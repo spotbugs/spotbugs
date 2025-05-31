@@ -47,6 +47,7 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
     private CFG currentCFG;
     private LockDataflow currentLockDataFlow;
     private boolean isFirstVisit = true;
+    private boolean hadOperation = false;
     private final Map<XMethod, Set<XField>> readFieldsByMethods = new HashMap<>();
     private final Set<XField> relevantFields = new HashSet<>();
     private final Map<XMethod, Set<XMethod>> nonSyncedMethodCallsByCallingMethods = new HashMap<>();
@@ -109,6 +110,7 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
     public void visit(Method method) {
         try {
             relevantFields.clear();
+            hadOperation = false;
             currentMethod = method;
             currentLockDataFlow = getClassContext().getLockDataflow(currentMethod);
             currentCFG = getClassContext().getCFG(currentMethod);
@@ -122,6 +124,7 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
         bugAccumulator.reportAccumulatedBugs();
         relevantFields.clear();
         readFieldsByMethods.clear();
+        hadOperation = false;
         nonSyncedMethodCallsByCallingMethods.clear();
     }
 
@@ -203,7 +206,8 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
                     && hasNonSyncedNonPrivateCallToMethod(method, new HashSet<>())) {
                 boolean fieldReadInOtherMethod = mapContainsFieldWithOtherMethod(field, method, readFieldsByMethods);
                 if (fieldReadInOtherMethod) {
-                    if (!relevantFields.isEmpty() && relevantFields.contains(field) && isPrimitiveOrItsBoxingType(field.getSignature())) {
+                    if (hadOperation && !relevantFields.isEmpty() && relevantFields.contains(field)
+                            && isPrimitiveOrItsBoxingType(field.getSignature())) {
                         bugAccumulator.accumulateBug(
                                 new BugInstance(this, "AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE", NORMAL_PRIORITY)
                                         .addClass(this)
@@ -225,10 +229,14 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
             relevantFields.clear();
         } else {
             short opcode = (short) seen;
-            // if the opcode is something different then it is not the calculation of the assigned value
-            if (!readOpCodes.contains(opcode) && !pushOpCodes.contains(opcode) && !operationOpCodes.contains(opcode)
-                    && !methodCallOpCodes.contains(opcode)) {
+            if (operationOpCodes.contains(opcode)) {
+                if (!relevantFields.isEmpty()) {
+                    hadOperation = true;
+                }
+            } else if (!readOpCodes.contains(opcode) && !pushOpCodes.contains(opcode) && !methodCallOpCodes.contains(opcode)) {
+                // if the opcode is something different then it is not the calculation of the assigned value
                 relevantFields.clear();
+                hadOperation = false;
             }
         }
     }
