@@ -200,7 +200,9 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
             }
         } else if (seen == Const.PUTFIELD || seen == Const.PUTSTATIC) {
             XField field = getXFieldOperand();
-            if (field != null && !field.isFinal() && !field.isSynthetic() && field.getClassDescriptor().equals(method.getClassDescriptor())
+            if (field != null && !field.isFinal() && !field.isSynthetic()
+                    && (seen == Const.PUTSTATIC || stack.getStackItem(1).getRegisterNumber() == 0)
+                    && field.getClassDescriptor().equals(method.getClassDescriptor())
                     && hasNonSyncedNonPrivateCallToMethod(method, new HashSet<>())) {
                 boolean fieldReadInOtherMethod = mapContainsFieldWithOtherMethod(field, method, readFieldsByMethods);
                 if (fieldReadInOtherMethod) {
