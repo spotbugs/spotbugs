@@ -17,8 +17,8 @@
  */
 package edu.umd.cs.findbugs.bytecode;
 
+import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
-import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.FieldOrMethod;
@@ -29,6 +29,7 @@ import org.apache.bcel.generic.FieldGenOrMethodGen;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.ba.ClassMember;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
@@ -36,9 +37,12 @@ import edu.umd.cs.findbugs.ba.XMethod;
  */
 public final class MemberUtils {
 
-    private static final String LOMBOK_GENERATED_TYPE = "Llombok/Generated;";
-    @SlashedClassName
-    private static final String LOMBOK_GENERATED_NAME = "lombok/Generated";
+    /**
+     * This will capture annotations such as <code>org.immutables.value.Generated</code> or <code>lombok.Generated</code>.
+     * Note that <code>javax.annotation.Generated</code>, <code>javax.annotation.processing.Generated</code> only have source retention and are not visible to SpotBugs.
+     */
+    private static final String GENERATED_TYPE_SUFFIX = "/Generated;";
+    private static final String GENERATED_NAME_SUFFIX = "/Generated";
 
     private MemberUtils() {
         throw new AssertionError("Utility classes can't be instantiated");
@@ -75,7 +79,7 @@ public final class MemberUtils {
     private static boolean isGeneratedMethod(final FieldOrMethod m) {
         for (AnnotationEntry a : m.getAnnotationEntries()) {
             String typeName = a.getAnnotationType();
-            if (LOMBOK_GENERATED_TYPE.equals(typeName)) {
+            if (typeName.endsWith(GENERATED_TYPE_SUFFIX)) {
                 return true;
             }
         }
@@ -86,7 +90,7 @@ public final class MemberUtils {
     private static boolean isGeneratedMethod(final FieldGenOrMethodGen m) {
         for (AnnotationEntryGen a : m.getAnnotationEntries()) {
             String typeName = a.getAnnotation().getAnnotationType();
-            if (LOMBOK_GENERATED_TYPE.equals(typeName)) {
+            if (typeName.endsWith(GENERATED_NAME_SUFFIX)) {
                 return true;
             }
         }
@@ -94,10 +98,10 @@ public final class MemberUtils {
         return false;
     }
 
-    private static boolean isGeneratedMethod(final XMethod m) {
-        for (AnnotationValue a : m.getAnnotations()) {
+    private static boolean isGenerated(final AnnotatedObject o) {
+        for (AnnotationValue a : o.getAnnotations()) {
             String typeName = a.getAnnotationClass().getClassName();
-            if (LOMBOK_GENERATED_NAME.equals(typeName)) {
+            if (typeName.endsWith(GENERATED_NAME_SUFFIX)) {
                 return true;
             }
         }
@@ -161,7 +165,7 @@ public final class MemberUtils {
      * @return True if the given member is user generated, false otherwise.
      */
     public static boolean isUserGenerated(final ClassMember m) {
-        return (!m.isSynthetic() || (m instanceof XMethod && couldBeLambda((XMethod) m))) && (!(m instanceof XMethod) || !isGeneratedMethod(
+        return (!m.isSynthetic() || (m instanceof XMethod && couldBeLambda((XMethod) m))) && (!(m instanceof XMethod) || !isGenerated(
                 (XMethod) m));
     }
 
@@ -176,6 +180,16 @@ public final class MemberUtils {
      */
     public static boolean isUserGenerated(final FieldGenOrMethodGen m) {
         return (!internalIsSynthetic(m) || (m instanceof MethodGen && couldBeLambda((MethodGen) m))) && !isGeneratedMethod(m);
+    }
+
+    /**
+     * Checks if the given class was user-generated, classes annotated with annotations such as Immutables' Generated are not considered user-generated.
+     *
+     * @param c The class to check.
+     * @return True if the given class is user generated, false otherwise.
+     */
+    public static boolean isUserGenerated(final XClass c) {
+        return !isGenerated(c);
     }
 
     /**

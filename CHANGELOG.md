@@ -12,26 +12,34 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 - Widen main method recognition according to [JEP 445](https://openjdk.org/jeps/445). ([#3371](https://github.com/spotbugs/spotbugs/pull/3371))
-- Do not report `US_USELESS_SUPPRESSION_ON_METHOD` on generated methods ([#3350](https://github.com/spotbugs/spotbugs/issues/3350))
+- Do not report `US_USELESS_SUPPRESSION_ON_*` on methods, fields, parameters, packages or classes with an `*.Generated` annotation with retention >= class ([#3350](https://github.com/spotbugs/spotbugs/issues/3350))([#3409](https://github.com/spotbugs/spotbugs/pull/3409))
 - Rewrite some member in `ResourceValueFrame.java` to Enum ([#2061](https://github.com/spotbugs/spotbugs/issues/2061))
 - Ignore non-interpreted text when looking for `FS_BAD_DATE_FORMAT_FLAG_COMBO` ([#3387](https://github.com/spotbugs/spotbugs/issues/3387))
 - Fix IllegalArgumentException thrown from `FindNoSideEffectMethods` detector ([#3320](https://github.com/spotbugs/spotbugs/issues/3320))
 - Do not report `RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT` when part of a Mockito `doAnswer()`, `doCallRealMethod()`, `doNothing()`, `doThrow()` or `doReturn()` call ([#3334](https://github.com/spotbugs/spotbugs/issues/3334))
+- Fix `CT_CONSTRUCTOR_THROW` false positive with public and private constructors in specific order of methods ([#3417](https://github.com/spotbugs/spotbugs/issues/3417))
+- Fix `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE`, `AT_NONATOMIC_64BIT_PRIMITIVE` and `AT_STALE_THREAD_WRITE_OF_PRIMITIVE` FP when the relevant code is in private method, which is only called with proper synchronization ([#3428](https://github.com/spotbugs/spotbugs/issues/3428)) 
+- Do not report `RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT` when part of a BDDMockito call ([#3441](https://github.com/spotbugs/spotbugs/issues/3441))
+- Fix `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE` when field of a local variable is set. ([#3459](https://github.com/spotbugs/spotbugs/pull/3459))
+- Fix `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE` FP when there was no compound operation ([#3363](https://github.com/spotbugs/spotbugs/issues/3363))
 
 ### Added
 - Added the unnecessary annotation to the `US_USELESS_SUPPRESSION_ON_*` messages ([#3395](https://github.com/spotbugs/spotbugs/issues/3395))
 - Multi-threaded code checks can be skipped with `@NotThreadSafe` ([#3390](https://github.com/spotbugs/spotbugs/issues/3390))
+- New bug type `CWO_CLOSED_WITHOUT_OPENED` for locks that might be released without even being acquired. (See [SEI CERT rule LCK08-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK08-J.+Ensure+actively+held+locks+are+released+on+exceptional+conditions)) ([#2055](https://github.com/spotbugs/spotbugs/pull/2055))
+  - Breaking change: changed values and new items in `ResourceValueFrame`.
 - New detector `FindImproperSynchronization` and introduced new bug types:
-  - `USO_UNSAFE_METHOD_SYNCHRONIZATION` is reported when using synchronized methods with the class' accessible intrinsic lock,
-  - `USO_UNSAFE_STATIC_METHOD_SYNCHRONIZATION` is reported when using static synchronized methods with the class' exposed intrinsic lock,
-  - `USO_UNSAFE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is visible from the outside,
-  - `USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is made accessible, with methods that update or return the lock, to the outside,
-  - `USO_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is can be altered by subclasses,
-  - `USO_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is later exposed in the subclasses.
-  - `USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION` is reported when the backing collection of a lock is visible from the outside,
-  - `USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION` is reported when the backing collection of a lock is made accessible, with methods that update or return the lock, to the outside,
-  - `USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION` is reported when the backing collection of a lock can be altered by subclasses.
-    (See [SEI CERT rule LCK00-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code) and [SEI CERT rule LCK04-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK04-J.+Do+not+synchronize+on+a+collection+view+if+the+backing+collection+is+accessible))
+    - `USO_UNSAFE_METHOD_SYNCHRONIZATION` is reported when using synchronized methods with the class' accessible intrinsic lock,
+    - `USO_UNSAFE_STATIC_METHOD_SYNCHRONIZATION` is reported when using static synchronized methods with the class' exposed intrinsic lock,
+    - `USO_UNSAFE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is visible from the outside,
+    - `USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is made accessible, with methods that update or return the lock, to the outside,
+    - `USO_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is can be altered by subclasses,
+    - `USO_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is later exposed in the subclasses.
+    - `USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION` is reported when the backing collection of a lock is visible from the outside,
+    - `USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION` is reported when the backing collection of a lock is made accessible, with methods that update or return the lock, to the outside,
+    - `USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION` is reported when the backing collection of a lock can be altered by subclasses.
+      (See [SEI CERT rule LCK00-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code) and [SEI CERT rule LCK04-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK04-J.+Do+not+synchronize+on+a+collection+view+if+the+backing+collection+is+accessible))
+
 
 ## 4.9.3 - 2025-03-14
 ### Added

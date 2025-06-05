@@ -1,5 +1,5 @@
 plugins {
-  id "org.sonarqube" version "6.1.0.5360"
+  id "org.sonarqube" version "6.2.0.5505"
   id "org.gradle.crypto.checksum" version "1.4.0"
   id "com.github.spotbugs" version "6.1.0"
   id "io.github.gradle-nexus.publish-plugin" version "2.0.0"
@@ -30,14 +30,14 @@ allprojects {
     mavenCentral()
   }
   dependencies {
-    def junitVersion = '5.12.2'
+    def junitVersion = '5.13.0'
     compileOnly platform("org.junit:junit-bom:$junitVersion")
     testImplementation platform("org.junit:junit-bom:$junitVersion")
   }
 }
 
 // https://discuss.gradle.org/t/merge-jacoco-coverage-reports-for-multiproject-setups/12100/6
-task jacocoRootReport(type: JacocoReport) {
+tasks.register("jacocoRootReport", JacocoReport.class) {
   description = 'Merge all coverage reports before submit to SonarQube'
   def reportTasks = project.getTasksByName("jacocoTestReport", true).minus(rootProject.jacocoTestReport)
   dependsOn reportTasks
