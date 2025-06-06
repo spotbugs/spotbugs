@@ -668,6 +668,9 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                 VariableData data = analyzedArguments.get(valueNumber);
                 if (data == null) {
                     try {
+                        if (condition.value.signature.startsWith("L")) {
+                            continue;
+                        }
                         data = new VariableData(condition.value.signature);
                     } catch (IllegalArgumentException e) {
                         continue;
