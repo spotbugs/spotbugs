@@ -62,10 +62,10 @@ jobs:
       - name: Pre-build setup
         if: matrix.os != 'windows-latest'
         run: |
-          echo "keystorepass=${KEYSTORE_PASS}" | tr -d '\r' >> gradle.properties
+          echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
           git fetch --no-tags https://$GITHUB_TOKEN@github.com/spotbugs/spotbugs.git +refs/heads/master:refs/remotes/origin/master
           if [ "$GPG_SECRET_PASSPHRASE" != "" ]; then
-            echo "$GPG_PASSPHRASE" | tr -d '\r' | gpg --quiet --batch --yes --decrypt --passphrase-fd 0 --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
+            echo "$GPG_SECRET_PASSPHRASE" | tr -d '\r' | gpg --quiet --batch --yes --decrypt --passphrase-fd 0 --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
