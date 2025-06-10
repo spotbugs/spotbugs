@@ -37,7 +37,7 @@ jobs:
 
       - name: Commit CHANGELOG.md
         if: (github.ref_type == 'tag') && (github.event.base_ref == 'refs/heads/master')
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v6
         with:
           branch: ${{ github.base_ref}}
           commit_message: 'docs: update CHANGELOG.md for ${{ github.ref_name }}'
