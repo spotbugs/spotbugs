@@ -28,6 +28,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Multi-threaded code checks can be skipped with `@NotThreadSafe` ([#3390](https://github.com/spotbugs/spotbugs/issues/3390))
 - New bug type `CWO_CLOSED_WITHOUT_OPENED` for locks that might be released without even being acquired. (See [SEI CERT rule LCK08-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK08-J.+Ensure+actively+held+locks+are+released+on+exceptional+conditions)) ([#2055](https://github.com/spotbugs/spotbugs/pull/2055))
   - Breaking change: changed values and new items in `ResourceValueFrame`.
+- Inline access method for method. ([#3481](https://github.com/spotbugs/spotbugs/issues/3481))
 
 ## 4.9.3 - 2025-03-14
 ### Added
