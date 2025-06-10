@@ -102,6 +102,17 @@ clean {
   delete ".libs"
 }
 
+project(':spotbugs-annotations') {
+    def jarTask = tasks.named('jar')
+    tasks.named('spotbugsMain') {
+        dependsOn jarTask
+
+        inputs.file(jarTask.flatMap { it.archiveFile })
+              .withPathSensitivity(PathSensitivity.RELATIVE)
+              .withPropertyName('spotbugsJarInput')
+    }
+}
+
 tasks.named('compileGuiJava', JavaCompile).configure {
   options.release = 11
 }
