@@ -43,6 +43,22 @@ public interface IErrorLogger {
     public void reportMissingClass(ClassDescriptor classDescriptor);
 
     /**
+     * Called to report a class lookup failure.
+     *
+     * @param classDescriptor
+     *            ClassDescriptor of a missing class
+     * @param exception
+     *            The exception thrown when trying to get the class
+     */
+    public default void reportMissingClass(ClassDescriptor classDescriptor, CheckedAnalysisException exception) {
+        if (exception instanceof MissingClassException) {
+            reportMissingClass(classDescriptor);
+        } else {
+            logError("Could not find class " + classDescriptor.getDottedClassName(), exception);
+        }
+    }
+
+    /**
      * Log an error that occurs while performing analysis.
      *
      * @param message
