@@ -23,6 +23,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Do not report `RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT` when part of a BDDMockito call ([#3441](https://github.com/spotbugs/spotbugs/issues/3441))
 - Fix `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE` when field of a local variable is set. ([#3459](https://github.com/spotbugs/spotbugs/pull/3459))
 - Fix `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE` FP when there was no compound operation ([#3363](https://github.com/spotbugs/spotbugs/issues/3363))
+- Fix `NM_FIELD_NAMING_CONVENTION` crash in the TestASM detector ([#3489](https://github.com/spotbugs/spotbugs/pull/3489))
 
 ### Added
 - Added the unnecessary annotation to the `US_USELESS_SUPPRESSION_ON_*` messages ([#3395](https://github.com/spotbugs/spotbugs/issues/3395))
