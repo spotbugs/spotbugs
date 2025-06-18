@@ -101,6 +101,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
             }
             return isJunit3TestCase(sClass);
         } catch (CheckedAnalysisException e) {
+            bugReporter.reportMissingClass(sDesc, e);
             return false;
         }
 

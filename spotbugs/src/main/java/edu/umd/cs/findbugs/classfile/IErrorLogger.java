@@ -47,14 +47,14 @@ public interface IErrorLogger {
      *
      * @param classDescriptor
      *            ClassDescriptor of a missing class
-     * @param exception
-     *            The exception thrown when trying to get the class
+     * @param throwable
+     *            The throwable thrown when trying to get the class
      */
-    public default void reportMissingClass(ClassDescriptor classDescriptor, CheckedAnalysisException exception) {
-        if (exception instanceof MissingClassException) {
+    public default void reportMissingClass(ClassDescriptor classDescriptor, Throwable throwable) {
+        if (throwable instanceof MissingClassException) {
             reportMissingClass(classDescriptor);
         } else {
-            logError("Could not find class " + classDescriptor.getDottedClassName(), exception);
+            logError("Could not find class " + classDescriptor.getDottedClassName(), throwable);
         }
     }
 

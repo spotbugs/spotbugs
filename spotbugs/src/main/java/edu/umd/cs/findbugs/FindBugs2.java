@@ -995,7 +995,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                     XClass info = Global.getAnalysisCache().getClassAnalysis(XClass.class, desc);
                     factory.intern(info);
                 } catch (CheckedAnalysisException | RuntimeException e) {
-                    AnalysisContext.logError("Couldn't get class info for " + desc, e);
+                    AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(desc, e);
                     badClasses.add(desc);
                 }
             }

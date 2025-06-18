@@ -353,6 +353,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                         sawCall(new MethodCall(matchingMethod.getMethodDescriptor(), TARGET_THIS), false);
                     }
                 } catch (CheckedAnalysisException e) {
+                    AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(subtype, e);
                 }
             }
         }
