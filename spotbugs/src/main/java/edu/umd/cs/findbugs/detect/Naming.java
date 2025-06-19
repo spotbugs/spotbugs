@@ -346,7 +346,7 @@ public class Naming extends PreorderVisitor implements Detector {
                 XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, d);
                 d = classNameAndInfo.getSuperclassDescriptor();
             } catch (CheckedAnalysisException e) {
-            	bugReporter.reportMissingClass(d, e);
+                bugReporter.reportMissingClass(d, e);
                 return true; // don't know
             }
         }
