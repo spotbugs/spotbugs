@@ -34,6 +34,15 @@ class WarningSuppressorTest extends AbstractIntegrationTest {
         assertBugInMethod("US_USELESS_SUPPRESSION_ON_METHOD", "suppress.SuppressedBugs", "nonSuppressedNpeRegex");
     }
 
+    @Test
+    void customSuppressAnnotationTest() {
+        performAnalysis("suppress/custom/CustomSuppressedBugs.class", "suppress/custom/SuppressFBWarnings.class");
+
+        assertMethodBugsCount("suppressedNpePrefix", 0);
+
+        assertMethodBugsCount("suppressedNpeExact", 0);
+    }
+
     private void assertMethodBugsCount(String methodName, int expectedCount) {
         BugInstanceMatcher matcher = new BugInstanceMatcherBuilder().inMethod(methodName).build();
         assertThat(getBugCollection(), containsExactly(expectedCount, matcher));
