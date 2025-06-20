@@ -100,7 +100,7 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
         }
     }
 
-    public boolean isSuppressWarnings(String annotationClass) {
+    public static boolean isSuppressWarnings(String annotationClass) {
         return annotationClass.endsWith("SuppressWarnings")
                 || annotationClass.endsWith("SuppressFBWarnings");
     }
