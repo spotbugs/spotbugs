@@ -860,6 +860,14 @@ public class UnreadFields extends OpcodeStackDetector {
             }
         }
 
+        try {
+            if ("setUp".equals(getMethodName()) && InvalidJUnitTest.isJunit3TestCase(getXClass())) {
+                return true;
+            }
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
+        }
+
         return false;
     }
 
