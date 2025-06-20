@@ -3,7 +3,7 @@ apply from: "$rootDir/gradle/javadoc.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 
 tasks.named('compileJava', JavaCompile).configure {
-    options.release = 11
+    options.release = 8
 }
 
 eclipse {

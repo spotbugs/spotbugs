@@ -335,7 +335,9 @@ public class UnreadFields extends OpcodeStackDetector {
         if (isInjectionAttribute(annotationClass)) {
             data.containerFields.add(XFactory.createXField(this));
         }
-        if (!annotationClass.startsWith("edu.umd.cs.findbugs") && !annotationClass.startsWith("javax.lang")) {
+        if (!annotationClass.startsWith("edu.umd.cs.findbugs")
+                && !annotationClass.startsWith("javax.lang")
+                && !NoteSuppressedWarnings.isSuppressWarnings(annotationClass)) {
             data.unknownAnnotation.add(XFactory.createXField(this), annotationClass);
         }
 
