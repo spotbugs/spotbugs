@@ -26,6 +26,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `NM_FIELD_NAMING_CONVENTION` crash in the TestASM detector ([#3489](https://github.com/spotbugs/spotbugs/pull/3489))
 - Do not report `UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR` for fields initialized in JUnit 3/4 `setUp()` method. ([#3169](https://github.com/spotbugs/spotbugs/issues/3169))
 - Fix `US_USELESS_SUPPRESSION_ON_FIELD`/`UUF_UNUSED_FIELD` false positive ([#3496](https://github.com/spotbugs/spotbugs/pull/3496))
+- Make the osgi manifest of the annotations jar Java 8 compatible  ([#3498](https://github.com/spotbugs/spotbugs/pull/3498)) ([#3500](https://github.com/spotbugs/spotbugs/pull/3500))
 
 ### Added
 - Added the unnecessary annotation to the `US_USELESS_SUPPRESSION_ON_*` messages ([#3395](https://github.com/spotbugs/spotbugs/issues/3395))
