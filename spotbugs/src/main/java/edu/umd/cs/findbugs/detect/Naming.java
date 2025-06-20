@@ -337,7 +337,7 @@ public class Naming extends PreorderVisitor implements Detector {
      *            class descriptor we want to check
      * @return true iff the descriptor ultimately inherits from Exception
      */
-    private static boolean mightInheritFromException(ClassDescriptor d) {
+    private boolean mightInheritFromException(ClassDescriptor d) {
         while (d != null) {
             try {
                 if ("java.lang.Exception".equals(d.getDottedClassName())) {
@@ -346,6 +346,7 @@ public class Naming extends PreorderVisitor implements Detector {
                 XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, d);
                 d = classNameAndInfo.getSuperclassDescriptor();
             } catch (CheckedAnalysisException e) {
+                bugReporter.reportMissingClass(d, e);
                 return true; // don't know
             }
         }

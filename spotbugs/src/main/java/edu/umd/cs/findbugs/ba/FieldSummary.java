@@ -93,6 +93,7 @@ public class FieldSummary {
                 }
             }
         } catch (CheckedAnalysisException e) {
+            AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(c, e);
             return false;
         }
 

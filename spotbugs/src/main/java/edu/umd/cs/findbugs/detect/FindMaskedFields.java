@@ -105,6 +105,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
             try {
                 c = Global.getAnalysisCache().getClassAnalysis(XClass.class, s);
             } catch (CheckedAnalysisException e) {
+                bugReporter.reportMissingClass(s, e);
                 break;
             }
 
