@@ -391,6 +391,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
                                         try {
                                             Global.getAnalysisCache().getClassAnalysis(XClass.class, c);
                                         } catch (CheckedAnalysisException e) {
+                                            bugReporter.reportMissingClass(c, e);
                                             continue;
                                         }
                                         XMethod m = Hierarchy2.findMethod(c, "equals", "(Ljava/lang/Object;)Z", false);

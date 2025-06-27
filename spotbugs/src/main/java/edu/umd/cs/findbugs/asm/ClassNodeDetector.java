@@ -78,7 +78,7 @@ public abstract class ClassNodeDetector extends ClassNode implements Detector2 {
         try {
             return Global.getAnalysisCache().getClassAnalysis(XClass.class, classDescr);
         } catch (CheckedAnalysisException e) {
-            bugReporter.reportMissingClass(classDescr);
+            bugReporter.reportMissingClass(classDescr, e);
             return null;
         }
     }
