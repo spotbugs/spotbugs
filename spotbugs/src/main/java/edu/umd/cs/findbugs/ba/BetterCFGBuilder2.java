@@ -554,6 +554,8 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
     private final IdentityHashMap<InstructionHandle, Subroutine> jsrSubroutineMap;
 
     private final Map<FieldDescriptor, Integer> addedFields = new HashMap<>();
+
+    private final Map<MethodDescriptor, Integer> addedMethods = new HashMap<>();
     private Subroutine topLevelSubroutine;
 
     private CFG cfg;
@@ -602,6 +604,16 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
     }
 
+    private int getIndex(MethodDescriptor method) {
+        Integer i = addedMethods.get(method);
+        if (i != null) {
+            return i;
+        }
+        int index = cpg.addMethodref(method.getSlashedClassName(), method.getName(), method.getSignature());
+        addedMethods.put(method, index);
+        return index;
+    }
+
     public void optimize(InstructionList instructionList) {
         InstructionHandle head = instructionList.getStart();
 
@@ -616,6 +628,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                 if (name.startsWith("access$")) {
                     XMethod invoked = XFactory.createXMethod(is, cpg);
                     FieldDescriptor field = invoked.getAccessMethodForField();
+                    MethodDescriptor method = invoked.getAccessMethodForMethod();
                     if (field != null) {
                         boolean isSetter = signature.endsWith("V");
                         Instruction replacement;
@@ -641,6 +654,15 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                                     + methodGen.getSignature());
                          */
 
+                    } else if (method != null) {
+                        Instruction replacement;
+                        int index = getIndex(method);
+                        if (method.isStatic()) {
+                            replacement = new INVOKESTATIC(index);
+                        } else {
+                            replacement = new INVOKESPECIAL(index);
+                        }
+                        head.swapInstruction(replacement);
                     }
 
                 }
