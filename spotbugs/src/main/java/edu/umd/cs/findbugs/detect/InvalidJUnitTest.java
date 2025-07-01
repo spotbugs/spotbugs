@@ -81,7 +81,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 
     }
 
-    private boolean isJunit3TestCase(XClass jClass) throws ClassNotFoundException {
+    public static boolean isJunit3TestCase(XClass jClass) throws ClassNotFoundException {
         ClassDescriptor sDesc = jClass.getSuperclassDescriptor();
         if (sDesc == null) {
             return false;

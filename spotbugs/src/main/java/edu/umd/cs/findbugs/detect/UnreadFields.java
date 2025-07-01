@@ -335,7 +335,9 @@ public class UnreadFields extends OpcodeStackDetector {
         if (isInjectionAttribute(annotationClass)) {
             data.containerFields.add(XFactory.createXField(this));
         }
-        if (!annotationClass.startsWith("edu.umd.cs.findbugs") && !annotationClass.startsWith("javax.lang")) {
+        if (!annotationClass.startsWith("edu.umd.cs.findbugs")
+                && !annotationClass.startsWith("javax.lang")
+                && !NoteSuppressedWarnings.isSuppressWarnings(annotationClass)) {
             data.unknownAnnotation.add(XFactory.createXField(this), annotationClass);
         }
 
@@ -856,6 +858,14 @@ public class UnreadFields extends OpcodeStackDetector {
             if (INITIALIZER_ANNOTATIONS.contains(typeName)) {
                 return true;
             }
+        }
+
+        try {
+            if ("setUp".equals(getMethodName()) && InvalidJUnitTest.isJunit3TestCase(getXClass())) {
+                return true;
+            }
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
         }
 
         return false;

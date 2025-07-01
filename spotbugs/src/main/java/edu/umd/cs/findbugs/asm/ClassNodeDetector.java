@@ -21,10 +21,13 @@ package edu.umd.cs.findbugs.asm;
 
 import java.util.ArrayList;
 
+import javax.annotation.CheckForNull;
+
 import org.objectweb.asm.tree.ClassNode;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -40,6 +43,8 @@ public abstract class ClassNodeDetector extends ClassNode implements Detector2 {
 
     protected final BugReporter bugReporter;
 
+    protected XClass xclass;
+
     /**
      * Construct a ClassNodeDetector. The bugReporter is passed to the
      * constructor and stored in a protected final field.
@@ -54,18 +59,32 @@ public abstract class ClassNodeDetector extends ClassNode implements Detector2 {
 
     @Override
     public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
+        xclass = getClassInfo(classDescriptor);
+        if (xclass != null) {
+            FBClassReader cr = Global.getAnalysisCache().getClassAnalysis(FBClassReader.class, classDescriptor);
+            this.interfaces = new ArrayList<>();
+            this.innerClasses = new ArrayList<>();
+            this.fields = new ArrayList<>();
+            this.methods = new ArrayList<>();
+            cr.accept(this, 0);
+        }
+    }
 
-        FBClassReader cr = Global.getAnalysisCache().getClassAnalysis(FBClassReader.class, classDescriptor);
-        this.interfaces = new ArrayList<>();
-        this.innerClasses = new ArrayList<>();
-        this.fields = new ArrayList<>();
-        this.methods = new ArrayList<>();
-        cr.accept(this, 0);
+    @CheckForNull
+    protected XClass getClassInfo(ClassDescriptor classDescr) {
+        if (classDescr == null) {
+            return null;
+        }
+        try {
+            return Global.getAnalysisCache().getClassAnalysis(XClass.class, classDescr);
+        } catch (CheckedAnalysisException e) {
+            bugReporter.reportMissingClass(classDescr);
+            return null;
+        }
     }
 
     @Override
     public void finishPass() {
         // do nothing
     }
-
 }

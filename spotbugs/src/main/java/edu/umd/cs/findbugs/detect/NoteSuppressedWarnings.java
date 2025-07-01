@@ -100,7 +100,7 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
         }
     }
 
-    public boolean isSuppressWarnings(String annotationClass) {
+    public static boolean isSuppressWarnings(String annotationClass) {
         return annotationClass.endsWith("SuppressWarnings")
                 || annotationClass.endsWith("SuppressFBWarnings");
     }
@@ -129,8 +129,15 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
     private void suppressWarning(int parameter, String pattern, SuppressMatchType matchType) {
         String className = getDottedClassName();
         ClassAnnotation clazz = new ClassAnnotation(className);
-        suppressionMatcher.addSuppressor(new ParameterWarningSuppressor(pattern, matchType, clazz, MethodAnnotation.fromVisitedMethod(this),
-                parameter));
+        ParameterWarningSuppressor suppressor = new ParameterWarningSuppressor(
+                pattern,
+                matchType,
+                clazz,
+                MethodAnnotation.fromVisitedMethod(this),
+                parameter,
+                MemberUtils.isUserGenerated(getXClass()));
+
+        suppressionMatcher.addSuppressor(suppressor);
 
     }
 
@@ -138,15 +145,41 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
         String className = getDottedClassName();
         ClassAnnotation clazz = new ClassAnnotation(className);
         if (className.endsWith(".package-info")) {
-            suppressionMatcher.addPackageSuppressor(new PackageWarningSuppressor(pattern, matchType, ClassName.toDottedClassName(getPackageName())));
+            PackageWarningSuppressor suppressor = new PackageWarningSuppressor(
+                    pattern,
+                    matchType,
+                    ClassName.toDottedClassName(getPackageName()),
+                    MemberUtils.isUserGenerated(getXClass()));
+
+            suppressionMatcher.addPackageSuppressor(suppressor);
         } else if (visitingMethod()) {
-            MethodWarningSuppressor suppressor = new MethodWarningSuppressor(pattern, matchType, clazz, MethodAnnotation.fromVisitedMethod(this),
-                    MemberUtils.isUserGenerated(getMethod()));
+            MethodWarningSuppressor suppressor = new MethodWarningSuppressor(
+                    pattern,
+                    matchType,
+                    clazz,
+                    MethodAnnotation.fromVisitedMethod(this),
+                    MemberUtils.isUserGenerated(getXClass()),
+                    MemberUtils.isUserGenerated(getMethod()) && MemberUtils.isUserGenerated(getXClass()));
+
             suppressionMatcher.addSuppressor(suppressor);
         } else if (visitingField()) {
-            suppressionMatcher.addSuppressor(new FieldWarningSuppressor(pattern, matchType, clazz, FieldAnnotation.fromVisitedField(this)));
+            FieldWarningSuppressor suppressor = new FieldWarningSuppressor(
+                    pattern,
+                    matchType,
+                    clazz,
+                    FieldAnnotation.fromVisitedField(this),
+                    MemberUtils.isUserGenerated(getXClass()),
+                    MemberUtils.isUserGenerated(getField()) && MemberUtils.isUserGenerated(getXClass()));
+
+            suppressionMatcher.addSuppressor(suppressor);
         } else {
-            suppressionMatcher.addSuppressor(new ClassWarningSuppressor(pattern, matchType, clazz));
+            ClassWarningSuppressor suppressor = new ClassWarningSuppressor(
+                    pattern,
+                    matchType,
+                    clazz,
+                    MemberUtils.isUserGenerated(getXClass()));
+
+            suppressionMatcher.addSuppressor(suppressor);
         }
     }
 

@@ -16,9 +16,13 @@ public class MethodWarningSuppressor extends ClassWarningSuppressor {
      */
     private final boolean userGeneratedMethod;
 
-    public MethodWarningSuppressor(String bugPattern, SuppressMatchType matchType, ClassAnnotation clazz, MethodAnnotation method,
+    public MethodWarningSuppressor(String bugPattern,
+            SuppressMatchType matchType,
+            ClassAnnotation clazz,
+            MethodAnnotation method,
+            boolean userGeneratedClass,
             boolean userGeneratedMethod) {
-        super(bugPattern, matchType, clazz);
+        super(bugPattern, matchType, clazz, userGeneratedClass);
         this.method = method;
         this.userGeneratedMethod = userGeneratedMethod;
     }
@@ -50,6 +54,6 @@ public class MethodWarningSuppressor extends ClassWarningSuppressor {
 
     @Override
     public boolean isUselessSuppressionReportable() {
-        return userGeneratedMethod;
+        return userGeneratedMethod && super.isUselessSuppressionReportable();
     }
 }
