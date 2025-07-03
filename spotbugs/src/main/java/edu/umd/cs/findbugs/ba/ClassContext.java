@@ -117,10 +117,13 @@ public class ClassContext {
         this.jclass = jclass;
         this.analysisContext = analysisContext;
         this.methodAnalysisObjectMap = new HashMap<>();
+
+        ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptor(jclass);
+
         try {
-            classInfo = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class,
-                    DescriptorFactory.createClassDescriptor(jclass));
+            classInfo = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, classDescriptor);
         } catch (CheckedAnalysisException e) {
+            analysisContext.getLookupFailureCallback().reportMissingClass(classDescriptor, e);
             throw new AssertionError("No ClassInfo for " + jclass);
         }
     }
