@@ -790,16 +790,18 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
             this.sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(detector);
         }
 
-        private BugInstance createBugInstance(BytecodeScanningDetector detector, String bugType, XField lock, XField assignedBackingCollection,
-                String... extraMessages) {
-            BugInstance bugInstance = new BugInstance(detector, bugType, NORMAL_PRIORITY)
+        private BugInstance createBugInstance(BytecodeScanningDetector detector, String bugType, XField lock, XField assignedBackingCollection) {
+            return new BugInstance(detector, bugType, NORMAL_PRIORITY)
                     .addClassAndMethod(inMethod)
                     .addField(lock)
                     .addReferencedField(FieldAnnotation.fromXField(assignedBackingCollection))
                     .addSourceLine(sourceLineAnnotation);
-            for (String message : extraMessages) {
-                bugInstance.addString(message);
-            }
+        }
+    }
+    
+    private BugInstance createBugInstance(BytecodeScanningDetector detector, String bugType, XField lock, XField assignedBackingCollection, String extraMessage) {
+            BugInstance bugInstance = createBugInstance(detector, bugType, lock, assignedBackingCollection);
+            bugInstance.addString(extraMessage);
 
             return bugInstance;
         }
