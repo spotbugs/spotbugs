@@ -3281,7 +3281,7 @@ public class OpcodeStack {
         if (stackOffset < 0 || stackOffset >= stack.size()) {
             AnalysisContext.logError("Can't get stack offset " + stackOffset + " from " + stack.toString() + " @ " + v.getPC()
                     + " in " + fullyQualifiedMethodName, new IllegalArgumentException(stackOffset
-                            + " is not a value stack offset"));
+                            + " is not a valid stack offset"));
             return new Item("Lfindbugs/OpcodeStackError;");
 
         }
@@ -3307,7 +3307,7 @@ public class OpcodeStack {
         if (stackOffset < 0 || stackOffset >= stack.size()) {
             AnalysisContext.logError("Can't get replace stack offset " + stackOffset + " from " + stack.toString() + " @ " + v.getPC()
                     + " in " + v.getFullyQualifiedMethodName(), new IllegalArgumentException(stackOffset
-                            + " is not a value stack offset"));
+                            + " is not a valid stack offset"));
 
         }
         int tos = stack.size() - 1;

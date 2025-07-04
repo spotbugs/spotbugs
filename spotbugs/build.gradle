@@ -67,7 +67,7 @@ dependencies {
   api libs.asm.util
   api 'org.apache.bcel:bcel:6.10.0'
   api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
-  api('org.dom4j:dom4j:2.1.4') {
+  api('org.dom4j:dom4j:2.2.0') {
     // exclude transitive dependencies to keep compatible with dom4j 2.1.1
     // https://github.com/dom4j/dom4j/issues/85
     // https://docs.gradle.org/current/userguide/dependency_downgrade_and_exclude.html#sec:excluding-transitive-deps
@@ -82,7 +82,7 @@ dependencies {
   api 'org.apache.commons:commons-lang3:3.17.0'
   api 'org.apache.commons:commons-text:1.13.1'
   api 'org.slf4j:slf4j-api:2.0.17'
-  implementation 'net.sf.saxon:Saxon-HE:12.7'
+  implementation 'net.sf.saxon:Saxon-HE:12.8'
   implementation libs.log4j.core
   logBinding (libs.log4j.slf4j2.impl) {
     exclude group: 'org.slf4j'
@@ -100,6 +100,17 @@ dependencies {
 
 clean {
   delete ".libs"
+}
+
+project(':spotbugs-annotations') {
+    def jarTask = tasks.named('jar')
+    tasks.named('spotbugsMain') {
+        dependsOn jarTask
+
+        inputs.file(jarTask.flatMap { it.archiveFile })
+              .withPathSensitivity(PathSensitivity.RELATIVE)
+              .withPropertyName('spotbugsJarInput')
+    }
 }
 
 tasks.named('compileGuiJava', JavaCompile).configure {

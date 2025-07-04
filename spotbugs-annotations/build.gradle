@@ -3,7 +3,7 @@ apply from: "$rootDir/gradle/javadoc.gradle"
 apply from: "$rootDir/gradle/maven.gradle"
 
 tasks.named('compileJava', JavaCompile).configure {
-    options.release = 11
+    options.release = 8
 }
 
 eclipse {
@@ -23,7 +23,7 @@ def manifestSpec = java.manifest {
                'Bundle-SymbolicName': 'spotbugs-annotations',
                'Bundle-Version': project.version.replace('-', '.'),
                'Export-Package': 'edu.umd.cs.findbugs.annotations',
-               'Bundle-RequiredExecutionEnvironment': 'JavaSE-11',
+               'Bundle-RequiredExecutionEnvironment': 'JavaSE-1.8',
                'Bundle-ManifestVersion': '2'
 }
 
@@ -41,7 +41,7 @@ def jar = tasks.named('jar', Jar) {
                'Bundle-SymbolicName': 'spotbugs-annotations',
                'Bundle-Version': project.version.replace('-', '.'),
                'Export-Package': 'edu.umd.cs.findbugs.annotations',
-               'Bundle-RequiredExecutionEnvironment': 'JavaSE-11',
+               'Bundle-RequiredExecutionEnvironment': 'JavaSE-1.8',
                'Bundle-ManifestVersion': '2'
   }
 }

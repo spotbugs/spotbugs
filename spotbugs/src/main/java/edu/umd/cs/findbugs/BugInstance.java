@@ -1125,7 +1125,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a field annotation.
      *
      * @param className
-     *            name of the class containing the field
+     *            the dotted name of the class containing the field
      * @param fieldName
      *            the name of the field
      * @param fieldSig
@@ -1135,7 +1135,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * @return this object
      */
     @Nonnull
-    public BugInstance addField(String className, String fieldName, String fieldSig, boolean isStatic) {
+    public BugInstance addField(@DottedClassName String className, String fieldName, String fieldSig, boolean isStatic) {
         addField(new FieldAnnotation(className, fieldName, fieldSig, isStatic));
         return this;
     }
@@ -1144,7 +1144,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a field annotation.
      *
      * @param className
-     *            name of the class containing the field
+     *            the dotted name of the class containing the field
      * @param fieldName
      *            the name of the field
      * @param fieldSig
@@ -1154,7 +1154,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * @return this object
      */
     @Nonnull
-    public BugInstance addField(String className, String fieldName, String fieldSig, int accessFlags) {
+    public BugInstance addField(@DottedClassName String className, String fieldName, String fieldSig, int accessFlags) {
         addField(new FieldAnnotation(className, fieldName, fieldSig, accessFlags));
         return this;
     }
