@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.type.TypeFrameModelingVisitor;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MultiMap;
@@ -63,6 +64,7 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -172,7 +174,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
 
     @Override
     public void visit(Method obj) {
-        if (obj.isSynthetic()) {
+        if (!MemberUtils.isUserGenerated(obj)) {
             return;
         }
 
@@ -229,6 +231,9 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
 
     @Override
     public void visit(Field obj) {
+        if (MemberUtils.isUserGenerated(obj)) {
+            return;
+        }
         XField xField = getXField();
         if (isCollection(xField)) {
             if (isInherited(xField)) {
@@ -536,7 +541,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
 
     private void analyzeAssignmentsInHierarchy(XField collectionLockObject) {
         String lockDeclaringClassName = collectionLockObject.getClassName();
-        Method[] ownMethods = getThisClass().getMethods();
+        ArrayList<Method> ownMethods = new ArrayList<>(Arrays.asList(getThisClass().getMethods()));
         JavaClass[] superClasses;
 
         try {
@@ -552,7 +557,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
             }
 
             for (Method method : declaringClass.getMethods()) {
-                if (ownMethods.length > 0 && Arrays.asList(ownMethods).contains(method) || method.getCode() == null) {
+                if (!ownMethods.isEmpty() && ownMethods.contains(method) || method.getCode() == null) {
                     continue;
                 }
 
@@ -579,11 +584,11 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
 
     private Set<XMethod> findExposureInHierarchy(XField lockObject) throws ClassNotFoundException {
         Set<XMethod> unsafeMethods = new HashSet<>();
-        Method[] ownMethods = getThisClass().getMethods();
+        ArrayList<Method> ownMethods = new ArrayList<>(Arrays.asList(getThisClass().getMethods()));
 
         for (JavaClass declaringClass : getThisClass().getSuperClasses()) {
             for (Method possibleAccessorMethod : declaringClass.getMethods()) {
-                if (possibleAccessorMethod.getCode() == null || Arrays.asList(ownMethods).contains(possibleAccessorMethod)
+                if (possibleAccessorMethod.getCode() == null || ownMethods.contains(possibleAccessorMethod)
                         || isInitializerMethod(possibleAccessorMethod.getName())) {
                     continue;
                 }
