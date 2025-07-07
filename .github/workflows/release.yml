@@ -12,7 +12,7 @@ jobs:
       contents: write # to push pages branch (peaceiris/actions-gh-pages)
 
     if: github.repository_owner == 'spotbugs'
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
