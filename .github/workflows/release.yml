@@ -6,6 +6,11 @@ on:
       - '**'
 
 permissions: {}
+
+env:
+  eclipse-version: 4.24
+  eclipse-date: 202206070700
+
 jobs:
   build:
     permissions:
@@ -52,9 +57,12 @@ jobs:
       - uses: gradle/actions/wrapper-validation@v4
       - name: Download Eclipse
         run: |
-          curl -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.24-202206070700/eclipse-SDK-4.24-win32-x86_64.zip&mirror_id=1' --output eclipse-SDK-4.24-win32-x86_64.zip
-          tar xzvf eclipse-SDK-4.24-win32-x86_64.zip eclipse
-          echo "eclipseRoot.dir=$(pwd)/eclipse" > eclipsePlugin/local.properties
+          Remove-item alias:curl
+          curl --continue-at - --create-dirs -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-win32-x86_64.zip&mirror_id=1' --output eclipse-sdk/eclipse.zip
+          Expand-Archive "eclipse-sdk/eclipse.zip" -DestinationPath "." -Force
+          $escapedPwd = $pwd.Path -replace '\\', '\\'
+          [System.IO.File]::WriteAllLines("$pwd\\eclipsePlugin\\local.properties", "eclipseRoot.dir=$escapedPwd\\eclipse")
+        shell: powershell
       - name: Build on tag
         if: (github.ref_type == 'tag') && (github.event.base_ref == 'refs/heads/master')
         run: |
