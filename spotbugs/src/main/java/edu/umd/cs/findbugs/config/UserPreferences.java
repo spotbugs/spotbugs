@@ -34,6 +34,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -108,6 +111,8 @@ public class UserPreferences implements Cloneable {
      */
     public static final String KEY_EXCLUDE_BUGS = "excludebugs";
 
+    private static final String KEY_MERGE_SIMILAR_WARNINGS = "mergeSimilarWarnings";
+
     // Fields
 
     private LinkedList<String> recentProjectsList;
@@ -127,6 +132,8 @@ public class UserPreferences implements Cloneable {
     private Map<String, Boolean> excludeBugsFiles;
 
     private Map<String, Boolean> customPlugins;
+
+    private boolean mergeSimilarWarnings;
 
     private UserPreferences() {
         filterSettings = ProjectFilterSettings.createDefault();
@@ -250,6 +257,7 @@ public class UserPreferences implements Cloneable {
         excludeFilterFiles = readProperties(props, KEY_EXCLUDE_FILTER);
         excludeBugsFiles = readProperties(props, KEY_EXCLUDE_BUGS);
         customPlugins = readProperties(props, KEY_PLUGIN);
+        mergeSimilarWarnings = Boolean.parseBoolean(props.getProperty(KEY_MERGE_SIMILAR_WARNINGS));
     }
 
     /**
@@ -297,6 +305,7 @@ public class UserPreferences implements Cloneable {
         // of FindBugs.
         props.put(DETECTOR_THRESHOLD_KEY, String.valueOf(filterSettings.getMinPriorityAsInt()));
         props.put(RUN_AT_FULL_BUILD, String.valueOf(runAtFullBuild));
+        props.put(KEY_MERGE_SIMILAR_WARNINGS, String.valueOf(mergeSimilarWarnings));
         props.setProperty(EFFORT_KEY, effort);
         writeProperties(props, KEY_INCLUDE_FILTER, includeFilterFiles);
         writeProperties(props, KEY_EXCLUDE_FILTER, excludeFilterFiles);
@@ -475,13 +484,15 @@ public class UserPreferences implements Cloneable {
                 && detectorEnablementMap.equals(other.detectorEnablementMap) && filterSettings.equals(other.filterSettings)
                 && effort.equals(other.effort) && includeFilterFiles.equals(other.includeFilterFiles)
                 && excludeFilterFiles.equals(other.excludeFilterFiles) && excludeBugsFiles.equals(other.excludeBugsFiles)
-                && customPlugins.equals(other.customPlugins);
+                && customPlugins.equals(other.customPlugins)
+                && mergeSimilarWarnings == other.mergeSimilarWarnings;
     }
 
     @Override
     public int hashCode() {
         return recentProjectsList.hashCode() + detectorEnablementMap.hashCode() + filterSettings.hashCode() + effort.hashCode()
-                + includeFilterFiles.hashCode() + excludeFilterFiles.hashCode() + (runAtFullBuild ? 1 : 0);
+                + includeFilterFiles.hashCode() + excludeFilterFiles.hashCode() + (runAtFullBuild ? 1 : 0)
+                + excludeBugsFiles.hashCode() + customPlugins.hashCode() + (mergeSimilarWarnings ? 1 : 0);
     }
 
     @Override
@@ -693,5 +704,74 @@ public class UserPreferences implements Cloneable {
             return FindBugs.MIN_EFFORT;
         }
         return FindBugs.MAX_EFFORT;
+    }
+
+    /**
+     * @return true if similar warnings should be merged, false otherwise
+     */
+    public boolean getMergeSimilarWarnings() {
+        return mergeSimilarWarnings;
+    }
+
+    /**
+     * @param mergeSimilarWarnings
+     *            true if similar warnings should be merged, false otherwise
+     */
+    public void setMergeSimilarWarnings(boolean mergeSimilarWarnings) {
+        this.mergeSimilarWarnings = mergeSimilarWarnings;
+    }
+
+    /**
+     * Resolve relative paths stored in the user preferences. If the preferences contain relative filter paths, modifies
+     * the paths to be absolute. For that, the directory of given file will be used first, and if that does not match,
+     * the parent directory will be used to resolve relative paths. If none of the paths match existing files,
+     * preferences will stay unchanged.
+     *
+     * @param preferencesPath
+     *            the path to the user preferences file, used to resolve relative paths
+     */
+    public void resolveRelativePaths(String preferencesPath) {
+        try {
+            Path prefsDir = Paths.get(preferencesPath).getParent();
+            if (prefsDir == null || !Files.isDirectory(prefsDir)) {
+                return; // no parent directory, nothing to resolve
+            }
+            setExcludeFilterFiles(resolveRelativePaths(prefsDir, getExcludeFilterFiles().entrySet()));
+            setIncludeFilterFiles(resolveRelativePaths(prefsDir, getIncludeFilterFiles().entrySet()));
+            setExcludeBugsFiles(resolveRelativePaths(prefsDir, getExcludeBugsFiles().entrySet()));
+        } catch (Exception e) {
+            FindBugs.LOG.warning("Unable to resolve path of user preferences file " + preferencesPath);
+        }
+    }
+
+    private static Map<String, Boolean> resolveRelativePaths(Path prefsDir, Set<Entry<String, Boolean>> oldMap) {
+        Map<String, Boolean> newMap = new TreeMap<>();
+        for (Entry<String, Boolean> entry : oldMap) {
+            String resolvedPath = resolveRelativePath(entry.getKey(), prefsDir);
+            newMap.put(resolvedPath, entry.getValue());
+        }
+        return newMap;
+    }
+
+    private static String resolveRelativePath(final String maybeRelativePath, Path prefsDir) {
+        Path filterPath = Paths.get(maybeRelativePath);
+        if (filterPath.isAbsolute()) {
+            return maybeRelativePath;
+        }
+        // relative path, try to resolve it
+        Path absolutePath = prefsDir.resolve(filterPath).normalize();
+        if (Files.exists(absolutePath)) {
+            return absolutePath.toString();
+        }
+        Path parent = prefsDir.getParent();
+        if (parent == null) {
+            return maybeRelativePath; // no parent directory, nothing to resolve
+        }
+        absolutePath = parent.resolve(filterPath).normalize();
+        if (Files.exists(absolutePath)) {
+            return absolutePath.toString();
+        }
+        // no match, return the original path
+        return maybeRelativePath;
     }
 }
