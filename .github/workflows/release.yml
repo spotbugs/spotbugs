@@ -21,7 +21,7 @@ jobs:
       - name: Get previous tag for the change log
         id: previousTag
         run: |
-          $name = git for-each-ref --merged=${{ github.ref_name }} --sort=creatordate --format='%(refname:short)' ${{ github.ref_name }} | Select-Object -Last 2 | Select-Object -First 1
+          $name = git for-each-ref --merged=${{ github.ref_name }} --sort=creatordate --format='%(refname:short)' refs/tags | Select-Object -Last 2 | Select-Object -First 1
           echo "previousTag: $name"
           echo "previousTag=$name" >> $GITHUB_ENV
 
