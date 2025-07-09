@@ -8,9 +8,9 @@ tasks.named('compileJava', JavaCompile).configure {
 
 eclipse {
   jdt {
-    sourceCompatibility = 11
-    targetCompatibility = 11
-    javaRuntimeName = "JavaSE-11"
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    javaRuntimeName = "JavaSE-1.8"
   }
 }
 
