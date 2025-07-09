@@ -8,7 +8,7 @@ publishing {
     maven {
       name = 'ossrh-staging-api'
       url = "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
-      }
+    }
   }
   publications {
     maven(MavenPublication) {
