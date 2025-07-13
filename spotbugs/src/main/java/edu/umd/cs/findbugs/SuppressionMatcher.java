@@ -70,6 +70,9 @@ public class SuppressionMatcher implements Matcher {
                     if (w.match(b)) {
                         count++;
                         matched.add(w);
+                        // Also mark the alternate suppressors as matched, see: NoteSuppressedWarnings
+                        matched.addAll(w.getAlternateSuppressors());
+
                         return true;
                     }
                 }
