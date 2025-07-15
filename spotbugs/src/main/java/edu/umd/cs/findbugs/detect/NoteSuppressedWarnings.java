@@ -68,8 +68,8 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
     /**
      * For records the header is compiled into fields, accessor methods and a canonical constructor.
      * A <code>SuppressWarnings</code> annotation in the header is applied to the corresponding field, accessor method and parameter of the canonical constructor.
-     * In the end we want to report unnecessary suppressions, however when only one of the three suppressor is matched we do not want to report the two others as unnecessary.
-     * We link the suppressors together so we can detect whether at least one of the was matched in {@link SuppressionMatcher#match(edu.umd.cs.findbugs.BugInstance)}
+     * In the end we want to report unnecessary suppressions, however when only one of the three suppressors is matched we do not want to report the two others as unnecessary.
+     * We link the suppressors together so we can detect whether at least one of them was matched in {@link SuppressionMatcher#match(edu.umd.cs.findbugs.BugInstance)}
      */
     private boolean isRecord;
     private boolean visitingCanonicalRecordConstructor;
@@ -128,7 +128,7 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
                 && Arrays.equals(method.getArgumentTypes(), recordComponents.stream().map(c -> c.field.getType()).toArray());
     }
 
-    private boolean isConstructor(Method method) {
+    private static boolean isConstructor(Method method) {
         return Const.CONSTRUCTOR_NAME.equals(method.getName());
     }
 

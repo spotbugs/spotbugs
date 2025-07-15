@@ -1,9 +1,10 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.annotations.SuppressMatchType;
@@ -22,7 +23,7 @@ public abstract class WarningSuppressor implements Matcher {
     protected final String bugPattern;
     protected final SuppressMatchType matchType;
 
-    private Collection<WarningSuppressor> alternateSuppressors = Collections.emptySet();
+    private Set<WarningSuppressor> alternateSuppressors = Collections.emptySet();
 
     protected WarningSuppressor(String bugPattern, SuppressMatchType matchType) {
         this.bugPattern = bugPattern;
@@ -101,7 +102,7 @@ public abstract class WarningSuppressor implements Matcher {
 
     public void addAlternateSuppressors(Collection<WarningSuppressor> additionalSuppressors) {
         if (alternateSuppressors.isEmpty()) {
-            alternateSuppressors = new ArrayList<>(additionalSuppressors);
+            alternateSuppressors = new HashSet<>(additionalSuppressors);
         } else {
             alternateSuppressors.addAll(additionalSuppressors);
         }
@@ -112,6 +113,6 @@ public abstract class WarningSuppressor implements Matcher {
      * See {@link NoteSuppressedWarnings}
      */
     public Collection<WarningSuppressor> getAlternateSuppressors() {
-        return alternateSuppressors;
+        return Collections.unmodifiableCollection(alternateSuppressors);
     }
 }
