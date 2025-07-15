@@ -160,7 +160,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             if (DEBUG) {
                 System.out.println("Fallthrough at : " + getPC() + ": " + Const.getOpcodeName(seen));
             }
-            
+
             potentiallyDeadStoresFromBeforeFallthrough = (BitSet) potentiallyDeadStores.clone();
             potentiallyDeadFieldsFromBeforeFallthrough = new HashSet<>(potentiallyDeadFields);
             if (!hasFallThruComment(lastPC + 1, getPC() - 1)) {
@@ -311,7 +311,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
     /**
      * A GOTO might correspond to a <code>break</code> or to a do/while/for loop.
      * For loops the branch target will be before the offset of the next case, for breaks we're exiting the switch so the target is actually even after the end of the last case.
-     * 
+     *
      * @return <code>true</code> if the branch target is after the next switch offset as it is the case for a switch break.
      */
     public boolean isBranchTargetAfterNextCaseOffset() {
