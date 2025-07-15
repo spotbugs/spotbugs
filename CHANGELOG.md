@@ -28,6 +28,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `US_USELESS_SUPPRESSION_ON_FIELD`/`UUF_UNUSED_FIELD` false positive ([#3496](https://github.com/spotbugs/spotbugs/pull/3496))
 - Make the osgi manifest of the annotations jar Java 8 compatible  ([#3498](https://github.com/spotbugs/spotbugs/pull/3498)) ([#3500](https://github.com/spotbugs/spotbugs/pull/3500))
 - `TextUICommandLine` supports all options encoded in Eclipse preferences file ([#3520](https://github.com/spotbugs/spotbugs/issues/3520))
+- Unnecessary suppressions fix for records headers ([#3471](https://github.com/spotbugs/spotbugs/issues/3471))
 
 ### Added
 - Added the unnecessary annotation to the `US_USELESS_SUPPRESSION_ON_*` messages ([#3395](https://github.com/spotbugs/spotbugs/issues/3395))
