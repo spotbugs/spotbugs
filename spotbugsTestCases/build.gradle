@@ -40,6 +40,25 @@ dependencies {
   implementation 'org.mockito:mockito-core:5.18.0'
 }
 
+// spotbugs takes a long time to analyse the module but we don't need that
+project.tasks.getByName('spotbugsMain').enabled = false
+
+// generate a file with the list of runtime dependencies
+tasks.register('exportClasspath') {
+  def File dependenciesFile = new File('spotbugsTestCases/build/runtime-classpath.txt')
+  
+  doLast {
+    dependenciesFile.delete()
+    dependenciesFile.getParentFile().mkdirs();
+    
+    project.configurations.getByName('runtimeClasspath').resolvedConfiguration.resolvedArtifacts.each {
+      dependenciesFile << it.file
+      dependenciesFile << '\n'
+    }
+  }
+  println dependenciesFile
+}
+
 tasks.withType(JavaCompile).configureEach {
   options.compilerArgs << '-Xlint:none'
   options.encoding = 'UTF-8'
@@ -105,14 +124,11 @@ tasks.named('classes').configure {
   } else {
     println "skip tests for Java 21 features"
   }
+  dependsOn exportClasspath
 }
 
 sonar {
   // this project should not be analyzed with sonarqube
   // as it is test data, not real code
   skipProject true
-}
-
-spotbugs {
-  ignoreFailures = true
 }
