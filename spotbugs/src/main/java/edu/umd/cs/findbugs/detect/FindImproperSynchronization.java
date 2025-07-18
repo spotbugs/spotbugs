@@ -797,9 +797,9 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
                     .addReferencedField(FieldAnnotation.fromXField(assignedBackingCollection))
                     .addSourceLine(sourceLineAnnotation);
         }
-    }
-    
-    private BugInstance createBugInstance(BytecodeScanningDetector detector, String bugType, XField lock, XField assignedBackingCollection, String extraMessage) {
+
+        private BugInstance createBugInstance(BytecodeScanningDetector detector, String bugType, XField lock, XField assignedBackingCollection,
+                String extraMessage) {
             BugInstance bugInstance = createBugInstance(detector, bugType, lock, assignedBackingCollection);
             bugInstance.addString(extraMessage);
 
