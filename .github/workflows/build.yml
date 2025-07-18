@@ -46,7 +46,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           Remove-item alias:curl
-          curl --continue-at - --create-dirs -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-win32-x86_64.zip&mirror_id=1' -o eclipse-sdk/eclipse.zip 
+          curl --continue-at - --create-dirs -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-win32-x86_64.zip&mirror_id=1' -o eclipse-sdk/eclipse.zip
           Expand-Archive "eclipse-sdk/eclipse.zip" -DestinationPath "." -Force
           $escapedPwd = $pwd.Path -replace '\\', '\\'
           [System.IO.File]::WriteAllLines("$pwd\\eclipsePlugin\\local.properties", "eclipseRoot.dir=$escapedPwd\\eclipse")
@@ -59,18 +59,19 @@ jobs:
           cp -r /Volumes/Eclipse/Eclipse.app /Applications/
           hdiutil detach /Volumes/Eclipse
           echo "eclipseRoot.dir=/Applications/Eclipse.app" | tee eclipsePlugin/local.properties
-      - name: Pre-build setup
-        if: matrix.os != 'windows-latest'
-        run: |
-          echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
-          git fetch --no-tags https://$GITHUB_TOKEN@github.com/spotbugs/spotbugs.git +refs/heads/master:refs/remotes/origin/master
-          if [ "$GPG_SECRET_PASSPHRASE" != "" ]; then
-            gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
-          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
+      # Disable gpg signing on *nix for time being until we get new keys established, checks will be on windows only for now
+      #- name: Pre-build setup
+      #  if: matrix.os != 'windows-latest'
+      #  run: |
+      #    echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
+      #    git fetch --no-tags https://$GITHUB_TOKEN@github.com/spotbugs/spotbugs.git +refs/heads/master:refs/remotes/origin/master
+      #    if [ "$GPG_SECRET_PASSPHRASE" != "" ]; then
+      #      gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
+      #    fi
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #    GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
+      #    KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
       - name: Pre-build setup Windows
         if: matrix.os == 'windows-latest'
         run: |

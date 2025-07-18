@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -124,7 +123,6 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             ClassAnnotation classAnnotation = new ClassAnnotation(getDottedClassName());
             equalsKindSummary.put(classAnnotation, kind);
 
-            count(kind);
             if (kind == EqualsKindSummary.KindOfEquals.GETCLASS_GOOD_EQUALS
                     || kind == EqualsKindSummary.KindOfEquals.ABSTRACT_GETCLASS_GOOD_EQUALS
                     || kind == EqualsKindSummary.KindOfEquals.GETCLASS_BAD_EQUALS) {
@@ -167,55 +165,43 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
         bugAccumulator.reportAccumulatedBugs();
     }
 
-    boolean sawInstanceOf;
+    private boolean sawInstanceOf;
 
-    boolean sawInstanceOfSupertype;
+    private boolean sawInstanceOfSupertype;
 
-    boolean sawCheckedCast;
+    private boolean sawCheckedCast;
 
-    boolean sawGetClass;
+    private boolean sawGetClass;
 
-    boolean sawReturnSuper;
+    private boolean sawReturnSuper;
 
-    boolean sawSuperEquals;
+    private boolean sawSuperEquals;
 
-    boolean sawReturnNonSuper;
+    private boolean sawReturnNonSuper;
 
-    boolean prevWasSuperEquals;
+    private boolean prevWasSuperEquals;
 
-    boolean sawInitialIdentityCheck;
+    private boolean sawInitialIdentityCheck;
 
-    boolean alwaysTrue;
+    private boolean alwaysTrue;
 
-    boolean alwaysFalse;
+    private boolean alwaysFalse;
 
-    int equalsCalls;
+    private int equalsCalls;
 
-    boolean sawGoodEqualsClass;
+    private boolean sawGoodEqualsClass;
 
-    boolean sawBadEqualsClass;
+    private boolean sawBadEqualsClass;
 
-    boolean sawCompare;
+    private boolean sawCompare;
 
-    boolean dangerDanger = false;
+    private boolean dangerDanger = false;
 
-    boolean sawStaticDelegate;
+    private boolean sawStaticDelegate;
 
-    boolean sawEqualsBuilder;
+    private boolean sawEqualsBuilder;
 
-    boolean isRecord;
-
-    private final EnumMap<EqualsKindSummary.KindOfEquals, Integer> count = new EnumMap<>(
-            EqualsKindSummary.KindOfEquals.class);
-
-    private void count(EqualsKindSummary.KindOfEquals k) {
-        Integer v = count.get(k);
-        if (v == null) {
-            count.put(k, 1);
-        } else {
-            count.put(k, v + 1);
-        }
-    }
+    private boolean isRecord;
 
     @Override
     public void sawOpcode(int seen) {
@@ -352,7 +338,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
     }
 
     public boolean invokesMethodWithEqualLikeName() {
-        return getNameConstantOperand().toLowerCase().indexOf(EQUALS_NAME) >= 0;
+        return getNameConstantOperand().toLowerCase().contains(EQUALS_NAME);
     }
 
     /**

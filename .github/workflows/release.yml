@@ -1,3 +1,4 @@
+name: release
 on:
   push:
     branches:
@@ -6,13 +7,18 @@ on:
       - '**'
 
 permissions: {}
+
+env:
+  eclipse-version: 4.24
+  eclipse-date: 202206070700
+
 jobs:
   build:
     permissions:
       contents: write # to push pages branch (peaceiris/actions-gh-pages)
 
     if: github.repository_owner == 'spotbugs'
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -21,7 +27,7 @@ jobs:
       - name: Get previous tag for the change log
         id: previousTag
         run: |
-          name=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | tail -2 | head -1)
+          $name = git for-each-ref --merged=${{ github.ref_name }} --sort=creatordate --format='%(refname:short)' refs/tags | Select-Object -Last 2 | Select-Object -First 1
           echo "previousTag: $name"
           echo "previousTag=$name" >> $GITHUB_ENV
 
@@ -52,9 +58,12 @@ jobs:
       - uses: gradle/actions/wrapper-validation@v4
       - name: Download Eclipse
         run: |
-          curl -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-4.24-202206070700/eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz&mirror_id=1' --output eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz
-          tar xzvf eclipse-SDK-4.24-linux-gtk-x86_64.tar.gz eclipse
-          echo "eclipseRoot.dir=$(pwd)/eclipse" > eclipsePlugin/local.properties
+          Remove-item alias:curl
+          curl --continue-at - --create-dirs -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-win32-x86_64.zip&mirror_id=1' --output eclipse-sdk/eclipse.zip
+          Expand-Archive "eclipse-sdk/eclipse.zip" -DestinationPath "." -Force
+          $escapedPwd = $pwd.Path -replace '\\', '\\'
+          [System.IO.File]::WriteAllLines("$pwd\\eclipsePlugin\\local.properties", "eclipseRoot.dir=$escapedPwd\\eclipse")
+        shell: powershell
       - name: Build on tag
         if: (github.ref_type == 'tag') && (github.event.base_ref == 'refs/heads/master')
         run: |

@@ -1,7 +1,7 @@
 plugins {
   id "org.sonarqube" version "6.2.0.5505"
   id "org.gradle.crypto.checksum" version "1.4.0"
-  id "com.github.spotbugs" version "6.2.1"
+  id "com.github.spotbugs" version "6.2.2"
   id "io.github.gradle-nexus.publish-plugin" version "2.0.0"
 }
 
@@ -30,7 +30,7 @@ allprojects {
     mavenCentral()
   }
   dependencies {
-    def junitVersion = '5.13.2'
+    def junitVersion = '5.13.3'
     compileOnly platform("org.junit:junit-bom:$junitVersion")
     testImplementation platform("org.junit:junit-bom:$junitVersion")
   }
@@ -128,9 +128,12 @@ createReleaseBody.configure {
 }
 
 nexusPublishing {
-    repositories {
-        sonatype()
+  repositories {
+    sonatype {
+      nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+      snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
     }
+  }
 }
 
 apply from: "$rootDir/gradle/sonar.gradle"

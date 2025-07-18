@@ -27,6 +27,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Do not report `UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR` for fields initialized in JUnit 3/4 `setUp()` method. ([#3169](https://github.com/spotbugs/spotbugs/issues/3169))
 - Fix `US_USELESS_SUPPRESSION_ON_FIELD`/`UUF_UNUSED_FIELD` false positive ([#3496](https://github.com/spotbugs/spotbugs/pull/3496))
 - Make the osgi manifest of the annotations jar Java 8 compatible  ([#3498](https://github.com/spotbugs/spotbugs/pull/3498)) ([#3500](https://github.com/spotbugs/spotbugs/pull/3500))
+- `TextUICommandLine` supports all options encoded in Eclipse preferences file ([#3520](https://github.com/spotbugs/spotbugs/issues/3520))
+- Unnecessary suppressions fix for records headers ([#3471](https://github.com/spotbugs/spotbugs/issues/3471))
+- Dead store fix when switch case contains loops  ([#3530](https://github.com/spotbugs/spotbugs/issues/3530))  ([#3449](https://github.com/spotbugs/spotbugs/issues/3449))
 
 ### Added
 - Added the unnecessary annotation to the `US_USELESS_SUPPRESSION_ON_*` messages ([#3395](https://github.com/spotbugs/spotbugs/issues/3395))
