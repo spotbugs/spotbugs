@@ -77,8 +77,6 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
     private int priority;
 
-    private int fallthroughDistance;
-
     public SwitchFallthrough(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
@@ -103,7 +101,6 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         clearAllDeadStores();
         deadStore = null;
         priority = NORMAL_PRIORITY;
-        fallthroughDistance = 1000;
         enumType = null;
         super.visit(obj);
         enumType = null;
@@ -163,7 +160,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             if (DEBUG) {
                 System.out.println("Fallthrough at : " + getPC() + ": " + Const.getOpcodeName(seen));
             }
-            fallthroughDistance = 0;
+
             potentiallyDeadStoresFromBeforeFallthrough = (BitSet) potentiallyDeadStores.clone();
             potentiallyDeadFieldsFromBeforeFallthrough = new HashSet<>(potentiallyDeadFields);
             if (!hasFallThruComment(lastPC + 1, getPC() - 1)) {
@@ -183,8 +180,9 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
         }
 
-        if (isBranch(seen) || isSwitch(seen) || seen == Const.GOTO || seen == Const.ARETURN || seen == Const.IRETURN || seen == Const.RETURN
-                || seen == Const.LRETURN || seen == Const.DRETURN || seen == Const.FRETURN) {
+        if (isSwitch(seen)
+                || isReturn(seen)
+                || (isBranch(seen) && isBranchTargetAfterNextCaseOffset())) {
             clearAllDeadStores();
         }
 
@@ -275,14 +273,17 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
         case Const.GOTO_W:
         case Const.GOTO:
-            if (biggestJumpTarget < getBranchTarget()) {
-                biggestJumpTarget = getBranchTarget();
-                if (DEBUG) {
-                    System.out.printf("  Setting BJT to %d%n", biggestJumpTarget);
+            if (isBranchTargetAfterNextCaseOffset()) {
+                if (biggestJumpTarget < getBranchTarget()) {
+                    biggestJumpTarget = getBranchTarget();
+                    if (DEBUG) {
+                        System.out.printf("  Setting BJT to %d%n", biggestJumpTarget);
+                    }
                 }
+
+                reachable = false;
             }
 
-            reachable = false;
             break;
 
         case Const.ATHROW:
@@ -305,7 +306,16 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
         justSawHashcode = seen == Const.INVOKEVIRTUAL && "hashCode".equals(getNameConstantOperand()) && "()I".equals(getSigConstantOperand());
         lastPC = getPC();
-        fallthroughDistance++;
+    }
+
+    /**
+     * A GOTO might correspond to a <code>break</code> or to a do/while/for loop.
+     * For loops the branch target will be before the offset of the next case, for breaks we're exiting the switch so the target is actually even after the end of the last case.
+     *
+     * @return <code>true</code> if the branch target is after the next switch offset as it is the case for a switch break.
+     */
+    public boolean isBranchTargetAfterNextCaseOffset() {
+        return getBranchTarget() > switchHdlr.getNextSwitchOffset(this);
     }
 
     boolean justSawHashcode;
