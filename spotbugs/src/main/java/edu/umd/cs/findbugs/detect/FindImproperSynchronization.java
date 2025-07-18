@@ -64,7 +64,7 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import java.util.Arrays;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -231,7 +231,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
 
     @Override
     public void visit(Field obj) {
-        if (MemberUtils.isUserGenerated(obj)) {
+        if (!MemberUtils.isUserGenerated(obj)) {
             return;
         }
         XField xField = getXField();
@@ -541,7 +541,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
 
     private void analyzeAssignmentsInHierarchy(XField collectionLockObject) {
         String lockDeclaringClassName = collectionLockObject.getClassName();
-        ArrayList<Method> ownMethods = new ArrayList<>(Arrays.asList(getThisClass().getMethods()));
+        List<Method> ownMethods = Arrays.asList(getThisClass().getMethods());
         JavaClass[] superClasses;
 
         try {
@@ -584,7 +584,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
 
     private Set<XMethod> findExposureInHierarchy(XField lockObject) throws ClassNotFoundException {
         Set<XMethod> unsafeMethods = new HashSet<>();
-        ArrayList<Method> ownMethods = new ArrayList<>(Arrays.asList(getThisClass().getMethods()));
+        List<Method> ownMethods = Arrays.asList(getThisClass().getMethods());
 
         for (JavaClass declaringClass : getThisClass().getSuperClasses()) {
             for (Method possibleAccessorMethod : declaringClass.getMethods()) {
