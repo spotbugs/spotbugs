@@ -120,6 +120,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
         case Const.INVOKEVIRTUAL:
         case Const.INVOKESPECIAL:
         case Const.INVOKESTATIC:
+        case Const.INVOKEINTERFACE:
             if (getDottedClassConstantOperand().equals(className)) {
                 String clsName = getDottedClassConstantOperand();
                 MethodAnnotation called = new MethodAnnotation(clsName, getNameConstantOperand(), getSigConstantOperand(),
