@@ -33,6 +33,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 -  Consider PUTFIELD and PUTSTATIC when looking for assertions with side effects ([#3463](https://github.com/spotbugs/spotbugs/issues/3463))
 - Detect cases when equals() unconditionally returns true or false ([#3528](https://github.com/spotbugs/spotbugs/issues/3528))
 - Do not report that an Iterator does not throw `NoSuchElementException` when `hasNext()` returns true ([#3501](https://github.com/spotbugs/spotbugs/issues/3501))
+- Narrow the definition of singletons ([#3508](https://github.com/spotbugs/spotbugs/issues/3508))
+
 ### Added
 - Added the unnecessary annotation to the `US_USELESS_SUPPRESSION_ON_*` messages ([#3395](https://github.com/spotbugs/spotbugs/issues/3395))
 - Multi-threaded code checks can be skipped with `@NotThreadSafe` ([#3390](https://github.com/spotbugs/spotbugs/issues/3390))
