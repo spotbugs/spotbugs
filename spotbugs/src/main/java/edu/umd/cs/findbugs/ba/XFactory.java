@@ -420,7 +420,7 @@ public class XFactory {
                      * obligation. If strict checking is performed, // weak
                      * entries are ignored.
                      */
-                    if (Const.CONSTRUCTOR_NAME.equals(methodName) || methodName.startsWith("access$") || xmethod.isStatic()
+                    if (Const.CONSTRUCTOR_NAME.equals(methodName) || xmethod.isAccessMethod() || xmethod.isStatic()
                             || methodName.toLowerCase().indexOf("close") >= 0
                             || xmethod.getSignature().toLowerCase().indexOf("Closeable") >= 0) {
                         ObligationPolicyDatabaseEntry entry = database.addParameterDeletesObligationDatabaseEntry(xmethod,

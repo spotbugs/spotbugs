@@ -88,6 +88,11 @@
                               <LaterCategory name="reporting" spanplugins="true"/>
                     </SplitPass>
                     <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.BuildAccessMethodsDatabase"/>
+                              <LaterCategory name="reporting" spanplugins="true"/>
+                    </SplitPass>
+                    
+                    <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical"/>
                               <Later class="edu.umd.cs.findbugs.detect.FindHEmismatch"/>
                     </SplitPass>
@@ -698,6 +703,8 @@
                     reports="AT_NONATOMIC_64BIT_PRIMITIVE,AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE,AT_STALE_THREAD_WRITE_OF_PRIMITIVE"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindHiddenMethod" speed="fast"
                     reports="HSM_HIDING_METHOD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.BuildAccessMethodsDatabase" speed="fast" reports=""
+                    hidden="true"/>
 
           <!-- Bug Categories -->
           <BugCategory category="NOISE" hidden="true"/>
