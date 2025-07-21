@@ -884,7 +884,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                          */
                         continue;
                     }
-                    if (m.getName().startsWith("access$") && (!(m instanceof XMethod) || ((XMethod) m).getAccessMethodForMethod() == null)) {
+                    if (m.isAccessMethod() && (!(m instanceof XMethod) || ((XMethod) m).getAccessMethodForMethod() == null)) {
                         /* We skip field access methods, because they can unnecessarily be used for static calls
                          * (probably by older javac)
                          */
