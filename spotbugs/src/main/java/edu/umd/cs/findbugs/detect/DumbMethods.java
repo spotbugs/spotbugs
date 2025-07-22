@@ -1180,7 +1180,7 @@ public class DumbMethods extends OpcodeStackDetector {
                     randomNextIntRegister = getRegisterOperand();
                     randomNextIntState = RandomNextIntState.STORED;
                 } else {
-                    randomNextIntState = RandomNextIntState.CAST_TO_DOUBLE;
+                    randomNextIntState = RandomNextIntState.OTHER;
                 }
 
                 break;
@@ -1194,16 +1194,16 @@ public class DumbMethods extends OpcodeStackDetector {
                     randomNextIntState = RandomNextIntState.START;
                 }
                 break;
-            case CAST_TO_DOUBLE:
+            case OTHER:
                 if (seen == Const.I2D) {
-                    randomNextIntState = RandomNextIntState.MULTIPLY;
+                    randomNextIntState = RandomNextIntState.CAST_TO_DOUBLE;
                 } else if (seen == Const.DMUL) {
                     randomNextIntState = RandomNextIntState.REPORT;
                 } else {
                     randomNextIntState = RandomNextIntState.START;
                 }
                 break;
-            case MULTIPLY:
+            case CAST_TO_DOUBLE:
                 if (seen == Const.DMUL) {
                     randomNextIntState = RandomNextIntState.REPORT;
                 } else {
@@ -1598,8 +1598,8 @@ public class DumbMethods extends OpcodeStackDetector {
         STORED,
         LOADED,
         INVOKED,
+        OTHER,
         CAST_TO_DOUBLE,
-        MULTIPLY,
         REPORT,
     }
 }
