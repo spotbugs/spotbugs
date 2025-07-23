@@ -7,6 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import edu.umd.cs.findbugs.ba.NullnessAnnotation;
+import edu.umd.cs.findbugs.ba.XMethod;
+import org.mockito.Mockito;
+
 class IsNullValueTest {
 
     @Test
@@ -65,5 +69,18 @@ class IsNullValueTest {
         IsNullValue nsp_e = IsNullValue.merge(checkedNull_e, unknown);
         assertTrue(nsp_e.isNullOnSomePath());
         assertTrue(nsp_e.isException());
+    }
+
+    @Test
+    void testMergeCheckForNull() {
+        XMethod method = Mockito.mock(XMethod.class);
+
+        IsNullValue checkedNull_e = IsNullValue.checkedNullValue().toExceptionValue();
+        IsNullValue checkForNull = IsNullValue.nullOnSimplePathValue().markInformationAsComingFromReturnValueOfMethod(method,
+                NullnessAnnotation.CHECK_FOR_NULL);
+        IsNullValue merged = IsNullValue.merge(checkedNull_e, checkForNull);
+
+        assertTrue(merged.isNullOnSomePath());
+        assertTrue(merged.isCheckForNull());
     }
 }

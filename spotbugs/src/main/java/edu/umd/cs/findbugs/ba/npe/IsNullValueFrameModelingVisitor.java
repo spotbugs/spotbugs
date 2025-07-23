@@ -265,7 +265,8 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
                 System.out.println("Null value returned from " + calledMethod);
             }
             pushValue = IsNullValue.nullOnSimplePathValue().markInformationAsComingFromReturnValueOfMethod(
-                    calledMethod);
+                    calledMethod,
+                    annotation);
         } else if (annotation == NullnessAnnotation.NULLABLE) {
             pushValue = IsNullValue.nonReportingNotNullValue();
         } else if (annotation == NullnessAnnotation.NONNULL
@@ -274,7 +275,9 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
             if (IsNullValueAnalysis.DEBUG) {
                 System.out.println("NonNull value return from " + calledMethod);
             }
-            pushValue = IsNullValue.nonNullValue().markInformationAsComingFromReturnValueOfMethod(calledMethod);
+            pushValue = IsNullValue.nonNullValue().markInformationAsComingFromReturnValueOfMethod(
+                    calledMethod,
+                    annotation);
 
         } else {
             pushValue = IsNullValue.nonReportingNotNullValue();
