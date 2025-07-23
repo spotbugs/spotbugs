@@ -56,4 +56,9 @@ public class Issue2965 {
     final String foo = null;
     Objects.requireNonNull(foo); // NP_LOAD_OF_KNOWN_NULL_VALUE
   }
+  
+  public String requireNonNullDereference() {
+    final String foo = getString("foo");
+    return foo.trim(); // NP_LOAD_OF_KNOWN_NULL_VALUE
+  }
 }
