@@ -81,7 +81,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
                 && EQUALS_SIGNATURE.equals(getMethodSig())) {
             sawCheckedCast = sawSuperEquals = sawInstanceOf = sawGetClass = sawReturnSuper = sawCompare = sawReturnNonSuper = prevWasSuperEquals =
                     sawGoodEqualsClass = sawBadEqualsClass = dangerDanger = sawInstanceOfSupertype = alwaysTrue = alwaysFalse = sawStaticDelegate =
-                            sawEqualsBuilder = isRecord = false;
+                            sawEqualsBuilder = isRecord = sawBranch = false;
             sawInitialIdentityCheck = obj.getCode().length == 11 || obj.getCode().length == 9;
             equalsCalls = 0;
             super.visit(obj);
@@ -203,6 +203,8 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
 
     private boolean isRecord;
 
+    private boolean sawBranch;
+
     @Override
     public void sawOpcode(int seen) {
         if (getPC() == 2 && seen != Const.IF_ACMPEQ && seen != Const.IF_ACMPNE) {
@@ -223,7 +225,9 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             sawEqualsBuilder = true;
         }
 
-        if (seen == Const.IRETURN && getPC() == 1 && getPrevOpcode(1) == Const.ICONST_0) {
+        sawBranch |= isBranch(seen);
+
+        if (seen == Const.IRETURN && getPC() >= 1 && getPrevOpcode(1) == Const.ICONST_0 && !sawBranch) {
             alwaysFalse = true;
             if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass())) {
                 bugReporter.reportBug(new BugInstance(this, "EQ_ALWAYS_FALSE", Priorities.HIGH_PRIORITY).addClassAndMethod(this)
@@ -231,7 +235,7 @@ public class OverridingEqualsNotSymmetrical extends OpcodeStackDetector implemen
             }
 
         }
-        if (seen == Const.IRETURN && getPC() == 1 && getPrevOpcode(1) == Const.ICONST_1) {
+        if (seen == Const.IRETURN && getPC() >= 1 && getPrevOpcode(1) == Const.ICONST_1 && !sawBranch) {
             alwaysTrue = true;
             if (AnalysisContext.currentAnalysisContext().isApplicationClass(getThisClass())) {
                 bugReporter.reportBug(new BugInstance(this, "EQ_ALWAYS_TRUE", Priorities.HIGH_PRIORITY).addClassAndMethod(this)
