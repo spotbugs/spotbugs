@@ -29,13 +29,13 @@ dependencies {
   implementation 'org.checkerframework:checker-qual:3.49.5'
   implementation 'com.sun.xml.bind:jaxb-impl:4.0.5'
 
-  implementation 'org.junit.jupiter:junit-jupiter-engine:5.13.3'
-  implementation 'org.junit.jupiter:junit-jupiter-params:5.13.3'
+  implementation 'org.junit.jupiter:junit-jupiter-engine:5.13.4'
+  implementation 'org.junit.jupiter:junit-jupiter-params:5.13.4'
   implementation 'org.testng:testng:7.11.0'
 
   implementation project(':spotbugs')
   api project(':spotbugs-annotations')
-  implementation 'org.apache.groovy:groovy-all:4.0.27'
+  implementation 'org.apache.groovy:groovy-all:4.0.28'
   implementation 'org.apache.commons:commons-lang3:3.18.0'
   implementation 'org.mockito:mockito-core:5.18.0'
 }
