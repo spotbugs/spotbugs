@@ -3235,6 +3235,15 @@ double value2 =  x / (double) y;
 ]]>
   </Details>
  </BugPattern>
+ <BugPattern type="DMI_MISLEADING_SUBSTRING">
+  <ShortDescription>Appel de substring(0) qui retourne la même valeur que toString()</ShortDescription>
+  <LongDescription>{1} appelle substring(0), ce qui peut être clarifié en appelant toString()</LongDescription>
+  <Details>
+<![CDATA[
+<p>Ce code appelle <code>substring(0)</code> sur un StringBuffer ou StringBuilder, ce qui renvoit la même valeur que toString().</p>
+]]>
+  </Details>
+ </BugPattern>
  <BugPattern type="DMI_CALLING_NEXT_FROM_HASNEXT">
   <ShortDescription>Méthode hasNext() appelant next()</ShortDescription>
   <LongDescription>{1} appelle {3}</LongDescription>

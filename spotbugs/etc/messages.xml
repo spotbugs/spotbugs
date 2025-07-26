@@ -8230,6 +8230,17 @@ This code invokes substring(0) on a String, which returns the original value.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="DMI_MISLEADING_SUBSTRING">
+    <ShortDescription>Invocation of substring(0), which returns the same as toString()</ShortDescription>
+    <LongDescription>{1} invokes substring(0), which might be misleading because it returns the entire String</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This code invokes substring(0) on a StringBuffer or a StringBuilder, which returns the same as toString().
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DMI_CALLING_NEXT_FROM_HASNEXT">
     <ShortDescription>hasNext method invokes next</ShortDescription>
     <LongDescription>{1} invokes {2.givenClass}</LongDescription>
