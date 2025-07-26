@@ -288,7 +288,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
             return null;
         }
         XMethod m = (XMethod) o;
-        if (m.getName().startsWith("access$")) {
+        if (m.isAccessMethod()) {
             return null;
         } else if (Const.CONSTRUCTOR_NAME.equals(m.getName())) {
             CheckReturnValueAnnotation a = getResolvedAnnotationOnConstructor(m);

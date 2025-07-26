@@ -1883,6 +1883,13 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.BuildAccessMethodsDatabase">
+    <Details>
+      <![CDATA[
+            <p>Builds a database with the location of the caller of inner classes access methods.</p>
+      ]]>
+    </Details>
+  </Detector>
 
   <!--
   **********************************************************************

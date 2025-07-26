@@ -151,7 +151,7 @@ public class CheckTypeQualifiers extends CFGDetector {
             return;
         }
 
-        if (methodDescriptor.getName().startsWith("access$")) {
+        if (methodDescriptor.isAccessMethod()) {
             return;
         }
 
