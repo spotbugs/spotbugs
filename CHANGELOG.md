@@ -37,6 +37,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Look for interfaces default methods when searching uncalled private methods ([#1988](https://github.com/spotbugs/spotbugs/issues/1988))
 - Fixed field self assignment false positive ([#2258](https://github.com/spotbugs/spotbugs/issues/2258))
 - Fixed `DMI_INVOKING_TOSTRING_ON_ARRAY` on newer JDK ([#1147](https://github.com/spotbugs/spotbugs/issues/1147))
+- Fix `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` false positive with `Objects.requireNonNull` ([#2965](https://github.com/spotbugs/spotbugs/issues/2965))
 
 ### Added
 - Added the unnecessary annotation to the `US_USELESS_SUPPRESSION_ON_*` messages ([#3395](https://github.com/spotbugs/spotbugs/issues/3395))
