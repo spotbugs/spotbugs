@@ -10,8 +10,8 @@ class Issue1928Test extends AbstractIntegrationTest {
     void testIssue() {
         performAnalysis("ghIssues/Issue1928.class");
 
-        assertBugInMethod("DMI_MISLEADING_SUBSTRING", "ghIssues.Issue1928", "builder");
-        assertBugInMethod("DMI_MISLEADING_SUBSTRING", "ghIssues.Issue1928", "buffer");
-        assertBugInMethod("DMI_USELESS_SUBSTRING", "ghIssues.Issue1928", "simpleString");
+        assertBugInMethodCount("DMI_MISLEADING_SUBSTRING", "ghIssues.Issue1928", "builder", 1);
+        assertBugInMethodCount("DMI_MISLEADING_SUBSTRING", "ghIssues.Issue1928", "buffer", 1);
+        assertBugInMethodCount("DMI_USELESS_SUBSTRING", "ghIssues.Issue1928", "simpleString", 1);
     }
 }
