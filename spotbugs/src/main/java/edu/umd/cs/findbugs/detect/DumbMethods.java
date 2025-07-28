@@ -555,7 +555,10 @@ public class DumbMethods extends OpcodeStackDetector {
 
     private int sinceBufferedInputStreamReady;
 
-    private int randomNextIntState;
+    private RandomNextIntState randomNextIntState;
+
+    // The register where we stored the result of random.nextValue()
+    private int randomNextIntRegister;
 
     private boolean checkForBitIorofSignedByte;
 
@@ -642,7 +645,7 @@ public class DumbMethods extends OpcodeStackDetector {
         }
         primitiveObjCtorSeen = null;
         ctorSeen = false;
-        randomNextIntState = 0;
+        randomNextIntState = RandomNextIntState.START;
         checkForBitIorofSignedByte = false;
         sinceBufferedInputStreamReady = 100000;
         sawCheckForNonNegativeSignedByte = -1000;
@@ -1154,51 +1157,65 @@ public class DumbMethods extends OpcodeStackDetector {
             // System.out.println(randomNextIntState + " " + Const.getOpcodeName(seen)
             // + " " + getMethodName());
             switch (randomNextIntState) {
-            case 0:
+            case START:
                 if (seen == Const.INVOKEVIRTUAL && CLASS_NAME_RANDOM.equals(getClassConstantOperand())
                         && ("nextDouble".equals(getNameConstantOperand()) || "nextFloat".equals(getNameConstantOperand())
                                 || "nextLong".equals(getNameConstantOperand()))
                         || seen == Const.INVOKESTATIC && ClassName.isMathClass(getClassConstantOperand())
                                 && "random".equals(getNameConstantOperand())) {
-                    randomNextIntState = 1;
+                    randomNextIntState = RandomNextIntState.INVOKED;
                 }
                 break;
-            case 1:
+            case INVOKED:
                 if (seen == Const.D2I || seen == Const.F2I || seen == Const.L2I) {
                     accumulator.accumulateBug(new BugInstance(this, "RV_01_TO_INT", HIGH_PRIORITY).addClassAndMethod(this), this);
-                    randomNextIntState = 0;
+                    randomNextIntState = RandomNextIntState.START;
                 } else if (seen == Const.DMUL) {
-                    randomNextIntState = 4;
+                    randomNextIntState = RandomNextIntState.REPORT;
                 } else if (seen == Const.LDC2_W && getConstantRefOperand() instanceof ConstantDouble
                         && ((ConstantDouble) getConstantRefOperand()).getBytes() == Integer.MIN_VALUE) {
-                    randomNextIntState = 0;
+                    randomNextIntState = RandomNextIntState.START;
+                } else if (seen == Const.DSTORE_0 || seen == Const.DSTORE_1 || seen == Const.DSTORE_2 || seen == Const.DSTORE_3
+                        || seen == Const.DSTORE) {
+                    randomNextIntRegister = getRegisterOperand();
+                    randomNextIntState = RandomNextIntState.STORED;
                 } else {
-                    randomNextIntState = 2;
+                    randomNextIntState = RandomNextIntState.OTHER;
                 }
 
                 break;
-            case 2:
+            case STORED:
+                if ((seen == Const.DLOAD_0 || seen == Const.DLOAD_1 || seen == Const.DLOAD_2 || seen == Const.DLOAD_3 || seen == Const.DLOAD)
+                        && randomNextIntRegister == getRegisterOperand()) {
+                    randomNextIntState = RandomNextIntState.INVOKED;
+                } else {
+                    // We only track the value when we store it in a variable and load it immediately afterwards
+                    // When something else happens we give up and reset the state to START
+                    randomNextIntState = RandomNextIntState.START;
+                }
+                break;
+            case OTHER:
                 if (seen == Const.I2D) {
-                    randomNextIntState = 3;
+                    randomNextIntState = RandomNextIntState.CAST_TO_DOUBLE;
                 } else if (seen == Const.DMUL) {
-                    randomNextIntState = 4;
+                    randomNextIntState = RandomNextIntState.REPORT;
                 } else {
-                    randomNextIntState = 0;
+                    randomNextIntState = RandomNextIntState.START;
                 }
                 break;
-            case 3:
+            case CAST_TO_DOUBLE:
                 if (seen == Const.DMUL) {
-                    randomNextIntState = 4;
+                    randomNextIntState = RandomNextIntState.REPORT;
                 } else {
-                    randomNextIntState = 0;
+                    randomNextIntState = RandomNextIntState.START;
                 }
                 break;
-            case 4:
+            case REPORT:
                 if (seen == Const.D2I) {
                     accumulator.accumulateBug(
                             new BugInstance(this, "DM_NEXTINT_VIA_NEXTDOUBLE", NORMAL_PRIORITY).addClassAndMethod(this), this);
                 }
-                randomNextIntState = 0;
+                randomNextIntState = RandomNextIntState.START;
                 break;
             default:
                 throw new IllegalStateException();
@@ -1574,5 +1591,15 @@ public class DumbMethods extends OpcodeStackDetector {
         gcInvocationBugReport = null;
 
         exceptionTable = null;
+    }
+
+    private enum RandomNextIntState {
+        START,
+        STORED,
+        LOADED,
+        INVOKED,
+        OTHER,
+        CAST_TO_DOUBLE,
+        REPORT,
     }
 }
