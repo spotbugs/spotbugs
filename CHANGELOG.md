@@ -35,6 +35,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Do not report that an Iterator does not throw `NoSuchElementException` when `hasNext()` returns true ([#3501](https://github.com/spotbugs/spotbugs/issues/3501))
 - Detect random value cast to int when stored in temporary variable ([#3461](https://github.com/spotbugs/spotbugs/issues/3461))
 - Look for interfaces default methods when searching uncalled private methods ([#1988](https://github.com/spotbugs/spotbugs/issues/1988))
+- Fixed field self assignment false positive ([#2258](https://github.com/spotbugs/spotbugs/issues/2258))
 - Narrow the definition of singletons ([#3508](https://github.com/spotbugs/spotbugs/issues/3508))
 
 ### Added
@@ -43,6 +44,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - New bug type `CWO_CLOSED_WITHOUT_OPENED` for locks that might be released without even being acquired. (See [SEI CERT rule LCK08-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK08-J.+Ensure+actively+held+locks+are+released+on+exceptional+conditions)) ([#2055](https://github.com/spotbugs/spotbugs/pull/2055))
   - Breaking change: changed values and new items in `ResourceValueFrame`.
 - Inline access method for method. ([#3481](https://github.com/spotbugs/spotbugs/issues/3481))
+- Added `DMI_MISLEADING_SUBSTRING` for calling `subString(0)` on a StringBuffer/StringBuilder ([#1928](https://github.com/spotbugs/spotbugs/issues/1928))
 
 ## 4.9.3 - 2025-03-14
 ### Added
