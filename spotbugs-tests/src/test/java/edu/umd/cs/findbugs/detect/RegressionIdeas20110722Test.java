@@ -1,13 +1,11 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class RegressionIdeas20110722Test extends AbstractIntegrationTest {
 
     // Problems in null checks, see https://github.com/spotbugs/spotbugs/issues/2890
-    @Disabled
     @Test
     void testArgumentAssertions() {
         performAnalysis("bugIdeas/Ideas_2011_07_22.class");
