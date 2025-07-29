@@ -418,7 +418,7 @@
                     disabled="false" reports="NP_LOAD_OF_KNOWN_NULL_VALUE"/>
           <Detector class="edu.umd.cs.findbugs.detect.DumbMethodInvocations" speed="fast"
                     disabled="false"
-                    reports="DMI_EMPTY_DB_PASSWORD,DMI_CONSTANT_DB_PASSWORD,DMI_USELESS_SUBSTRING,DMI_HARDCODED_ABSOLUTE_FILENAME"/>
+                    reports="DMI_EMPTY_DB_PASSWORD,DMI_CONSTANT_DB_PASSWORD,DMI_USELESS_SUBSTRING,DMI_MISLEADING_SUBSTRING,DMI_HARDCODED_ABSOLUTE_FILENAME"/>
           <Detector class="edu.umd.cs.findbugs.detect.URLProblems" speed="fast"
                     reports="DMI_BLOCKING_METHODS_ON_URL,DMI_COLLECTION_OF_URLS"/>
           <Detector class="edu.umd.cs.findbugs.detect.CovariantArrayAssignment" speed="fast" disabled="true"
@@ -1235,6 +1235,7 @@
           <BugPattern abbrev="DMI" type="DMI_HARDCODED_ABSOLUTE_FILENAME" category="STYLE"/>
           <BugPattern abbrev="DMI" type="DMI_BAD_MONTH" category="CORRECTNESS"/>
           <BugPattern abbrev="DMI" type="DMI_USELESS_SUBSTRING" category="STYLE"/>
+          <BugPattern abbrev="DMI" type="DMI_MISLEADING_SUBSTRING" category="STYLE"/>
           <BugPattern abbrev="DMI" type="DMI_CALLING_NEXT_FROM_HASNEXT" category="CORRECTNESS"/>
           <BugPattern abbrev="ST" type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" category="STYLE"/>
           <BugPattern abbrev="SWL" type="SWL_SLEEP_WITH_LOCK_HELD" category="MT_CORRECTNESS" cweid="667"/>
