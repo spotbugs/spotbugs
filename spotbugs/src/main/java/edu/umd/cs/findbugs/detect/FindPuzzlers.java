@@ -495,7 +495,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
         }
 
         // Java Puzzlers, chapter 3, puzzle 12
-        if (seen == Const.INVOKEVIRTUAL
+        if ((seen == Const.INVOKEVIRTUAL
                 && stack.getStackDepth() > 0
                 && ("toString".equals(getNameConstantOperand()) && "()Ljava/lang/String;".equals(getSigConstantOperand())
                         || "append".equals(getNameConstantOperand())
@@ -505,7 +505,11 @@ public class FindPuzzlers extends OpcodeStackDetector {
                                 && "(Ljava/lang/Object;)Ljava/lang/StringBuffer;".equals(getSigConstantOperand())
                                 && "java/lang/StringBuffer".equals(getClassConstantOperand()) || ("print".equals(getNameConstantOperand())
                                         || "println".equals(getNameConstantOperand()))
-                                        && "(Ljava/lang/Object;)V".equals(getSigConstantOperand()))) {
+                                        && "(Ljava/lang/Object;)V".equals(getSigConstantOperand())))
+                || (seen == Const.INVOKESTATIC
+                        && stack.getStackDepth() > 0
+                        && "valueOf".equals(getNameConstantOperand())
+                        && "(Ljava/lang/Object;)Ljava/lang/String;".equals(getSigConstantOperand()))) {
             OpcodeStack.Item item = stack.getStackItem(0);
             String signature = item.getSignature();
             if (signature != null && signature.startsWith("[")) {

@@ -44,6 +44,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - Breaking change: changed values and new items in `ResourceValueFrame`.
 - Inline access method for method. ([#3481](https://github.com/spotbugs/spotbugs/issues/3481))
 - Added `DMI_MISLEADING_SUBSTRING` for calling `subString(0)` on a StringBuffer/StringBuilder ([#1928](https://github.com/spotbugs/spotbugs/issues/1928))
+- Fixed `DMI_INVOKING_TOSTRING_ON_ARRAY` on newer JDK ([#1147](https://github.com/spotbugs/spotbugs/issues/1147))
 
 ## 4.9.3 - 2025-03-14
 ### Added
