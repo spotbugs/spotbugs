@@ -61,4 +61,28 @@ public class Issue2965 {
     final String foo = getString("foo");
     return foo.trim(); // NP_LOAD_OF_KNOWN_NULL_VALUE
   }
+  
+
+  // From: https://github.com/spotbugs/spotbugs/issues/2965#issuecomment-2456118599
+  public String springNullableRequireNonNull() {
+    String nullableResult = callNullableMethod();
+    nullableResult = Objects.requireNonNull(nullableResult);
+
+    return nullableResult;
+  }
+
+  @Nullable
+  private String callNullableMethod() {
+    return "x";
+  }
+  
+  // From https://github.com/spotbugs/spotbugs/issues/2965#issuecomment-2787946295
+  public String checkForNullRequireNonNullChainedCall() {
+    return Objects.requireNonNull(getValue()).toString();
+  }
+  
+  @CheckForNull
+  private Issue2965 getValue() {
+    return null;
+  }
 }
