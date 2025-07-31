@@ -212,7 +212,7 @@ class SuppressionMatcherTest {
 
     @Test
     void nullBugPatternPackageWarningSuppressor() {
-        PackageWarningSuppressor suppressor = new PackageWarningSuppressor("null", SuppressMatchType.DEFAULT, "java.lang", true);
+        PackageWarningSuppressor suppressor = new PackageWarningSuppressor(null, SuppressMatchType.DEFAULT, "java.lang", true);
         BugInstance bugInstance = suppressor.buildUselessSuppressionBugInstance(new UselessSuppressionDetector());
         assertThat("Message", bugInstance.getMessage(), is("US: Suppressing annotation on the package java.lang is unnecessary"));
     }
