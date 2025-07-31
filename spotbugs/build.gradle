@@ -65,7 +65,7 @@ dependencies {
   api libs.asm.commons
   api libs.asm.tree
   api libs.asm.util
-  api 'org.apache.bcel:bcel:6.10.0'
+  api 'org.apache.bcel:bcel:6.11.0-20250706.125103-7'
   api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
   api('org.dom4j:dom4j:2.2.0') {
     // exclude transitive dependencies to keep compatible with dom4j 2.1.1
@@ -99,7 +99,7 @@ dependencies {
 }
 
 clean {
-  delete ".libs"
+  delete ".libs", "META-INF/MANIFEST.MF"
 }
 
 project(':spotbugs-annotations') {
