@@ -508,8 +508,10 @@ public class FindPuzzlers extends OpcodeStackDetector {
                                         && "(Ljava/lang/Object;)V".equals(getSigConstantOperand())))
                 || (seen == Const.INVOKESTATIC
                         && stack.getStackDepth() > 0
-                        && ("valueOf".equals(getNameConstantOperand()) && "(Ljava/lang/Object;)Ljava/lang/String;".equals(getSigConstantOperand())
-                                || "makeConcatWithConstants".equals(getNameConstantOperand())))) {
+                        && ("valueOf".equals(getNameConstantOperand()) && "(Ljava/lang/Object;)Ljava/lang/String;".equals(getSigConstantOperand())))
+                || (seen == Const.INVOKEDYNAMIC
+                        && stack.getStackDepth() > 0
+                        && ("makeConcatWithConstants".equals(getNameConstantOperand())))) {
             OpcodeStack.Item item = stack.getStackItem(0);
             String signature = item.getSignature();
             if (signature != null && signature.startsWith("[")) {
