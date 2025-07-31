@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        java: [11.0.12+7, 17.0.1+12, 11, 17, 21, 24]
+        java: [11.0.15+10, 17.0.1+12, 11, 17, 21, 24]
       max-parallel: 6
     runs-on: ${{ matrix.os }}
     continue-on-error: true
