@@ -115,4 +115,8 @@ public abstract class WarningSuppressor implements Matcher {
     public Collection<WarningSuppressor> getAlternateSuppressors() {
         return Collections.unmodifiableCollection(alternateSuppressors);
     }
+
+    protected String adjustBugPatternForMessage() {
+        return bugPattern != null ? (bugPattern + " ") : "";
+    }
 }
