@@ -273,7 +273,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
         case Const.GOTO_W:
         case Const.GOTO:
-            if (isBranchTargetAfterNextCaseOffset()) {
+            if (isBranchTargetAfterNextCaseOffset() || switchHdlr.getDefaultOffset() == getBranchTarget()) {
                 if (biggestJumpTarget < getBranchTarget()) {
                     biggestJumpTarget = getBranchTarget();
                     if (DEBUG) {
