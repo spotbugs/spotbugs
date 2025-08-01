@@ -3,9 +3,9 @@ package edu.umd.cs.findbugs.util;
 import java.util.*;
 import java.util.stream.Stream;
 
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
@@ -167,8 +167,8 @@ public class MutableClasses {
             return false;
         }
 
-        return MutableClasses.looksLikeASetter(xmethod.getName(), xClass.getSourceSignature(), new SignatureParser(xmethod.getSignature())
-                .getReturnTypeSignature());
+        return MutableClasses.looksLikeASetter(xmethod.getName(), xClass.getSourceSignature(),
+                new GenericSignatureParser(xmethod.getSignature()).getReturnTypeSignature());
     }
 
     /**
