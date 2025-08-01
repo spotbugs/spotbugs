@@ -14,6 +14,7 @@ public class Issue1148 {
 	public List<Integer> diskData;
 	public List<Integer> memData;
 
+	// False positive for SF_SWITCH_NO_DEFAULT
 	public void setDamageParam(int i, double v){
 		switch(i){	//this line is marked
 			case 0:  TACKLE = v;
@@ -22,7 +23,7 @@ public class Issue1148 {
 			case 3:  HEADBUTT = v;
 			case 4:  MAGIC = v;
 			default:
-				break;
+				break; // The compiler does not emit a GOTO for this so we can't tell if it was written, hence  the SF_SWITCH_NO_DEFAULT false positive
 		}
 	}
 

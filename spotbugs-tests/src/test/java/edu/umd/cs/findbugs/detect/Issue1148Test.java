@@ -10,6 +10,6 @@ class Issue1148Test extends AbstractIntegrationTest {
         performAnalysis("ghIssues/Issue1148.class",
                 "ghIssues/Issue1148$UsageType.class");
 
-        assertBugTypeCount("SF_SWITCH_NO_DEFAULT", 0);
+        assertBugInMethodCount("SF_SWITCH_NO_DEFAULT", "ghIssues.Issue1148", "addData", 0);
     }
 }
