@@ -206,7 +206,7 @@ public class FindBugsWorker {
 
         // configure extended preferences
         findBugs.setAnalysisFeatureSettings(userPrefs.getAnalysisFeatureSettings());
-        findBugs.setMergeSimilarWarnings(false);
+        findBugs.setMergeSimilarWarnings(userPrefs.getMergeSimilarWarnings());
 
         if (cacheClassData) {
             FindBugs2Eclipse.checkClassPathChanges(findBugs.getProject().getAuxClasspathEntryList(), project);

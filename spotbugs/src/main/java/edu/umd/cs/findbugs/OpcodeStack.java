@@ -1307,7 +1307,8 @@ public class OpcodeStack {
     public void sawOpcode(DismantleBytecode dbc, int seen) {
         int register;
         String signature;
-        Item it, it2;
+        Item it;
+        Item it2;
         Constant cons;
 
         // System.out.printf("%3d %12s%s%n", dbc.getPC(), Const.getOpcodeName(seen),
@@ -2373,7 +2374,8 @@ public class OpcodeStack {
     }
 
     private void handleDup2() {
-        Item it, it2;
+        Item it;
+        Item it2;
         it = pop();
         if (it.getSize() == 2) {
             push(it);
@@ -3279,7 +3281,7 @@ public class OpcodeStack {
         if (stackOffset < 0 || stackOffset >= stack.size()) {
             AnalysisContext.logError("Can't get stack offset " + stackOffset + " from " + stack.toString() + " @ " + v.getPC()
                     + " in " + fullyQualifiedMethodName, new IllegalArgumentException(stackOffset
-                            + " is not a value stack offset"));
+                            + " is not a valid stack offset"));
             return new Item("Lfindbugs/OpcodeStackError;");
 
         }
@@ -3305,7 +3307,7 @@ public class OpcodeStack {
         if (stackOffset < 0 || stackOffset >= stack.size()) {
             AnalysisContext.logError("Can't get replace stack offset " + stackOffset + " from " + stack.toString() + " @ " + v.getPC()
                     + " in " + v.getFullyQualifiedMethodName(), new IllegalArgumentException(stackOffset
-                            + " is not a value stack offset"));
+                            + " is not a valid stack offset"));
 
         }
         int tos = stack.size() - 1;

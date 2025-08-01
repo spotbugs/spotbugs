@@ -302,5 +302,8 @@ class UnresolvedXMethod extends AbstractMethod {
         return false;
     }
 
-
+    @Override
+    public boolean hasPolymorphicSignature() {
+        return false;
+    }
 }

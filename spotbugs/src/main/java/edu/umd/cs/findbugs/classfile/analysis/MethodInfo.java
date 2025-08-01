@@ -72,7 +72,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
         final @SlashedClassName String className;
 
-        final String methodName, methodSignature;
+        final String methodName;
+
+        final String methodSignature;
 
         String[] exceptions;
 
@@ -231,6 +233,8 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     final boolean isStub;
 
+    final boolean hasPolymorphicSignature;
+
     final String methodSourceSignature;
 
     final @CheckForNull String[] exceptions;
@@ -318,6 +322,17 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
         this.isStub = isStub;
         this.methodCallCount = methodCallCount;
         this.variableIsSynthetic = variableIsSynthetic;
+        this.hasPolymorphicSignature = computeHasPolymorphicSignature(methodAnnotations);
+    }
+
+    private boolean computeHasPolymorphicSignature(Map<ClassDescriptor, AnnotationValue> methodAnnotations) {
+        for (ClassDescriptor annotationDescriptor : methodAnnotations.keySet()) {
+            if ("java.lang.invoke.MethodHandle$PolymorphicSignature".equals(annotationDescriptor.getDottedClassName())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -692,5 +707,36 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
             return XFactory.createXMethod(access);
         }
         return this;
+    }
+
+    @Override
+    public boolean hasPolymorphicSignature() {
+        return hasPolymorphicSignature;
+    }
+
+    /**
+     * @param otherMethodSignature A method signature, for instance ()Ljava/lang/Object;
+     * @return a new {@link MethodInfo} with the given signature
+     */
+    public MethodInfo withSignature(String otherMethodSignature) {
+        return new MethodInfo(getSlashedClassName(),
+                getName(),
+                otherMethodSignature,
+                otherMethodSignature,
+                accessFlags,
+                getUnconditionalthrowers().containsKey(this),
+                getUnconditionalthrowers().containsKey(this),
+                usesConcurrency,
+                hasBackBranch,
+                isStub,
+                getIdentitymethods().containsKey(this),
+                getInvokeDynamicMethods().containsKey(this),
+                methodCallCount,
+                exceptions,
+                getAccessmethodformethod().get(this),
+                getAccessmethodforfield().get(this),
+                methodAnnotations,
+                methodParameterAnnotations,
+                variableIsSynthetic);
     }
 }

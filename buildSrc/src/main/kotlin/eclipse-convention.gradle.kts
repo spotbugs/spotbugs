@@ -7,6 +7,7 @@ val pdeTool by configurations.creating {
 }
 
 eclipseMavenCentral {
+  silenceEquoIDE()
   release("4.24.0") {
     compileOnly("org.eclipse.ant.core")
     compileOnly("org.eclipse.core.resources")

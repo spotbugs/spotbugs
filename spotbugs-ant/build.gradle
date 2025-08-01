@@ -8,8 +8,9 @@ dependencies {
   compileOnly 'org.apache.ant:ant:1.10.15'
 
   testImplementation 'org.apache.ant:ant:1.10.15'
-  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
+  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.13.4'
   testImplementation 'org.hamcrest:hamcrest:3.0'
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('javadoc', Javadoc).configure {
@@ -27,6 +28,10 @@ tasks.named('jar', Jar).configure {
 java {
   withJavadocJar()
   withSourcesJar()
+}
+
+test {
+  useJUnitPlatform()
 }
 
 publishing.publications.maven {

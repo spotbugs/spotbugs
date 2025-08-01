@@ -88,6 +88,11 @@
                               <LaterCategory name="reporting" spanplugins="true"/>
                     </SplitPass>
                     <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.BuildAccessMethodsDatabase"/>
+                              <LaterCategory name="reporting" spanplugins="true"/>
+                    </SplitPass>
+                    
+                    <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical"/>
                               <Later class="edu.umd.cs.findbugs.detect.FindHEmismatch"/>
                     </SplitPass>
@@ -299,6 +304,9 @@
                     reports="" hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" speed="fast"
                     reports="" hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.UselessSuppressionDetector" speed="fast"
+                    reports="US_USELESS_SUPPRESSION_ON_CLASS,US_USELESS_SUPPRESSION_ON_FIELD,US_USELESS_SUPPRESSION_ON_METHOD,US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER,US_USELESS_SUPPRESSION_ON_PACKAGE"
+                    hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.NoteAnnotationRetention" speed="fast"
                     reports="" hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers"
@@ -415,7 +423,7 @@
                     disabled="false" reports="NP_LOAD_OF_KNOWN_NULL_VALUE"/>
           <Detector class="edu.umd.cs.findbugs.detect.DumbMethodInvocations" speed="fast"
                     disabled="false"
-                    reports="DMI_EMPTY_DB_PASSWORD,DMI_CONSTANT_DB_PASSWORD,DMI_USELESS_SUBSTRING,DMI_HARDCODED_ABSOLUTE_FILENAME"/>
+                    reports="DMI_EMPTY_DB_PASSWORD,DMI_CONSTANT_DB_PASSWORD,DMI_USELESS_SUBSTRING,DMI_MISLEADING_SUBSTRING,DMI_HARDCODED_ABSOLUTE_FILENAME"/>
           <Detector class="edu.umd.cs.findbugs.detect.URLProblems" speed="fast"
                     reports="DMI_BLOCKING_METHODS_ON_URL,DMI_COLLECTION_OF_URLS"/>
           <Detector class="edu.umd.cs.findbugs.detect.CovariantArrayAssignment" speed="fast" disabled="true"
@@ -499,7 +507,8 @@
           <Detector class="edu.umd.cs.findbugs.detect.FindUselessControlFlow" speed="fast"
                     reports="UCF_USELESS_CONTROL_FLOW,UCF_USELESS_CONTROL_FLOW_NEXT_LINE"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock" speed="moderate"
-                    requirejre="1.5" reports="UL_UNRELEASED_LOCK,UL_UNRELEASED_LOCK_EXCEPTION_PATH"/>
+                    requirejre="1.5"
+                    reports="UL_UNRELEASED_LOCK,UL_UNRELEASED_LOCK_EXCEPTION_PATH,CWO_CLOSED_WITHOUT_OPENED"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison" speed="slow"
                     reports="ES_COMPARING_STRINGS_WITH_EQ,ES_COMPARING_PARAMETER_STRING_WITH_EQ,RC_REF_COMPARISON,RC_REF_COMPARISON_BAD_PRACTICE,RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN,EC_UNRELATED_TYPES,EC_NULL_ARG,EC_UNRELATED_CLASS_AND_INTERFACE,EC_UNRELATED_INTERFACES,EC_ARRAY_AND_NONARRAY,EC_INCOMPATIBLE_ARRAY_COMPARE,EC_BAD_ARRAY_COMPARE,EC_UNRELATED_TYPES_USING_POINTER_EQUALITY,DMI_DOH"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindMismatchedWaitOrNotify" speed="moderate"
@@ -694,6 +703,8 @@
                     reports="AT_NONATOMIC_64BIT_PRIMITIVE,AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE,AT_STALE_THREAD_WRITE_OF_PRIMITIVE"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindHiddenMethod" speed="fast"
                     reports="HSM_HIDING_METHOD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.BuildAccessMethodsDatabase" speed="fast" reports=""
+                    hidden="true"/>
 
           <!-- Bug Categories -->
           <BugCategory category="NOISE" hidden="true"/>
@@ -715,7 +726,7 @@
           <BugCode abbrev="J2EE" cweid="4"/>
           <BugCode abbrev="RE" cweid="185"/>
           <BugCode abbrev="MS" cweid="493"/>
-          <BugCode abbrev="DE" cweid="391"/>
+          <BugCode abbrev="DE" cweid="754"/>
           <BugCode abbrev="XSS" cweid="79"/>
           <BugCode abbrev="HRS" cweid="113"/>
           <BugCode abbrev="STCAL" cweid="366"/>
@@ -730,14 +741,13 @@
           <BugCode abbrev="HSM"/>
           <!-- Bug patterns -->
           <BugPattern abbrev="JUA" type="JUA_DONT_ASSERT_INSTANCEOF_IN_TESTS" category="BAD_PRACTICE" experimental="true" />
-          <BugPattern abbrev="AA" type="AA_ASSERTION_OF_ARGUMENTS" category="BAD_PRACTICE" />
+          <BugPattern abbrev="AA" type="AA_ASSERTION_OF_ARGUMENTS" category="BAD_PRACTICE" cweid="617"/>
           <BugPattern abbrev="CT" type="CT_CONSTRUCTOR_THROW" category="BAD_PRACTICE" />
           <BugPattern abbrev="CN" type="OVERRIDING_METHODS_MUST_INVOKE_SUPER" category="CORRECTNESS" />
-          <BugPattern abbrev="CNT" type="CNT_ROUGH_CONSTANT_VALUE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="CNT" type="CNT_ROUGH_CONSTANT_VALUE" category="BAD_PRACTICE" cweid="1106"/>
 
-          <BugPattern abbrev="AT" type="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION"
-                    category="MT_CORRECTNESS"/>
-          <BugPattern abbrev="AT" type="AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="AT" type="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION" category="MT_CORRECTNESS" cweid="362"/>
+          <BugPattern abbrev="AT" type="AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD" category="MT_CORRECTNESS" cweid="362"/>
           <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SEND_ERROR" category="SECURITY" cweid="81"/>
           <BugPattern abbrev="SKIPPED" type="SKIPPED_CLASS_TOO_BIG" category="EXPERIMENTAL"/>
           <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER"
@@ -763,7 +773,7 @@
                     experimental="true"/>
           <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD"
                     category="BAD_PRACTICE"/>
-          <BugPattern abbrev="IL" type="IL_INFINITE_LOOP" category="CORRECTNESS"/>
+          <BugPattern abbrev="IL" type="IL_INFINITE_LOOP" category="CORRECTNESS" cweid="835"/>
           <BugPattern abbrev="IO" type="IO_APPENDING_TO_OBJECT_OUTPUT_STREAM" category="CORRECTNESS"/>
           <BugPattern abbrev="IL" type="IL_INFINITE_RECURSIVE_LOOP" category="CORRECTNESS"
                     cweid="674"/>
@@ -771,7 +781,7 @@
           <BugPattern abbrev="FI" type="FI_FINALIZER_NULLS_FIELDS" category="BAD_PRACTICE"/>
           <BugPattern abbrev="IL" type="IL_CONTAINER_ADDED_TO_ITSELF" category="CORRECTNESS"/>
           <BugPattern abbrev="VO" type="VO_VOLATILE_REFERENCE_TO_ARRAY" category="MT_CORRECTNESS"/>
-          <BugPattern abbrev="VO" type="VO_VOLATILE_INCREMENT" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="VO" type="VO_VOLATILE_INCREMENT" category="MT_CORRECTNESS" cweid="567"/>
           <BugPattern abbrev="UI" type="UI_INHERITANCE_UNSAFE_GETRESOURCE" category="BAD_PRACTICE"/>
           <BugPattern abbrev="HSC" type="HSC_HUGE_SHARED_STRING_CONSTANT" category="PERFORMANCE"/>
           <BugPattern abbrev="RpC" type="RpC_REPEATED_CONDITIONAL_TEST" category="CORRECTNESS"/>
@@ -786,11 +796,10 @@
           <BugPattern abbrev="TEST" type="TESTING3" category="EXPERIMENTAL"/>
           <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" category="BAD_PRACTICE"/>
           <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_JAR_FILE_ENTRY" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="DP" type="DP_DO_INSIDE_DO_PRIVILEGED" category="MALICIOUS_CODE"/>
-          <BugPattern abbrev="DP" type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"
-                    category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="DP" type="DP_DO_INSIDE_DO_PRIVILEGED" category="MALICIOUS_CODE" cweid="266"/>
+          <BugPattern abbrev="DP" type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED" category="MALICIOUS_CODE" cweid="266"/>
           <BugPattern abbrev="IMSE" type="IMSE_DONT_CATCH_IMSE" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="FL" type="FL_MATH_USING_FLOAT_PRECISION" category="CORRECTNESS"/>
+          <BugPattern abbrev="FL" type="FL_MATH_USING_FLOAT_PRECISION" category="CORRECTNESS" cweid="1339"/>
           <BugPattern abbrev="CAA" type="CAA_COVARIANT_ARRAY_FIELD" category="STYLE"
                     experimental="true"/>
           <BugPattern abbrev="CAA" type="CAA_COVARIANT_ARRAY_RETURN" category="STYLE"
@@ -802,7 +811,7 @@
           <BugPattern abbrev="CN" type="CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE"
                     category="BAD_PRACTICE"/>
           <BugPattern abbrev="CN" type="CN_IDIOM" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="CN" type="CN_IDIOM_NO_SUPER_CALL" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="CN" type="CN_IDIOM_NO_SUPER_CALL" category="BAD_PRACTICE" cweid="580"/>
           <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="BAD_PRACTICE"/>
           <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="BAD_PRACTICE"/>
           <BugPattern abbrev="Dm" type="DM_EXIT" category="BAD_PRACTICE" cweid="382"/>
@@ -810,13 +819,12 @@
                     category="BAD_PRACTICE"/>
           <BugPattern abbrev="Nm" type="NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER"
                     category="BAD_PRACTICE"/>
-          <BugPattern abbrev="JCIP" type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS"
-                    category="BAD_PRACTICE"/>
+          <BugPattern abbrev="JCIP" type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS" category="BAD_PRACTICE" cweid="471"/>
           <BugPattern abbrev="Dm" type="DMI_VACUOUS_CALL_TO_EASYMOCK_METHOD" category="CORRECTNESS"/>
           <BugPattern abbrev="Dm" type="DMI_FUTILE_ATTEMPT_TO_CHANGE_MAXPOOL_SIZE_OF_SCHEDULED_THREAD_POOL_EXECUTOR"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="DMI" type="DMI_BIGDECIMAL_CONSTRUCTED_FROM_DOUBLE"
-                    category="CORRECTNESS"/>
+                    category="CORRECTNESS" cweid="1339"/>
           <BugPattern abbrev="Dm" type="DMI_SCHEDULED_THREAD_POOL_EXECUTOR_WITH_ZERO_CORE_THREADS"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="Dm" type="DMI_CONSTANT_DB_PASSWORD" category="SECURITY" cweid="259"/>
@@ -868,18 +876,18 @@
           <BugPattern abbrev="DC" type="DC_PARTIALLY_CONSTRUCTED" category="MT_CORRECTNESS" cweid="609"/>
           <BugPattern abbrev="FI" type="FI_PUBLIC_SHOULD_BE_PROTECTED" category="MALICIOUS_CODE"
                     cweid="583"/>
-          <BugPattern abbrev="FI" type="FI_EMPTY" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="FI" type="FI_EMPTY" category="BAD_PRACTICE" cweid="568"/>
           <BugPattern abbrev="FI" type="FI_NULLIFY_SUPER" category="BAD_PRACTICE" cweid="568"/>
           <BugPattern abbrev="FI" type="FI_USELESS" category="BAD_PRACTICE"/>
           <BugPattern abbrev="FI" type="FI_MISSING_SUPER_CALL" category="BAD_PRACTICE" cweid="568"/>
           <BugPattern abbrev="FI" type="FI_EXPLICIT_INVOCATION" category="BAD_PRACTICE" cweid="586"/>
           <BugPattern abbrev="Eq" type="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS"
                     category="BAD_PRACTICE"/>
-          <BugPattern abbrev="Eq" type="EQ_COMPARING_CLASS_NAMES" category="CORRECTNESS"/>
+          <BugPattern abbrev="Eq" type="EQ_COMPARING_CLASS_NAMES" category="CORRECTNESS" cweid="486"/>
           <BugPattern abbrev="Eq" type="EQ_UNUSUAL" category="STYLE"/>
-          <BugPattern abbrev="Eq" type="EQ_GETCLASS_AND_CLASS_CONSTANT" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="Eq" type="EQ_ALWAYS_TRUE" category="CORRECTNESS"/>
-          <BugPattern abbrev="Eq" type="EQ_ALWAYS_FALSE" category="CORRECTNESS"/>
+          <BugPattern abbrev="Eq" type="EQ_GETCLASS_AND_CLASS_CONSTANT" category="BAD_PRACTICE" cweid="486"/>
+          <BugPattern abbrev="Eq" type="EQ_ALWAYS_TRUE" category="CORRECTNESS" cweid="571"/>
+          <BugPattern abbrev="Eq" type="EQ_ALWAYS_FALSE" category="CORRECTNESS" cweid="570"/>
           <BugPattern abbrev="Eq" type="EQ_OVERRIDING_EQUALS_NOT_SYMMETRIC" category="CORRECTNESS"/>
           <BugPattern abbrev="Eq" type="EQ_DOESNT_OVERRIDE_EQUALS" category="STYLE"/>
           <BugPattern abbrev="Eq" type="EQ_DONT_DEFINE_EQUALS_FOR_ENUM" category="CORRECTNESS"/>
@@ -891,31 +899,26 @@
           <BugPattern abbrev="Co" type="CO_COMPARETO_RESULTS_MIN_VALUE" category="BAD_PRACTICE"/>
           <BugPattern abbrev="Co" type="CO_COMPARETO_INCORRECT_FLOATING" category="BAD_PRACTICE"/>
           <BugPattern abbrev="RV" type="RV_NEGATING_RESULT_OF_COMPARETO" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="ES" type="ES_COMPARING_STRINGS_WITH_EQ" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="ES" type="ES_COMPARING_STRINGS_WITH_EQ" category="BAD_PRACTICE" cweid="595"/>
           <BugPattern abbrev="ES" type="ES_COMPARING_PARAMETER_STRING_WITH_EQ"
-                    category="BAD_PRACTICE"/>
+                    category="BAD_PRACTICE" cweid="595"/>
           <BugPattern abbrev="HE" type="HE_SIGNATURE_DECLARES_HASHING_OF_UNHASHABLE_CLASS"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="HE" type="HE_USE_OF_UNHASHABLE_CLASS" category="CORRECTNESS"/>
           <BugPattern abbrev="Eq" type="EQ_COMPARETO_USE_OBJECT_EQUALS" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="HE" type="HE_HASHCODE_USE_OBJECT_EQUALS" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="HE" type="HE_HASHCODE_NO_EQUALS" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="HE" type="HE_EQUALS_USE_HASHCODE" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="HE" type="HE_INHERITS_EQUALS_USE_HASHCODE" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="HE" type="HE_EQUALS_NO_HASHCODE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="HE" type="HE_HASHCODE_USE_OBJECT_EQUALS" category="BAD_PRACTICE" cweid="581"/>
+          <BugPattern abbrev="HE" type="HE_HASHCODE_NO_EQUALS" category="BAD_PRACTICE" cweid="581"/>
+          <BugPattern abbrev="HE" type="HE_EQUALS_USE_HASHCODE" category="BAD_PRACTICE" cweid="581"/>
+          <BugPattern abbrev="HE" type="HE_INHERITS_EQUALS_USE_HASHCODE" category="BAD_PRACTICE" cweid="581"/>
+          <BugPattern abbrev="HE" type="HE_EQUALS_NO_HASHCODE" category="BAD_PRACTICE" cweid="581"/>
           <BugPattern abbrev="Eq" type="EQ_ABSTRACT_SELF" category="BAD_PRACTICE"/>
           <BugPattern abbrev="Co" type="CO_ABSTRACT_SELF" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_SHARED_CONSTANT"
-                    category="MT_CORRECTNESS"/>
-          <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_BOOLEAN" category="MT_CORRECTNESS"/>
-          <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE"
-                    category="MT_CORRECTNESS"/>
-          <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE"
-                    category="MT_CORRECTNESS"/>
-          <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_INTERNED_STRING"
-                    category="MT_CORRECTNESS"/>
-          <BugPattern abbrev="WL" type="WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL"
-                    category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_SHARED_CONSTANT" category="MT_CORRECTNESS" cweid="412"/>
+          <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_BOOLEAN" category="MT_CORRECTNESS" cweid="412"/>
+          <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_BOXED_PRIMITIVE" category="MT_CORRECTNESS" cweid="412"/>
+          <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_UNSHARED_BOXED_PRIMITIVE" category="MT_CORRECTNESS" cweid="412"/>
+          <BugPattern abbrev="DL" type="DL_SYNCHRONIZATION_ON_INTERNED_STRING" category="MT_CORRECTNESS" cweid="412"/>
+          <BugPattern abbrev="WL" type="WL_USING_GETCLASS_RATHER_THAN_CLASS_LITERAL" category="MT_CORRECTNESS" cweid="821"/>
           <BugPattern abbrev="ESync" type="ESync_EMPTY_SYNC" category="MT_CORRECTNESS" cweid="585"/>
           <BugPattern abbrev="MSF" type="MSF_MUTABLE_SERVLET_FIELD" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="IS" type="IS2_INCONSISTENT_SYNC" category="MT_CORRECTNESS"/>
@@ -929,33 +932,30 @@
           <BugPattern abbrev="EI2" type="EI_EXPOSE_BUF2" category="MALICIOUS_CODE" cweid="374"/>
           <BugPattern abbrev="MS" type="EI_EXPOSE_STATIC_BUF2" category="MALICIOUS_CODE"/>
           <BugPattern abbrev="Ru" type="RU_INVOKE_RUN" category="MT_CORRECTNESS" cweid="572"/>
-          <BugPattern abbrev="SP" type="SP_SPIN_ON_FIELD" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="SP" type="SP_SPIN_ON_FIELD" category="MT_CORRECTNESS" cweid="662"/>
           <BugPattern abbrev="NS" type="NS_NON_SHORT_CIRCUIT" category="STYLE"/>
           <BugPattern abbrev="NS" type="NS_DANGEROUS_NON_SHORT_CIRCUIT" category="STYLE"/>
-          <BugPattern abbrev="TLW" type="TLW_TWO_LOCK_WAIT" category="MT_CORRECTNESS"/>
-          <BugPattern abbrev="TLW" type="TLW_TWO_LOCK_NOTIFY" category="MT_CORRECTNESS"
-                    deprecated="true" experimental="true"/>
-          <!-- has never been generated -->
+          <BugPattern abbrev="TLW" type="TLW_TWO_LOCK_WAIT" category="MT_CORRECTNESS" cweid="833"/>
           <BugPattern abbrev="UW" type="UW_UNCOND_WAIT" category="MT_CORRECTNESS"/>
-          <BugPattern abbrev="UR" type="UR_UNINIT_READ" category="CORRECTNESS"/>
+          <BugPattern abbrev="UR" type="UR_UNINIT_READ" category="CORRECTNESS" cweid="457"/>
           <BugPattern abbrev="UR" type="UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR"
-                    category="CORRECTNESS"/>
-          <BugPattern abbrev="UG" type="UG_SYNC_SET_UNSYNC_GET" category="MT_CORRECTNESS"/>
+                    category="CORRECTNESS" cweid="457"/>
+          <BugPattern abbrev="UG" type="UG_SYNC_SET_UNSYNC_GET" category="MT_CORRECTNESS" cweid="820"/>
           <BugPattern abbrev="IC" type="IC_INIT_CIRCULARITY" category="STYLE"/>
           <BugPattern abbrev="IC" type="IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION"
-                    category="BAD_PRACTICE"/>
+                    category="BAD_PRACTICE" cweid="457"/>
           <BugPattern abbrev="SI" type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED" category="BAD_PRACTICE"/>
           <BugPattern abbrev="It" type="IT_NO_SUCH_ELEMENT" category="BAD_PRACTICE"/>
           <BugPattern abbrev="IS" type="IS_INCONSISTENT_SYNC" category="MT_CORRECTNESS" deprecated="true"/>
           <BugPattern abbrev="IS" type="IS_FIELD_NOT_GUARDED" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="ML" type="ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD"
-                    category="MT_CORRECTNESS"/>
-          <BugPattern abbrev="ML" type="ML_SYNC_ON_UPDATED_FIELD" category="MT_CORRECTNESS"/>
+                    category="MT_CORRECTNESS" cweid="821"/>
+          <BugPattern abbrev="ML" type="ML_SYNC_ON_UPDATED_FIELD" category="MT_CORRECTNESS" cweid="821"/>
           <BugPattern abbrev="MS" type="MS_OOI_PKGPROTECT" category="MALICIOUS_CODE"/>
           <BugPattern abbrev="MS" type="MS_FINAL_PKGPROTECT" category="MALICIOUS_CODE"/>
-          <BugPattern abbrev="MS" type="MS_SHOULD_BE_FINAL" category="MALICIOUS_CODE"/>
-          <BugPattern abbrev="MS" type="MS_SHOULD_BE_REFACTORED_TO_BE_FINAL" category="MALICIOUS_CODE"/>
-          <BugPattern abbrev="MS" type="MS_PKGPROTECT" category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="MS" type="MS_SHOULD_BE_FINAL" category="MALICIOUS_CODE" cweid="500"/>
+          <BugPattern abbrev="MS" type="MS_SHOULD_BE_REFACTORED_TO_BE_FINAL" category="MALICIOUS_CODE" cweid="500"/>
+          <BugPattern abbrev="MS" type="MS_PKGPROTECT" category="MALICIOUS_CODE" cweid="607"/>
           <BugPattern abbrev="MS" type="MS_MUTABLE_HASHTABLE" category="MALICIOUS_CODE"/>
           <BugPattern abbrev="MS" type="MS_MUTABLE_ARRAY" category="MALICIOUS_CODE"/>
           <BugPattern abbrev="MS" type="MS_MUTABLE_COLLECTION" category="MALICIOUS_CODE"/>
@@ -980,23 +980,23 @@
           <BugPattern abbrev="IA" type="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD"
                     category="STYLE"/>
           <BugPattern abbrev="Nm" type="NM_CLASS_NOT_EXCEPTION" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="RR" type="RR_NOT_CHECKED" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="RR" type="SR_NOT_CHECKED" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="RR" type="RR_NOT_CHECKED" category="BAD_PRACTICE" cweid="252"/>
+          <BugPattern abbrev="RR" type="SR_NOT_CHECKED" category="BAD_PRACTICE" cweid="252"/>
           <BugPattern abbrev="Se" type="SE_READ_RESOLVE_IS_STATIC" category="CORRECTNESS"/>
           <BugPattern abbrev="Se" type="SE_PRIVATE_READ_RESOLVE_NOT_INHERITED" category="STYLE"/>
           <BugPattern abbrev="Se" type="SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS"
-                    category="STYLE"/>
+                    category="STYLE" cweid="1066"/>
           <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR" category="BAD_PRACTICE"/>
           <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION"
                     category="BAD_PRACTICE"/>
           <BugPattern abbrev="Se" type="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE"
-                    category="BAD_PRACTICE"/>
+                    category="BAD_PRACTICE" cweid="1066"/>
           <BugPattern abbrev="SnVI" type="SE_NO_SERIALVERSIONID" category="BAD_PRACTICE"/>
           <BugPattern abbrev="Se" type="SE_READ_RESOLVE_MUST_RETURN_OBJECT" category="BAD_PRACTICE"/>
           <BugPattern abbrev="Se" type="SE_TRANSIENT_FIELD_NOT_RESTORED" category="BAD_PRACTICE"/>
           <BugPattern abbrev="Se" type="SE_PREVENT_EXT_OBJ_OVERWRITE" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="WS" type="WS_WRITEOBJECT_SYNC" category="MT_CORRECTNESS"/>
-          <BugPattern abbrev="RS" type="RS_READOBJECT_SYNC" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="WS" type="WS_WRITEOBJECT_SYNC" category="MT_CORRECTNESS" cweid="820"/>
+          <BugPattern abbrev="RS" type="RS_READOBJECT_SYNC" category="MT_CORRECTNESS" cweid="820"/>
           <BugPattern abbrev="Se" type="SE_NONFINAL_SERIALVERSIONID" category="BAD_PRACTICE"/>
           <BugPattern abbrev="Se" type="SE_NONSTATIC_SERIALVERSIONID" category="BAD_PRACTICE"/>
           <BugPattern abbrev="Se" type="SE_NONLONG_SERIALVERSIONID" category="BAD_PRACTICE"/>
@@ -1007,23 +1007,23 @@
           <BugPattern abbrev="Se" type="SE_BAD_FIELD_STORE" category="BAD_PRACTICE"/>
           <BugPattern abbrev="SC" type="SC_START_IN_CTOR" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="SF" type="SF_SWITCH_FALLTHROUGH" category="STYLE" cweid="484"/>
-          <BugPattern abbrev="SF" type="SF_SWITCH_NO_DEFAULT" category="STYLE"/>
+          <BugPattern abbrev="SF" type="SF_SWITCH_NO_DEFAULT" category="STYLE" cweid="478"/>
           <BugPattern abbrev="SF" type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH"
                     category="CORRECTNESS" cweid="484"/>
           <BugPattern abbrev="SF" type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW"
                     category="CORRECTNESS" cweid="484"/>
           <BugPattern abbrev="SS" type="SS_SHOULD_BE_STATIC" category="PERFORMANCE"/>
-          <BugPattern abbrev="UuF" type="UUF_UNUSED_FIELD" category="PERFORMANCE"/>
-          <BugPattern abbrev="UrF" type="URF_UNREAD_FIELD" category="PERFORMANCE"/>
-          <BugPattern abbrev="UuF" type="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" category="STYLE"/>
-          <BugPattern abbrev="UrF" type="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" category="STYLE"/>
+          <BugPattern abbrev="UuF" type="UUF_UNUSED_FIELD" category="PERFORMANCE" cweid="563"/>
+          <BugPattern abbrev="UrF" type="URF_UNREAD_FIELD" category="PERFORMANCE" cweid="563"/>
+          <BugPattern abbrev="UuF" type="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" category="STYLE" cweid="563"/>
+          <BugPattern abbrev="UrF" type="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" category="STYLE" cweid="563"/>
           <BugPattern abbrev="QF" type="QF_QUESTIONABLE_FOR_LOOP" category="STYLE"/>
-          <BugPattern abbrev="NP" type="NP_UNWRITTEN_FIELD" category="CORRECTNESS"/>
-          <BugPattern abbrev="NP" type="NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD" category="STYLE"/>
-          <BugPattern abbrev="UwF" type="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" category="STYLE"/>
+          <BugPattern abbrev="NP" type="NP_UNWRITTEN_FIELD" category="CORRECTNESS" cweid="457"/>
+          <BugPattern abbrev="NP" type="NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD" category="STYLE" cweid="457"/>
+          <BugPattern abbrev="UwF" type="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" category="STYLE" cweid="457"/>
           <BugPattern abbrev="UwF" type="UWF_NULL_FIELD" category="CORRECTNESS"/>
-          <BugPattern abbrev="UwF" type="UWF_UNWRITTEN_FIELD" category="CORRECTNESS"/>
-          <BugPattern abbrev="UwF" type="UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD" category="STYLE"/>
+          <BugPattern abbrev="UwF" type="UWF_UNWRITTEN_FIELD" category="CORRECTNESS" cweid="457"/>
+          <BugPattern abbrev="UwF" type="UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD" category="STYLE" cweid="457"/>
           <BugPattern abbrev="SIC" type="SIC_THREADLOCAL_DEADLY_EMBRACE" category="CORRECTNESS"/>
           <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC" category="PERFORMANCE"/>
           <BugPattern abbrev="SIC" type="SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS"
@@ -1033,21 +1033,21 @@
           <BugPattern abbrev="Wa" type="WA_AWAIT_NOT_IN_LOOP" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="No" type="NO_NOTIFY_NOT_NOTIFYALL" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="UC" type="UC_USELESS_VOID_METHOD" category="STYLE"/>
-          <BugPattern abbrev="UC" type="UC_USELESS_CONDITION" category="STYLE"/>
-          <BugPattern abbrev="UC" type="UC_USELESS_CONDITION_TYPE" category="STYLE"/>
+          <BugPattern abbrev="UC" type="UC_USELESS_CONDITION" category="STYLE" cweid="570"/>
+          <BugPattern abbrev="UC" type="UC_USELESS_CONDITION_TYPE" category="STYLE" cweid="570"/>
           <BugPattern abbrev="UC" type="UC_USELESS_OBJECT" category="STYLE"/>
           <BugPattern abbrev="UC" type="UC_USELESS_OBJECT_STACK" category="STYLE"/>
           <BugPattern abbrev="RANGE" type="RANGE_ARRAY_INDEX" category="CORRECTNESS"/>
           <BugPattern abbrev="RANGE" type="RANGE_ARRAY_OFFSET" category="CORRECTNESS"/>
           <BugPattern abbrev="RANGE" type="RANGE_ARRAY_LENGTH" category="CORRECTNESS"/>
           <BugPattern abbrev="RANGE" type="RANGE_STRING_INDEX" category="CORRECTNESS"/>
-          <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED" category="CORRECTNESS"/>
+          <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED" category="CORRECTNESS" cweid="252"/>
           <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED_INFERRED" category="STYLE"/>
           <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT" category="STYLE"/>
           <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"
                     category="BAD_PRACTICE" cweid="253"/>
           <BugPattern abbrev="RV" type="RV_EXCEPTION_NOT_THROWN" category="CORRECTNESS"/>
-          <BugPattern abbrev="RV" type="RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE" category="CORRECTNESS"/>
+          <BugPattern abbrev="RV" type="RV_CHECK_COMPARETO_FOR_SPECIFIC_RETURN_VALUE" category="CORRECTNESS" cweid="253"/>
           <BugPattern abbrev="RV" type="RV_CHECK_FOR_POSITIVE_INDEXOF" category="STYLE"/>
           <BugPattern abbrev="RV" type="RV_DONT_JUST_NULL_CHECK_READLINE" category="STYLE"/>
           <BugPattern abbrev="NP" type="NP_ALWAYS_NULL" category="CORRECTNESS"/>
@@ -1072,33 +1072,33 @@
           <BugPattern abbrev="NP" type="NP_GUARANTEED_DEREF" category="CORRECTNESS"/>
           <BugPattern abbrev="NP" type="NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH"
                     category="CORRECTNESS"/>
-          <BugPattern abbrev="OS" type="OS_OPEN_STREAM" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="OS" type="OS_OPEN_STREAM_EXCEPTION_PATH" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="OS" type="OS_OPEN_STREAM" category="BAD_PRACTICE" cweid="459"/>
+          <BugPattern abbrev="OS" type="OS_OPEN_STREAM_EXCEPTION_PATH" category="BAD_PRACTICE" cweid="459"/>
           <BugPattern abbrev="PZLA" type="PZLA_PREFER_ZERO_LENGTH_ARRAYS" category="STYLE"/>
           <BugPattern abbrev="UCF" type="UCF_USELESS_CONTROL_FLOW" category="STYLE"/>
           <BugPattern abbrev="UCF" type="UCF_USELESS_CONTROL_FLOW_NEXT_LINE" category="STYLE"/>
-          <BugPattern abbrev="DMI" type="DMI_ARGUMENTS_WRONG_ORDER" category="CORRECTNESS"/>
+          <BugPattern abbrev="DMI" type="DMI_ARGUMENTS_WRONG_ORDER" category="CORRECTNESS" cweid="683"/>
           <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE" category="STYLE"/>
           <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" category="CORRECTNESS"/>
           <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE" category="STYLE"/>
           <BugPattern abbrev="RCN" type="RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES" category="STYLE"/>
           <BugPattern abbrev="RCN" type="RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE" category="STYLE"/>
-          <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK" category="MT_CORRECTNESS"/>
-          <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK_EXCEPTION_PATH" category="MT_CORRECTNESS"/>
-          <BugPattern abbrev="RC" type="RC_REF_COMPARISON_BAD_PRACTICE" category="BAD_PRACTICE"/>
+          <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK" category="MT_CORRECTNESS" cweid="459"/>
+          <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK_EXCEPTION_PATH" category="MT_CORRECTNESS" cweid="459"/>
+          <BugPattern abbrev="RC" type="RC_REF_COMPARISON_BAD_PRACTICE" category="BAD_PRACTICE" cweid="595"/>
           <BugPattern abbrev="RC" type="RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN"
-                    category="BAD_PRACTICE"/>
-          <BugPattern abbrev="RC" type="RC_REF_COMPARISON" category="CORRECTNESS"/>
+                    category="BAD_PRACTICE" cweid="595"/>
+          <BugPattern abbrev="RC" type="RC_REF_COMPARISON" category="CORRECTNESS" cweid="595"/>
           <BugPattern abbrev="VA" type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="FS" type="VA_FORMAT_STRING_USES_NEWLINE" category="BAD_PRACTICE"/>
           <BugPattern abbrev="FS" type="FS_BAD_DATE_FORMAT_FLAG_COMBO" category="BAD_PRACTICE" experimental="true"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES_USING_POINTER_EQUALITY"
-                    category="CORRECTNESS"/>
-          <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES" category="CORRECTNESS"/>
-          <BugPattern abbrev="EC" type="EC_ARRAY_AND_NONARRAY" category="CORRECTNESS"/>
-          <BugPattern abbrev="EC" type="EC_NULL_ARG" category="CORRECTNESS"/>
-          <BugPattern abbrev="EC" type="EC_UNRELATED_INTERFACES" category="CORRECTNESS"/>
+                    category="CORRECTNESS" cweid="570"/>
+          <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES" category="CORRECTNESS" cweid="570"/>
+          <BugPattern abbrev="EC" type="EC_ARRAY_AND_NONARRAY" category="CORRECTNESS" cweid="570"/>
+          <BugPattern abbrev="EC" type="EC_NULL_ARG" category="CORRECTNESS" cweid="570"/>
+          <BugPattern abbrev="EC" type="EC_UNRELATED_INTERFACES" category="CORRECTNESS" cweid="570"/>
           <BugPattern abbrev="EC" type="EC_UNRELATED_CLASS_AND_INTERFACE" category="CORRECTNESS"/>
           <BugPattern abbrev="MWN" type="MWN_MISMATCHED_WAIT" category="MT_CORRECTNESS"/>
           <BugPattern abbrev="MWN" type="MWN_MISMATCHED_NOTIFY" category="MT_CORRECTNESS"/>
@@ -1126,9 +1126,6 @@
           <BugPattern abbrev="SA" type="SA_LOCAL_SELF_COMPUTATION" category="CORRECTNESS"/>
           <BugPattern abbrev="SA" type="SA_FIELD_SELF_COMPARISON" category="CORRECTNESS"/>
           <BugPattern abbrev="SA" type="SA_LOCAL_SELF_COMPARISON" category="CORRECTNESS"/>
-          <BugPattern abbrev="LI" type="LI_LAZY_INIT_INSTANCE" category="MT_CORRECTNESS"
-                    deprecated="true" experimental="true"/>
-          <!-- has never been generated? -->
           <BugPattern abbrev="LI" type="LI_LAZY_INIT_STATIC" category="MT_CORRECTNESS" cweid="543"/>
           <BugPattern abbrev="LI" type="LI_LAZY_INIT_UPDATE_STATIC" category="MT_CORRECTNESS"
                     cweid="543"/>
@@ -1137,12 +1134,12 @@
           <BugPattern abbrev="JLM" type="JML_JSR166_CALLING_WAIT_RATHER_THAN_AWAIT"
                     category="MT_CORRECTNESS"/>
           <BugPattern abbrev="JLM" type="JLM_JSR166_LOCK_MONITORENTER" category="MT_CORRECTNESS"/>
-          <BugPattern abbrev="UPM" type="UPM_UNCALLED_PRIVATE_METHOD" category="PERFORMANCE"/>
+          <BugPattern abbrev="UPM" type="UPM_UNCALLED_PRIVATE_METHOD" category="PERFORMANCE" cweid="561"/>
           <BugPattern abbrev="UMAC" type="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS"
-                    category="CORRECTNESS"/>
-          <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE" category="BAD_PRACTICE"/>
+                    category="CORRECTNESS" cweid="561"/>
+          <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE" category="BAD_PRACTICE" cweid="459"/>
           <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH"
-                    category="BAD_PRACTICE"/>
+                    category="BAD_PRACTICE" cweid="459"/>
           <BugPattern abbrev="SBSC" type="SBSC_USE_STRINGBUFFER_CONCATENATION"
                     category="PERFORMANCE"/>
           <BugPattern abbrev="IIL" type="IIL_ELEMENTS_GET_LENGTH_IN_LOOP" category="PERFORMANCE"
@@ -1167,15 +1164,12 @@
           <BugPattern abbrev="IJU" type="IJU_SUITE_NOT_STATIC" category="CORRECTNESS"/>
           <BugPattern abbrev="IJU" type="IJU_NO_TESTS" category="CORRECTNESS"/>
           <BugPattern abbrev="BOA" type="BOA_BADLY_OVERRIDDEN_ADAPTER" category="CORRECTNESS"/>
-          <BugPattern abbrev="SQL" type="BRSA_BAD_RESULTSET_ACCESS" category="CORRECTNESS"
-                    deprecated="true" experimental="true"/>
-          <!-- deprecated in favor of SQL_BAD_RESULTSET_ACCESS -->
           <BugPattern abbrev="SQL" type="SQL_BAD_RESULTSET_ACCESS" category="CORRECTNESS"/>
           <BugPattern abbrev="SQL" type="SQL_BAD_PREPARED_STATEMENT_ACCESS" category="CORRECTNESS"/>
           <BugPattern abbrev="SIO" type="SIO_SUPERFLUOUS_INSTANCEOF" category="CORRECTNESS"/>
           <BugPattern abbrev="BAC" type="BAC_BAD_APPLET_CONSTRUCTOR" category="CORRECTNESS"
                     experimental="true"/>
-          <BugPattern abbrev="EC" type="EC_INCOMPATIBLE_ARRAY_COMPARE" category="CORRECTNESS"/>
+          <BugPattern abbrev="EC" type="EC_INCOMPATIBLE_ARRAY_COMPARE" category="CORRECTNESS" cweid="570"/>
           <BugPattern abbrev="EC" type="EC_BAD_ARRAY_COMPARE" category="CORRECTNESS"/>
           <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_CURRENTTHREAD" category="CORRECTNESS"/>
           <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_UNKNOWNTHREAD" category="CORRECTNESS"/>
@@ -1192,9 +1186,9 @@
           <BugPattern abbrev="WMI" type="WMI_WRONG_MAP_ITERATOR" category="PERFORMANCE"/>
           <BugPattern abbrev="ISC" type="ISC_INSTANTIATE_STATIC_CLASS" category="BAD_PRACTICE"/>
           <BugPattern abbrev="REC" type="REC_CATCH_EXCEPTION" category="STYLE" cweid="396"/>
-          <BugPattern abbrev="DCN" type="DCN_NULLPOINTER_EXCEPTION" category="STYLE"/>
+          <BugPattern abbrev="DCN" type="DCN_NULLPOINTER_EXCEPTION" category="STYLE" cweid="395"/>
           <BugPattern abbrev="FE" type="FE_FLOATING_POINT_EQUALITY" category="STYLE"/>
-          <BugPattern abbrev="FE" type="FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER" category="CORRECTNESS"/>
+          <BugPattern abbrev="FE" type="FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER" category="CORRECTNESS" cweid="570"/>
           <BugPattern abbrev="UM" type="UM_UNNECESSARY_MATH" category="PERFORMANCE"/>
           <BugPattern abbrev="CD" type="CD_CIRCULAR_DEPENDENCY" category="STYLE" experimental="true"/>
           <BugPattern abbrev="RI" type="RI_REDUNDANT_INTERFACES" category="STYLE"/>
@@ -1209,9 +1203,6 @@
           <BugPattern abbrev="ICAST" type="ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="NP" type="NP_NULL_INSTANCEOF" category="CORRECTNESS"/>
-          <BugPattern abbrev="NP" type="BC_NULL_INSTANCEOF" category="CORRECTNESS" deprecated="true"
-                    experimental="true"/>
-          <!-- deprecated in favor of NP_NULL_INSTANCEOF -->
           <BugPattern abbrev="DMI" type="DMI_RANDOM_USED_ONLY_ONCE" category="BAD_PRACTICE"/>
           <BugPattern abbrev="DMI" type="DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT"
                     category="CORRECTNESS"/>
@@ -1224,13 +1215,13 @@
           <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY" category="CORRECTNESS"
                     deprecated="true"/>
           <!-- deprecated in favor of BC_IMPOSSIBLE_CAST -->
-          <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_CAST" category="CORRECTNESS" cweid="570"/>
-          <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_DOWNCAST" category="CORRECTNESS" cweid="570"/>
+          <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_CAST" category="CORRECTNESS" cweid="704"/>
+          <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_DOWNCAST" category="CORRECTNESS" cweid="704"/>
           <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY" category="CORRECTNESS"
-                    cweid="570"/>
-          <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_INSTANCEOF" category="CORRECTNESS" cweid="570"/>
+                    cweid="704"/>
+          <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_INSTANCEOF" category="CORRECTNESS" cweid="704"/>
           <BugPattern abbrev="BC" type="BC_VACUOUS_INSTANCEOF" category="STYLE" cweid="571"/>
-          <BugPattern abbrev="BC" type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION" category="STYLE"/>
+          <BugPattern abbrev="BC" type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION" category="STYLE" cweid="704"/>
           <BugPattern abbrev="RE" type="RE_POSSIBLE_UNINTENDED_PATTERN" category="CORRECTNESS"/>
           <BugPattern abbrev="RE" type="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION" category="CORRECTNESS"/>
           <BugPattern abbrev="RE" type="RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION"
@@ -1251,14 +1242,15 @@
           <BugPattern abbrev="DMI" type="DMI_HARDCODED_ABSOLUTE_FILENAME" category="STYLE"/>
           <BugPattern abbrev="DMI" type="DMI_BAD_MONTH" category="CORRECTNESS"/>
           <BugPattern abbrev="DMI" type="DMI_USELESS_SUBSTRING" category="STYLE"/>
+          <BugPattern abbrev="DMI" type="DMI_MISLEADING_SUBSTRING" category="STYLE"/>
           <BugPattern abbrev="DMI" type="DMI_CALLING_NEXT_FROM_HASNEXT" category="CORRECTNESS"/>
           <BugPattern abbrev="ST" type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" category="STYLE"/>
-          <BugPattern abbrev="SWL" type="SWL_SLEEP_WITH_LOCK_HELD" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="SWL" type="SWL_SLEEP_WITH_LOCK_HELD" category="MT_CORRECTNESS" cweid="667"/>
           <BugPattern abbrev="J2EE" type="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION"
                     category="BAD_PRACTICE" cweid="579"/>
           <BugPattern abbrev="DMI" type="DMI_NONSERIALIZABLE_OBJECT_WRITTEN" category="STYLE"/>
-          <BugPattern abbrev="DB" type="DB_DUPLICATE_BRANCHES" category="STYLE"/>
-          <BugPattern abbrev="DB" type="DB_DUPLICATE_SWITCH_CLAUSES" category="STYLE"/>
+          <BugPattern abbrev="DB" type="DB_DUPLICATE_BRANCHES" category="STYLE" cweid="1041"/>
+          <BugPattern abbrev="DB" type="DB_DUPLICATE_SWITCH_CLAUSES" category="STYLE" cweid="1041"/>
           <BugPattern abbrev="IMA" type="IMA_INEFFICIENT_MEMBER_ACCESS" category="PERFORMANCE"
                     experimental="true"/>
           <BugPattern abbrev="XFB" type="XFB_XML_FACTORY_BYPASS" category="STYLE"/>
@@ -1304,47 +1296,51 @@
           <BugPattern abbrev="FB" type="FB_UNEXPECTED_WARNING" category="CORRECTNESS"/>
           <BugPattern abbrev="FB" type="FB_MISSING_EXPECTED_WARNING" category="CORRECTNESS"/>
           <BugPattern abbrev="RV" type="RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED"
-                    category="MT_CORRECTNESS"/>
+                    category="MT_CORRECTNESS" cweid="252"/>
           <BugPattern abbrev="LG" type="LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE"
                     category="EXPERIMENTAL"/>
-          <BugPattern abbrev="Dm" type="DM_DEFAULT_ENCODING" category="I18N" />
+          <BugPattern abbrev="Dm" type="DM_DEFAULT_ENCODING" category="I18N" cweid="173"/>
           <BugPattern abbrev="NP" type="NP_METHOD_RETURN_RELAXING_ANNOTATION" category="STYLE" />
           <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION" category="STYLE" />
           <BugPattern abbrev="NP" type="NP_METHOD_PARAMETER_RELAXING_ANNOTATION" category="STYLE" deprecated="true" />
           <BugPattern abbrev="EOS" type="EOS_BAD_END_OF_STREAM_CHECK" category="CORRECTNESS" />
-          <BugPattern abbrev="REFLC" type="REFLC_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS" category="MALICIOUS_CODE" />
-          <BugPattern abbrev="REFLF" type="REFLF_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_FIELD" category="MALICIOUS_CODE" />
+          <BugPattern abbrev="REFLC" type="REFLC_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_CLASS" category="MALICIOUS_CODE" cweid="470"/>
+          <BugPattern abbrev="REFLF" type="REFLF_REFLECTION_MAY_INCREASE_ACCESSIBILITY_OF_FIELD" category="MALICIOUS_CODE" cweid="470"/>
           <BugPattern abbrev="MC" type="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR" category="MALICIOUS_CODE" />
           <BugPattern abbrev="MC" type="MC_OVERRIDABLE_METHOD_CALL_IN_CLONE" category="MALICIOUS_CODE" />
           <BugPattern abbrev="MC" type="MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT" category="MALICIOUS_CODE" />
-          <BugPattern abbrev="SSD" type="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA" category="MT_CORRECTNESS" />
-          <BugPattern abbrev="FL" type="FL_FLOATS_AS_LOOP_COUNTERS" category="CORRECTNESS" />
-          <BugPattern abbrev="THROWS" type="THROWS_METHOD_THROWS_RUNTIMEEXCEPTION" category="BAD_PRACTICE" />
-          <BugPattern abbrev="THROWS" type="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION" category="BAD_PRACTICE" />
-          <BugPattern abbrev="THROWS" type="THROWS_METHOD_THROWS_CLAUSE_THROWABLE" category="BAD_PRACTICE" />
+          <BugPattern abbrev="SSD" type="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA" category="MT_CORRECTNESS" cweid="667"/>
+          <BugPattern abbrev="FL" type="FL_FLOATS_AS_LOOP_COUNTERS" category="CORRECTNESS" cweid="1339"/>
+          <BugPattern abbrev="THROWS" type="THROWS_METHOD_THROWS_RUNTIMEEXCEPTION" category="BAD_PRACTICE" cweid="397"/>
+          <BugPattern abbrev="THROWS" type="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION" category="BAD_PRACTICE" cweid="397"/>
+          <BugPattern abbrev="THROWS" type="THROWS_METHOD_THROWS_CLAUSE_THROWABLE" category="BAD_PRACTICE" cweid="397"/>
           <BugPattern abbrev="PERM" type="PERM_SUPER_NOT_CALLED_IN_GETPERMISSIONS" category="MALICIOUS_CODE" />
-          <BugPattern abbrev="USC" type="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE"
-                    category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="USC" type="USC_POTENTIAL_SECURITY_CHECK_BASED_ON_UNTRUSTED_SOURCE" category="MALICIOUS_CODE" cweid="302"/>
           <BugPattern abbrev="ASE" type="ASE_ASSERTION_WITH_SIDE_EFFECT" category="SECURITY" />
           <BugPattern abbrev="ASE" type="ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD" category="SECURITY" />
-          <BugPattern abbrev="PA" type="PA_PUBLIC_PRIMITIVE_ATTRIBUTE" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="PA" type="PA_PUBLIC_ARRAY_ATTRIBUTE" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="PA" type="PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="VSC" type="VSC_VULNERABLE_SECURITY_CHECK_METHODS"
-                    category="MALICIOUS_CODE"/>
+          <BugPattern abbrev="PA" type="PA_PUBLIC_PRIMITIVE_ATTRIBUTE" category="BAD_PRACTICE" cweid="766"/>
+          <BugPattern abbrev="PA" type="PA_PUBLIC_ARRAY_ATTRIBUTE" category="BAD_PRACTICE" cweid="766"/>
+          <BugPattern abbrev="PA" type="PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE" category="BAD_PRACTICE" cweid="766"/>
+          <BugPattern abbrev="VSC" type="VSC_VULNERABLE_SECURITY_CHECK_METHODS" category="MALICIOUS_CODE"/>
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_CLASS_NAMES" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_FIELD_NAMES" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_METHOD_NAMES" category="BAD_PRACTICE"/>
           <BugPattern abbrev="PI" type="PI_DO_NOT_REUSE_PUBLIC_IDENTIFIERS_LOCAL_VARIABLE_NAMES" category="BAD_PRACTICE"/>
-          <BugPattern abbrev="SING" type="SING_SINGLETON_IMPLEMENTS_CLONEABLE" category="CORRECTNESS" />
-          <BugPattern abbrev="SING" type="SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE" category="CORRECTNESS" />
-          <BugPattern abbrev="SING" type="SING_SINGLETON_IMPLEMENTS_CLONE_METHOD" category="CORRECTNESS" />
-          <BugPattern abbrev="SING" type="SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR" category="CORRECTNESS" />
-          <BugPattern abbrev="SING" type="SING_SINGLETON_IMPLEMENTS_SERIALIZABLE" category="CORRECTNESS" />
-          <BugPattern abbrev="SING" type="SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" category="CORRECTNESS" />
+          <BugPattern abbrev="SING" type="SING_SINGLETON_IMPLEMENTS_CLONEABLE" category="CORRECTNESS" cweid="543"/>
+          <BugPattern abbrev="SING" type="SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE" category="CORRECTNESS" cweid="543"/>
+          <BugPattern abbrev="SING" type="SING_SINGLETON_IMPLEMENTS_CLONE_METHOD" category="CORRECTNESS" cweid="543"/>
+          <BugPattern abbrev="SING" type="SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR" category="CORRECTNESS" cweid="543"/>
+          <BugPattern abbrev="SING" type="SING_SINGLETON_IMPLEMENTS_SERIALIZABLE" category="CORRECTNESS" cweid="543"/>
+          <BugPattern abbrev="SING" type="SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" category="CORRECTNESS" cweid="543"/>
           <BugPattern abbrev="ENV" type="ENV_USE_PROPERTY_INSTEAD_OF_ENV" category="BAD_PRACTICE" />
-          <BugPattern abbrev="AT" type="AT_NONATOMIC_64BIT_PRIMITIVE" category="MT_CORRECTNESS" />
-          <BugPattern abbrev="AT" type="AT_STALE_THREAD_WRITE_OF_PRIMITIVE" category="MT_CORRECTNESS" />
-          <BugPattern abbrev="AT" type="AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="CWO" type="CWO_CLOSED_WITHOUT_OPENED" category="MT_CORRECTNESS" cweid="833"/>
+          <BugPattern abbrev="AT" type="AT_NONATOMIC_64BIT_PRIMITIVE" category="MT_CORRECTNESS" cweid="667"/>
+          <BugPattern abbrev="AT" type="AT_STALE_THREAD_WRITE_OF_PRIMITIVE" category="MT_CORRECTNESS" cweid="413"/>
+          <BugPattern abbrev="AT" type="AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE" category="MT_CORRECTNESS" cweid="413"/>
           <BugPattern abbrev="HSM" type="HSM_HIDING_METHOD" category="CORRECTNESS"/>
+          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_FIELD" category="STYLE"/>
+          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_CLASS" category="STYLE"/>
+          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_METHOD" category="STYLE"/>
+          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER" category="STYLE"/>
+          <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_PACKAGE" category="STYLE"/>
 </FindbugsPlugin>

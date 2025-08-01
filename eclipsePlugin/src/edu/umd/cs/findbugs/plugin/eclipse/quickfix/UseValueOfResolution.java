@@ -24,7 +24,6 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.addStaticImports;
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getASTNode;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,14 +63,8 @@ public class UseValueOfResolution extends BugResolution {
 
     private static final String VALUE_OF_METHOD_NAME = "valueOf";
 
-    private static final Set<String> primitiveWrapperClasses = new HashSet<>();
-
-    static {
-        primitiveWrapperClasses.add("java.lang.Double");
-        primitiveWrapperClasses.add("java.lang.Integer");
-        primitiveWrapperClasses.add("java.lang.Boolean");
-        primitiveWrapperClasses.add("java.lang.Float");
-    }
+    private static final Set<String> primitiveWrapperClasses = Set.of("java.lang.Double", "java.lang.Integer", "java.lang.Boolean",
+            "java.lang.Float");
 
     private boolean isDouble;
 

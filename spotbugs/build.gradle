@@ -65,9 +65,9 @@ dependencies {
   api libs.asm.commons
   api libs.asm.tree
   api libs.asm.util
-  api 'org.apache.bcel:bcel:6.10.0'
+  api 'org.apache.bcel:bcel:6.11.0-20250706.125103-7'
   api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
-  api('org.dom4j:dom4j:2.1.4') {
+  api('org.dom4j:dom4j:2.2.0') {
     // exclude transitive dependencies to keep compatible with dom4j 2.1.1
     // https://github.com/dom4j/dom4j/issues/85
     // https://docs.gradle.org/current/userguide/dependency_downgrade_and_exclude.html#sec:excluding-transitive-deps
@@ -79,10 +79,10 @@ dependencies {
     exclude group: 'xpp3',             module: 'xpp3'
   }
   implementation 'jaxen:jaxen:2.0.0' // only transitive through org.dom4j:dom4j:2.1.4, which has an *optional* dependency on jaxen:jaxen.
-  api 'org.apache.commons:commons-lang3:3.17.0'
-  api 'org.apache.commons:commons-text:1.13.0'
-  api 'org.slf4j:slf4j-api:2.0.16'
-  implementation 'net.sf.saxon:Saxon-HE:12.5'
+  api 'org.apache.commons:commons-lang3:3.18.0'
+  api 'org.apache.commons:commons-text:1.14.0'
+  api 'org.slf4j:slf4j-api:2.0.17'
+  implementation 'net.sf.saxon:Saxon-HE:12.8'
   implementation libs.log4j.core
   logBinding (libs.log4j.slf4j2.impl) {
     exclude group: 'org.slf4j'
@@ -92,14 +92,25 @@ dependencies {
   // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
   api project(':spotbugs-annotations')
 
-  api "com.google.code.gson:gson:2.12.1"
+  api "com.google.code.gson:gson:2.13.1"
 
   guiImplementation sourceSets.main.runtimeClasspath
   guiCompileOnly project(':spotbugs-annotations')
 }
 
 clean {
-  delete ".libs"
+  delete ".libs", "META-INF/MANIFEST.MF"
+}
+
+project(':spotbugs-annotations') {
+    def jarTask = tasks.named('jar')
+    tasks.named('spotbugsMain') {
+        dependsOn jarTask
+
+        inputs.file(jarTask.flatMap { it.archiveFile })
+              .withPathSensitivity(PathSensitivity.RELATIVE)
+              .withPropertyName('spotbugsJarInput')
+    }
 }
 
 tasks.named('compileGuiJava', JavaCompile).configure {
@@ -298,8 +309,10 @@ tasks.named('jar') {
   dependsOn tasks.named('updateManifest')
 }
 
+def resolvedBuildDir = project.layout.buildDirectory.asFile.get()
+
 def distSrcZip = tasks.register('distSrcZip', Exec) {
-  def out = "${buildDir}/distributions/spotbugs-${project.version}-source.zip"
+  def out = "${resolvedBuildDir}/distributions/spotbugs-${project.version}-source.zip"
   outputs.file out
   commandLine 'git', 'archive', '-o', out,
     '--prefix', "spotbugs-${project.version}/", 'HEAD'
@@ -318,7 +331,7 @@ tasks.named('assemble') {
 def unzipDist = tasks.register('unzipDist', Copy) {
   dependsOn distZip
   from distZip.map { zipTree(it.outputs.files.singleFile) }
-  into file("$buildDir/smoketest/")
+  into file("${resolvedBuildDir}/smoketest/")
   // Remove prefix
   eachFile { details ->
     details.path = details.path - "spotbugs-${project.version}"
@@ -330,13 +343,13 @@ def smokeTest = tasks.register('smokeTest') {
   dependsOn unzipDist, project(':spotbugs-ant').tasks.named('jar')
   doLast {
     ant.taskdef(name:'spotbugs', classname:'edu.umd.cs.findbugs.anttask.FindBugsTask', classpath:project(':spotbugs-ant').jar.outputs.files.asPath)
-    ant.spotbugs(home:"$buildDir/smoketest/", output:'xml:withMessages',
+    ant.spotbugs(home:"${resolvedBuildDir}/smoketest/", output:'xml:withMessages',
               jvmargs:'-ea -Xmx1200m',
               excludeFilter:'findbugsExclude.xml',
               projectName:'spotbugs',
               maxRank:'20',
               timeout:'1800000',
-              outputFile:"${buildDir}/smoketest/findbugscheckAll.xml") {
+              outputFile:"${resolvedBuildDir}/smoketest/findbugscheckAll.xml") {
       sourcePath(path:'src/main/java:src/gui/main:src/tools')
       'class'(location:project.tasks['compileJava'].destinationDirectory.get().asFile)
       configurations.compileClasspath.each { File file -> auxClasspath(path:file.path) }

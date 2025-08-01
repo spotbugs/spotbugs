@@ -52,7 +52,9 @@ public class FindAssertionsWithSideEffects extends AbstractAssertDetector {
                 seen == Const.ISTORE_0 ||
                 seen == Const.ISTORE_1 ||
                 seen == Const.ISTORE_2 ||
-                seen == Const.ISTORE_3;
+                seen == Const.ISTORE_3 ||
+                seen == Const.PUTFIELD ||
+                seen == Const.PUTSTATIC;
     }
 
     /**

@@ -3,7 +3,7 @@ import static groovy.io.FileType.FILES
 // TODO: deploy not only jar but also sources and javadoc, to pass validation by Sonatype nexus
 // apply from: "$rootDir/gradle/maven.gradle"
 plugins {
-  id 'org.ajoberstar.grgit' version '5.3.0'
+  id 'org.ajoberstar.grgit' version '5.3.2'
   id "eclipse-convention"
 }
 
@@ -60,8 +60,8 @@ def findEclipseExecutable() {
   localProps.load(new FileInputStream("$projectDir/local.properties"))
   def eclipseRootDir = new File(localProps.getProperty('eclipseRoot.dir'))
   // Eclipse 4.5+ uses a different directory layout under macOS. Try to detect this first.
-  OperatingSystem os = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.currentOperatingSystem;
-  def eclipseExecutable;
+  OperatingSystem os = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.currentOperatingSystem
+  def eclipseExecutable
   if(os.isMacOsX()){
     eclipseExecutable = new File(eclipseRootDir, "Contents/MacOS/eclipse")
     if (!eclipseExecutable.exists()) {
@@ -90,7 +90,7 @@ dependencies {
 }
 
 tasks.named('clean', Delete).configure {
-    delete "lib", "build"
+    delete "lib", "build", "META-INF/MANIFEST.MF", "build.properties"
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340
@@ -115,8 +115,10 @@ def copyLibsForEclipse = tasks.register('copyLibsForEclipse', Copy) {
     into "lib"
 }
 
+def resolvedBuildDir = project.layout.buildDirectory.asFile.get()
+
 def distSrcZip = tasks.register('distSrcZip', Exec) {
-  def out = "${buildDir}/distributions/${eclipsePluginId}_${project.version}-source.zip"
+  def out = "${resolvedBuildDir}/distributions/${eclipsePluginId}_${project.version}-source.zip"
   outputs.file out
   commandLine 'git', 'archive', '-o', out, 'HEAD'
 }
@@ -165,12 +167,12 @@ tasks.named('compileJava').configure { dependsOn ':spotbugs:jar' }
 tasks.named('eclipse').configure { dependsOn copyLibsForEclipse, updateManifest }
 
 class FileRef implements org.gradle.plugins.ide.eclipse.model.FileReference {
-    def file;
+    def file
     def FileRef(File file){
         this.file = file
     }
     def File getFile(){
-        return file;
+        return file
     }
     def String getJarURL(){
         return "jar:" + file
@@ -248,14 +250,14 @@ def distZip = tasks.register('distZip', Zip) {
 }
 
 def testPluginJar = tasks.register('testPluginJar') {
-  def jarFile = "$buildDir/site/eclipse/plugins/${eclipsePluginId}_${project.version}.jar"
+  def jarFile = "${resolvedBuildDir}/site/eclipse/plugins/${eclipsePluginId}_${project.version}.jar"
   inputs.file jarFile
   doLast {
     def spotbugsJar = zipTree(jarFile)
             .matching { include 'lib/spotbugs.jar' }
             .singleFile
     if (!spotbugsJar.exists()) {
-      throw new TaskInstantiationException('Eclipse plugin does not contain spotbugs.jar');
+      throw new TaskInstantiationException('Eclipse plugin does not contain spotbugs.jar')
     } else {
       println 'Eclipse plugin contains spotbugs.jar'
     }
@@ -457,7 +459,7 @@ def siteStableLatestXml = tasks.register('siteStableLatestXml', Copy) {
 
 // sign all .jar file under specified dir
 ext.signJar = { File dir ->
-  def keystorepass = project.hasProperty('keystorepass') ? keystorepass : '';
+  def keystorepass = project.hasProperty('keystorepass') ? keystorepass : ''
   if (keystorepass.isEmpty()) {
     print 'to sign eclipse plugins, set "keystorepass" project property'
     return
@@ -498,9 +500,10 @@ def generateP2Metadata = tasks.register('generateP2Metadata', Exec) {
   dependsOn confirmEclipse, pluginJar, featureJar, siteXml, siteHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
-    '-metadataRepository', "file:${buildDir}/site/eclipse", // TODO : May not work on Windows
-    '-artifactRepository', "file:${buildDir}/site/eclipse", // TODO : May not work on Windows
-    '-source', "${buildDir}/site/eclipse"
+    '-metadataRepository', "file:${resolvedBuildDir}/site/eclipse",
+    '-artifactRepository', "file:${resolvedBuildDir}/site/eclipse",
+    '-source', "${resolvedBuildDir}/site/eclipse",
+    '-vm', "${System.getProperty('java.home')}/bin"
 }
 
 def generateCandidateP2Metadata = tasks.register('generateCandidateP2Metadata', Exec) {
@@ -514,9 +517,10 @@ def generateCandidateP2Metadata = tasks.register('generateCandidateP2Metadata', 
   dependsOn confirmEclipse, pluginCandidateJar, featureCandidateJar, siteCandidateXml, siteCandidateHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
-    '-metadataRepository', "file:${buildDir}/site/eclipse-candidate", // TODO : May not work on Windows
-    '-artifactRepository', "file:${buildDir}/site/eclipse-candidate", // TODO : May not work on Windows
-    '-source', "${buildDir}/site/eclipse-candidate"
+    '-metadataRepository', "file:${resolvedBuildDir}/site/eclipse-candidate",
+    '-artifactRepository', "file:${resolvedBuildDir}/site/eclipse-candidate",
+    '-source', "${resolvedBuildDir}/site/eclipse-candidate",
+    '-vm', "${System.getProperty('java.home')}/bin"
 }
 
 def generateP2MetadataDaily = tasks.register('generateP2MetadataDaily', Exec) {
@@ -530,9 +534,10 @@ def generateP2MetadataDaily = tasks.register('generateP2MetadataDaily', Exec) {
   dependsOn confirmEclipse, pluginDailyJar, featureDailyJar, siteDailyXml, siteDailyHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
-    '-metadataRepository', "file:${buildDir}/site/eclipse-daily", // TODO : May not work on Windows
-    '-artifactRepository', "file:${buildDir}/site/eclipse-daily", // TODO : May not work on Windows
-    '-source', "${buildDir}/site/eclipse-daily"
+    '-metadataRepository', "file:${resolvedBuildDir}/site/eclipse-daily",
+    '-artifactRepository', "file:${resolvedBuildDir}/site/eclipse-daily",
+    '-source', "${resolvedBuildDir}/site/eclipse-daily",
+    '-vm', "${System.getProperty('java.home')}/bin"
 }
 
 def generateP2MetadataStableLatest = tasks.register('generateP2MetadataStableLatest', Exec) {
@@ -546,9 +551,10 @@ def generateP2MetadataStableLatest = tasks.register('generateP2MetadataStableLat
   dependsOn confirmEclipse, pluginStableLatestJar, featureStableLatestJar, siteStableLatestXml, siteStableLatestHtml
   commandLine "${eclipseExecutable}", '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
-    '-metadataRepository', "file:${buildDir}/site/eclipse-stable-latest", // TODO : May not work on Windows
-    '-artifactRepository', "file:${buildDir}/site/eclipse-stable-latest", // TODO : May not work on Windows
-    '-source', "${buildDir}/site/eclipse-stable-latest"
+    '-metadataRepository', "file:${resolvedBuildDir}/site/eclipse-stable-latest",
+    '-artifactRepository', "file:${resolvedBuildDir}/site/eclipse-stable-latest",
+    '-source', "${resolvedBuildDir}/site/eclipse-stable-latest",
+    '-vm', "${System.getProperty('java.home')}/bin"
 }
 
 def eclipseSite = tasks.register('eclipseSite') {

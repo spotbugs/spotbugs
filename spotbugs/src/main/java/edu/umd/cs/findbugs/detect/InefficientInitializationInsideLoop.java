@@ -20,9 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -61,8 +59,8 @@ public class InefficientInitializationInsideLoop extends OpcodeStackDetector {
     private static final MethodDescriptor STRING_SPLIT_2 = new MethodDescriptor("java/lang/String", "split",
             "(Ljava/lang/String;I)[Ljava/lang/String;");
 
-    private static final Set<MethodDescriptor> implicitPatternMethods = new HashSet<>(Arrays.asList(PATTERN_MATCHES,
-            STRING_MATCHES, STRING_REPLACEALL, STRING_REPLACEFIRST, STRING_SPLIT, STRING_SPLIT_2));
+    private static final Set<MethodDescriptor> implicitPatternMethods = Set.of(PATTERN_MATCHES,
+            STRING_MATCHES, STRING_REPLACEALL, STRING_REPLACEFIRST, STRING_SPLIT, STRING_SPLIT_2);
 
     private static final List<MethodDescriptor> methods = new ArrayList<>();
 

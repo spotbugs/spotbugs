@@ -62,6 +62,9 @@ import org.slf4j.LoggerFactory;
  * enable and disable detectors as requested).
  */
 public class TextUICommandLine extends FindBugsCommandLine {
+
+    private static final String USER_PREFS = "-userPrefs";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
@@ -156,7 +159,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
     public TextUICommandLine() {
         addSwitch("-showPlugins", "show list of available detector plugins");
 
-        addOption("-userPrefs", "filename",
+        addOption(USER_PREFS, "filename",
                 "user preferences file, e.g /path/to/project/.settings/edu.umd.cs.findbugs.core.prefs for Eclipse projects");
 
         startOptionGroup("Output options:");
@@ -611,7 +614,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 sourceDirs.add(new File(tok.nextToken()).getAbsolutePath());
             }
             project.addSourceDirs(sourceDirs);
-        } else if ("-userPrefs".equals(option)) {
+        } else if (USER_PREFS.equals(option)) {
             UserPreferences prefs = UserPreferences.createDefaultUserPreferences();
             prefs.read(new FileInputStream(argument));
             project.setConfiguration(prefs);
@@ -720,7 +723,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
             findBugs.setProgressCallback(new TextUIProgressCallback(System.out));
         }
 
-        findBugs.setUserPreferences(getUserPreferences());
         findBugs.setClassScreener(classScreener);
 
         findBugs.setRelaxedReportingMode(relaxedReportingMode);
@@ -750,6 +752,29 @@ public class TextUICommandLine extends FindBugsCommandLine {
         if (applySuppression) {
             findBugs.setApplySuppression(true);
         }
+
+        UserPreferences userPreferences = getUserPreferences();
+        // Ideally applied last, to make sure if the user preferences file is
+        // given, it overrides the values set by the command line options.
+        if (parsedOptions.containsKey(USER_PREFS)) {
+            // only override values if the user preferences file was given, to avoid re-setting to defaults
+            textuiBugReporter.setPriorityThreshold(userPreferences.getUserDetectorThreshold());
+            textuiBugReporter.setRankThreshold(userPreferences.getFilterSettings().getMinRank());
+            findBugs.setAnalysisFeatureSettings(userPreferences.getAnalysisFeatureSettings());
+            findBugs.setMergeSimilarWarnings(userPreferences.getMergeSimilarWarnings());
+
+            // Paths in user preferences file are relative to the project root, so resolve them
+            userPreferences.resolveRelativePaths(parsedOptions.get(USER_PREFS));
+
+            List<String> overriddenOptions = List.of("-maxRank", "-low", "-medium", "-high", "-dontCombineWarnings");
+            if (parsedOptions.keySet().stream().anyMatch(option -> overriddenOptions.contains(option))) {
+                FindBugs.LOG
+                        .warning("Following given command line options are overridden by the user preferences file: '"
+                                + overriddenOptions + "'. Options from file " + parsedOptions.get(USER_PREFS)
+                                + " will be used.");
+            }
+        }
+        findBugs.setUserPreferences(userPreferences);
 
         findBugs.finishSettings();
     }
