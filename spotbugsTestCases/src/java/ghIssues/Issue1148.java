@@ -23,7 +23,7 @@ public class Issue1148 {
 			case 3:  HEADBUTT = v;
 			case 4:  MAGIC = v;
 			default:
-				break; // The compiler does not emit a GOTO for this so we can't tell if it was written, hence  the SF_SWITCH_NO_DEFAULT false positive
+				break; // The compiler does not emit a GOTO for this so we can't tell if it was written, hence the SF_SWITCH_NO_DEFAULT false positive
 		}
 	}
 
