@@ -1,7 +1,7 @@
 plugins {
   id "org.sonarqube" version "6.2.0.5505"
   id "org.gradle.crypto.checksum" version "1.4.0"
-  id "com.github.spotbugs" version "6.2.2"
+  id "com.github.spotbugs" version "6.2.3"
   id "io.github.gradle-nexus.publish-plugin" version "2.0.0"
 }
 
@@ -28,9 +28,12 @@ subprojects {
 allprojects {
   repositories {
     mavenCentral()
+    maven {
+      url = uri("https://repository.apache.org/content/repositories/snapshots/")
+    }
   }
   dependencies {
-    def junitVersion = '5.13.3'
+    def junitVersion = '5.13.4'
     compileOnly platform("org.junit:junit-bom:$junitVersion")
     testImplementation platform("org.junit:junit-bom:$junitVersion")
   }

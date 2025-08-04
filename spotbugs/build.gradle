@@ -65,7 +65,7 @@ dependencies {
   api libs.asm.commons
   api libs.asm.tree
   api libs.asm.util
-  api 'org.apache.bcel:bcel:6.10.0'
+  api 'org.apache.bcel:bcel:6.11.0-20250706.125103-7'
   api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
   api('org.dom4j:dom4j:2.2.0') {
     // exclude transitive dependencies to keep compatible with dom4j 2.1.1
@@ -80,7 +80,7 @@ dependencies {
   }
   implementation 'jaxen:jaxen:2.0.0' // only transitive through org.dom4j:dom4j:2.1.4, which has an *optional* dependency on jaxen:jaxen.
   api 'org.apache.commons:commons-lang3:3.18.0'
-  api 'org.apache.commons:commons-text:1.13.1'
+  api 'org.apache.commons:commons-text:1.14.0'
   api 'org.slf4j:slf4j-api:2.0.17'
   implementation 'net.sf.saxon:Saxon-HE:12.8'
   implementation libs.log4j.core
@@ -99,7 +99,7 @@ dependencies {
 }
 
 clean {
-  delete ".libs"
+  delete ".libs", "META-INF/MANIFEST.MF"
 }
 
 project(':spotbugs-annotations') {

@@ -55,7 +55,7 @@ public class FieldWarningSuppressor extends ClassWarningSuppressor {
         return new BugInstance(detector, BUG_TYPE, PRIORITY)
                 .addClass(clazz.getClassDescriptor())
                 .addField(field)
-                .addString(bugPattern);
+                .addString(adjustBugPatternForMessage());
     }
 
     @Override

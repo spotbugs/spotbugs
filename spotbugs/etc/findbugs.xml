@@ -88,6 +88,11 @@
                               <LaterCategory name="reporting" spanplugins="true"/>
                     </SplitPass>
                     <SplitPass>
+                              <Earlier class="edu.umd.cs.findbugs.detect.BuildAccessMethodsDatabase"/>
+                              <LaterCategory name="reporting" spanplugins="true"/>
+                    </SplitPass>
+
+                    <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical"/>
                               <Later class="edu.umd.cs.findbugs.detect.FindHEmismatch"/>
                     </SplitPass>
@@ -418,7 +423,7 @@
                     disabled="false" reports="NP_LOAD_OF_KNOWN_NULL_VALUE"/>
           <Detector class="edu.umd.cs.findbugs.detect.DumbMethodInvocations" speed="fast"
                     disabled="false"
-                    reports="DMI_EMPTY_DB_PASSWORD,DMI_CONSTANT_DB_PASSWORD,DMI_USELESS_SUBSTRING,DMI_HARDCODED_ABSOLUTE_FILENAME"/>
+                    reports="DMI_EMPTY_DB_PASSWORD,DMI_CONSTANT_DB_PASSWORD,DMI_USELESS_SUBSTRING,DMI_MISLEADING_SUBSTRING,DMI_HARDCODED_ABSOLUTE_FILENAME"/>
           <Detector class="edu.umd.cs.findbugs.detect.URLProblems" speed="fast"
                     reports="DMI_BLOCKING_METHODS_ON_URL,DMI_COLLECTION_OF_URLS"/>
           <Detector class="edu.umd.cs.findbugs.detect.CovariantArrayAssignment" speed="fast" disabled="true"
@@ -698,6 +703,8 @@
                     reports="AT_NONATOMIC_64BIT_PRIMITIVE,AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE,AT_STALE_THREAD_WRITE_OF_PRIMITIVE"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindHiddenMethod" speed="fast"
                     reports="HSM_HIDING_METHOD"/>
+          <Detector class="edu.umd.cs.findbugs.detect.BuildAccessMethodsDatabase" speed="fast" reports=""
+                    hidden="true"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindImproperSynchronization" speed="fast"
                     reports="USO_UNSAFE_METHOD_SYNCHRONIZATION,USO_UNSAFE_STATIC_METHOD_SYNCHRONIZATION,USO_UNSAFE_OBJECT_SYNCHRONIZATION,USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION,USO_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION,USO_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION,USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION,USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION,USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION"/>
 
@@ -1237,6 +1244,7 @@
           <BugPattern abbrev="DMI" type="DMI_HARDCODED_ABSOLUTE_FILENAME" category="STYLE"/>
           <BugPattern abbrev="DMI" type="DMI_BAD_MONTH" category="CORRECTNESS"/>
           <BugPattern abbrev="DMI" type="DMI_USELESS_SUBSTRING" category="STYLE"/>
+          <BugPattern abbrev="DMI" type="DMI_MISLEADING_SUBSTRING" category="STYLE"/>
           <BugPattern abbrev="DMI" type="DMI_CALLING_NEXT_FROM_HASNEXT" category="CORRECTNESS"/>
           <BugPattern abbrev="ST" type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" category="STYLE"/>
           <BugPattern abbrev="SWL" type="SWL_SLEEP_WITH_LOCK_HELD" category="MT_CORRECTNESS" cweid="667"/>
