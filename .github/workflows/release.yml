@@ -50,8 +50,8 @@ jobs:
         if: (github.ref_type == 'tag') && (github.event.base_ref == 'refs/heads/master')
         run: |
           gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
-          echo "sonatypeUsername=${SONATYPE_USERNAME}" >> gradle.properties
-          echo "sonatypePassword=${SONATYPE_PASSWORD}" >> gradle.properties
+          echo "ossrhUsername=${SONATYPE_USERNAME}" >> gradle.properties
+          echo "ossrhPassword=${SONATYPE_PASSWORD}" >> gradle.properties
           echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
           ./gradlew assemble publishToSonatype closeAndReleaseSonatypeStagingRepository createReleaseBody --no-daemon
         env:
@@ -65,8 +65,8 @@ jobs:
         if: ${{ !((github.ref_type == 'tag') && (github.event.base_ref == 'refs/heads/master')) }}
         run: |
           gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
-          echo "sonatypeUsername=${SONATYPE_USERNAME}" >> gradle.properties
-          echo "sonatypePassword=${SONATYPE_PASSWORD}" >> gradle.properties
+          echo "ossrhUsername=${SONATYPE_USERNAME}" >> gradle.properties
+          echo "ossrhPassword=${SONATYPE_PASSWORD}" >> gradle.properties
           echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
           ./gradlew assemble publishToSonatype createReleaseBody --no-daemon
         env:
