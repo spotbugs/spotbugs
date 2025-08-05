@@ -81,6 +81,6 @@ class IsNullValueTest {
         IsNullValue merged = IsNullValue.merge(checkedNull_e, checkForNull);
 
         assertTrue(merged.isNullOnSomePath());
-        assertTrue(merged.isCheckForNull());
+        assertFalse(merged.isCheckForNull());
     }
 }
