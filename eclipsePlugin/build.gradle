@@ -463,6 +463,9 @@ ext.signJar = { File dir ->
   if (keystorepass.isEmpty()) {
     print 'to sign eclipse plugins, set "keystorepass" project property'
     return
+  } else {
+    print 'Signing of Eclipse plugins is disabled now, see https://github.com/spotbugs/spotbugs/issues/3406'
+    return;
   }
 
   dir.traverse(type: FILES, nameFilter: ~/.*\.jar$/) {
