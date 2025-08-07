@@ -27,7 +27,7 @@ Manifest manifestSpec = java.manifest {
                'Bundle-ManifestVersion': '2'
 }
 
-TaskProvider<UpdateManifest> updateManifest = tasks.register('updateManifest') {
+TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
     // write manifests
     manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
 }
