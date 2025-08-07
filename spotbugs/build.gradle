@@ -99,7 +99,7 @@ dependencies {
 }
 
 clean {
-  delete ".libs"
+  delete ".libs", "META-INF/MANIFEST.MF"
 }
 
 project(':spotbugs-annotations') {

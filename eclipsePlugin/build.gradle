@@ -90,7 +90,7 @@ dependencies {
 }
 
 tasks.named('clean', Delete).configure {
-    delete "lib", "build"
+    delete "lib", "build", "META-INF/MANIFEST.MF", "build.properties"
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340
