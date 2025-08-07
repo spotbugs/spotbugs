@@ -121,7 +121,7 @@ createReleaseBody.configure {
       it.name
     }.forEach {
       def name = it.name.replace(".sha256", "")
-      def hash = it as String[]
+      def hash = it.text as String[]
       outputFile.get().asFile << "| ${ name } | ${hash[0]} |\n"
     }
   }
