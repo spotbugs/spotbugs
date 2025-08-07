@@ -31,7 +31,7 @@ allprojects {
   }
   dependencies {
     def junitVersion = '5.13.4'
-    compileOnly platform("org.junit:junit-bom:$junitVersion")
+    implementation platform("org.junit:junit-bom:$junitVersion")
     testImplementation platform("org.junit:junit-bom:$junitVersion")
   }
 }
