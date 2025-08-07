@@ -18,7 +18,7 @@ dependencies {
   api 'com.google.code.findbugs:jsr305:3.0.2'
 }
 
-def manifestSpec = java.manifest {
+Manifest manifestSpec = java.manifest {
   attributes 'Bundle-Name': 'spotbugs-annotations',
                'Bundle-SymbolicName': 'spotbugs-annotations',
                'Bundle-Version': project.version.replace('-', '.'),
@@ -27,13 +27,13 @@ def manifestSpec = java.manifest {
                'Bundle-ManifestVersion': '2'
 }
 
-def updateManifest = tasks.register('updateManifest') {
+tasks.register('updateManifest') {
     // write manifests
     manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
 }
 tasks.eclipse.dependsOn(updateManifest)
 
-def jar = tasks.named('jar', Jar) {
+TaskProvider<Jar> jar = tasks.named('jar', Jar) {
   // To keep backward compatibility, delete version number from jar name
   archiveFileName = "${archiveBaseName.get()}.${archiveExtension.get()}"
   manifest {

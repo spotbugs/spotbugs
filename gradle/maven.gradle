@@ -69,8 +69,8 @@ publishing {
   }
 }
 
-def signingKey = System.getenv("SIGNING_KEY")
-def signingPassword = System.getenv("SIGNING_PASSWORD")
+String signingKey = System.getenv("SIGNING_KEY")
+String signingPassword = System.getenv("SIGNING_PASSWORD")
 
 signing {
   if (signingKey != null &&
