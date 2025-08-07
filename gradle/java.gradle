@@ -23,9 +23,10 @@ tasks.withType(AbstractArchiveTask).configureEach {
   }
 }
 
-tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
-    effort = com.github.spotbugs.snom.Effort.MAX
-    reportLevel = com.github.spotbugs.snom.Confidence.HIGH
+// Use string type for SpotBugs task type to avoid class resolution issues in Groovy DSL
+tasks.withType('com.github.spotbugs.snom.SpotBugsTask').configureEach {
+    effort = 'max'
+    reportLevel = 'high'
     maxHeapSize = '1g'
     reports {
         html {
