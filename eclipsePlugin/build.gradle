@@ -296,9 +296,9 @@ def pluginStableLatestJar = tasks.register('pluginStableLatestJar', Copy) {
 
 def siteFilterTokens = [
   'PLUGIN_ID': eclipsePluginId,
-  'PLUGIN_VERSION':"${project.version}".toString(),
+  'PLUGIN_VERSION':project.version.toString(),
   'FEATURE_ID': eclipsePluginId,
-  'FEATURE_VERSION':"${project.version}".toString()
+  'FEATURE_VERSION':project.version.toString()
 ]
 
 def featureJar = tasks.register('featureJar', Zip) {
@@ -501,7 +501,7 @@ def generateP2Metadata = tasks.register('generateP2Metadata', Exec) {
   }
   inputs.file 'local.properties'
   dependsOn confirmEclipse, pluginJar, featureJar, siteXml, siteHtml
-  commandLine "${eclipseExecutable}", '-nosplash',
+  commandLine eclipseExecutable, '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${resolvedBuildDir}/site/eclipse",
     '-artifactRepository', "file:${resolvedBuildDir}/site/eclipse",
@@ -518,7 +518,7 @@ def generateCandidateP2Metadata = tasks.register('generateCandidateP2Metadata', 
   }
   inputs.file 'local.properties'
   dependsOn confirmEclipse, pluginCandidateJar, featureCandidateJar, siteCandidateXml, siteCandidateHtml
-  commandLine "${eclipseExecutable}", '-nosplash',
+  commandLine eclipseExecutable, '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${resolvedBuildDir}/site/eclipse-candidate",
     '-artifactRepository', "file:${resolvedBuildDir}/site/eclipse-candidate",
@@ -535,7 +535,7 @@ def generateP2MetadataDaily = tasks.register('generateP2MetadataDaily', Exec) {
   }
   inputs.file 'local.properties'
   dependsOn confirmEclipse, pluginDailyJar, featureDailyJar, siteDailyXml, siteDailyHtml
-  commandLine "${eclipseExecutable}", '-nosplash',
+  commandLine eclipseExecutable, '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${resolvedBuildDir}/site/eclipse-daily",
     '-artifactRepository', "file:${resolvedBuildDir}/site/eclipse-daily",
@@ -552,7 +552,7 @@ def generateP2MetadataStableLatest = tasks.register('generateP2MetadataStableLat
   }
   inputs.file 'local.properties'
   dependsOn confirmEclipse, pluginStableLatestJar, featureStableLatestJar, siteStableLatestXml, siteStableLatestHtml
-  commandLine "${eclipseExecutable}", '-nosplash',
+  commandLine eclipseExecutable, '-nosplash',
     '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
     '-metadataRepository', "file:${resolvedBuildDir}/site/eclipse-stable-latest",
     '-artifactRepository', "file:${resolvedBuildDir}/site/eclipse-stable-latest",

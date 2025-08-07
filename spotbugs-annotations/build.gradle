@@ -29,13 +29,13 @@ Manifest manifestSpec = java.manifest {
 
 TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
     // write manifests
-    manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
+    manifestSpec.writeTo(projectDir + '/META-INF/MANIFEST.MF')
 }
 tasks.eclipse.dependsOn(updateManifest)
 
 TaskProvider<Jar> jar = tasks.named('jar', Jar) {
   // To keep backward compatibility, delete version number from jar name
-  archiveFileName = "${archiveBaseName.get()}.${archiveExtension.get()}"
+  archiveFileName = archiveBaseName.get() + '.' + archiveExtension.get()
   manifest {
     attributes 'Bundle-Name': 'spotbugs-annotations',
                'Bundle-SymbolicName': 'spotbugs-annotations',

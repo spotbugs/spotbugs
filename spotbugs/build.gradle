@@ -199,7 +199,7 @@ tasks.eclipse.dependsOn(updateManifest)
 // Manually define what goes into the default jar, since it's not only main sourceset
 def jar = tasks.named('jar', Jar) {
   // To keep backward compatibility, delete version number from jar name
-  archiveFileName = "${archiveBaseName.get()}.${archiveExtension.get()}"
+  archiveFileName = archiveBaseName.get() + '.' + archiveExtension.get()
 
   from sourceSets.main.output
   from sourceSets.gui.output
