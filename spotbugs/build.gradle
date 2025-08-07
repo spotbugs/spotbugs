@@ -12,7 +12,7 @@ eclipse {
   jdt {
     sourceCompatibility = 11
     targetCompatibility = 11
-    javaRuntimeName = "JavaSE-11"
+    javaRuntimeName = 'JavaSE-11'
   }
 }
 
@@ -107,14 +107,14 @@ dependencies {
   // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
   api project(':spotbugs-annotations')
 
-  api "com.google.code.gson:gson:2.13.1"
+  api 'com.google.code.gson:gson:2.13.1'
 
   guiImplementation sourceSets.main.runtimeClasspath
   guiCompileOnly project(':spotbugs-annotations')
 }
 
 clean {
-  delete ".libs", "META-INF/MANIFEST.MF"
+  delete '.libs', 'META-INF/MANIFEST.MF'
 }
 
 project(':spotbugs-annotations') {
@@ -148,7 +148,7 @@ eclipse.classpath.file {
              entry ->
                if(entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations')
                    && !java.nio.file.Files.isDirectory(java.nio.file.Paths.get(entry.path))) {
-                   entry.path = ".libs/" + java.nio.file.Paths.get(entry.path).getFileName().toString()
+                   entry.path = '.libs/' + java.nio.file.Paths.get(entry.path).getFileName().toString()
                    entry.exported = true
                }
          }
@@ -172,10 +172,10 @@ eclipse.classpath.file {
 
 def copyLibsForEclipse = tasks.register('copyLibsForEclipse', Copy) {
     from configurations.testCompileClasspath, configurations.testRuntimeClasspath, configurations.guiRuntimeClasspath, configurations.guiCompileClasspath, configurations.logBinding
-    into ".libs"
-    include "*.jar"
-    exclude "*xml-apis*.jar"
-    exclude "*spotbugs-annotations*.jar"
+    into '.libs'
+    include '*.jar'
+    exclude '*xml-apis*.jar'
+    exclude '*spotbugs-annotations*.jar'
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
@@ -249,7 +249,7 @@ def scripts = tasks.register('scripts', Copy) {
     into 'experimental'
   }
 
-  into(layout.buildDirectory.dir("bin"))
+  into(layout.buildDirectory.dir('bin'))
   duplicatesStrategy = DuplicatesStrategy.FAIL
   filePermissions{
     unix (0755)
@@ -377,7 +377,7 @@ publishing.publications.maven {
   artifact distZip
   pom {
     name = 'SpotBugs'
-    description = "SpotBugs: Because it's easy!"
+    description = 'SpotBugs: Because it's easy!'
   }
 }
 

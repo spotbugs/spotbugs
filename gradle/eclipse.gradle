@@ -19,7 +19,7 @@ eclipse {
     
     // Link default settings to all eclipse projects, see #380
     // Don't link settings to the test cases - they contain broken code (on purpose)
-    if(!testCasesProject){
+    if (!testCasesProject) {
         linkedResource name: '.settings', type: '2', locationUri: '$%7BPARENT-1-PROJECT_LOC%7D/gradle/.settings-templates'
     }
   }

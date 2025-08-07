@@ -15,10 +15,10 @@ tasks.named('compileJava', JavaCompile).configure {
 tasks.withType(AbstractArchiveTask).configureEach {
   preserveFileTimestamps = false
   reproducibleFileOrder = true
-  dirPermissions{
+  dirPermissions {
     unix (0775)
   }
-  filePermissions{
+  filePermissions {
     unix (0664)
   }
 }
