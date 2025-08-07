@@ -15,6 +15,6 @@ tasks.withType(Javadoc).configureEach {
      splitIndex = true
      use = true
      version = true
-     tags = ["ant.task","noinspection"]
+     tags = ['ant.task','noinspection']
   }
 }
