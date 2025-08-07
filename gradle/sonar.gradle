@@ -7,7 +7,7 @@ sonar {
         property 'sonar.projectKey', 'com.github.spotbugs.spotbugs'
         property 'sonar.projectName', 'SpotBugs'
 
-        def resolvedBuildDir = project.layout.buildDirectory.asFile.get()
+        File resolvedBuildDir = project.layout.buildDirectory.asFile.get()
         property 'sonar.coverage.jacoco.xmlReportPaths', "${resolvedBuildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
     }
 }
