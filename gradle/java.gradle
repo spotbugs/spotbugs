@@ -23,12 +23,10 @@ tasks.withType(AbstractArchiveTask).configureEach {
   }
 }
 
-spotbugs {
-    effort = 'max'
-    reportLevel = 'high'
-    maxHeapSize = '1g'
-}
 tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
+    effort = com.github.spotbugs.snom.Effort.MAX
+    reportLevel = com.github.spotbugs.snom.Confidence.HIGH
+    maxHeapSize = '1g'
     reports {
         html {
             required = true
