@@ -33,10 +33,6 @@ tasks.named('compileJava', JavaCompile).configure {
   options.release = 11
 }
 
-artifacts {
-  archives sourcesJar
-}
-
 tasks.named('jacocoTestReport', JacocoReport).configure {
   dependsOn('unstableTest')
   additionalSourceDirs.setFrom files(project(':spotbugs').sourceSets.main.java.srcDirs)

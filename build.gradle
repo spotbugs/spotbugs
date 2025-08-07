@@ -31,7 +31,7 @@ allprojects {
   }
   dependencies {
     def junitVersion = '5.13.4'
-    compileOnly platform("org.junit:junit-bom:$junitVersion")
+    implementation platform("org.junit:junit-bom:$junitVersion")
     testImplementation platform("org.junit:junit-bom:$junitVersion")
   }
 }
@@ -121,7 +121,7 @@ createReleaseBody.configure {
       it.name
     }.forEach {
       def name = it.name.replace(".sha256", "")
-      def hash = it as String[]
+      def hash = it.text as String[]
       outputFile.get().asFile << "| ${ name } | ${hash[0]} |\n"
     }
   }
