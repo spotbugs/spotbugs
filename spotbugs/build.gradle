@@ -377,7 +377,7 @@ publishing.publications.maven {
   artifact distZip
   pom {
     name = 'SpotBugs'
-    description = 'SpotBugs: Because it's easy!'
+    description = 'SpotBugs: Because it is easy!'
   }
 }
 
