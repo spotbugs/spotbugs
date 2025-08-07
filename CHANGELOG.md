@@ -49,6 +49,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Inline access method for method. ([#3481](https://github.com/spotbugs/spotbugs/issues/3481))
 - Added `DMI_MISLEADING_SUBSTRING` for calling `subString(0)` on a StringBuffer/StringBuilder ([#1928](https://github.com/spotbugs/spotbugs/issues/1928))
 
+### Signing
+- Signing for Eclipse plugin has been removed at the current time due to signing keys being expired.  The expired key produced a warning during install, the same is true without signing.
+
 ## 4.9.3 - 2025-03-14
 ### Added
 - Introduced `UselessSuppressionDetector` to report the useless annotations instead of `NoteSuppressedWarnings` ([#3348](https://github.com/spotbugs/spotbugs/issues/3348))
