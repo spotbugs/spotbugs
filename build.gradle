@@ -110,7 +110,7 @@ createReleaseBody.configure {
     outputAsFile << """SpotBugs ${version}
 
 ### CHANGELOG
-- https://github.com/spotbugs/spotbugs/blob/${project.version}/CHANGELOG.md
+- https://github.com/spotbugs/spotbugs/blob/${version}/CHANGELOG.md
 
 ### CHECKSUM
 | file | checksum (sha256) |
