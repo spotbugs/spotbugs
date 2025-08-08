@@ -497,7 +497,7 @@ TaskProvider<Task> confirmEclipse = tasks.register('confirmEclipse') {
 
 TaskProvider<Exec> generateP2Metadata = tasks.register('generateP2Metadata', Exec) {
   doFirst {
-    Directory eclipseSiteDir = layout.buildDirectory.dir('site/eclipse')
+    Provider<Directory> eclipseSiteDir = layout.buildDirectory.dir('site/eclipse')
     File artifactsXml = eclipseSiteDir.map { it.file('artifacts.xml') }.get().asFile
     File contentXml = eclipseSiteDir.map { it.file('content.xml') }.get().asFile
     delete artifactsXml
@@ -516,7 +516,7 @@ TaskProvider<Exec> generateP2Metadata = tasks.register('generateP2Metadata', Exe
 
 TaskProvider<Exec> generateCandidateP2Metadata = tasks.register('generateCandidateP2Metadata', Exec) {
   doFirst {
-    Directory eclipseSiteCandidateDir = layout.buildDirectory.dir('site/eclipse-candidate')
+    Provider<Directory> eclipseSiteCandidateDir = layout.buildDirectory.dir('site/eclipse-candidate')
     // Avoid project.delete and project.file in task action (Gradle 10+)
     File artifactsXml = eclipseSiteCandidateDir.map { it.file('artifacts.xml') }.get().asFile
     File contentXml = eclipseSiteCandidateDir.map { it.file('content.xml') }.get().asFile
@@ -536,7 +536,7 @@ TaskProvider<Exec> generateCandidateP2Metadata = tasks.register('generateCandida
 
 TaskProvider<Exec> generateP2MetadataDaily = tasks.register('generateP2MetadataDaily', Exec) {
   doFirst {
-    Directory eclipseSiteDailyDir = layout.buildDirectory.dir('site/eclipse-daily')
+    Provider<Directory> eclipseSiteDailyDir = layout.buildDirectory.dir('site/eclipse-daily')
     File artifactsXml = eclipseSiteDailyDir.map { it.file('artifacts.xml') }.get().asFile
     File contentXml = eclipseSiteDailyDir.map { it.file('content.xml') }.get().asFile
     delete artifactsXml
@@ -555,7 +555,7 @@ TaskProvider<Exec> generateP2MetadataDaily = tasks.register('generateP2MetadataD
 
 TaskProvider<Exec> generateP2MetadataStableLatest = tasks.register('generateP2MetadataStableLatest', Exec) {
   doFirst {
-    Directory eclipseSiteStableLatestDir = layout.buildDirectory.dir('site/eclipse-stable-latest')
+    Provider<Directory> eclipseSiteStableLatestDir = layout.buildDirectory.dir('site/eclipse-stable-latest')
     File artifactsXml = eclipseSiteStableLatestDir.map { it.file('artifacts.xml') }.get().asFile
     File contentXml = eclipseSiteStableLatestDir.map { it.file('content.xml') }.get().asFile
     delete artifactsXml
