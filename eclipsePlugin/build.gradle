@@ -66,15 +66,15 @@ File findEclipseExecutable() {
   localProps.load(new FileInputStream("$projectDir/local.properties"))
   File eclipseRootDir = new File(localProps.getProperty('eclipseRoot.dir'))
   // Eclipse 4.5+ uses a different directory layout under macOS. Try to detect this first.
-  OperatingSystem os = org.gradle.nativeplatform.platform.OperatingSystem.current()
+  String os = System.getProperty('os.name').toLowerCase(Locale.ROOT)
   File eclipseExecutable
-  if(os.isMacOsX()){
+  if (os.contains('mac')) {
     eclipseExecutable = new File(eclipseRootDir, 'Contents/MacOS/eclipse')
     if (!eclipseExecutable.exists()) {
       // Fall back to non-macOS directory layout.
       eclipseExecutable = new File(eclipseRootDir, 'eclipse')
     }
-  } else if (os.isWindows()) {
+  } else if (os.contains('win')) {
     eclipseExecutable = new File(eclipseRootDir, 'eclipse.exe')
   } else {
     eclipseExecutable = new File(eclipseRootDir, 'eclipse')
