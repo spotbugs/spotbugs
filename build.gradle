@@ -30,7 +30,7 @@ allprojects {
     mavenCentral()
   }
   dependencies {
-    def junitVersion = '5.13.4'
+    String junitVersion = '5.13.4'
     implementation platform("org.junit:junit-bom:$junitVersion")
     testImplementation platform("org.junit:junit-bom:$junitVersion")
   }
@@ -39,7 +39,7 @@ allprojects {
 // https://discuss.gradle.org/t/merge-jacoco-coverage-reports-for-multiproject-setups/12100/6
 tasks.register('jacocoRootReport', JacocoReport.class) {
   description = 'Merge all coverage reports before submit to SonarQube'
-  def reportTasks = project.getTasksByName("jacocoTestReport", true).minus(rootProject.jacocoTestReport)
+  Set<JacocoReport> reportTasks = project.getTasksByName('jacocoTestReport', true).minus(rootProject.jacocoTestReport)
   dependsOn reportTasks
 
   executionData.setFrom reportTasks.executionData
@@ -59,14 +59,14 @@ tasks.register('jacocoRootReport', JacocoReport.class) {
 
 import org.gradle.crypto.checksum.Checksum
 
-def createReleaseBody = tasks.register("createReleaseBody")
-def createChecksums = tasks.register("createChecksums", Checksum)
-def publishTask = tasks.findByName("publish")
+TaskProvider<Task> createReleaseBody = tasks.register('createReleaseBody')
+TaskProvider<Checksum> createChecksums = tasks.register('createChecksums', Checksum)
+TaskProvider<Task> publishTask = tasks.findByName('publish')
 if (publishTask == null) {
-  publishTask = tasks.findByName("publishToMavenLocal")
+  publishTask = tasks.findByName('publishToMavenLocal')
 }
-def outputFile = layout.buildDirectory.file("release.md")
-def inputFile =  subprojects.collect {
+Provider<RegularFile> outputFile = layout.buildDirectory.file('release.md')
+List<File> inputFile = subprojects.collect {
   it.hasProperty('publishing') ? it.publishing.publications.maven.artifacts : []
 }.flatten().collect {
   it.file
@@ -116,14 +116,12 @@ createReleaseBody.configure {
 | file | checksum (sha256) |
 | ---- | ----------------- |
 """
-    fileTree(layout.buildDirectory.dir("checksums")).matching {
-      include "*.sha256"
-    }.sort {
-      it.name
-    }.forEach {
-      def name = it.name.replace(".sha256", "")
-      def hash = it.text as String[]
-      outputFile.get().asFile << "| ${ name } | ${hash[0]} |\n"
+    fileTree(layout.buildDirectory.dir('checksums')).matching {
+      include '*.sha256'
+    }.sort { File a, File b -> a.name <=> b.name }.forEach {
+      String name = it.name.replace('.sha256', '')
+      String[] hash = it.text as String[]
+      outputFile.get().asFile << "| ${name} | ${hash[0]} |\n"
     }
   }
 }
