@@ -63,9 +63,7 @@ jobs:
       #  if: github.repository_owner == 'spotbugs' && matrix.os != 'windows-latest'
       #  run: |
       #    git fetch --no-tags https://$GITHUB_TOKEN@github.com/spotbugs/spotbugs.git +refs/heads/master:refs/remotes/origin/master
-      #    if [ "$GPG_SECRET_PASSPHRASE" != "" ]; then
-      #      gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
-      #    fi
+      #    gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
       #  env:
       #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       #    GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
@@ -74,9 +72,7 @@ jobs:
         if: github.repository_owner == 'spotbugs' && matrix.os == 'windows-latest'
         run: |
           git fetch --no-tags https://$GITHUB_TOKEN@github.com/spotbugs/spotbugs.git +refs/heads/master:refs/remotes/origin/master
-          if ( "$GPG_SECRET_PASSPHRASE" -ne "" ) {
-            gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
-          }
+          gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
