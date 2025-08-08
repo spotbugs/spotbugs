@@ -84,14 +84,12 @@ jobs:
       - name: Build with Sonar JDK ${{ matrix.java }}, ${{ matrix.os }}
         # https://community.sonarsource.com/t/sonarcloud-now-not-updating-github-pr-and-checks/6595/17
         if: matrix.java == '21'
-        run: |
-          ./gradlew spotlessCheck build smoketest ${SONAR_LOGIN:+sonar} --no-daemon "-Dsonar.token=$SONAR_LOGIN" --scan
+        run: ./gradlew spotlessCheck build smoketest ${SONAR_LOGIN:+sonar} --no-daemon "-Dsonar.token=$SONAR_LOGIN" --scan
         env:
           SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
       - name: Build JDK ${{ matrix.java }}, ${{ matrix.os }}
         # https://community.sonarsource.com/t/sonarcloud-now-not-updating-github-pr-and-checks/6595/17
         if: matrix.java != '21'
-        run: |
-          ./gradlew spotlessCheck build smoketest --no-daemon --scan
+        run: ./gradlew spotlessCheck build smoketest --no-daemon --scan
         env:
           SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
