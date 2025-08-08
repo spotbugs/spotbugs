@@ -21,22 +21,28 @@ String readLastCommitHash() {
   return org.ajoberstar.grgit.Grgit.open(dir: rootDir).head().abbreviatedId
 }
 
-if (version.endsWith('-SNAPSHOT')) {
-  // eclipse doesn't like the `-SNAPSHOT`, so we timestamp uniquely
-  version = version - '-SNAPSHOT' + '.' + new Date().format('yyyyMMddHHmm') + '-' + readLastCommitHash()
-} else if (version.contains('-RC')) {
-  // eclipse doesn't like the `-RC`, so we timestamp uniquely
-  version = version.substring(0, version.lastIndexOf('-RC')) + '.' + new Date().format('yyyyMMddHHmm') + '-' + readLastCommitHash()
-} else if (version.contains('-beta')) {
-  // eclipse doesn't like the `-beta`, so we timestamp uniquely
-  version = version.substring(0, version.lastIndexOf('-beta')) + '.' + new Date().format('yyyyMMddHHmm') + '-' + readLastCommitHash()
-} else {
-  // A release build version like 3.0.0 without qualifier will always be smaller
-  // then nightly build 3.0.0.20171023-1508734123102, but to update from nightlies
-  // we must give Eclipse a higher version number.
-  // The "r" makes the release version to be always higher then nightly builds
-  version = version + '.r' + new Date().format('yyyyMMddHHmm') + '-' + readLastCommitHash()
+String computeVersion(String baseVersion) {
+    String now = new Date().format('yyyyMMddHHmm')
+    String hash = readLastCommitHash()
+    if (baseVersion.endsWith('-SNAPSHOT')) {
+        // eclipse doesn't like the `-SNAPSHOT`, so we timestamp uniquely
+        return baseVersion - '-SNAPSHOT' + ".${now}-${hash}"
+    } else if (baseVersion.contains('-RC')) {
+        // eclipse doesn't like the `-RC`, so we timestamp uniquely
+        return baseVersion.substring(0, baseVersion.lastIndexOf('-RC')) + ".${now}-${hash}"
+    } else if (baseVersion.contains('-beta')) {
+        // eclipse doesn't like the `-beta`, so we timestamp uniquely
+        return baseVersion.substring(0, baseVersion.lastIndexOf('-beta')) + ".${now}-${hash}"
+    } else {
+        // A release build version like 3.0.0 without qualifier will always be smaller
+        // then nightly build 3.0.0.20171023-1508734123102, but to update from nightlies
+        // we must give Eclipse a higher version number.
+        // The "r" makes the release version to be always higher then nightly builds
+        return baseVersion + ".r${now}-${hash}"
+    }
 }
+
+version = computeVersion(version)
 
 sourceSets {
   main {
@@ -60,7 +66,7 @@ File findEclipseExecutable() {
   localProps.load(new FileInputStream("$projectDir/local.properties"))
   File eclipseRootDir = new File(localProps.getProperty('eclipseRoot.dir'))
   // Eclipse 4.5+ uses a different directory layout under macOS. Try to detect this first.
-  OperatingSystem os = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.currentOperatingSystem
+  OperatingSystem os = org.gradle.nativeplatform.platform.OperatingSystem.current()
   File eclipseExecutable
   if(os.isMacOsX()){
     eclipseExecutable = new File(eclipseRootDir, 'Contents/MacOS/eclipse')
@@ -90,7 +96,7 @@ dependencies {
 }
 
 tasks.named('clean', Delete).configure {
-    delete 'lib', 'build', 'META-INF/MANIFEST.MF', 'build.properties'
+  delete 'lib', 'build', 'META-INF/MANIFEST.MF', 'build.properties'
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340
@@ -108,11 +114,11 @@ tasks.named('javadoc', Javadoc).configure {
 }
 
 TaskProvider<Copy> copyLibsForEclipse = tasks.register('copyLibsForEclipse', Copy) {
-    from (configurations.runtimeClasspath) {
-      include '*.jar'
-      exclude 'Saxon*.jar'
-    }
-    into 'lib'
+  from (configurations.runtimeClasspath) {
+    include '*.jar'
+    exclude 'Saxon*.jar'
+  }
+  into 'lib'
 }
 
 File resolvedBuildDir = project.layout.buildDirectory.asFile.get()
