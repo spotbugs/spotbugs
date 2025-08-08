@@ -49,7 +49,8 @@ jobs:
       - name: Build on tag
         if: (github.ref_type == 'tag') && (github.event.base_ref == 'refs/heads/master')
         run: |
-          gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
+          # Disable gpg signing on *nix for time being until we get new keys established
+          # gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
           ./gradlew assemble publishToSonatype closeAndReleaseSonatypeStagingRepository createReleaseBody --no-daemon
         env:
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
@@ -61,7 +62,8 @@ jobs:
       - name: Build otherwise
         if: ${{ !((github.ref_type == 'tag') && (github.event.base_ref == 'refs/heads/master')) }}
         run: |
-          gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
+          # Disable gpg signing on *nix for time being until we get new keys established
+          # gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
           ./gradlew assemble publishToSonatype createReleaseBody --no-daemon
         env:
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
