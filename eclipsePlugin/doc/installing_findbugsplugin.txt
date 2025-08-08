@@ -1,60 +1,63 @@
 Here is how to install and use the Find Bugs Eclipse Plug-in:
 
-NOTE: Since FindBugs requires a JDK 1.8.x to run on, you MUST ENSURE that you
-start Eclipse using a JRE/JDK 1.8.x (or later) as well.
+NOTE: Since FindBugs requires a JDK 11.0.x to run on, you MUST ENSURE that you
+start Eclipse using a JRE/JDK 11.0.x (or later) as well.
 
 Install the plug-in
 ===================================================
 1) Extract the contents of the file
-   - edu.umd.cs.findbugs.plugin.eclipse_4.8.0.202310010614-b78d23d.zip
+   - edu.umd.cs.findbugs.plugin.eclipse_4.9.4.r202508080258-e36f44a.zip
    into the [plugins] folder of your Eclipse installation. This should result in
    the following directory structure:
    <eclipse-dir>
    |
    +- plugins
       |
-      +- edu.umd.cs.findbugs.plugin.eclipse_1.1.0.v20060908
+      +- edu.umd.cs.findbugs.plugin.eclipse_4.9.4.r202508080258-e36f44a
          |
          +- plugin.xml
+            +- doc
             +- icons
             +- lib
             |  |
-            |  +- annotations.jar
-            |     asm-9.6.jar
-            |     asm-analysis-9.6.jar
-            |     asm-commons-9.6.jar
-            |     asm-tree-9.6.jar
-            |     asm-util-9.6.jar
-            |     bcel-6.6.1.jar
-            |     commons-codec-1.15.jar
-            |     commons-lang3-3.13.0.jar
-            |     commons-text-1.1.10.jar
-            |     dom4j-2.1.4.jar
-            |     gson-2.10.1.jar
-            |     httpclient5-5.1.3.jar
-            |     httpcore5-5.1.3.jar
-            |     httpcore5-h2-5.1.3.jar
+            |  +- asm-9.8.jar
+            |     asm-analysis-9.8.jar
+            |     asm-commons-9.8.jar
+            |     asm-tree-9.8.jar
+            |     asm-util-9.8.jar
+            |     bcel-6.10.jar
+            |     commons-lang3-3.18.0.jar
+            |     commons-text-1.14.0.jar
+            |     dom4j-2.2.0.jar
+            |     error_prone_annotatoins-2.38.0.jar
+            |     gson-2.13.1.jar
             |     jaxen-2.0.0.jar
             |     jcip-annotations-1.0-1.jar
             |     jsr305-3.0.2.jar
-            |     log4j-api-2.20.0.jar
-            |     log4j-core-2.20.0.jar
-            |     slf4j-api-2.0.9.jar
+            |     log4j-api-2.25.1.jar
+            |     log4j-core-2.25.1.jar
+            |     slf4j-api-2.0.17.jar
             |     spotbugs.jar
             |     spotbugs-annotations.jar
-            |     xmlresolver-5.2.0.jar
-            |     xmlresolver-5.2.0-data.jar
+            |     xmlresolver-5.3.3.jar
+            |     xmlresolver-5.3.3-data.jar
             |
             +- META-INF
             |  |
             |  +- MANIFEST.MF
             |
+            +- OSGI-INF
             +- plugin
-            findbugs-plugin.jar
-            plugin.properties
+            .options
+            about.html
+            about.ini
+            about.properties
+            FindBugs.png
             plugin.xml
             RELEASENEOTES
             smallBuggy.png
+            spotbugs.png
+            spotbugs-plugin.jar
 
 
 2) (Re-)start Eclipse
