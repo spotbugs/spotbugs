@@ -55,7 +55,7 @@ jobs:
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
           ORG_GRADLE_PROJECT_ossrhUsername: ${{ secrets.OSSRH_USERNAME }}
           ORG_GRADLE_PROJECT_ossrhPassword: ${{ secrets.OSSRH_PASSWORD }}
-          ORG_GRADLE_PROEJCT_keystorepass: ${{ secrets.KEYSTORE_PASS }}
+          ORG_GRADLE_PROJECT_keystorepass: ${{ secrets.KEYSTORE_PASS }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
       - name: Build otherwise

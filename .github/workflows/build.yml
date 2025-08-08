@@ -63,7 +63,6 @@ jobs:
       #- name: Pre-build setup
       #  if: matrix.os != 'windows-latest'
       #  run: |
-      #    echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
       #    git fetch --no-tags https://$GITHUB_TOKEN@github.com/spotbugs/spotbugs.git +refs/heads/master:refs/remotes/origin/master
       #    if [ "$GPG_SECRET_PASSPHRASE" != "" ]; then
       #      gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
@@ -71,11 +70,10 @@ jobs:
       #  env:
       #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       #    GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
-      #    KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
+      #    ORG_GRADLE_PROJECT_keystorepass: ${{ secrets.KEYSTORE_PASS }}
       - name: Pre-build setup Windows
         if: matrix.os == 'windows-latest'
         run: |
-          echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
           git fetch --no-tags https://$GITHUB_TOKEN@github.com/spotbugs/spotbugs.git +refs/heads/master:refs/remotes/origin/master
           if ( "$GPG_SECRET_PASSPHRASE" -ne "" ) {
             gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
@@ -83,7 +81,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
-          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
+          ORG_GRADLE_PROJECT_keystorepass: ${{ secrets.KEYSTORE_PASS }}
       - name: Build with Sonar JDK ${{ matrix.java }}, ${{ matrix.os }}
         # https://community.sonarsource.com/t/sonarcloud-now-not-updating-github-pr-and-checks/6595/17
         if: matrix.java == '21'
