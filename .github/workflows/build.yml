@@ -55,7 +55,8 @@ jobs:
         run: |
           curl --continue-at - --create-dirs --location 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-macosx-cocoa-aarch64.dmg&mirror_id=1' --output eclipse-sdk/eclipse.dmg
           hdiutil attach eclipse-sdk/eclipse.dmg
-          cp --recursive /Volumes/Eclipse/Eclipse.app /Applications/
+          # Mac uses BSD cp which doesn't have --recursive therefore -R is required
+          cp -R /Volumes/Eclipse/Eclipse.app /Applications/
           hdiutil detach /Volumes/Eclipse
           echo "eclipseRoot.dir=/Applications/Eclipse.app" | tee eclipsePlugin/local.properties
       # Disable gpg signing on *nix for time being until we get new keys established, checks will be on windows only for now
