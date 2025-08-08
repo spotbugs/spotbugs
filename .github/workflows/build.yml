@@ -60,7 +60,7 @@ jobs:
           echo "eclipseRoot.dir=/Applications/Eclipse.app" | tee eclipsePlugin/local.properties
       # Disable gpg signing on *nix for time being until we get new keys established, checks will be on windows only for now
       #- name: Pre-build setup
-      #  if: matrix.os != 'windows-latest'
+      #  if: github.repository_owner == 'spotbugs' && matrix.os != 'windows-latest'
       #  run: |
       #    git fetch --no-tags https://$GITHUB_TOKEN@github.com/spotbugs/spotbugs.git +refs/heads/master:refs/remotes/origin/master
       #    if [ "$GPG_SECRET_PASSPHRASE" != "" ]; then
@@ -71,7 +71,7 @@ jobs:
       #    GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
       #    ORG_GRADLE_PROJECT_keystorepass: ${{ secrets.KEYSTORE_PASS }}
       - name: Pre-build setup Windows
-        if: matrix.os == 'windows-latest'
+        if: github.repository_owner == 'spotbugs' && matrix.os == 'windows-latest'
         run: |
           git fetch --no-tags https://$GITHUB_TOKEN@github.com/spotbugs/spotbugs.git +refs/heads/master:refs/remotes/origin/master
           if ( "$GPG_SECRET_PASSPHRASE" -ne "" ) {
