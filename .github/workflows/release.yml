@@ -104,9 +104,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: (github.ref_type == 'tag')
+        shell: bash
         run: |
           set -x
-          curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
+          curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.2
           assets=("-a" "./eclipsePlugin/build/distributions/eclipsePlugin.zip")
           for asset in ./spotbugs/build/distributions/*; do
             assets+=("-a" "$asset")
@@ -116,5 +117,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: (github.ref_type == 'tag') && (github.event.base_ref == 'refs/heads/master')
+        shell: bash
         run: |
           bin/hub release edit ${{ github.ref_name }} --draft=false
