@@ -7,8 +7,9 @@ sonar {
         property 'sonar.projectKey', 'com.github.spotbugs.spotbugs'
         property 'sonar.projectName', 'SpotBugs'
 
-        File resolvedBuildDir = project.layout.buildDirectory.asFile.get()
-        property 'sonar.coverage.jacoco.xmlReportPaths', "${resolvedBuildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+        property 'sonar.coverage.jacoco.xmlReportPaths', layout.buildDirectory.map { dir ->
+             "${dir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+        }
     }
 }
 
