@@ -131,11 +131,12 @@ def updateManifest = tasks.register('updateManifest') {
   outputs.file "$projectDir/build.properties"
 
   dependsOn ':spotbugs:updateManifest', copyLibsForEclipse
+  String version = project.version
   doLast {
     def manifestSpec = java.manifest {
       from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
       attributes 'Bundle-SymbolicName': "$eclipsePluginId; singleton:=true",
-                 'Bundle-Version': project.version,
+                 'Bundle-Version': version,
                  'Bundle-ClassPath': '.,spotbugs-plugin.jar,' + fileTree(dir: 'lib').collect {
                       projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
     }
@@ -143,7 +144,7 @@ def updateManifest = tasks.register('updateManifest') {
     def distManifestSpec = java.manifest {
       from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
       attributes 'Bundle-SymbolicName': "$eclipsePluginId; singleton:=true",
-                 'Bundle-Version': project.version,
+                 'Bundle-Version': version,
                  'Bundle-ClassPath': 'spotbugs-plugin.jar,' + fileTree(dir: 'lib').collect {
                         projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
     }
