@@ -49,7 +49,7 @@ jobs:
       - name: Build on tag
         if: (github.ref_type == 'tag') && (github.event.base_ref == 'refs/heads/master')
         run: |
-          # Disable gpg signing on *nix for time being until we get new keys established
+          # Disable gpg signing for time being until we get new keys established
           # gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
           ./gradlew assemble publishToSonatype closeAndReleaseSonatypeStagingRepository createReleaseBody --no-daemon
         env:
@@ -62,7 +62,7 @@ jobs:
       - name: Build otherwise
         if: ${{ !((github.ref_type == 'tag') && (github.event.base_ref == 'refs/heads/master')) }}
         run: |
-          # Disable gpg signing on *nix for time being until we get new keys established
+          # Disable gpg signing on for time being until we get new keys established
           # gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
           ./gradlew assemble publishToSonatype createReleaseBody --no-daemon
         env:
