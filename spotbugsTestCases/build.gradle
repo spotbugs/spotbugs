@@ -132,5 +132,5 @@ tasks.named('classes').configure {
 sonar {
   // this project should not be analyzed with sonarqube
   // as it is test data, not real code
-  skipProject true
+  skipProject = true
 }
