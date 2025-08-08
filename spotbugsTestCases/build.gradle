@@ -1,3 +1,5 @@
+import org.gradle.api.artifacts.ConfigurationContainer
+
 plugins {
   id 'groovy'
 }
@@ -47,11 +49,12 @@ project.tasks.getByName('spotbugsMain').enabled = false
 tasks.register('exportClasspath') {
   File dependenciesFile = new File('spotbugsTestCases/build/runtime-classpath.txt')
 
+  ConfigurationContainer configurations = project.configurations
   doLast {
     dependenciesFile.delete()
     dependenciesFile.getParentFile().mkdirs();
-    
-    project.configurations.getByName('runtimeClasspath').resolvedConfiguration.resolvedArtifacts.each {
+
+    configurations.getByName('runtimeClasspath').resolvedConfiguration.resolvedArtifacts.each {
       dependenciesFile << it.file
       dependenciesFile << '\n'
     }
