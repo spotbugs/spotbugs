@@ -1,11 +1,11 @@
 tasks.withType(Test) {
-    testLogging {
-        events 'FAILED'
-        exceptionFormat = 'full'
-    }
-    doFirst {
-      jvmArgs += [
-        '--add-opens', 'java.base/java.lang=ALL-UNNAMED'
-      ]
-    }
+  testLogging {
+    events 'FAILED'
+    exceptionFormat = 'full'
+  }
+  doFirst {
+    jvmArgs += [
+      '--add-opens', 'java.base/java.lang=ALL-UNNAMED'
+    ]
+  }
 }

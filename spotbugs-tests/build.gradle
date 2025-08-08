@@ -20,7 +20,7 @@ dependencies {
   implementation libs.log4j.core
   implementation libs.log4j.slf4j2.impl
   implementation 'com.google.errorprone:error_prone_annotations:2.41.0'
-  implementation files(project(":spotbugs").sourceSets.gui.output)
+  implementation files(project(':spotbugs').sourceSets.gui.output)
   testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

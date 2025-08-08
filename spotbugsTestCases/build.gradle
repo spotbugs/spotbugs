@@ -92,25 +92,25 @@ tasks.named('javadoc', Javadoc).configure {
 }
 
 TaskProvider<JavaCompile> classesJava8 = tasks.register('classesJava8', JavaCompile) {
-  destinationDirectory.set(layout.buildDirectory.dir("classes/java/java8"))
+  destinationDirectory.set(layout.buildDirectory.dir('classes/java/java8'))
   classpath = sourceSets.main.compileClasspath
   source = file('src/java8')
 }
 
 TaskProvider<JavaCompile> classesJava11 = tasks.register('classesJava11', JavaCompile) {
-  destinationDirectory.set(layout.buildDirectory.dir("classes/java/java11"))
+  destinationDirectory.set(layout.buildDirectory.dir('classes/java/java11'))
   classpath = sourceSets.main.compileClasspath
   source = file('src/java11')
 }
 
 TaskProvider<JavaCompile> classesJava17 = tasks.register('classesJava17', JavaCompile) {
-  destinationDirectory.set(layout.buildDirectory.dir("classes/java/java17"))
+  destinationDirectory.set(layout.buildDirectory.dir('classes/java/java17'))
   classpath = sourceSets.main.compileClasspath
   source = file('src/java17')
 }
 
 TaskProvider<JavaCompile> classesJava21 = tasks.register('classesJava21', JavaCompile) {
-  destinationDirectory.set(layout.buildDirectory.dir("classes/java/java21"))
+  destinationDirectory.set(layout.buildDirectory.dir('classes/java/java21'))
   classpath = sourceSets.main.compileClasspath
   source = file('src/java21')
 }
@@ -122,12 +122,12 @@ tasks.named('classes').configure {
   if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_17)) {
     dependsOn classesJava17
   } else {
-    println "skip tests for Java 17 features"
+    println 'skip tests for Java 17 features'
   }
   if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_21)) {
     dependsOn classesJava21
   } else {
-    println "skip tests for Java 21 features"
+    println 'skip tests for Java 21 features'
   }
   dependsOn exportClasspath
 }

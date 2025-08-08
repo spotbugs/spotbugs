@@ -12,7 +12,7 @@ apply from: "$rootDir/gradle/java.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
 
 subprojects {
-  apply plugin: "constraints"
+  apply plugin: 'constraints'
   apply from: "$rootDir/gradle/java.gradle"
   apply from: "$rootDir/gradle/eclipse.gradle"
   apply from: "$rootDir/gradle/idea.gradle"
