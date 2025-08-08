@@ -56,7 +56,9 @@ tasks.register('exportClasspath') {
       dependenciesFile << '\n'
     }
   }
-  println dependenciesFile
+  doLast {
+      println dependenciesFile
+  }
 }
 
 tasks.withType(JavaCompile).configureEach {
