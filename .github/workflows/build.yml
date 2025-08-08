@@ -59,15 +59,9 @@ jobs:
           cp -r /Volumes/Eclipse/Eclipse.app /Applications/
           hdiutil detach /Volumes/Eclipse
           echo "eclipseRoot.dir=/Applications/Eclipse.app" | tee eclipsePlugin/local.properties
-      # Disable gpg signing on *nix for time being until we get new keys established
-      #- name: Pre-build setup
-      #  if: github.repository_owner == 'spotbugs' && matrix.os != 'windows-latest'
-      #  run: gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
-      #  env:
-      #    GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
       # Disable gpg signing on windows for time being until we get new keys established
-      #- name: Pre-build setup Windows
-      #  if: github.repository_owner == 'spotbugs' && matrix.os == 'windows-latest'
+      #- name: Pre-build setup
+      #  if: github.repository_owner == 'spotbugs'
       #  run: gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
       #  env:
       #    GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
