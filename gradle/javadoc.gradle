@@ -1,20 +1,20 @@
 tasks.withType(Javadoc).configureEach {
   // Default configuration for all javadoc tasks
   options.with {
-     memberLevel = JavadocMemberLevel.PROTECTED
-     author = true
-     docTitle = 'SpotBugs API Documentation'
-     header = "<b>SpotBugs ${project.version}</b>"
-     windowTitle = "SpotBugs ${project.version} API"
-     bottom = '<font size="-1"><a href="http://github.com/spotbugs/" target="_parent">SpotBugs</a> is licensed under the LGPL.</font>'
-     noDeprecated = false
-     noDeprecatedList = false
-     noIndex = false
-     noNavBar = false
-     noTree = false
-     splitIndex = true
-     use = true
-     version = true
-     tags = ['ant.task','noinspection']
+    memberLevel = JavadocMemberLevel.PROTECTED
+    author = true
+    docTitle = 'SpotBugs API Documentation'
+    header = "<b>SpotBugs ${project.version}</b>"
+    windowTitle = "SpotBugs ${project.version} API"
+    bottom = '<font size="-1"><a href="http://github.com/spotbugs/" target="_parent">SpotBugs</a> is licensed under the LGPL.</font>'
+    noDeprecated = false
+    noDeprecatedList = false
+    noIndex = false
+    noNavBar = false
+    noTree = false
+    splitIndex = true
+    use = true
+    version = true
+    tags = ['ant.task','noinspection']
   }
 }

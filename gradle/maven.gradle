@@ -1,7 +1,7 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-ext.isReleaseVersion = !version.endsWith("SNAPSHOT") && /* for Eclipse plugin */ !version.contains("-SNAPSHOT.")
+ext.isReleaseVersion = !version.endsWith('SNAPSHOT') && /* for Eclipse plugin */ !version.contains('-SNAPSHOT.')
 
 publishing {
   publications {
@@ -69,14 +69,11 @@ publishing {
   }
 }
 
-String signingKey = System.getenv("SIGNING_KEY")
-String signingPassword = System.getenv("SIGNING_PASSWORD")
+String signingKey = System.getenv('SIGNING_KEY')
+String signingPassword = System.getenv('SIGNING_PASSWORD')
 
 signing {
-  if (signingKey != null &&
-          signingPassword != null &&
-          !signingKey.isEmpty() &&
-          !signingPassword.isEmpty()) {
+  if (signingKey != null && signingPassword != null && !signingKey.isEmpty() && !signingPassword.isEmpty()) {
     useInMemoryPgpKeys(signingKey, signingPassword)
     sign publishing.publications.maven
   } else {

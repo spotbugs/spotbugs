@@ -1,5 +1,5 @@
 plugins {
-  id "eclipse-convention"
+  id 'eclipse-convention'
 }
 apply from: "$rootDir/gradle/checkstyle.gradle"
 
