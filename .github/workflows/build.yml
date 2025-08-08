@@ -62,19 +62,13 @@ jobs:
       # Disable gpg signing on *nix for time being until we get new keys established, checks will be on windows only for now
       #- name: Pre-build setup
       #  if: github.repository_owner == 'spotbugs' && matrix.os != 'windows-latest'
-      #  run: |
-      #    git fetch --no-tags https://$GITHUB_TOKEN@github.com/spotbugs/spotbugs.git +refs/heads/master:refs/remotes/origin/master
-      #    gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
+      #  run: gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
       #  env:
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       #    GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
       - name: Pre-build setup Windows
         if: github.repository_owner == 'spotbugs' && matrix.os == 'windows-latest'
-        run: |
-          git fetch --no-tags https://$GITHUB_TOKEN@github.com/spotbugs/spotbugs.git +refs/heads/master:refs/remotes/origin/master
-          gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
+        run: gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
       - name: Build with Sonar JDK ${{ matrix.java }}, ${{ matrix.os }}
         # https://community.sonarsource.com/t/sonarcloud-now-not-updating-github-pr-and-checks/6595/17
