@@ -13,8 +13,16 @@ dependencies {
   testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+// This disables hundreds of javadoc warnings on missing tags etc, see #340
 tasks.named('javadoc', Javadoc).configure {
   options.with {
+    // This is supposed to enable everything except "missing" but doesn't work with gradle
+    // See https://docs.oracle.com/en/java/javase/11/tools/javadoc.html
+    addBooleanOption('Xdoclint:all,-missing', true)
+
+    // TODO remove command and warning below if the doclint can be properly configured
+    addStringOption('Xmaxwarns', '3')
+
     memberLevel = JavadocMemberLevel.PUBLIC
     docTitle = 'SpotBugs Ant Task Documentation'
   }
