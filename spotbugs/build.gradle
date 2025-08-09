@@ -1,5 +1,6 @@
 import java.nio.file.Files
 import java.nio.file.Path
+import org.gradle.plugins.ide.eclipse.model.Classpath
 import org.gradle.plugins.ide.eclipse.model.ClasspathEntry
 
 apply from: "${rootDir}/gradle/jacoco.gradle"
@@ -143,31 +144,35 @@ tasks.withType(Jar).configureEach {
 }
 
 eclipse.classpath.file {
-  whenMerged {
-    classpath ->
-       classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('build/classes/')}
-       classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('build/resources/')}
-       classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('xml-apis')}
-       classpath.entries.forEach { ClasspathEntry entry ->
-         if (entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations') && !Files.isDirectory(Path.of(entry.path))) {
-           entry.path = '.libs/' + Path.of(entry.path).getFileName().toString()
-           entry.exported = true
-         }
-       }
-       Map<String, List<ClasspathEntry>> entryByPath = classpath.entries.groupBy { ClasspathEntry entry -> entry.path }
-       entryByPath.each { String key, List<ClasspathEntry> values ->
-         if (values.size() > 1) {
-           ClasspathEntry entry = values.first()
-           if (entry.kind == 'src') {
-             entry.includes = []
-             entry.excludes = []
-           }
-           int index = classpath.entries.indexOf(entry)
-           logger.lifecycle "Removing ${values.collect { ClasspathEntry v -> v.path }}"
-           classpath.entries.removeAll(values)
-           logger.lifecycle "Adding ${entry.path}"
-           classpath.entries.add(index, entry)
+  whenMerged { Classpath classpath ->
+    classpath.entries.removeAll { ClasspathEntry entry ->
+      entry.kind == 'lib' && entry.path.contains('build/classes/')
+    }
+    classpath.entries.removeAll { ClasspathEntry entry ->
+      entry.kind == 'lib' && entry.path.contains('build/resources/')
+    }
+    classpath.entries.removeAll { ClasspathEntry entry ->
+      entry.kind == 'lib' && entry.path.contains('xml-apis')
+    }
+    classpath.entries.forEach { ClasspathEntry entry ->
+      if (entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations') && !Files.isDirectory(Path.of(entry.path))) {
+        entry.path = '.libs/' + Path.of(entry.path).getFileName().toString()
+        entry.exported = true
+      }
+    }
+    Map<String, List<ClasspathEntry>> entryByPath = classpath.entries.groupBy { ClasspathEntry entry -> entry.path }
+    entryByPath.each { String key, List<ClasspathEntry> values ->
+      if (values.size() > 1) {
+        ClasspathEntry entry = values.first()
+        if (entry.kind == 'src') {
+          entry.includes = []
+          entry.excludes = []
         }
+        int index = classpath.entries.indexOf(entry)
+        logger.lifecycle "Removing ${values.collect { ClasspathEntry v -> v.path }}"
+        classpath.entries.removeAll(values)
+        logger.lifecycle "Adding ${entry.path}"
+        classpath.entries.add(index, entry)
       }
     }
   }
