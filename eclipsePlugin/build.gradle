@@ -271,7 +271,7 @@ TaskProvider<Task> testPluginJar = tasks.register('testPluginJar') {
     if (!spotbugsJar.exists()) {
       throw new TaskInstantiationException('Eclipse plugin does not contain spotbugs.jar')
     } else {
-      println 'Eclipse plugin contains spotbugs.jar'
+      logger.lifecycle('Eclipse plugin contains spotbugs.jar')
     }
   }
 }
@@ -474,16 +474,16 @@ TaskProvider<Copy> siteStableLatestXml = tasks.register('siteStableLatestXml', C
 ext.signJar = { File dir ->
   String keystorepass = project.hasProperty('keystorepass') ? keystorepass : ''
   if (keystorepass.isEmpty()) {
-    print 'to sign eclipse plugins, set "keystorepass" project property'
+    logger.lifecycle('to sign eclipse plugins, set "keystorepass" project property')
     return
   } else {
-    print 'Signing of Eclipse plugins is disabled now, see https://github.com/spotbugs/spotbugs/issues/3406'
+    logger.lifecycle('Signing of Eclipse plugins is disabled now, see https://github.com/spotbugs/spotbugs/issues/3406')
     return;
   }
 
   dir.traverse(type: FILES, nameFilter: ~/.*\.jar$/) { File jarFile ->
     String relativePath = rootDir.toPath().relativize(jarFile.toPath())
-    println "signing ${relativePath}"
+    logger.lifecycle("signing ${relativePath}")
     ant.signjar(
         destDir: jarFile.parentFile,
         jar: jarFile,
@@ -593,7 +593,7 @@ TaskProvider<Zip> eclipseSiteZip = tasks.register('eclipseSiteZip', Zip) {
 }
 
 if (eclipseExecutable == null) {
-  println 'Create local.properties to build eclipse site'
+  logger.lifecycle('Create local.properties to build eclipse site')
 } else {
   tasks.named('assemble').configure { dependsOn eclipseSiteZip }
 }

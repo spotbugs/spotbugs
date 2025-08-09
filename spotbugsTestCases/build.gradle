@@ -61,7 +61,7 @@ tasks.register('exportClasspath') {
     }
   }
   doLast {
-      println dependenciesFile
+      logger.lifecycle("Exported classpath to: ${dependenciesFile}")
   }
 }
 
@@ -123,12 +123,12 @@ tasks.named('classes').configure { Task classesTask ->
   if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_17)) {
     dependsOn classesJava17
   } else {
-    println 'skip tests for Java 17 features'
+    logger.lifecycle('skip tests for Java 17 features')
   }
   if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_21)) {
     dependsOn classesJava21
   } else {
-    println 'skip tests for Java 21 features'
+    logger.lifecycle('skip tests for Java 21 features')
   }
   dependsOn exportClasspath
 }
