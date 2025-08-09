@@ -145,14 +145,9 @@ tasks.withType(Jar).configureEach {
 
 eclipse.classpath.file {
   whenMerged { Classpath classpath ->
+    List<String> removeLibPaths = ['build/classes/', 'build/resources/', 'xml-apis']
     classpath.entries.removeAll { ClasspathEntry entry ->
-      entry.kind == 'lib' && entry.path.contains('build/classes/')
-    }
-    classpath.entries.removeAll { ClasspathEntry entry ->
-      entry.kind == 'lib' && entry.path.contains('build/resources/')
-    }
-    classpath.entries.removeAll { ClasspathEntry entry ->
-      entry.kind == 'lib' && entry.path.contains('xml-apis')
+      entry.kind == 'lib' && removeLibPaths.any { String pathPart -> entry.path.contains(pathPart) }
     }
     classpath.entries.forEach { ClasspathEntry entry ->
       if (entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations') && !Files.isDirectory(Path.of(entry.path))) {
