@@ -149,8 +149,7 @@ eclipse.classpath.file {
        classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('build/resources/')}
        classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('xml-apis')}
        classpath.entries.forEach { ClasspathEntry entry ->
-         if (entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations') &&
-             !Files.isDirectory(Path.of(entry.path))) {
+         if (entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations') && !Files.isDirectory(Path.of(entry.path))) {
            entry.path = '.libs/' + Path.of(entry.path).getFileName().toString()
            entry.exported = true
          }
