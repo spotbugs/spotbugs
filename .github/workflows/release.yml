@@ -42,7 +42,7 @@ jobs:
       - uses: gradle/actions/wrapper-validation@v4
       - name: Download Eclipse
         run: |
-          Remove-item alias: curl
+          Remove-item alias:curl
           curl --continue-at - --create-dirs --location 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-win32-x86_64.zip&mirror_id=1' --output eclipse-sdk/eclipse.zip
           Expand-Archive "eclipse-sdk/eclipse.zip" -DestinationPath "." -Force
           $escapedPwd = $pwd.Path -replace '\\', '\\'
