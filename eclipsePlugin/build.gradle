@@ -114,19 +114,21 @@ tasks.named('javadoc', Javadoc).configure {
 }
 
 TaskProvider<Copy> copyLibsForEclipse = tasks.register('copyLibsForEclipse', Copy) {
-  from (configurations.runtimeClasspath) {
+  from({ configurations.runtimeClasspath }) {
     include '*.jar'
     exclude 'Saxon*.jar'
   }
   into 'lib'
 }
 
-File resolvedBuildDir = project.layout.buildDirectory.asFile.get()
+Provider<File> resolvedBuildDir = layout.buildDirectory.asFile
 
 TaskProvider<Exec> distSrcZip = tasks.register('distSrcZip', Exec) {
-  String out = "${resolvedBuildDir}/distributions/${eclipsePluginId}_${project.version}-source.zip"
-  outputs.file out
-  commandLine 'git', 'archive', '-o', out, 'HEAD'
+  Provider<String> out = resolvedBuildDir.map { File dir ->
+    "${dir}/distributions/${eclipsePluginId}_${project.version}-source.zip"
+  }
+  outputs.file(out)
+  commandLine 'git', 'archive', '-o', out.get(), 'HEAD'
 }
 
 TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
@@ -139,11 +141,12 @@ TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
   dependsOn ':spotbugs:updateManifest', copyLibsForEclipse
   String version = project.version
   doLast {
+    Set<File> libFiles = fileTree(dir: 'lib').files
     Manifest manifestSpec = java.manifest {
       from "${projectDir}/META-INF/MANIFEST-TEMPLATE.MF"
       attributes 'Bundle-SymbolicName': "${eclipsePluginId}; singleton:=true",
                  'Bundle-Version': version,
-                 'Bundle-ClassPath': '.,spotbugs-plugin.jar,' + fileTree(dir: 'lib').collect {
+                 'Bundle-ClassPath': '.,spotbugs-plugin.jar,' + libFiles.collect {
                       projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
     }
 
@@ -151,7 +154,7 @@ TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
       from "${projectDir}/META-INF/MANIFEST-TEMPLATE.MF"
       attributes 'Bundle-SymbolicName': "${eclipsePluginId}; singleton:=true",
                  'Bundle-Version': version,
-                 'Bundle-ClassPath': 'spotbugs-plugin.jar,' + fileTree(dir: 'lib').collect {
+                 'Bundle-ClassPath': 'spotbugs-plugin.jar,' + libFiles.collect {
                         projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
     }
     // write manifests
@@ -163,7 +166,7 @@ TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
     Properties props = new Properties()
     props.load(propsTemplate.newDataInputStream())
     props.setProperty('bin.includes', props.getProperty('bin.includes') + ',' +
-        fileTree(dir: 'lib').collect { projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(','))
+        libFiles.collect { projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(','))
     props.store(file('build.properties').newWriter(), null)
   }
 }
@@ -199,7 +202,8 @@ eclipse.classpath.file {
                entry -> entry.kind == 'lib'
            }
            copyLibsForEclipse
-           fileTree(dir: 'lib').forEach {
+           Set<File> libFiles = fileTree(dir: 'lib').files
+           libFiles.forEach {
                 file ->
                     File rel = projectDir.toPath().relativize(java.nio.file.Paths.get(file.toString())).toFile()
                     org.gradle.plugins.ide.eclipse.model.ClasspathEntry entry =
