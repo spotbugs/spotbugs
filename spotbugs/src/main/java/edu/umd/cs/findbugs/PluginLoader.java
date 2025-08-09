@@ -64,6 +64,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+import org.xml.sax.SAXException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1194,6 +1195,16 @@ public class PluginLoader implements AutoCloseable {
                     + " doesn't contain findbugs.xml; got " + findbugsXML_URL + " from " + classloaderName);
         }
         SAXReader reader = XMLUtil.buildSAXReader();
+        // Securely configure SAXReader to prevent XXE
+        try {
+            org.xml.sax.XMLReader xmlReader = reader.getXMLReader();
+            xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        } catch (org.xml.sax.SAXException e) {
+            throw new PluginException("Failed to securely configure XML parser for " + findbugsXML_URL, e);
+        }
 
         try (InputStream input = IO.openNonCachedStream(findbugsXML_URL);
                 Reader r = UTF8.bufferedReader(input)) {
