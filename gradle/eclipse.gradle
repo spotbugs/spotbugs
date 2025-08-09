@@ -33,7 +33,7 @@ eclipse {
 
     file {
       whenMerged {
-        ClasspathEntry jre = entries.find { it.path.contains 'org.eclipse.jdt.launching.JRE_CONTAINER' }
+        ClasspathEntry jre = entries.find { ClasspathEntry entry -> entry.path.contains 'org.eclipse.jdt.launching.JRE_CONTAINER' }
         jre.accessRules.add(new AccessRule('accessible', 'com/sun/management/*'))
         jre.accessRules.add(new AccessRule('nonaccessible', 'com/sun/**'))
         jre.accessRules.add(new AccessRule('accessible', 'com/apple/eawt/*'))

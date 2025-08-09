@@ -1,3 +1,8 @@
+import java.nio.file.Files
+import java.nio.file.Path
+import org.gradle.plugins.ide.eclipse.model.Classpath
+import org.gradle.plugins.ide.eclipse.model.ClasspathEntry
+
 apply from: "${rootDir}/gradle/jacoco.gradle"
 apply from: "${rootDir}/gradle/maven.gradle"
 apply from: "${rootDir}/gradle/checkstyle.gradle"
@@ -122,7 +127,7 @@ project(':spotbugs-annotations') {
   tasks.named('spotbugsMain') {
     dependsOn(jarTask)
 
-    inputs.file(jarTask.flatMap { it.archiveFile })
+    inputs.file(jarTask.flatMap { Jar jar -> jar.archiveFile })
           .withPathSensitivity(PathSensitivity.RELATIVE)
           .withPropertyName('spotbugsJarInput')
   }
@@ -139,32 +144,35 @@ tasks.withType(Jar).configureEach {
 }
 
 eclipse.classpath.file {
-  whenMerged {
-    classpath ->
-       classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('build/classes/')}
-       classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('build/resources/')}
-       classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('xml-apis')}
-       classpath.entries.forEach {
-         entry ->
-           if (entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations') &&
-               !java.nio.file.Files.isDirectory(java.nio.file.Paths.get(entry.path))) {
-             entry.path = '.libs/' + java.nio.file.Paths.get(entry.path).getFileName().toString()
-             entry.exported = true
-           }
-       }
-       Map entryByPath = classpath.entries.groupBy { entry -> entry.path }
-       entryByPath.each { key, values ->
-       if (values.size() > 1) {
-         def entry = values.first()
-         if (entry.kind == 'src') {
-           entry.includes = []
-           entry.excludes = []
-         }
-         int index = classpath.entries.indexOf(entry)
-         logger.lifecycle "Removing ${values.collect { it.path }}"
-         classpath.entries.removeAll(values)
-         logger.lifecycle "Adding ${entry.path}"
-         classpath.entries.add(index, entry)
+  whenMerged { Classpath classpath ->
+    classpath.entries.removeAll { ClasspathEntry entry ->
+      entry.kind == 'lib' && entry.path.contains('build/classes/')
+    }
+    classpath.entries.removeAll { ClasspathEntry entry ->
+      entry.kind == 'lib' && entry.path.contains('build/resources/')
+    }
+    classpath.entries.removeAll { ClasspathEntry entry ->
+      entry.kind == 'lib' && entry.path.contains('xml-apis')
+    }
+    classpath.entries.forEach { ClasspathEntry entry ->
+      if (entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations') && !Files.isDirectory(Path.of(entry.path))) {
+        entry.path = '.libs/' + Path.of(entry.path).getFileName().toString()
+        entry.exported = true
+      }
+    }
+    Map<String, List<ClasspathEntry>> entryByPath = classpath.entries.groupBy { ClasspathEntry entry -> entry.path }
+    entryByPath.each { String key, List<ClasspathEntry> values ->
+      if (values.size() > 1) {
+        ClasspathEntry entry = values.first()
+        if (entry.kind == 'src') {
+          entry.includes = []
+          entry.excludes = []
+        }
+        int index = classpath.entries.indexOf(entry)
+        logger.lifecycle "Removing ${values.collect { ClasspathEntry v -> v.path }}"
+        classpath.entries.removeAll(values)
+        logger.lifecycle "Adding ${entry.path}"
+        classpath.entries.add(index, entry)
       }
     }
   }
@@ -189,7 +197,7 @@ TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
       from "${projectDir}/META-INF/MANIFEST-TEMPLATE.MF"
       attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
                'Bundle-Version': version.replace('-', '.'),
-               'Bundle-ClassPath': 'spotbugs.jar,' +  fileTree(dir: '.libs').collect { projectDir.toPath().relativize(it.toPath()).toString() }.join(',')
+               'Bundle-ClassPath': 'spotbugs.jar,' +  fileTree(dir: '.libs').collect { File file -> projectDir.toPath().relativize(file.toPath()).toString() }.join(',')
     }
     // write manifests
     manifestSpec.writeTo("${projectDir}/META-INF/MANIFEST.MF")
@@ -208,7 +216,7 @@ TaskProvider<Jar> jar = tasks.named('jar', Jar) {
   manifest {
     attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
                'Bundle-Version': project.version,
-               'Class-Path': project.providers.provider { jarInClasspath.collect{it.getName()}.join(' ') + ' config/' }
+               'Class-Path': project.providers.provider { jarInClasspath.collect { File file -> file.getName() }.join(' ') + ' config/' }
   }
   dependsOn tasks.named('updateManifest')
 }
@@ -230,7 +238,7 @@ TaskProvider<Copy> scripts = tasks.register('scripts', Copy) {
   inputs.file "${projectDir}/etc/script.properties"
 
   doFirst {
-    props.load(new FileInputStream("${projectDir}/etc/script.properties"))
+    props.load(Files.newInputStream(Path.of("${projectDir}/etc/script.properties")))
 
     filesNotMatching('**/*.ico') {
       filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
@@ -348,10 +356,10 @@ tasks.named('assemble') {
 String version = project.version
 TaskProvider<Copy> unzipDist = tasks.register('unzipDist', Copy) {
   dependsOn distZip
-  from distZip.map { zipTree(it.outputs.files.singleFile) }
+  from distZip.map { Zip zipTask -> zipTree(zipTask.outputs.files.singleFile) }
   into file("${resolvedBuildDir}/smoketest/")
   // Remove prefix
-  eachFile { details ->
+  eachFile { FileCopyDetails details ->
     details.path = details.path - ('spotbugs-' + version)
   }
 }
