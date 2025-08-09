@@ -7,4 +7,11 @@ spotless {
     eclipse().configFile "${rootProject.projectDir}/gradle/eclipse-formatter.xml"
     endWithNewline()
   }
+  groovyGradle {
+    target '*.gradle'
+    greclipse()
+    leadingTabsToSpaces(2)
+    trimTrailingWhitespace()
+    endWithNewline()
+  }
 }
