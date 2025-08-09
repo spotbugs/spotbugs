@@ -30,24 +30,24 @@ String readLastCommitHash() {
 }
 
 String computeVersion(String baseVersion) {
-    String now = new Date().format('yyyyMMddHHmm')
-    String hash = readLastCommitHash()
-    if (baseVersion.endsWith('-SNAPSHOT')) {
-        // eclipse doesn't like the `-SNAPSHOT`, so we timestamp uniquely
-        return baseVersion - '-SNAPSHOT' + ".${now}-${hash}"
-    } else if (baseVersion.contains('-RC')) {
-        // eclipse doesn't like the `-RC`, so we timestamp uniquely
-        return baseVersion.substring(0, baseVersion.lastIndexOf('-RC')) + ".${now}-${hash}"
-    } else if (baseVersion.contains('-beta')) {
-        // eclipse doesn't like the `-beta`, so we timestamp uniquely
-        return baseVersion.substring(0, baseVersion.lastIndexOf('-beta')) + ".${now}-${hash}"
-    } else {
-        // A release build version like 3.0.0 without qualifier will always be smaller
-        // then nightly build 3.0.0.20171023-1508734123102, but to update from nightlies
-        // we must give Eclipse a higher version number.
-        // The "r" makes the release version to be always higher then nightly builds
-        return baseVersion + ".r${now}-${hash}"
-    }
+  String now = new Date().format('yyyyMMddHHmm')
+  String hash = readLastCommitHash()
+  if (baseVersion.endsWith('-SNAPSHOT')) {
+    // eclipse doesn't like the `-SNAPSHOT`, so we timestamp uniquely
+    return baseVersion - '-SNAPSHOT' + ".${now}-${hash}"
+  } else if (baseVersion.contains('-RC')) {
+    // eclipse doesn't like the `-RC`, so we timestamp uniquely
+    return baseVersion.substring(0, baseVersion.lastIndexOf('-RC')) + ".${now}-${hash}"
+  } else if (baseVersion.contains('-beta')) {
+    // eclipse doesn't like the `-beta`, so we timestamp uniquely
+    return baseVersion.substring(0, baseVersion.lastIndexOf('-beta')) + ".${now}-${hash}"
+  } else {
+    // A release build version like 3.0.0 without qualifier will always be smaller
+    // then nightly build 3.0.0.20171023-1508734123102, but to update from nightlies
+    // we must give Eclipse a higher version number.
+    // The "r" makes the release version to be always higher then nightly builds
+    return baseVersion + ".r${now}-${hash}"
+  }
 }
 
 version = computeVersion(version)
@@ -183,22 +183,22 @@ tasks.named('compileJava').configure { dependsOn ':spotbugs:jar' }
 tasks.named('eclipse').configure { dependsOn copyLibsForEclipse, updateManifest }
 
 class FileRef implements FileReference {
-    File file
-    FileRef(File file){
-        this.file = file
-    }
-    File getFile(){
-        return file
-    }
-    String getJarURL(){
-        return 'jar:' + file
-    }
-    String getPath(){
-        return file.toString().replace('\\', '/')
-    }
-    boolean isRelativeToPathVariable(){
-        return false
-    }
+  File file
+  FileRef(File file){
+    this.file = file
+  }
+  File getFile(){
+    return file
+  }
+  String getJarURL(){
+    return 'jar:' + file
+  }
+  String getPath(){
+    return file.toString().replace('\\', '/')
+  }
+  boolean isRelativeToPathVariable(){
+    return false
+  }
 }
 
 eclipse.classpath.file {
