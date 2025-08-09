@@ -24,11 +24,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          fetch-tags: true
       - name: Ensure tag is on master
         if: github.ref_type == 'tag'
         run: |
           TAG_COMMIT=$(git rev-parse ${{ github.ref }})
-          if ! git branch --contains "${TAG_COMMIT}" | grep -q 'origin/master'; then
+          if ! git branch --remotes --contains "${TAG_COMMIT}" | grep -q 'origin/master'; then
             echo "Tag does not point to a commit on master. Exiting."
             exit 1
           fi
