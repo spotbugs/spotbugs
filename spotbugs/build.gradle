@@ -126,7 +126,7 @@ project(':spotbugs-annotations') {
   tasks.named('spotbugsMain') {
     dependsOn(jarTask)
 
-    inputs.file(jarTask.flatMap { it.archiveFile })
+    inputs.file(jarTask.flatMap { Jar jar -> jar.archiveFile })
           .withPathSensitivity(PathSensitivity.RELATIVE)
           .withPropertyName('spotbugsJarInput')
   }
@@ -164,7 +164,7 @@ eclipse.classpath.file {
              entry.excludes = []
            }
            int index = classpath.entries.indexOf(entry)
-           logger.lifecycle "Removing ${values.collect { it.path }}"
+           logger.lifecycle "Removing ${values.collect { ClasspathEntry v -> v.path }}"
            classpath.entries.removeAll(values)
            logger.lifecycle "Adding ${entry.path}"
            classpath.entries.add(index, entry)
@@ -193,7 +193,7 @@ TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
       from "${projectDir}/META-INF/MANIFEST-TEMPLATE.MF"
       attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
                'Bundle-Version': version.replace('-', '.'),
-               'Bundle-ClassPath': 'spotbugs.jar,' +  fileTree(dir: '.libs').collect { projectDir.toPath().relativize(it.toPath()).toString() }.join(',')
+               'Bundle-ClassPath': 'spotbugs.jar,' +  fileTree(dir: '.libs').collect { File file -> projectDir.toPath().relativize(file.toPath()).toString() }.join(',')
     }
     // write manifests
     manifestSpec.writeTo("${projectDir}/META-INF/MANIFEST.MF")
@@ -212,7 +212,7 @@ TaskProvider<Jar> jar = tasks.named('jar', Jar) {
   manifest {
     attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
                'Bundle-Version': project.version,
-               'Class-Path': project.providers.provider { jarInClasspath.collect{it.getName()}.join(' ') + ' config/' }
+               'Class-Path': project.providers.provider { jarInClasspath.collect { File file -> file.getName() }.join(' ') + ' config/' }
   }
   dependsOn tasks.named('updateManifest')
 }
