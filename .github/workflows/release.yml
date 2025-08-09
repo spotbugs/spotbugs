@@ -28,7 +28,7 @@ jobs:
         if: github.ref_type == 'tag'
         run: |
           TAG_COMMIT=$(git rev-parse ${{ github.ref }})
-          if ! git branch --contains "${TAG_COMMIT}" | grep -q 'master'; then
+          if ! git branch --contains "${TAG_COMMIT}" | grep -q 'origin/master'; then
             echo "Tag does not point to a commit on master. Exiting."
             exit 1
           fi
