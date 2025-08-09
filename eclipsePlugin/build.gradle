@@ -1,7 +1,7 @@
 import static groovy.io.FileType.FILES
 
 // TODO: deploy not only jar but also sources and javadoc, to pass validation by Sonatype nexus
-// apply from: "$rootDir/gradle/maven.gradle"
+// apply from: "${rootDir}/gradle/maven.gradle"
 plugins {
   id 'org.ajoberstar.grgit' version '5.3.2'
   id 'eclipse-convention'
@@ -58,12 +58,12 @@ sourceSets {
 }
 
 File findEclipseExecutable() {
-  if (!file("$projectDir/local.properties").exists()) {
+  if (!file("${projectDir}/local.properties").exists()) {
     return null
   }
 
   Properties localProps = new Properties()
-  localProps.load(new FileInputStream("$projectDir/local.properties"))
+  localProps.load(new FileInputStream("${projectDir}/local.properties"))
   File eclipseRootDir = new File(localProps.getProperty('eclipseRoot.dir'))
   // Eclipse 4.5+ uses a different directory layout under macOS. Try to detect this first.
   String os = System.getProperty('os.name').toLowerCase(Locale.ROOT)
@@ -130,36 +130,36 @@ TaskProvider<Exec> distSrcZip = tasks.register('distSrcZip', Exec) {
 }
 
 TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
-  inputs.file "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
-  outputs.file "$projectDir/META-INF/MANIFEST.MF"
-  outputs.file "$projectDir/META-INF/MANIFEST-DIST.MF"
-  inputs.file "$projectDir/build-template.properties"
-  outputs.file "$projectDir/build.properties"
+  inputs.file "${projectDir}/META-INF/MANIFEST-TEMPLATE.MF"
+  outputs.file "${projectDir}/META-INF/MANIFEST.MF"
+  outputs.file "${projectDir}/META-INF/MANIFEST-DIST.MF"
+  inputs.file "${projectDir}/build-template.properties"
+  outputs.file "${projectDir}/build.properties"
 
   dependsOn ':spotbugs:updateManifest', copyLibsForEclipse
   String version = project.version
   doLast {
     Manifest manifestSpec = java.manifest {
-      from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
-      attributes 'Bundle-SymbolicName': "$eclipsePluginId; singleton:=true",
+      from "${projectDir}/META-INF/MANIFEST-TEMPLATE.MF"
+      attributes 'Bundle-SymbolicName': "${eclipsePluginId}; singleton:=true",
                  'Bundle-Version': version,
                  'Bundle-ClassPath': '.,spotbugs-plugin.jar,' + fileTree(dir: 'lib').collect {
                       projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
     }
 
     Manifest distManifestSpec = java.manifest {
-      from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
-      attributes 'Bundle-SymbolicName': "$eclipsePluginId; singleton:=true",
+      from "${projectDir}/META-INF/MANIFEST-TEMPLATE.MF"
+      attributes 'Bundle-SymbolicName': "${eclipsePluginId}; singleton:=true",
                  'Bundle-Version': version,
                  'Bundle-ClassPath': 'spotbugs-plugin.jar,' + fileTree(dir: 'lib').collect {
                         projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
     }
     // write manifests
-    manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
-    distManifestSpec.writeTo("$projectDir/META-INF/MANIFEST-DIST.MF")
+    manifestSpec.writeTo("${projectDir}/META-INF/MANIFEST.MF")
+    distManifestSpec.writeTo("${projectDir}/META-INF/MANIFEST-DIST.MF")
 
     // write build.properties
-    File propsTemplate = file("$projectDir/build-template.properties")
+    File propsTemplate = file("${projectDir}/build-template.properties")
     Properties props = new Properties()
     props.load(propsTemplate.newDataInputStream())
     props.setProperty('bin.includes', props.getProperty('bin.includes') + ',' +
@@ -484,7 +484,7 @@ ext.signJar = { File dir ->
         destDir: it.parentFile,
         jar: it,
         alias: 'eclipse-plugin',
-        keystore: "$rootDir/spotbugs.jks",
+        keystore: "${rootDir}/spotbugs.jks",
         storepass: keystorepass,
         tsaurl: 'http://timestamp.digicert.com',
         verbose: true

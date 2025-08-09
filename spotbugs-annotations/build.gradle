@@ -1,6 +1,6 @@
-apply from: "$rootDir/gradle/checkstyle.gradle"
-apply from: "$rootDir/gradle/javadoc.gradle"
-apply from: "$rootDir/gradle/maven.gradle"
+apply from: "${rootDir}/gradle/checkstyle.gradle"
+apply from: "${rootDir}/gradle/javadoc.gradle"
+apply from: "${rootDir}/gradle/maven.gradle"
 
 tasks.named('compileJava', JavaCompile).configure {
     options.release = 8
@@ -30,7 +30,7 @@ Manifest manifestSpec = java.manifest {
 TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
     // write manifests
     doLast {
-        manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
+        manifestSpec.writeTo("${projectDir}/META-INF/MANIFEST.MF")
     }
 }
 tasks.eclipse.dependsOn(updateManifest)
@@ -78,4 +78,4 @@ publishing.publications.maven {
 // Module name should be reverse-DNS (com.github.spotbugs) just like package name
 // http://blog.joda.org/2017/04/java-se-9-jpms-module-naming.html
 ext.moduleName = 'com.github.spotbugs.annotations'
-apply from: "$rootDir/gradle/jigsaw.gradle"
+apply from: "${rootDir}/gradle/jigsaw.gradle"
