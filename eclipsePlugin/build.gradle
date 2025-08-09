@@ -262,10 +262,11 @@ TaskProvider<Zip> distZip = tasks.register('distZip', Zip) {
 }
 
 TaskProvider<Task> testPluginJar = tasks.register('testPluginJar') {
-  String jarFile = "${resolvedBuildDir}/site/eclipse/plugins/${eclipsePluginId}_${project.version}.jar"
-  inputs.file jarFile
+  dependsOn pluginJar
+  Provider<File> jarFile = pluginJar.flatMap { it.archiveFile }.map { it.asFile }
+  inputs.file(jarFile)
   doLast {
-    File spotbugsJar = zipTree(jarFile)
+    File spotbugsJar = zipTree(jarFile.get())
             .matching { include 'lib/spotbugs.jar' }
             .singleFile
     if (!spotbugsJar.exists()) {
