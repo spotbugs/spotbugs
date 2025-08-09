@@ -1,6 +1,7 @@
 import static groovy.io.FileType.FILES
 
 import java.nio.file.Paths;
+import org.gradle.plugins.ide.eclipse.model.Classpath
 import org.gradle.plugins.ide.eclipse.model.ClasspathEntry
 import org.gradle.plugins.ide.eclipse.model.FileReference
 import org.gradle.plugins.ide.eclipse.model.Library
@@ -199,18 +200,18 @@ class FileRef implements FileReference {
 }
 
 eclipse.classpath.file {
-    whenMerged { classpath ->
-           classpath.entries.removeAll { ClasspathEntry entry ->
-             entry.kind == 'lib'
-           }
-           copyLibsForEclipse
-           Set<File> libFiles = fileTree(dir: 'lib').files
-           libFiles.forEach { File file ->
-              File rel = projectDir.toPath().relativize(Paths.get(file.toString())).toFile()
-              ClasspathEntry entry = new Library(new FileRef(rel))
-              classpath.entries.add(entry)
-           }
+  whenMerged { Classpath classpath ->
+    classpath.entries.removeAll { ClasspathEntry entry ->
+      entry.kind == 'lib'
     }
+    copyLibsForEclipse
+    Set<File> libFiles = fileTree(dir: 'lib').files
+    libFiles.forEach { File file ->
+      File rel = projectDir.toPath().relativize(Paths.get(file.toString())).toFile()
+      ClasspathEntry entry = new Library(new FileRef(rel))
+      classpath.entries.add(entry)
+    }
+  }
 }
 
 TaskProvider<Jar> jar = tasks.named('jar', Jar) {
