@@ -1,6 +1,8 @@
 import static groovy.io.FileType.FILES
 
-import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import org.ajoberstar.grgit.Grgit
 import org.gradle.plugins.ide.eclipse.model.Classpath
 import org.gradle.plugins.ide.eclipse.model.ClasspathEntry
 import org.gradle.plugins.ide.eclipse.model.FileReference
@@ -24,7 +26,7 @@ eclipse {
 
 String readLastCommitHash() {
   // Same as 'git log -1 --pretty=format:"%h"'.execute().getText()
-  return org.ajoberstar.grgit.Grgit.open(dir: rootDir).head().abbreviatedId
+  return Grgit.open(dir: rootDir).head().abbreviatedId
 }
 
 String computeVersion(String baseVersion) {
@@ -69,7 +71,7 @@ File findEclipseExecutable() {
   }
 
   Properties localProps = new Properties()
-  localProps.load(new FileInputStream("${projectDir}/local.properties"))
+  localProps.load(Files.newInputStream(Path.of("${projectDir}/local.properties")))
   File eclipseRootDir = new File(localProps.getProperty('eclipseRoot.dir'))
   // Eclipse 4.5+ uses a different directory layout under macOS. Try to detect this first.
   String os = System.getProperty('os.name').toLowerCase(Locale.ROOT)
@@ -207,7 +209,7 @@ eclipse.classpath.file {
     copyLibsForEclipse
     Set<File> libFiles = fileTree(dir: 'lib').files
     libFiles.forEach { File file ->
-      File rel = projectDir.toPath().relativize(Paths.get(file.toString())).toFile()
+      File rel = projectDir.toPath().relativize(Paths.of(file.toString())).toFile()
       ClasspathEntry entry = new Library(new FileRef(rel))
       classpath.entries.add(entry)
     }
