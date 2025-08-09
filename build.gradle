@@ -8,17 +8,17 @@ plugins {
 group = 'com.github.spotbugs'
 version = '4.9.5-SNAPSHOT'
 
-apply from: "$rootDir/gradle/java.gradle"
-apply from: "$rootDir/gradle/jacoco.gradle"
+apply from: "${rootDir}/gradle/java.gradle"
+apply from: "${rootDir}/gradle/jacoco.gradle"
 
 subprojects {
   apply plugin: 'constraints'
-  apply from: "$rootDir/gradle/java.gradle"
-  apply from: "$rootDir/gradle/eclipse.gradle"
-  apply from: "$rootDir/gradle/idea.gradle"
-  apply from: "$rootDir/gradle/test.gradle"
+  apply from: "${rootDir}/gradle/java.gradle"
+  apply from: "${rootDir}/gradle/eclipse.gradle"
+  apply from: "${rootDir}/gradle/idea.gradle"
+  apply from: "${rootDir}/gradle/test.gradle"
   if (!project.name.equals('spotbugsTestCases')) {
-    apply from: "$rootDir/gradle/spotless.gradle"
+    apply from: "${rootDir}/gradle/spotless.gradle"
   }
 
   group = 'com.github.spotbugs'
@@ -31,8 +31,8 @@ allprojects {
   }
   dependencies {
     String junitVersion = '5.13.4'
-    implementation platform("org.junit:junit-bom:$junitVersion")
-    testImplementation platform("org.junit:junit-bom:$junitVersion")
+    implementation platform("org.junit:junit-bom:${junitVersion}")
+    testImplementation platform("org.junit:junit-bom:${junitVersion}")
   }
 }
 
@@ -137,4 +137,4 @@ nexusPublishing {
   }
 }
 
-apply from: "$rootDir/gradle/sonar.gradle"
+apply from: "${rootDir}/gradle/sonar.gradle"

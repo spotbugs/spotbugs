@@ -1,7 +1,7 @@
-apply from: "$rootDir/gradle/jacoco.gradle"
-apply from: "$rootDir/gradle/maven.gradle"
-apply from: "$rootDir/gradle/checkstyle.gradle"
-apply from: "$rootDir/gradle/javadoc.gradle"
+apply from: "${rootDir}/gradle/jacoco.gradle"
+apply from: "${rootDir}/gradle/maven.gradle"
+apply from: "${rootDir}/gradle/checkstyle.gradle"
+apply from: "${rootDir}/gradle/javadoc.gradle"
 
 tasks.named('compileJava', JavaCompile).configure {
     options.release = 11
@@ -135,7 +135,7 @@ tasks.named('compileGuiJava', JavaCompile).configure {
 tasks.withType(Jar).configureEach {
   includeEmptyDirs = false
   // FIXME: this is ugly, but is what ant is currently doing... our own jars are included as dependencies :S
-  //destinationDirectory = file("$projectDir/lib")
+  //destinationDirectory = file("${projectDir}/lib")
 }
 
 eclipse.classpath.file {
@@ -180,19 +180,19 @@ TaskProvider<Copy> copyLibsForEclipse = tasks.register('copyLibsForEclipse', Cop
 }
 
 TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
-  inputs.file "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
-  outputs.file "$projectDir/META-INF/MANIFEST.MF"
+  inputs.file "${projectDir}/META-INF/MANIFEST-TEMPLATE.MF"
+  outputs.file "${projectDir}/META-INF/MANIFEST.MF"
   dependsOn configurations.runtimeClasspath, copyLibsForEclipse
   String version = project.version
   doLast {
     Manifest manifestSpec = java.manifest {
-      from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
+      from "${projectDir}/META-INF/MANIFEST-TEMPLATE.MF"
       attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
                'Bundle-Version': version.replace('-', '.'),
                'Bundle-ClassPath': 'spotbugs.jar,' +  fileTree(dir: '.libs').collect { projectDir.toPath().relativize(it.toPath()).toString() }.join(',')
     }
     // write manifests
-    manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
+    manifestSpec.writeTo("${projectDir}/META-INF/MANIFEST.MF")
   }
 }
 tasks.eclipse.dependsOn(updateManifest)
@@ -227,10 +227,10 @@ tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
 Properties props = new Properties()
 TaskProvider<Copy> scripts = tasks.register('scripts', Copy) {
   // Take the properties into account for up-to-date checking
-  inputs.file "$projectDir/etc/script.properties"
+  inputs.file "${projectDir}/etc/script.properties"
 
   doFirst {
-    props.load(new FileInputStream("$projectDir/etc/script.properties"))
+    props.load(new FileInputStream("${projectDir}/etc/script.properties"))
 
     filesNotMatching('**/*.ico') {
       filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
@@ -335,7 +335,7 @@ TaskProvider<Exec> distSrcZip = tasks.register('distSrcZip', Exec) {
     '--prefix', "spotbugs-${project.version}/", 'HEAD'
 
   onlyIf {
-    file("$rootDir/.git").isDirectory()
+    file("${rootDir}/.git").isDirectory()
   }
 }
 TaskProvider<Task> assembleDist = tasks.named('assembleDist') {
@@ -403,7 +403,7 @@ publishing.publications.maven {
 // Module name should be reverse-DNS (com.github.spotbugs) just like package name
 // http://blog.joda.org/2017/04/java-se-9-jpms-module-naming.html
 ext.moduleName = 'com.github.spotbugs.spotbugs'
-apply from: "$rootDir/gradle/jigsaw.gradle"
+apply from: "${rootDir}/gradle/jigsaw.gradle"
 
 tasks.named('spotbugsTest').configure {
   ignoreFailures = true
