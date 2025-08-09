@@ -9,7 +9,7 @@ apply from: "${rootDir}/gradle/checkstyle.gradle"
 apply from: "${rootDir}/gradle/javadoc.gradle"
 
 tasks.named('compileJava', JavaCompile).configure {
-    options.release = 11
+  options.release = 11
 }
 
 // Force Eclipse use Java 11, otherwise it will get Java 17 (!) from gradle
@@ -164,12 +164,12 @@ eclipse.classpath.file {
 }
 
 TaskProvider<Copy> copyLibsForEclipse = tasks.register('copyLibsForEclipse', Copy) {
-    from configurations.testCompileClasspath, configurations.testRuntimeClasspath, configurations.guiRuntimeClasspath, configurations.guiCompileClasspath, configurations.logBinding
-    into '.libs'
-    include '*.jar'
-    exclude '*xml-apis*.jar'
-    exclude '*spotbugs-annotations*.jar'
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  from configurations.testCompileClasspath, configurations.testRuntimeClasspath, configurations.guiRuntimeClasspath, configurations.guiCompileClasspath, configurations.logBinding
+  into '.libs'
+  include '*.jar'
+  exclude '*xml-apis*.jar'
+  exclude '*spotbugs-annotations*.jar'
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
@@ -283,8 +283,8 @@ distributions {
       }
       from 'README.txt'
       from ('plugin') {
-         into 'plugin'
-         include 'README'
+        into 'plugin'
+        include 'README'
       }
       from 'licenses'
       from([configurations.runtimeClasspath, configurations.logBinding]) {

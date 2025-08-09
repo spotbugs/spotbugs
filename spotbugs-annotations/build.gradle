@@ -3,7 +3,7 @@ apply from: "${rootDir}/gradle/javadoc.gradle"
 apply from: "${rootDir}/gradle/maven.gradle"
 
 tasks.named('compileJava', JavaCompile).configure {
-    options.release = 8
+  options.release = 8
 }
 
 eclipse {
@@ -28,10 +28,10 @@ Manifest manifestSpec = java.manifest {
 }
 
 TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
-    // write manifests
-    doLast {
-        manifestSpec.writeTo("${projectDir}/META-INF/MANIFEST.MF")
-    }
+  // write manifests
+  doLast {
+    manifestSpec.writeTo("${projectDir}/META-INF/MANIFEST.MF")
+  }
 }
 tasks.eclipse.dependsOn(updateManifest)
 
