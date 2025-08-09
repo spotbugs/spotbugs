@@ -1,3 +1,13 @@
+import org.gradle.crypto.checksum.Checksum
+import org.gradle.api.Task;
+import org.gradle.api.tasks.TaskProvider;
+import org.gradle.api.file.RegularFile;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.Project;
+import org.gradle.api.publish.PublishingExtension;
+import org.gradle.api.publish.maven.MavenArtifact;
+import org.gradle.api.tasks.util.PatternFilterable;
+
 plugins {
   id 'org.sonarqube' version '6.2.0.5505'
   id 'org.gradle.crypto.checksum' version '1.4.0'
@@ -46,8 +56,8 @@ tasks.register('jacocoRootReport', JacocoReport.class) {
   sourceDirectories.setFrom reportTasks.sourceDirectories
 
   // Only enable class directories related to non-test project
-  classDirectories.setFrom files(reportTasks.classDirectories).filter {
-    !it.toString().contains('-test') && !it.toString().contains('Test') && !it.toString().contains('junit')
+  classDirectories.setFrom files(reportTasks.classDirectories).filter { File dir ->
+    !dir.toString().contains('-test') && !dir.toString().contains('Test') && !dir.toString().contains('junit')
   }
 
   reports {
@@ -57,8 +67,6 @@ tasks.register('jacocoRootReport', JacocoReport.class) {
   }
 }
 
-import org.gradle.crypto.checksum.Checksum
-
 TaskProvider<Task> createReleaseBody = tasks.register('createReleaseBody')
 TaskProvider<Checksum> createChecksums = tasks.register('createChecksums', Checksum)
 TaskProvider<Task> publishTask = tasks.findByName('publish')
@@ -66,19 +74,19 @@ if (publishTask == null) {
   publishTask = tasks.findByName('publishToMavenLocal')
 }
 Provider<RegularFile> outputFile = layout.buildDirectory.file('release.md')
-List<File> inputFile = subprojects.collect {
-  it.hasProperty('publishing') ? it.publishing.publications.maven.artifacts : []
-}.flatten().collect {
-  it.file
+List<File> inputFile = subprojects.collect { Project subproject ->
+  subproject.hasProperty('publishing') ? ((PublishingExtension) subproject.publishing).publications.maven.artifacts : []
+}.flatten().collect { MavenArtifact artifact ->
+  artifact.file
 }
 
-createChecksums.configure {
-  files = files(inputFile)
+createChecksums.configure { Checksum checksumTask ->
+  checksumTask.files = files(inputFile)
   if (publishTask != null) {
-    dependsOn publishTask
+    checksumTask.dependsOn publishTask
   }
-  subprojects.each {
-    dependsOn("${it.name}:jar")
+  subprojects.each { Project subproject ->
+    checksumTask.dependsOn("${subproject.name}:jar")
   }
 
   dependsOn(':spotbugs:javadocJar')
@@ -96,12 +104,12 @@ createChecksums.configure {
   dependsOn(':spotbugs:distZip')
   dependsOn(':spotbugs:distTar')
 }
-createReleaseBody.configure {
-  inputs.files fileTree(layout.buildDirectory.dir('checksums')).matching {
-    include '*.sha256'
+createReleaseBody.configure { Task releaseTask ->
+  releaseTask.inputs.files fileTree(layout.buildDirectory.dir('checksums')).matching { PatternFilterable pattern ->
+    pattern.include '*.sha256'
   }
-  outputs.file outputFile
-  dependsOn createChecksums
+  releaseTask.outputs.file outputFile
+  releaseTask.dependsOn createChecksums
 
   String version = project.version
   doLast {
@@ -116,11 +124,11 @@ createReleaseBody.configure {
 | file | checksum (sha256) |
 | ---- | ----------------- |
 """
-    fileTree(layout.buildDirectory.dir('checksums')).matching {
-      include '*.sha256'
-    }.sort { File a, File b -> a.name <=> b.name }.forEach {
-      String name = it.name.replace('.sha256', '')
-      String[] hash = it.text as String[]
+    fileTree(layout.buildDirectory.dir('checksums')).matching { PatternFilterable pattern ->
+      pattern.include '*.sha256'
+    }.sort { File a, File b -> a.name <=> b.name }.forEach { File checksumFile ->
+      String name = checksumFile.name.replace('.sha256', '')
+      String[] hash = checksumFile.text as String[]
       outputFile.get().asFile << "| ${name} | ${hash[0]} |\n"
     }
   }
