@@ -1,5 +1,11 @@
 import static groovy.io.FileType.FILES
 
+import java.nio.file.Paths;
+import org.gradle.plugins.ide.eclipse.model.Classpath
+import org.gradle.plugins.ide.eclipse.model.ClasspathEntry
+import org.gradle.plugins.ide.eclipse.model.FileReference
+import org.gradle.plugins.ide.eclipse.model.Library
+
 // TODO: deploy not only jar but also sources and javadoc, to pass validation by Sonatype nexus
 // apply from: "${rootDir}/gradle/maven.gradle"
 plugins {
@@ -139,20 +145,21 @@ TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
   dependsOn ':spotbugs:updateManifest', copyLibsForEclipse
   String version = project.version
   doLast {
+    Set<File> libFiles = fileTree(dir: 'lib').files
     Manifest manifestSpec = java.manifest {
       from "${projectDir}/META-INF/MANIFEST-TEMPLATE.MF"
       attributes 'Bundle-SymbolicName': "${eclipsePluginId}; singleton:=true",
                  'Bundle-Version': version,
-                 'Bundle-ClassPath': '.,spotbugs-plugin.jar,' + fileTree(dir: 'lib').collect {
-                      projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
+                 'Bundle-ClassPath': '.,spotbugs-plugin.jar,' + libFiles.collect { File file ->
+                      projectDir.toPath().relativize(file.toPath()).toString().replace('\\', '/') }.join(',')
     }
 
     Manifest distManifestSpec = java.manifest {
       from "${projectDir}/META-INF/MANIFEST-TEMPLATE.MF"
       attributes 'Bundle-SymbolicName': "${eclipsePluginId}; singleton:=true",
                  'Bundle-Version': version,
-                 'Bundle-ClassPath': 'spotbugs-plugin.jar,' + fileTree(dir: 'lib').collect {
-                        projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
+                 'Bundle-ClassPath': 'spotbugs-plugin.jar,' + libFiles.collect { File file ->
+                        projectDir.toPath().relativize(file.toPath()).toString().replace('\\', '/') }.join(',')
     }
     // write manifests
     manifestSpec.writeTo("${projectDir}/META-INF/MANIFEST.MF")
@@ -163,7 +170,7 @@ TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
     Properties props = new Properties()
     props.load(propsTemplate.newDataInputStream())
     props.setProperty('bin.includes', props.getProperty('bin.includes') + ',' +
-        fileTree(dir: 'lib').collect { projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(','))
+        libFiles.collect { File file -> projectDir.toPath().relativize(file.toPath()).toString().replace('\\', '/') }.join(','))
     props.store(file('build.properties').newWriter(), null)
   }
 }
@@ -173,7 +180,7 @@ tasks.named('compileJava').configure { dependsOn ':spotbugs:jar' }
 // create manifest when importing to eclipse
 tasks.named('eclipse').configure { dependsOn copyLibsForEclipse, updateManifest }
 
-class FileRef implements org.gradle.plugins.ide.eclipse.model.FileReference {
+class FileRef implements FileReference {
     File file
     FileRef(File file){
         this.file = file
@@ -193,20 +200,18 @@ class FileRef implements org.gradle.plugins.ide.eclipse.model.FileReference {
 }
 
 eclipse.classpath.file {
-    whenMerged {
-        classpath ->
-           classpath.entries.removeAll {
-               entry -> entry.kind == 'lib'
-           }
-           copyLibsForEclipse
-           fileTree(dir: 'lib').forEach {
-                file ->
-                    File rel = projectDir.toPath().relativize(java.nio.file.Paths.get(file.toString())).toFile()
-                    org.gradle.plugins.ide.eclipse.model.ClasspathEntry entry =
-                        new org.gradle.plugins.ide.eclipse.model.Library(new FileRef(rel))
-                    classpath.entries.add(entry)
-           }
+  whenMerged { Classpath classpath ->
+    classpath.entries.removeAll { ClasspathEntry entry ->
+      entry.kind == 'lib'
     }
+    copyLibsForEclipse
+    Set<File> libFiles = fileTree(dir: 'lib').files
+    libFiles.forEach { File file ->
+      File rel = projectDir.toPath().relativize(Paths.get(file.toString())).toFile()
+      ClasspathEntry entry = new Library(new FileRef(rel))
+      classpath.entries.add(entry)
+    }
+  }
 }
 
 TaskProvider<Jar> jar = tasks.named('jar', Jar) {
@@ -218,7 +223,7 @@ TaskProvider<Jar> jar = tasks.named('jar', Jar) {
 }
 
 CopySpec distSpec = copySpec {
-  from jar.map { it.outputs.files }
+  from jar.map { Jar jarTask -> jarTask.outputs.files }
   from(project.projectDir) {
     include 'RELEASENOTES'
     include 'plugin.xml'
@@ -236,11 +241,10 @@ CopySpec distSpec = copySpec {
     include 'plugin/**'
   }
   from('META-INF/MANIFEST-DIST.MF') {
-    filter { line ->
+    filter { String line ->
       if (line.startsWith('Bundle-Version:')) {
         return "Bundle-Version: ${project.version}"
       }
-
       line
     }
     into 'META-INF/'
@@ -283,13 +287,13 @@ TaskProvider<Zip> pluginJar = tasks.register('pluginJar', Zip) {
 
 TaskProvider<Copy> pluginCandidateJar = tasks.register('pluginCandidateJar', Copy) {
   dependsOn pluginJar
-  from pluginJar.map { it.outputs.files }
+  from pluginJar.map { Zip zipTask -> zipTask.outputs.files }
   into layout.buildDirectory.dir('site/eclipse-candidate/plugins/')
 }
 
 TaskProvider<Copy> pluginDailyJar = tasks.register('pluginDailyJar', Copy) {
   dependsOn pluginJar
-  from pluginJar.map { it.outputs.files }
+  from pluginJar.map { Zip zipTask -> zipTask.outputs.files }
   into layout.buildDirectory.dir('site/eclipse-daily/plugins/')
   mustRunAfter(siteHtml)
   mustRunAfter(siteXml)
@@ -297,7 +301,7 @@ TaskProvider<Copy> pluginDailyJar = tasks.register('pluginDailyJar', Copy) {
 
 TaskProvider<Copy> pluginStableLatestJar = tasks.register('pluginStableLatestJar', Copy) {
   dependsOn pluginJar
-  from pluginJar.map { it.outputs.files }
+  from pluginJar.map { Zip zipTask -> zipTask.outputs.files }
   into layout.buildDirectory.dir('site/eclipse-stable-latest/plugins/')
   mustRunAfter(siteHtml)
   mustRunAfter(siteXml)
@@ -477,12 +481,12 @@ ext.signJar = { File dir ->
     return;
   }
 
-  dir.traverse(type: FILES, nameFilter: ~/.*\.jar$/) {
-    String relativePath = rootDir.toPath().relativize( it.toPath() )
+  dir.traverse(type: FILES, nameFilter: ~/.*\.jar$/) { File jarFile ->
+    String relativePath = rootDir.toPath().relativize(jarFile.toPath())
     println "signing ${relativePath}"
     ant.signjar(
-        destDir: it.parentFile,
-        jar: it,
+        destDir: jarFile.parentFile,
+        jar: jarFile,
         alias: 'eclipse-plugin',
         keystore: "${rootDir}/spotbugs.jks",
         storepass: keystorepass,
@@ -504,8 +508,8 @@ TaskProvider<Task> confirmEclipse = tasks.register('confirmEclipse') {
 TaskProvider<Exec> generateP2Metadata = tasks.register('generateP2Metadata', Exec) {
   doFirst {
     Provider<Directory> eclipseSiteDir = layout.buildDirectory.dir('site/eclipse')
-    File artifactsXml = eclipseSiteDir.map { it.file('artifacts.xml') }.get().asFile
-    File contentXml = eclipseSiteDir.map { it.file('content.xml') }.get().asFile
+    File artifactsXml = eclipseSiteDir.map { Directory dir -> dir.file('artifacts.xml') }.get().asFile
+    File contentXml = eclipseSiteDir.map { Directory dir -> dir.file('content.xml') }.get().asFile
     delete artifactsXml
     delete contentXml
     signJar(eclipseSiteDir.get().asFile)
@@ -523,9 +527,8 @@ TaskProvider<Exec> generateP2Metadata = tasks.register('generateP2Metadata', Exe
 TaskProvider<Exec> generateCandidateP2Metadata = tasks.register('generateCandidateP2Metadata', Exec) {
   doFirst {
     Provider<Directory> eclipseSiteCandidateDir = layout.buildDirectory.dir('site/eclipse-candidate')
-    // Avoid project.delete and project.file in task action (Gradle 10+)
-    File artifactsXml = eclipseSiteCandidateDir.map { it.file('artifacts.xml') }.get().asFile
-    File contentXml = eclipseSiteCandidateDir.map { it.file('content.xml') }.get().asFile
+    File artifactsXml = eclipseSiteCandidateDir.map { Directory dir -> dir.file('artifacts.xml') }.get().asFile
+    File contentXml = eclipseSiteCandidateDir.map { Directory dir -> dir.file('content.xml') }.get().asFile
     delete artifactsXml
     delete contentXml
     signJar(eclipseSiteCandidateDir.get().asFile)
@@ -543,8 +546,8 @@ TaskProvider<Exec> generateCandidateP2Metadata = tasks.register('generateCandida
 TaskProvider<Exec> generateP2MetadataDaily = tasks.register('generateP2MetadataDaily', Exec) {
   doFirst {
     Provider<Directory> eclipseSiteDailyDir = layout.buildDirectory.dir('site/eclipse-daily')
-    File artifactsXml = eclipseSiteDailyDir.map { it.file('artifacts.xml') }.get().asFile
-    File contentXml = eclipseSiteDailyDir.map { it.file('content.xml') }.get().asFile
+    File artifactsXml = eclipseSiteDailyDir.map { Directory dir -> dir.file('artifacts.xml') }.get().asFile
+    File contentXml = eclipseSiteDailyDir.map { Directory dir -> dir.file('content.xml') }.get().asFile
     delete artifactsXml
     delete contentXml
     signJar(eclipseSiteDailyDir.get().asFile)
@@ -562,8 +565,8 @@ TaskProvider<Exec> generateP2MetadataDaily = tasks.register('generateP2MetadataD
 TaskProvider<Exec> generateP2MetadataStableLatest = tasks.register('generateP2MetadataStableLatest', Exec) {
   doFirst {
     Provider<Directory> eclipseSiteStableLatestDir = layout.buildDirectory.dir('site/eclipse-stable-latest')
-    File artifactsXml = eclipseSiteStableLatestDir.map { it.file('artifacts.xml') }.get().asFile
-    File contentXml = eclipseSiteStableLatestDir.map { it.file('content.xml') }.get().asFile
+    File artifactsXml = eclipseSiteStableLatestDir.map { Directory dir -> dir.file('artifacts.xml') }.get().asFile
+    File contentXml = eclipseSiteStableLatestDir.map { Directory dir -> dir.file('content.xml') }.get().asFile
     delete artifactsXml
     delete contentXml
     signJar(eclipseSiteStableLatestDir.get().asFile)
