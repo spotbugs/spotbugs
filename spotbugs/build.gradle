@@ -281,12 +281,12 @@ distributions {
           unix(0755)
         }
       }
-      from 'README.txt'
-      from ('plugin') {
+      from('README.txt')
+      from('plugin') {
         into 'plugin'
         include 'README'
       }
-      from 'licenses'
+      from('licenses')
       from([configurations.runtimeClasspath, configurations.logBinding]) {
         into 'lib'
         include '**/*.jar'
@@ -294,7 +294,7 @@ distributions {
       from([jar, project(':spotbugs-ant').jar]) {
         into 'lib'
       }
-      from ('log4j2.xml') {
+      from('log4j2.xml') {
         into 'lib/config'
       }
       from('src/xsl') {
