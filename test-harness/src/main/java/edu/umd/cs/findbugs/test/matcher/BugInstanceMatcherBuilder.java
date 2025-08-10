@@ -53,7 +53,7 @@ public class BugInstanceMatcherBuilder {
      *
      * @param bugType
      *            the type of the bug
-     * 
+     *
      * @return this builder instance
      */
     public BugInstanceMatcherBuilder bugType(String bugType) {
@@ -66,7 +66,7 @@ public class BugInstanceMatcherBuilder {
      *
      * @param className
      *            the class name
-     * 
+     *
      * @return this builder instance
      */
     public BugInstanceMatcherBuilder inClass(String className) {
@@ -79,7 +79,7 @@ public class BugInstanceMatcherBuilder {
      *
      * @param methodName
      *            the method name
-     * 
+     *
      * @return this builder instance
      */
     public BugInstanceMatcherBuilder inMethod(String methodName) {
@@ -92,7 +92,7 @@ public class BugInstanceMatcherBuilder {
      *
      * @param fieldName
      *            the field name
-     * 
+     *
      * @return this builder instance
      */
     public BugInstanceMatcherBuilder atField(String fieldName) {
@@ -105,7 +105,7 @@ public class BugInstanceMatcherBuilder {
      *
      * @param variableName
      *            the variable name
-     * 
+     *
      * @return this builder instance
      */
     public BugInstanceMatcherBuilder atVariable(String variableName) {
@@ -118,7 +118,7 @@ public class BugInstanceMatcherBuilder {
      *
      * @param lineNumber
      *            the line number
-     * 
+     *
      * @return this builder instance
      */
     public BugInstanceMatcherBuilder atLine(int lineNumber) {
@@ -145,7 +145,7 @@ public class BugInstanceMatcherBuilder {
      *
      * @param confidence
      *            the confidence level
-     * 
+     *
      * @return this builder instance
      */
     public BugInstanceMatcherBuilder withConfidence(Confidence confidence) {
@@ -158,7 +158,7 @@ public class BugInstanceMatcherBuilder {
      *
      * @param jspFile
      *            the name of the JSP file
-     * 
+     *
      * @return this builder instance
      */
     public BugInstanceMatcherBuilder inJspFile(String jspFile) {
@@ -171,7 +171,7 @@ public class BugInstanceMatcherBuilder {
      *
      * @param jspLine
      *            the line number in the JSP file
-     * 
+     *
      * @return this builder instance
      */
     public BugInstanceMatcherBuilder atJspLine(Integer jspLine) {
