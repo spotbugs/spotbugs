@@ -204,7 +204,7 @@ public class BugInstanceMatcherBuilder {
         final ClassFileLocator locator = new ClassFileLocator();
         final File smapFile = new File(locator.getJspFilePath(jspFile) + ".smap");
         if (!smapFile.exists()) {
-            throw new RuntimeException("SMAP File are missing. (" + smapFile + ")");
+            throw new RuntimeException("SMAP file is missing. (" + smapFile + ")");
         }
         try {
             //Convert
