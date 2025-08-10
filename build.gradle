@@ -136,8 +136,8 @@ createReleaseBody.configure { Task releaseTask ->
       pattern.include '*.sha256'
     }.sort { File a, File b -> a.name <=> b.name }.forEach { File checksumFile ->
       String name = checksumFile.name.replace('.sha256', '')
-      String[] hash = checksumFile as String[]
-      outputFile.get().asFile << "| ${name} | ${hash[0]} |\n"
+      String hash = checksumFile.text.trim()
+      outputFile.get().asFile << "| ${name} | ${hash} |\n"
     }
   }
 }
