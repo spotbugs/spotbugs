@@ -74,14 +74,22 @@ if (publishTask == null) {
   publishTask = tasks.findByName('publishToMavenLocal')
 }
 Provider<RegularFile> outputFile = layout.buildDirectory.file('release.md')
-List<File> inputFile = subprojects.collect { Project subproject ->
-  subproject.hasProperty('publishing') ? ((PublishingExtension) subproject.publishing).publications.maven.artifacts : []
-}.flatten().collect { MavenArtifact artifact ->
-  artifact.file
-}
 
+// Defer artifact file collection to execution time for Gradle 9 compatibility
 createChecksums.configure { Checksum checksumTask ->
-  checksumTask.files = files(inputFile)
+  checksumTask.files.from provider {
+    subprojects.collect { Project subproject ->
+      if (subproject.hasProperty('publishing')) {
+        PublishingExtension publishing = (PublishingExtension) subproject.publishing
+        if (publishing.publications.findByName('maven')) {
+          return publishing.publications.maven.artifacts.collect { MavenArtifact artifact ->
+            return artifact.file
+          }
+        }
+      }
+      return []
+    }.flatten().findAll { File file -> file != null && file.exists() }
+  }
   if (publishTask != null) {
     checksumTask.dependsOn publishTask
   }
