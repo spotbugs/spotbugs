@@ -9,6 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 - Fix for an error when a record method has the `@SuppressFBWarnings` annotation ([#3622](https://github.com/spotbugs/spotbugs/pull/3622))
 - Fix `SF_SWITCH_FALLTHROUGH` false positive when continuing a loop ([#3617](https://github.com/spotbugs/spotbugs/issues/3617))
+- `CWO_CLOSED_WITHOUT_OPENED` false positive ([#3616](https://github.com/spotbugs/spotbugs/issues/3616))
 
 ## 4.9.4 - 2025-08-07
 ### Changed
