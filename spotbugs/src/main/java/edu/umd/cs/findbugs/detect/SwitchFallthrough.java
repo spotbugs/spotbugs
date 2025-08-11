@@ -318,15 +318,15 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
      * <ul>
      * <li> the branch target is after the next switch offset as it is the case for a switch break</li>
      * <li> or the branch target is before the PC corresponding to the switch instruction</li>
-     * <li> or there's no next switch case</li>
+     * <li> or there's no next switch case (as it is the case for the default case)</li>
      * </ul>
      */
     public boolean isBranchTargetOutsideOfNextCase() {
         int branchTarget = getBranchTarget();
-        SwitchDetails nextwitchDetails = switchHdlr.getNextSwitchDetails(this);
+        SwitchDetails nextSwitchDetails = switchHdlr.getNextSwitchDetails(this);
 
-        if (nextwitchDetails != null) {
-            return branchTarget > nextwitchDetails.getNextSwitchOffset(getPC()) || branchTarget < nextwitchDetails.getSwitchPC();
+        if (nextSwitchDetails != null) {
+            return branchTarget > nextSwitchDetails.getNextSwitchOffset(getPC()) || branchTarget < nextSwitchDetails.getSwitchPC();
         } else {
             return true;
         }
