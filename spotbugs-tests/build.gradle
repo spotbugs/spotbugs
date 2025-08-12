@@ -43,6 +43,8 @@ tasks.named('jacocoTestReport', JacocoReport).configure {
 // Tests below fail if executed with other tests
 // So we run them before all other tests are executed
 tasks.register('unstableTest', Test.class) {
+  testClassesDirs = testing.suites.test.sources.output.classesDirs
+  classpath = testing.suites.test.sources.runtimeClasspath
   useJUnitPlatform()
   filter {
     includeTestsMatching 'PlaceholderTest'
