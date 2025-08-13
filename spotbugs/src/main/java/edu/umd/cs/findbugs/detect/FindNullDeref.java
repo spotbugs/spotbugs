@@ -1446,7 +1446,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
             sourceLocations = doomedLocations;
         }
 
-        if (doomedLocations.isEmpty() || derefLocationSet.isEmpty()) {
+        if (derefLocationSet.isEmpty()) {
             return;
         }
 
