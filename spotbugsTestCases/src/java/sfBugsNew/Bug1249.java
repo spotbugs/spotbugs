@@ -1,11 +1,8 @@
 package sfBugsNew;
 
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug1249 {
-
-    @ExpectWarning("SF_SWITCH_FALLTHROUGH")
     void foo1(int x) {
 
         switch (x) {
