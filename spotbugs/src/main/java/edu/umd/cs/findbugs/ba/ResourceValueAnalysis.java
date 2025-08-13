@@ -106,7 +106,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
                 // If status is OPEN, downgrade to OPEN_ON_EXCEPTION_PATH
                 tmpFact = modifyFrame(fact, null);
                 tmpFact.setStatus(ResourceValueFrame.State.OPEN_ON_EXCEPTION_PATH);
-            } else {
+            } else if (fact.getStatus() != ResourceValueFrame.State.CLOSED) {
                 tmpFact = modifyFrame(fact, null);
                 tmpFact.setStatus(ResourceValueFrame.State.NOT_OPEN_ON_EXCEPTION_PATH);
             }
