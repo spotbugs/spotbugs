@@ -1,4 +1,4 @@
-name: build
+name: Build
 on: [push, pull_request]
 
 permissions:
@@ -19,7 +19,7 @@ jobs:
     continue-on-error: true
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Set up JDK ${{ matrix.java }}
@@ -35,18 +35,17 @@ jobs:
         with:
           path: eclipse-sdk
           key: eclipse-sdk-${{ matrix.os }}-${{ env.eclipse-version }}-${{ env.eclipse-date }}
-
       - name: Download Eclipse on Ubuntu
         if: matrix.os == 'ubuntu-latest'
         run: |
-          curl --continue-at - --create-dirs -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-linux-gtk-x86_64.tar.gz&mirror_id=1' --output eclipse-sdk/eclipse.tar.gz
+          curl --continue-at - --create-dirs --location 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-linux-gtk-x86_64.tar.gz&mirror_id=1' --output eclipse-sdk/eclipse.tar.gz
           tar xzf eclipse-sdk/eclipse.tar.gz eclipse
           echo "eclipseRoot.dir=$(pwd)/eclipse" | tee eclipsePlugin/local.properties
       - name: Download Eclipse on Windows
         if: matrix.os == 'windows-latest'
         run: |
           Remove-item alias:curl
-          curl --continue-at - --create-dirs -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-win32-x86_64.zip&mirror_id=1' -o eclipse-sdk/eclipse.zip
+          curl --continue-at - --create-dirs --location 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-win32-x86_64.zip&mirror_id=1' -o eclipse-sdk/eclipse.zip
           Expand-Archive "eclipse-sdk/eclipse.zip" -DestinationPath "." -Force
           $escapedPwd = $pwd.Path -replace '\\', '\\'
           [System.IO.File]::WriteAllLines("$pwd\\eclipsePlugin\\local.properties", "eclipseRoot.dir=$escapedPwd\\eclipse")
@@ -54,47 +53,29 @@ jobs:
       - name: Download Eclipse on Mac
         if: matrix.os == 'macos-latest'
         run: |
-          curl --continue-at - --create-dirs -L 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-macosx-cocoa-aarch64.dmg&mirror_id=1' --output eclipse-sdk/eclipse.dmg
+          curl --continue-at - --create-dirs --location 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-macosx-cocoa-aarch64.dmg&mirror_id=1' --output eclipse-sdk/eclipse.dmg
           hdiutil attach eclipse-sdk/eclipse.dmg
+          # Mac uses BSD cp which doesn't have --recursive therefore -R is required
           cp -r /Volumes/Eclipse/Eclipse.app /Applications/
           hdiutil detach /Volumes/Eclipse
           echo "eclipseRoot.dir=/Applications/Eclipse.app" | tee eclipsePlugin/local.properties
-      # Disable gpg signing on *nix for time being until we get new keys established, checks will be on windows only for now
+      # Disable gpg decryption of certificate for time being until we get new keys established
       #- name: Pre-build setup
-      #  if: matrix.os != 'windows-latest'
-      #  run: |
-      #    echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
-      #    git fetch --no-tags https://$GITHUB_TOKEN@github.com/spotbugs/spotbugs.git +refs/heads/master:refs/remotes/origin/master
-      #    if [ "$GPG_SECRET_PASSPHRASE" != "" ]; then
-      #      gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
-      #    fi
+      #  if: github.repository_owner == 'spotbugs'
+      #  run: gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
       #  env:
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       #    GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
-      #    KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
-      - name: Pre-build setup Windows
-        if: matrix.os == 'windows-latest'
-        run: |
-          echo "keystorepass=${KEYSTORE_PASS}" >> gradle.properties
-          git fetch --no-tags https://$GITHUB_TOKEN@github.com/spotbugs/spotbugs.git +refs/heads/master:refs/remotes/origin/master
-          if ( "$GPG_SECRET_PASSPHRASE" -ne "" ) {
-            gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
-          }
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
-          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
       - name: Build with Sonar JDK ${{ matrix.java }}, ${{ matrix.os }}
         # https://community.sonarsource.com/t/sonarcloud-now-not-updating-github-pr-and-checks/6595/17
         if: matrix.java == '21'
-        run: |
-          ./gradlew spotlessCheck build smoketest ${SONAR_LOGIN:+sonar} --no-daemon "-Dsonar.token=$SONAR_LOGIN" --scan
+        run: ./gradlew spotlessCheck build smoketest ${SONAR_LOGIN:+sonar} --no-daemon "-Dsonar.token=$SONAR_LOGIN" --scan
         env:
           SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
+          ORG_GRADLE_PROJECT_keystorepass: ${{ secrets.KEYSTORE_PASS }}
       - name: Build JDK ${{ matrix.java }}, ${{ matrix.os }}
         # https://community.sonarsource.com/t/sonarcloud-now-not-updating-github-pr-and-checks/6595/17
         if: matrix.java != '21'
-        run: |
-          ./gradlew spotlessCheck build smoketest --no-daemon --scan
+        run: ./gradlew spotlessCheck build smoketest --no-daemon --scan
         env:
           SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
+          ORG_GRADLE_PROJECT_keystorepass: ${{ secrets.KEYSTORE_PASS }}

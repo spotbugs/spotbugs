@@ -437,10 +437,6 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
             combinedFlags |= EXCEPTION;
         }
 
-        if (a.isCheckForNull() || b.isCheckForNull()) {
-            combinedFlags |= CHECK_FOR_NULL_VAL;
-        }
-
         // Left hand value should be >=, since it is used
         // as the first dimension of the matrix to index.
         if (aKind < bKind) {

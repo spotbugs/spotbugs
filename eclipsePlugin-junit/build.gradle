@@ -1,9 +1,9 @@
 plugins {
-  id "eclipse-convention"
+  id 'eclipse-convention'
 }
 
-apply from: "$rootDir/gradle/checkstyle.gradle"
-apply from: "$rootDir/gradle/jacoco.gradle"
+apply from: "${rootDir}/gradle/checkstyle.gradle"
+apply from: "${rootDir}/gradle/jacoco.gradle"
 
 tasks.named('compileJava', JavaCompile).configure {
   options.release = 11

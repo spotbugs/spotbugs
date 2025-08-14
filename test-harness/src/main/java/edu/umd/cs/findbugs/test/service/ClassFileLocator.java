@@ -23,10 +23,17 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+/**
+ * ClassFileLocator is a utility class that provides methods to locate class files,
+ * JSP files, and JAR files based on their paths or names.
+ * It retrieves the full path to these files from the class loader's resources.
+ */
 public class ClassFileLocator {
     private static final String PREFIX = "file:";
 
     /**
+     * Get the full path to a class file based on its class name.
+     *
      * @param path
      *            class name
      * @return Full path to the class file base on class name.
@@ -42,6 +49,13 @@ public class ClassFileLocator {
         return getFilenameFromUrl(url);
     }
 
+    /**
+     * Get the full path to a JSP file based on its path.
+     *
+     * @param path
+     *            JSP file path
+     * @return Full path to the JSP file.
+     */
     public String getJspFilePath(String path) {
         ClassLoader cl = getClass().getClassLoader();
 
@@ -56,6 +70,13 @@ public class ClassFileLocator {
         return getFilenameFromUrl(url);
     }
 
+    /**
+     * Get the full path to a JAR file based on its path.
+     *
+     * @param path
+     *            JAR file path
+     * @return Full path to the JAR file.
+     */
     public String getJarFilePath(String path) {
         ClassLoader cl = getClass().getClassLoader();
         URL url = cl.getResource(path);

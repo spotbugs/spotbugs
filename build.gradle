@@ -1,24 +1,34 @@
+import org.gradle.crypto.checksum.Checksum
+import org.gradle.api.Task;
+import org.gradle.api.tasks.TaskProvider;
+import org.gradle.api.file.RegularFile;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.Project;
+import org.gradle.api.publish.PublishingExtension;
+import org.gradle.api.publish.maven.MavenArtifact;
+import org.gradle.api.tasks.util.PatternFilterable;
+
 plugins {
-  id "org.sonarqube" version "6.2.0.5505"
-  id "org.gradle.crypto.checksum" version "1.4.0"
-  id "com.github.spotbugs" version "6.2.3"
-  id "io.github.gradle-nexus.publish-plugin" version "2.0.0"
+  id 'org.sonarqube' version '6.2.0.5505'
+  id 'org.gradle.crypto.checksum' version '1.4.0'
+  id 'com.github.spotbugs' version '6.2.4'
+  id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
 group = 'com.github.spotbugs'
-version = '4.9.4-SNAPSHOT'
+version = '4.9.5-SNAPSHOT'
 
-apply from: "$rootDir/gradle/java.gradle"
-apply from: "$rootDir/gradle/jacoco.gradle"
+apply from: "${rootDir}/gradle/java.gradle"
+apply from: "${rootDir}/gradle/jacoco.gradle"
 
 subprojects {
-  apply plugin: "constraints"
-  apply from: "$rootDir/gradle/java.gradle"
-  apply from: "$rootDir/gradle/eclipse.gradle"
-  apply from: "$rootDir/gradle/idea.gradle"
-  apply from: "$rootDir/gradle/test.gradle"
-  if (!project.name.equals("spotbugsTestCases")) {
-    apply from: "$rootDir/gradle/spotless.gradle"
+  apply plugin: 'constraints'
+  apply from: "${rootDir}/gradle/java.gradle"
+  apply from: "${rootDir}/gradle/eclipse.gradle"
+  apply from: "${rootDir}/gradle/idea.gradle"
+  apply from: "${rootDir}/gradle/test.gradle"
+  if (!project.name.equals('spotbugsTestCases')) {
+    apply from: "${rootDir}/gradle/spotless.gradle"
   }
 
   group = 'com.github.spotbugs'
@@ -28,29 +38,26 @@ subprojects {
 allprojects {
   repositories {
     mavenCentral()
-    maven {
-      url = uri("https://repository.apache.org/content/repositories/snapshots/")
-    }
   }
   dependencies {
-    def junitVersion = '5.13.4'
-    compileOnly platform("org.junit:junit-bom:$junitVersion")
-    testImplementation platform("org.junit:junit-bom:$junitVersion")
+    String junitVersion = '5.13.4'
+    implementation platform("org.junit:junit-bom:${junitVersion}")
+    testImplementation platform("org.junit:junit-bom:${junitVersion}")
   }
 }
 
 // https://discuss.gradle.org/t/merge-jacoco-coverage-reports-for-multiproject-setups/12100/6
-tasks.register("jacocoRootReport", JacocoReport.class) {
+tasks.register('jacocoRootReport', JacocoReport.class) {
   description = 'Merge all coverage reports before submit to SonarQube'
-  def reportTasks = project.getTasksByName("jacocoTestReport", true).minus(rootProject.jacocoTestReport)
+  Set<JacocoReport> reportTasks = project.getTasksByName('jacocoTestReport', true).minus(rootProject.jacocoTestReport)
   dependsOn reportTasks
 
   executionData.setFrom reportTasks.executionData
   sourceDirectories.setFrom reportTasks.sourceDirectories
 
   // Only enable class directories related to non-test project
-  classDirectories.setFrom files(reportTasks.classDirectories).filter {
-    !it.toString().contains("-test") && !it.toString().contains("Test") && !it.toString().contains("junit")
+  classDirectories.setFrom files(reportTasks.classDirectories).filter { File dir ->
+    !dir.toString().contains('-test') && !dir.toString().contains('Test') && !dir.toString().contains('junit')
   }
 
   reports {
@@ -60,72 +67,77 @@ tasks.register("jacocoRootReport", JacocoReport.class) {
   }
 }
 
-import org.gradle.crypto.checksum.Checksum
-
-def createReleaseBody = tasks.register("createReleaseBody")
-def createChecksums = tasks.register("createChecksums", Checksum)
-def publishTask = tasks.findByName("publish")
+TaskProvider<Task> createReleaseBody = tasks.register('createReleaseBody')
+TaskProvider<Checksum> createChecksums = tasks.register('createChecksums', Checksum)
+TaskProvider<Task> publishTask = tasks.findByName('publish')
 if (publishTask == null) {
-  publishTask = tasks.findByName("publishToMavenLocal")
+  publishTask = tasks.findByName('publishToMavenLocal')
 }
-def outputFile = layout.buildDirectory.file("release.md")
-def inputFile =  subprojects.collect {
-  it.hasProperty('publishing') ? it.publishing.publications.maven.artifacts : []
-}.flatten().collect {
-  it.file
-}
+Provider<RegularFile> outputFile = layout.buildDirectory.file('release.md')
 
-createChecksums.configure {
-  files = files(inputFile)
+// Defer artifact file collection to execution time for Gradle 9 compatibility
+createChecksums.configure { Checksum checksumTask ->
+  checksumTask.files.from provider {
+    subprojects.collect { Project subproject ->
+      if (subproject.hasProperty('publishing')) {
+        PublishingExtension publishing = (PublishingExtension) subproject.publishing
+        if (publishing.publications.findByName('maven')) {
+          return publishing.publications.maven.artifacts.collect { MavenArtifact artifact ->
+            return artifact.file
+          }
+        }
+      }
+      return []
+    }.flatten().findAll { File file -> file != null && file.exists() }
+  }
   if (publishTask != null) {
-    dependsOn publishTask
+    checksumTask.dependsOn publishTask
   }
-  subprojects.each {
-    dependsOn("${it.name}:jar")
+  subprojects.each { Project subproject ->
+    checksumTask.dependsOn("${subproject.name}:jar")
   }
 
-  dependsOn(":spotbugs:javadocJar")
-  dependsOn(":spotbugs:sourcesJar")
-  dependsOn(":spotbugs-annotations:javadocJar")
-  dependsOn(":spotbugs-annotations:sourcesJar")
-  dependsOn(":spotbugs-ant:javadocJar")
-  dependsOn(":spotbugs-ant:sourcesJar")
-  dependsOn(":test-harness:javadocJar")
-  dependsOn(":test-harness:sourcesJar")
-  dependsOn(":test-harness-core:javadocJar")
-  dependsOn(":test-harness-core:sourcesJar")
-  dependsOn(":test-harness-jupiter:javadocJar")
-  dependsOn(":test-harness-jupiter:sourcesJar")
-  dependsOn(":spotbugs:distZip")
-  dependsOn(":spotbugs:distTar")
+  dependsOn(':spotbugs:javadocJar')
+  dependsOn(':spotbugs:sourcesJar')
+  dependsOn(':spotbugs-annotations:javadocJar')
+  dependsOn(':spotbugs-annotations:sourcesJar')
+  dependsOn(':spotbugs-ant:javadocJar')
+  dependsOn(':spotbugs-ant:sourcesJar')
+  dependsOn(':test-harness:javadocJar')
+  dependsOn(':test-harness:sourcesJar')
+  dependsOn(':test-harness-core:javadocJar')
+  dependsOn(':test-harness-core:sourcesJar')
+  dependsOn(':test-harness-jupiter:javadocJar')
+  dependsOn(':test-harness-jupiter:sourcesJar')
+  dependsOn(':spotbugs:distZip')
+  dependsOn(':spotbugs:distTar')
 }
-createReleaseBody.configure {
-  inputs.files fileTree(layout.buildDirectory.dir("checksums")).matching {
-    include "*.sha256"
+createReleaseBody.configure { Task releaseTask ->
+  releaseTask.inputs.files fileTree(layout.buildDirectory.dir('checksums')).matching { PatternFilterable pattern ->
+    pattern.include '*.sha256'
   }
-  outputs.file outputFile
-  dependsOn createChecksums
+  releaseTask.outputs.file outputFile
+  releaseTask.dependsOn createChecksums
 
+  String version = project.version
   doLast {
     File outputAsFile = outputFile.get().asFile
     outputAsFile.delete()
-    outputAsFile << """SpotBugs ${project.version}
+    outputAsFile << """SpotBugs ${version}
 
 ### CHANGELOG
-- https://github.com/spotbugs/spotbugs/blob/${project.version}/CHANGELOG.md
+- https://github.com/spotbugs/spotbugs/blob/${version}/CHANGELOG.md
 
 ### CHECKSUM
 | file | checksum (sha256) |
 | ---- | ----------------- |
 """
-    fileTree(layout.buildDirectory.dir("checksums")).matching {
-      include "*.sha256"
-    }.sort {
-      it.name
-    }.forEach {
-      def name = it.name.replace(".sha256", "")
-      def hash = it as String[]
-      outputFile.get().asFile << "| ${ name } | ${hash[0]} |\n"
+    fileTree(layout.buildDirectory.dir('checksums')).matching { PatternFilterable pattern ->
+      pattern.include '*.sha256'
+    }.sort { File a, File b -> a.name <=> b.name }.forEach { File checksumFile ->
+      String name = checksumFile.name.replace('.sha256', '')
+      String hash = checksumFile.text.trim()
+      outputFile.get().asFile << "| ${name} | ${hash} |\n"
     }
   }
 }
@@ -133,10 +145,12 @@ createReleaseBody.configure {
 nexusPublishing {
   repositories {
     sonatype {
-      nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
-      snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
+      nexusUrl.set(uri('https://ossrh-staging-api.central.sonatype.com/service/local/'))
+      snapshotRepositoryUrl.set(uri('https://central.sonatype.com/repository/maven-snapshots/'))
+      username.set(findProperty('ossrhUsername') ?: '')
+      password.set(findProperty('ossrhPassword') ?: '')
     }
   }
 }
 
-apply from: "$rootDir/gradle/sonar.gradle"
+apply from: "${rootDir}/gradle/sonar.gradle"

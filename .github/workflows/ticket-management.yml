@@ -1,4 +1,4 @@
-name: 'Automated ticket management'
+name: Ticket Management
 on:
   schedule:
     # Run the check every day.
