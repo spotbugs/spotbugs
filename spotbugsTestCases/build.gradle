@@ -40,7 +40,7 @@ dependencies {
   api project(':spotbugs-annotations')
   implementation 'org.apache.groovy:groovy-all:4.0.28'
   implementation 'org.apache.commons:commons-lang3:3.18.0'
-  implementation 'org.mockito:mockito-core:5.18.0'
+  implementation 'org.mockito:mockito-core:5.19.0'
 }
 
 // spotbugs takes a long time to analyse the module but we don't need that
