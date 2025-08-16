@@ -91,7 +91,7 @@
                               <Earlier class="edu.umd.cs.findbugs.detect.BuildAccessMethodsDatabase"/>
                               <LaterCategory name="reporting" spanplugins="true"/>
                     </SplitPass>
-                    
+
                     <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical"/>
                               <Later class="edu.umd.cs.findbugs.detect.FindHEmismatch"/>
@@ -705,6 +705,8 @@
                     reports="HSM_HIDING_METHOD"/>
           <Detector class="edu.umd.cs.findbugs.detect.BuildAccessMethodsDatabase" speed="fast" reports=""
                     hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindImproperSynchronization" speed="fast"
+                    reports="USO_UNSAFE_METHOD_SYNCHRONIZATION,USO_UNSAFE_STATIC_METHOD_SYNCHRONIZATION,USO_UNSAFE_OBJECT_SYNCHRONIZATION,USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION,USO_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION,USO_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION,USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION,USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION,USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION"/>
 
           <!-- Bug Categories -->
           <BugCategory category="NOISE" hidden="true"/>
@@ -1343,4 +1345,13 @@
           <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_METHOD" category="STYLE"/>
           <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER" category="STYLE"/>
           <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_PACKAGE" category="STYLE"/>
+          <BugPattern abbrev="USO" type="USO_UNSAFE_METHOD_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="USO" type="USO_UNSAFE_STATIC_METHOD_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="USO" type="USO_UNSAFE_OBJECT_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="USO" type="USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="USO" type="USO_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="USO" type="USO_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="USBC" type="USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION" category="SECURITY" />
+          <BugPattern abbrev="USBC" type="USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION" category="SECURITY" />
+          <BugPattern abbrev="USBC" type="USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION" category="SECURITY" />
 </FindbugsPlugin>
