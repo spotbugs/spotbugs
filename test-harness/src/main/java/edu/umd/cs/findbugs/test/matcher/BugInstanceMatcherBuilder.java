@@ -29,7 +29,11 @@ import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.test.service.ClassFileLocator;
 
 /**
- * DSL to build BugInstanceMatcher
+ * Builder for creating a BugInstanceMatcher.
+ * <p>
+ * This class provides a fluent API to set various properties of the bug instance
+ * such as bug type, class name, method name, field name, variable name, line number,
+ * confidence level, and JSP file information.
  */
 public class BugInstanceMatcherBuilder {
 
@@ -44,41 +48,91 @@ public class BugInstanceMatcherBuilder {
     private String jspFile;
     private Integer jspLine;
 
+    /**
+     * Sets the bug type for the bug instance.
+     *
+     * @param bugType
+     *            the type of the bug
+     *
+     * @return this builder instance
+     */
     public BugInstanceMatcherBuilder bugType(String bugType) {
         this.bugType = bugType;
         return this;
     }
 
+    /**
+     * Sets the class name for the bug instance.
+     *
+     * @param className
+     *            the class name
+     *
+     * @return this builder instance
+     */
     public BugInstanceMatcherBuilder inClass(String className) {
         this.className = className;
         return this;
     }
 
+    /**
+     * Sets the method name for the bug instance.
+     *
+     * @param methodName
+     *            the method name
+     *
+     * @return this builder instance
+     */
     public BugInstanceMatcherBuilder inMethod(String methodName) {
         this.methodName = methodName;
         return this;
     }
 
+    /**
+     * Sets the field name for the bug instance.
+     *
+     * @param fieldName
+     *            the field name
+     *
+     * @return this builder instance
+     */
     public BugInstanceMatcherBuilder atField(String fieldName) {
         this.fieldName = fieldName;
         return this;
     }
 
+    /**
+     * Sets the variable name for the bug instance.
+     *
+     * @param variableName
+     *            the variable name
+     *
+     * @return this builder instance
+     */
     public BugInstanceMatcherBuilder atVariable(String variableName) {
         this.variableName = variableName;
         return this;
     }
 
+    /**
+     * Sets the line number for the bug instance.
+     *
+     * @param lineNumber
+     *            the line number
+     *
+     * @return this builder instance
+     */
     public BugInstanceMatcherBuilder atLine(int lineNumber) {
         this.lineNumber = lineNumber;
         return this;
     }
 
     /**
-     * @deprecated Use atJspLine for JSP line mapping
+     * Sets the approximate line number for the bug instance.
+     *
      * @param lineNumberApprox
      *            Line to verify accepting an offset of 1
-     * @return this
+     * @return this builder instance
+     * @deprecated Use atJspLine for JSP line mapping
      */
     @Deprecated
     public BugInstanceMatcherBuilder atLineApprox(int lineNumberApprox) {
@@ -87,29 +141,48 @@ public class BugInstanceMatcherBuilder {
     }
 
     /**
-     * Define the priority of the detector
+     * Sets the confidence level for the bug instance.
      *
      * @param confidence
-     *            The desired confidence
-     * @return this
+     *            the confidence level
+     *
+     * @return this builder instance
      */
     public BugInstanceMatcherBuilder withConfidence(Confidence confidence) {
         this.confidence = confidence;
         return this;
     }
 
+    /**
+     * Sets the JSP file for the bug instance.
+     *
+     * @param jspFile
+     *            the name of the JSP file
+     *
+     * @return this builder instance
+     */
     public BugInstanceMatcherBuilder inJspFile(String jspFile) {
         this.jspFile = jspFile;
         return this;
     }
 
+    /**
+     * Sets the JSP line number for the bug instance.
+     *
+     * @param jspLine
+     *            the line number in the JSP file
+     *
+     * @return this builder instance
+     */
     public BugInstanceMatcherBuilder atJspLine(Integer jspLine) {
         this.jspLine = jspLine;
         return this;
     }
 
     /**
-     * @return Hamcrest Matcher
+     * Builds a BugInstanceMatcher with the provided parameters.
+     *
+     * @return a new BugInstanceMatcher instance
      */
     public BugInstanceMatcher build() {
         //JSP line to Java source conversion

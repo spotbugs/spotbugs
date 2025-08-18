@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.SwitchHandler;
+import edu.umd.cs.findbugs.SwitchHandler.SwitchDetails;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -182,7 +183,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
         if (isSwitch(seen)
                 || isReturn(seen)
-                || (isBranch(seen) && isBranchTargetAfterNextCaseOffset())) {
+                || (isBranch(seen) && isBranchTargetOutsideOfNextCase())) {
             clearAllDeadStores();
         }
 
@@ -273,7 +274,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
         case Const.GOTO_W:
         case Const.GOTO:
-            if (isBranchTargetAfterNextCaseOffset()) {
+            if (isBranchTargetOutsideOfNextCase() || switchHdlr.getDefaultOffset() == getBranchTarget()) {
                 if (biggestJumpTarget < getBranchTarget()) {
                     biggestJumpTarget = getBranchTarget();
                     if (DEBUG) {
@@ -311,11 +312,24 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
     /**
      * A GOTO might correspond to a <code>break</code> or to a do/while/for loop.
      * For loops the branch target will be before the offset of the next case, for breaks we're exiting the switch so the target is actually even after the end of the last case.
+     * The branch target might be before the switch when we're inside another structure such as a loop.
      *
-     * @return <code>true</code> if the branch target is after the next switch offset as it is the case for a switch break.
+     * @return <code>true</code> if:
+     * <ul>
+     * <li> the branch target is after the next switch offset as it is the case for a switch break</li>
+     * <li> or the branch target is before the PC corresponding to the switch instruction</li>
+     * <li> or there's no next switch case (as it is the case for the default case)</li>
+     * </ul>
      */
-    public boolean isBranchTargetAfterNextCaseOffset() {
-        return getBranchTarget() > switchHdlr.getNextSwitchOffset(this);
+    public boolean isBranchTargetOutsideOfNextCase() {
+        int branchTarget = getBranchTarget();
+        SwitchDetails nextSwitchDetails = switchHdlr.getNextSwitchDetails(this);
+
+        if (nextSwitchDetails != null) {
+            return branchTarget > nextSwitchDetails.getNextSwitchOffset(getPC()) || branchTarget < nextSwitchDetails.getSwitchPC();
+        } else {
+            return true;
+        }
     }
 
     boolean justSawHashcode;

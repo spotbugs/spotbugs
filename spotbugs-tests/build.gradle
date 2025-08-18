@@ -1,5 +1,5 @@
-apply from: "$rootDir/gradle/checkstyle.gradle"
-apply from: "$rootDir/gradle/jacoco.gradle"
+apply from: "${rootDir}/gradle/checkstyle.gradle"
+apply from: "${rootDir}/gradle/jacoco.gradle"
 
 dependencies {
   implementation(project(':spotbugs')) {
@@ -15,12 +15,12 @@ dependencies {
   implementation 'org.junit.jupiter:junit-jupiter-engine:5.13.4'
   implementation 'org.junit.jupiter:junit-jupiter-params:5.13.4'
   implementation 'org.hamcrest:hamcrest:3.0'
-  implementation 'org.mockito:mockito-junit-jupiter:5.18.0'
+  implementation 'org.mockito:mockito-junit-jupiter:5.19.0'
   implementation 'org.apache.ant:ant:1.10.15'
   implementation libs.log4j.core
   implementation libs.log4j.slf4j2.impl
   implementation 'com.google.errorprone:error_prone_annotations:2.41.0'
-  implementation files(project(":spotbugs").sourceSets.gui.output)
+  implementation files(project(':spotbugs').sourceSets.gui.output)
   testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -33,27 +33,25 @@ tasks.named('compileJava', JavaCompile).configure {
   options.release = 11
 }
 
-artifacts {
-  archives sourcesJar
-}
-
 tasks.named('jacocoTestReport', JacocoReport).configure {
   dependsOn('unstableTest')
   additionalSourceDirs.setFrom files(project(':spotbugs').sourceSets.main.java.srcDirs)
   additionalClassDirs.setFrom files(project(':spotbugs').sourceSets.main.output.classesDirs)
-  executionData.setFrom files(layout.buildDirectory.file("jacoco/unstableTest.exec"), layout.buildDirectory.file("jacoco/test.exec"))
+  executionData.setFrom files(layout.buildDirectory.file('jacoco/unstableTest.exec'), layout.buildDirectory.file('jacoco/test.exec'))
 }
 
 // Tests below fail if executed with other tests
 // So we run them before all other tests are executed
-tasks.register("unstableTest", Test.class) {
+tasks.register('unstableTest', Test.class) {
+  testClassesDirs = testing.suites.test.sources.output.classesDirs
+  classpath = testing.suites.test.sources.runtimeClasspath
   useJUnitPlatform()
   filter {
-    includeTestsMatching "PlaceholderTest"
-    includeTestsMatching "MutableClassesTest"
+    includeTestsMatching 'PlaceholderTest'
+    includeTestsMatching 'MutableClassesTest'
   }
   testLogging {
-    events "passed", "skipped", "failed"
+    events 'passed', 'skipped', 'failed'
   }
 }
 
@@ -61,8 +59,8 @@ test {
   dependsOn ':spotbugsTestCases:build', 'unstableTest'
   useJUnitPlatform()
   filter {
-    excludeTestsMatching "PlaceholderTest"
-    excludeTestsMatching "MutableClassesTest"
+    excludeTestsMatching 'PlaceholderTest'
+    excludeTestsMatching 'MutableClassesTest'
   }
 }
 

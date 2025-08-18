@@ -235,7 +235,11 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
 
             if (isRecord) {
                 RecordComponentSuppressors suppressors = recordComponentsByName.get(getMethodName());
-                suppressors.accessorMethodSuppressor = suppressor;
+
+                if (suppressors != null) {
+                    // This suppressor was compiled from the header of the record
+                    suppressors.accessorMethodSuppressor = suppressor;
+                }
             }
         } else if (visitingField()) {
             FieldWarningSuppressor suppressor = new FieldWarningSuppressor(
