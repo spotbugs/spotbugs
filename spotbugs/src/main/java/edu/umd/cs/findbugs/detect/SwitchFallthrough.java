@@ -325,9 +325,9 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
     public boolean isBranchTargetOutsideOfNextCase() {
         int branchTarget = getBranchTarget();
         if (getCodeByte(branchTarget) == Const.GOTO) {
-        	return true;
+            return true;
         }
-        
+
         SwitchDetails nextSwitchDetails = switchHdlr.getNextSwitchDetails(this);
 
         if (nextSwitchDetails != null) {
