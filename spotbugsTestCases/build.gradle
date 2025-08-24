@@ -38,7 +38,7 @@ dependencies {
 
   implementation project(':spotbugs')
   api project(':spotbugs-annotations')
-  implementation 'org.apache.groovy:groovy-all:4.0.28'
+  implementation 'org.apache.groovy:groovy-all:5.0.0'
   implementation 'org.apache.commons:commons-lang3:3.18.0'
   implementation 'org.mockito:mockito-core:5.19.0'
 }
