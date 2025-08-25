@@ -3,6 +3,10 @@ package edu.umd.cs.findbugs.util;
 import java.util.*;
 import java.util.stream.Stream;
 
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
@@ -157,6 +161,20 @@ public class MutableClasses {
         return SETTER_LIKE_PREFIXES.stream().anyMatch(methodName::startsWith);
     }
 
+    public static boolean looksLikeASetter(XClass xClass, XMethod xmethod) {
+        return looksLikeASetter(xClass.getSourceSignature(), xmethod);
+    }
+
+    public static boolean looksLikeASetter(String classSig, XMethod xmethod) {
+        // If the method throws an UnsupportedOperationException then we ignore it.
+        if (xmethod.isUnsupported()) {
+            return false;
+        }
+
+        return MutableClasses.looksLikeASetter(xmethod.getName(), classSig,
+                new GenericSignatureParser(xmethod.getSignature()).getReturnTypeSignature());
+    }
+
     /**
      * Analytic information about a {@link JavaClass} relevant to determining its mutability properties.
      */
@@ -199,7 +217,7 @@ public class MutableClasses {
             }
 
             for (Method method : cls.getMethods()) {
-                if (!method.isStatic() && looksLikeASetter(method)) {
+                if (!method.isStatic() && looksLikeASetter(cls, method)) {
                     return true;
                 }
             }
@@ -208,8 +226,8 @@ public class MutableClasses {
             return maybeSuper != null && maybeSuper.isMutable();
         }
 
-        private boolean looksLikeASetter(Method method) {
-            return MutableClasses.looksLikeASetter(method.getName(), getSig(), method.getReturnType().getSignature());
+        private boolean looksLikeASetter(JavaClass cls, Method method) {
+            return MutableClasses.looksLikeASetter(getSig(), XFactory.createXMethod(cls, method));
         }
 
         private String getSig() {
