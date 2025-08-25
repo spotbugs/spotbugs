@@ -77,11 +77,13 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
             jClass.accept(this);
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
+        } catch (CheckedAnalysisException e) {
+            bugReporter.reportMissingClass(xClass.getSuperclassDescriptor(), e);
         }
 
     }
 
-    private boolean isJunit3TestCase(XClass jClass) throws ClassNotFoundException {
+    public static boolean isJunit3TestCase(XClass jClass) throws ClassNotFoundException, CheckedAnalysisException {
         ClassDescriptor sDesc = jClass.getSuperclassDescriptor();
         if (sDesc == null) {
             return false;
@@ -93,17 +95,11 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
         if (sName.equals("java/lang/Object")) {
             return false;
         }
-
-        try {
-            XClass sClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, sDesc);
-            if (sClass == null) {
-                return false;
-            }
-            return isJunit3TestCase(sClass);
-        } catch (CheckedAnalysisException e) {
+        XClass sClass = Global.getAnalysisCache().getClassAnalysis(XClass.class, sDesc);
+        if (sClass == null) {
             return false;
         }
-
+        return isJunit3TestCase(sClass);
     }
 
     private boolean hasTestMethods(JavaClass jClass) {

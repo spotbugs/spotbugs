@@ -22,8 +22,10 @@ package edu.umd.cs.findbugs.ba.npe;
 import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -95,7 +97,15 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
     /** Value is (potentially) null because of a value returned from readline. */
     private static final int READLINE_VAL = (16 << FLAG_SHIFT) | RETURN_VAL;
 
-    private static final int FLAG_MASK = EXCEPTION | PARAM | RETURN_VAL | FIELD_VAL | READLINE_VAL;
+    /** Value is (potentially) null because it was returned from a {@link CheckForNull} method . */
+    private static final int CHECK_FOR_NULL_VAL = (32 << FLAG_SHIFT) | RETURN_VAL;
+
+    private static final int FLAG_MASK = EXCEPTION
+            | PARAM
+            | RETURN_VAL
+            | FIELD_VAL
+            | READLINE_VAL
+            | CHECK_FOR_NULL_VAL;
 
     private static final int[][] mergeMatrix = {
         // NULL, CHECKED_NULL, NN, CHECKED_NN, NO_KABOOM_NN, NSP,
@@ -212,6 +222,13 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
         return hasFlag(READLINE_VAL);
     }
 
+    /**
+     * @return <code>true</code> if that was returned from a {@link CheckForNull} method
+     */
+    public boolean isCheckForNull() {
+        return hasFlag(CHECK_FOR_NULL_VAL);
+    }
+
     public boolean isFieldValue() {
         return hasFlag(FIELD_VAL);
     }
@@ -258,10 +275,10 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
      * Convert to a value known because it was returned from a method in a
      * method property database.
      *
-     * @param methodInvoked
-     *            TODO
+     * @param methodInvoked The invoked method
+     * @param methodNullnessAnnotation The {@link NullnessAnnotation} of the invoked method
      */
-    public IsNullValue markInformationAsComingFromReturnValueOfMethod(XMethod methodInvoked) {
+    public IsNullValue markInformationAsComingFromReturnValueOfMethod(XMethod methodInvoked, NullnessAnnotation methodNullnessAnnotation) {
         FieldDescriptor fieldDescriptor = methodInvoked.getAccessMethodForField();
         if (fieldDescriptor != null) {
             XField f = XFactory.getExactXField(fieldDescriptor);
@@ -271,7 +288,10 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
         int flag = RETURN_VAL;
         if ("readLine".equals(methodInvoked.getName()) && "()Ljava/lang/String;".equals(methodInvoked.getSignature())) {
             flag = READLINE_VAL;
+        } else if (methodNullnessAnnotation == NullnessAnnotation.CHECK_FOR_NULL) {
+            flag = CHECK_FOR_NULL_VAL;
         }
+
         if (getBaseKind() == NO_KABOOM_NN) {
             return new IsNullValue(kind | flag, locationOfKaBoom);
         }

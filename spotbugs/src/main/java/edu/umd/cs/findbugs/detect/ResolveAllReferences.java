@@ -31,7 +31,6 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.NestedAccessUtil;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -61,10 +60,8 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
                 try {
                     JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, c.getClassDescriptor());
                     addAllDefinitions(jclass);
-                } catch (MissingClassException e) {
-                    bugReporter.reportMissingClass(e.getClassDescriptor());
                 } catch (CheckedAnalysisException e) {
-                    bugReporter.logError("Could not find class " + c.getClassDescriptor().toDottedClassName(), e);
+                    bugReporter.reportMissingClass(c.getClassDescriptor(), e);
                 }
             }
             // System.out.println("Done Computing: " +

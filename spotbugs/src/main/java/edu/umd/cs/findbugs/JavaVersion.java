@@ -46,11 +46,6 @@ public class JavaVersion {
     }
 
     /**
-     * StaticConstant for Java 1.5 (Tiger).
-     */
-    public static final JavaVersion JAVA_1_5 = new JavaVersion(1, 5);
-
-    /**
      * Constructor.
      *
      * @param versionString

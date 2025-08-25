@@ -129,7 +129,7 @@ public abstract class AbstractIntegrationTest {
             throw new UncheckedIOException(e);
         }
 
-        final Path dependencies = getFindbugsTestCases().resolve("build/spotbugs/auxclasspath/spotbugsMain");
+        final Path dependencies = getFindbugsTestCases().resolve("build/runtime-classpath.txt");
         try {
             final List<String> lines = Files.readAllLines(dependencies);
             for (String line : lines) {

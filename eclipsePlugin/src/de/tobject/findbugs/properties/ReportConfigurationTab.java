@@ -84,6 +84,7 @@ public class ReportConfigurationTab extends Composite {
 
     private MarkerSeverity initialOfConcernRank;
 
+    private final Button mergeSimilarWarnings;
 
     public ReportConfigurationTab(TabFolder parent, FindbugsPropertyPage page, int style) {
         super(parent, style);
@@ -97,6 +98,18 @@ public class ReportConfigurationTab extends Composite {
 
         Composite rankAndPrioGroup = new Composite(this, SWT.NONE);
         rankAndPrioGroup.setLayout(new GridLayout(2, false));
+
+        mergeSimilarWarnings = new Button(rankAndPrioGroup, SWT.CHECK);
+        mergeSimilarWarnings.setText(getMessage("property.mergeSimilarWarnings"));
+        mergeSimilarWarnings.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
+        mergeSimilarWarnings.setSelection(getCurrentProps().getMergeSimilarWarnings());
+        mergeSimilarWarnings.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                boolean merge = mergeSimilarWarnings.getSelection();
+                getCurrentProps().setMergeSimilarWarnings(merge);
+            }
+        });
 
         createRankGroup(rankAndPrioGroup);
         createPriorityGroup(rankAndPrioGroup);
@@ -353,6 +366,7 @@ public class ReportConfigurationTab extends Composite {
             checkBox.setSelection(filterSettings.containsCategory((String) checkBox.getData()));
         }
         syncSelectedCategories();
+        mergeSimilarWarnings.setSelection(prefs.getMergeSimilarWarnings());
     }
 
     protected List<Button> getChkEnableBugCategoryList() {

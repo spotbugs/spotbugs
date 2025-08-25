@@ -10,12 +10,61 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Added `org.jspecify.annotations.Nullable`, `org.jspecify.annotations.NonNull`, `org.jspecify.annotations.NullUnmarked` and `org.jspecify.annotations.Nullmarked` to supported `NullnessAnnotation`s.
 
 ### Fixed
+- Fix for an error when a record method has the `@SuppressFBWarnings` annotation ([#3622](https://github.com/spotbugs/spotbugs/pull/3622))
+- Fix `SF_SWITCH_FALLTHROUGH` false positive when continuing a loop ([#3617](https://github.com/spotbugs/spotbugs/issues/3617))
+- `CWO_CLOSED_WITHOUT_OPENED` false positive ([#3616](https://github.com/spotbugs/spotbugs/issues/3616))
+
+## 4.9.4 - 2025-08-07
+### Changed
+- `AnnotationMatcher` can now ignore bugs if annotation is also applied on methods or fields. Previously only annotations on classes were considered.
+- Add relevant CWE ids to bugs and refer the CWEs in the bug messages ([#3354](https://github.com/spotbugs/spotbugs/pull/3354)).
+- Replace `LOCAL_VARIABLE_UNKNOWN` with exact method name for `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` ([#3485](https://github.com/spotbugs/spotbugs/pull/3485))
+- `SF_SWITCH_NO_DEFAULT` false positive fix for switch-arrow ([#3645](https://github.com/spotbugs/spotbugs/issues/3645))
+
+
+### Fixed
 - Widen main method recognition according to [JEP 445](https://openjdk.org/jeps/445). ([#3371](https://github.com/spotbugs/spotbugs/pull/3371))
-- Do not report `US_USELESS_SUPPRESSION_ON_METHOD` on generated methods ([#3350](https://github.com/spotbugs/spotbugs/issues/3350))
+- Do not report `US_USELESS_SUPPRESSION_ON_*` on methods, fields, parameters, packages or classes with an `*.Generated` annotation with retention >= class ([#3350](https://github.com/spotbugs/spotbugs/issues/3350))([#3409](https://github.com/spotbugs/spotbugs/pull/3409))
+- Rewrite some member in `ResourceValueFrame.java` to Enum ([#2061](https://github.com/spotbugs/spotbugs/issues/2061))
+- Ignore non-interpreted text when looking for `FS_BAD_DATE_FORMAT_FLAG_COMBO` ([#3387](https://github.com/spotbugs/spotbugs/issues/3387))
+- Fix IllegalArgumentException thrown from `FindNoSideEffectMethods` detector ([#3320](https://github.com/spotbugs/spotbugs/issues/3320))
+- Do not report `RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT` when part of a Mockito `doAnswer()`, `doCallRealMethod()`, `doNothing()`, `doThrow()` or `doReturn()` call ([#3334](https://github.com/spotbugs/spotbugs/issues/3334))
+- Fix `CT_CONSTRUCTOR_THROW` false positive with public and private constructors in specific order of methods ([#3417](https://github.com/spotbugs/spotbugs/issues/3417))
+- Fix `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE`, `AT_NONATOMIC_64BIT_PRIMITIVE` and `AT_STALE_THREAD_WRITE_OF_PRIMITIVE` FP when the relevant code is in private method, which is only called with proper synchronization ([#3428](https://github.com/spotbugs/spotbugs/issues/3428)) 
+- Do not report `RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT` when part of a BDDMockito call ([#3441](https://github.com/spotbugs/spotbugs/issues/3441))
+- Fix `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE` when field of a local variable is set. ([#3459](https://github.com/spotbugs/spotbugs/pull/3459))
+- Fix `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE` FP when there was no compound operation ([#3363](https://github.com/spotbugs/spotbugs/issues/3363))
+- Fix `NM_FIELD_NAMING_CONVENTION` crash in the TestASM detector ([#3489](https://github.com/spotbugs/spotbugs/pull/3489))
+- Do not report `UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR` for fields initialized in JUnit 3/4 `setUp()` method. ([#3169](https://github.com/spotbugs/spotbugs/issues/3169))
+- Fix `US_USELESS_SUPPRESSION_ON_FIELD`/`UUF_UNUSED_FIELD` false positive ([#3496](https://github.com/spotbugs/spotbugs/pull/3496))
+- Make the osgi manifest of the annotations jar Java 8 compatible  ([#3498](https://github.com/spotbugs/spotbugs/pull/3498)) ([#3500](https://github.com/spotbugs/spotbugs/pull/3500))
+- `TextUICommandLine` supports all options encoded in Eclipse preferences file ([#3520](https://github.com/spotbugs/spotbugs/issues/3520))
+- Unnecessary suppressions fix for records headers ([#3471](https://github.com/spotbugs/spotbugs/issues/3471))
+- Dead store fix when switch case contains loops  ([#3530](https://github.com/spotbugs/spotbugs/issues/3530))  ([#3449](https://github.com/spotbugs/spotbugs/issues/3449))
+-  Consider PUTFIELD and PUTSTATIC when looking for assertions with side effects ([#3463](https://github.com/spotbugs/spotbugs/issues/3463))
+- Detect cases when equals() unconditionally returns true or false ([#3528](https://github.com/spotbugs/spotbugs/issues/3528))
+- Do not report that an Iterator does not throw `NoSuchElementException` when `hasNext()` returns true ([#3501](https://github.com/spotbugs/spotbugs/issues/3501))
+- Detect random value cast to int when stored in temporary variable ([#3461](https://github.com/spotbugs/spotbugs/issues/3461))
+- Look for interfaces default methods when searching uncalled private methods ([#1988](https://github.com/spotbugs/spotbugs/issues/1988))
+- Fixed field self assignment false positive ([#2258](https://github.com/spotbugs/spotbugs/issues/2258))
+- Fixed `DMI_INVOKING_TOSTRING_ON_ARRAY` on newer JDK ([#1147](https://github.com/spotbugs/spotbugs/issues/1147))
+- Fix `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` false positive with `Objects.requireNonNull` ([#2965](https://github.com/spotbugs/spotbugs/issues/2965)) ([#3573](https://github.com/spotbugs/spotbugs/issues/3573))
+- Track inner classes access methods to correctly report the bugs ([#2029](https://github.com/spotbugs/spotbugs/issues/2029))
+- `SF_SWITCH_NO_DEFAULT` false positive fix ([#1148](https://github.com/spotbugs/spotbugs/issues/1148)) ([#3572](https://github.com/spotbugs/spotbugs/issues/3572))
+
+### Added
+- Added the unnecessary annotation to the `US_USELESS_SUPPRESSION_ON_*` messages ([#3395](https://github.com/spotbugs/spotbugs/issues/3395))
+- Multi-threaded code checks can be skipped with `@NotThreadSafe` ([#3390](https://github.com/spotbugs/spotbugs/issues/3390))
+- New bug type `CWO_CLOSED_WITHOUT_OPENED` for locks that might be released without even being acquired. (See [SEI CERT rule LCK08-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK08-J.+Ensure+actively+held+locks+are+released+on+exceptional+conditions)) ([#2055](https://github.com/spotbugs/spotbugs/pull/2055))
+  - Breaking change: changed values and new items in `ResourceValueFrame`.
+- Inline access method for method. ([#3481](https://github.com/spotbugs/spotbugs/issues/3481))
+- Added `DMI_MISLEADING_SUBSTRING` for calling `subString(0)` on a StringBuffer/StringBuilder ([#1928](https://github.com/spotbugs/spotbugs/issues/1928))
+
+### Signing
+- Signing for Eclipse plugin has been removed at the current time due to signing keys being expired.  The expired key produced a warning during install, the same is true without signing.
 
 ## 4.9.3 - 2025-03-14
 ### Added
-
 - Introduced `UselessSuppressionDetector` to report the useless annotations instead of `NoteSuppressedWarnings` ([#3348](https://github.com/spotbugs/spotbugs/issues/3348))
 
 ### Fixed
@@ -23,7 +72,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## 4.9.2 - 2025-03-01
 ### Added
-
 - Reporting useless `@SuppressFBWarnings` annotations ([#641](https://github.com/spotbugs/spotbugs/issues/641))
 
 ### Fixed
@@ -326,6 +374,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed CFGBuilderException thrown when `dup_x2` is used to swap the reference and wide-value (double, long) in the stack ([#2146](https://github.com/spotbugs/spotbugs/pull/2146))
 
 ## 4.7.1 - 2022-06-26
+
 ### Fixed
 - Fixed False positives for `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` on try-with-resources with interface references ([#1931](https://github.com/spotbugs/spotbugs/issues/1931))
 - Fixed NullPointerException thrown by detector `FindPotentialSecurityCheckBasedOnUntrustedSource` on Kotlin files. ([#2041](https://github.com/spotbugs/spotbugs/issues/2041))

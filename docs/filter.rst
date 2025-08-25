@@ -81,6 +81,11 @@ This element specifies a method. The ``name`` attribute is used to specify the e
 
 This element specifies a field. The ``name`` attribute is used to specify the exact or regex match pattern for the field name. You can also filter fields according to their signature - use ``type`` attribute to specify fully qualified type of the field. You can specify either or both of these attributes in order to perform name / signature based matches. The ``role`` attribute is the field role.
 
+<Annotation>
+^^^^^^^^^^^^
+
+This element specifies an annotation. The ``name`` attribute is used to specify the exact or regex match pattern for the qualified annotation name. Annotations applied to classes, methods, or fields are considered. Annotation must have a retention policy of ``CLASS`` or ``RUNTIME``.
+
 <Local>
 ^^^^^^^
 

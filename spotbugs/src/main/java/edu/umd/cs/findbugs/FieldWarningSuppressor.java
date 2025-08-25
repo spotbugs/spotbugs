@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.annotations.SuppressMatchType;
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.detect.UselessSuppressionDetector;
 
 public class FieldWarningSuppressor extends ClassWarningSuppressor {
@@ -9,9 +10,21 @@ public class FieldWarningSuppressor extends ClassWarningSuppressor {
 
     FieldAnnotation field;
 
-    public FieldWarningSuppressor(String bugPattern, SuppressMatchType matchType, ClassAnnotation clazz, FieldAnnotation field) {
-        super(bugPattern, matchType, clazz);
+    /**
+     * Indicates whether this field was "user generated" as defined in {@link MemberUtils#isUserGenerated(org.apache.bcel.classfile.FieldOrMethod)}
+     * When a field is not user generated we are not interested in reporting warnings, in particular we do not want to report US_USELESS_SUPPRESSION_ON_FIELD
+     */
+    private final boolean userGeneratedField;
+
+    public FieldWarningSuppressor(String bugPattern,
+            SuppressMatchType matchType,
+            ClassAnnotation clazz,
+            FieldAnnotation field,
+            boolean userGeneratedClass,
+            boolean userGeneratedField) {
+        super(bugPattern, matchType, clazz, userGeneratedClass);
         this.field = field;
+        this.userGeneratedField = userGeneratedField;
     }
 
 
@@ -41,6 +54,12 @@ public class FieldWarningSuppressor extends ClassWarningSuppressor {
     public BugInstance buildUselessSuppressionBugInstance(UselessSuppressionDetector detector) {
         return new BugInstance(detector, BUG_TYPE, PRIORITY)
                 .addClass(clazz.getClassDescriptor())
-                .addField(field);
+                .addField(field)
+                .addString(adjustBugPatternForMessage());
+    }
+
+    @Override
+    public boolean isUselessSuppressionReportable() {
+        return userGeneratedField && super.isUselessSuppressionReportable();
     }
 }
