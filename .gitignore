@@ -1,5 +1,6 @@
 .gradle
 build
+!.idea/icon.png
 .idea
 .project
 .settings
