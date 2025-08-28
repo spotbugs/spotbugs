@@ -22,5 +22,5 @@ Please consider to follow the same points with ***Before reporting problem in de
 
 ## Before you submit a pull request
 
-1. Run `./gradlew spotlessApply build smoketest` in your local to verify your change.
+1. Run `./gradlew rewriteRun spotlessApply build smoketest` in your local to verify your change.
 2. Make sure you updated the `CHANGELOG.md` accordingly. Detailed requirements are explained at the beginning of the changelog.

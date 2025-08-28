@@ -1,0 +1,11 @@
+rewrite {
+    activeRecipe("com.github.spotbugs.openrewrite.DefinitionOfDone")
+    exclusion("**sfBugs**")
+    exclusion("**spotbugsTestCases**")
+    setExportDatatables(true)
+    setFailOnDryRunResults(true)
+}
+
+dependencies {
+    rewrite("org.openrewrite.recipe:rewrite-static-analysis:2.15.0")
+}
