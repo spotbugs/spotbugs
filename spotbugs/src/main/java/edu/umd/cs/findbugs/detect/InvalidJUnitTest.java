@@ -103,7 +103,6 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
     }
 
     private boolean hasTestMethods(JavaClass jClass) {
-        boolean foundTest = false;
         Method[] methods = jClass.getMethods();
         for (Method m : methods) {
             if (m.isPublic() && m.getName().startsWith("test") && m.getSignature().equals("()V")) {
