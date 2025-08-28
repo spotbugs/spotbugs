@@ -65,17 +65,19 @@ jobs:
       #  run: gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg;
       #  env:
       #    GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
+      - name: Pre-build verification
+        run: ./gradlew spotlessCheck smoketest --no-daemon --scan
       - name: Build with Sonar JDK ${{ matrix.java }}, ${{ matrix.os }}
         # https://community.sonarsource.com/t/sonarcloud-now-not-updating-github-pr-and-checks/6595/17
         if: matrix.java == '21'
-        run: ./gradlew spotlessCheck build smoketest ${SONAR_LOGIN:+sonar} --no-daemon "-Dsonar.token=$SONAR_LOGIN" --scan
+        run: ./gradlew build --no-daemon --scan ${SONAR_LOGIN:+sonar} "-Dsonar.token=$SONAR_LOGIN"
         env:
           SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
           ORG_GRADLE_PROJECT_keystorepass: ${{ secrets.KEYSTORE_PASS }}
       - name: Build JDK ${{ matrix.java }}, ${{ matrix.os }}
         # https://community.sonarsource.com/t/sonarcloud-now-not-updating-github-pr-and-checks/6595/17
         if: matrix.java != '21'
-        run: ./gradlew spotlessCheck build smoketest --no-daemon --scan
+        run: ./gradlew build --no-daemon --scan
         env:
           SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
           ORG_GRADLE_PROJECT_keystorepass: ${{ secrets.KEYSTORE_PASS }}
