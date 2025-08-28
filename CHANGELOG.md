@@ -152,6 +152,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Merge conditions of nested ifs ([#3231](https://github.com/spotbugs/spotbugs/pull/3231))
 - Use non deprecated 'getDottedClassName' instead of 'toDottedClassName'([#3251](https://github.com/spotbugs/spotbugs/pull/3251))
 - Use try with resources where possible ([#3253](https://github.com/spotbugs/spotbugs/pull/3253))
+- S1124: Modifiers should be declared in the correct order ([#3657](https://github.com/spotbugs/spotbugs/pull/3657))
 
 ### Changed
 - Bump up Java version to 11

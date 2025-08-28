@@ -81,7 +81,7 @@ public class MainFrame extends FBFrame implements LogSync {
 
     public static final String TITLE_START_TXT = "SpotBugs";
 
-    private final static String WINDOW_MODIFIED = "windowModified";
+    private static final String WINDOW_MODIFIED = "windowModified";
 
     public static final boolean USE_WINDOWS_LAF = false;
 
