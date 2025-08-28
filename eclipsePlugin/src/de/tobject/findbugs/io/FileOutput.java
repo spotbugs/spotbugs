@@ -21,14 +21,11 @@ package de.tobject.findbugs.io;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IProgressMonitor;
-
 /**
  * Interface for an object responsible for generating data to use when writing
  * the contents of a file in the Eclipse workspace.
  *
- * @see de.tobject.findbugs.io.IO#writeFile(IFile, FileOutput, IProgressMonitor)
+ * @see de.tobject.findbugs.io.IO#writeFile(org.eclipse.core.resources.IFile, FileOutput, org.eclipse.core.runtime.IProgressMonitor)
  * @author David Hovemeyer
  */
 public interface FileOutput {

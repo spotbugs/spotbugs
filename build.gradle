@@ -1,18 +1,11 @@
 import org.gradle.crypto.checksum.Checksum
-import org.gradle.api.Task;
-import org.gradle.api.tasks.TaskProvider;
-import org.gradle.api.file.RegularFile;
-import org.gradle.api.provider.Provider;
-import org.gradle.api.Project;
-import org.gradle.api.publish.PublishingExtension;
-import org.gradle.api.publish.maven.MavenArtifact;
-import org.gradle.api.tasks.util.PatternFilterable;
 
 plugins {
   id 'org.sonarqube' version '6.3.1.5724'
   id 'org.gradle.crypto.checksum' version '1.4.0'
   id 'com.github.spotbugs' version '6.2.5'
   id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
+  id 'org.openrewrite.rewrite' version '7.14.1'
 }
 
 group = 'com.github.spotbugs'
@@ -154,3 +147,4 @@ nexusPublishing {
 }
 
 apply from: "${rootDir}/gradle/sonar.gradle"
+apply from: "${rootDir}/gradle/rewrite.gradle"

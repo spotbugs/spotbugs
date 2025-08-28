@@ -1,6 +1,8 @@
 package edu.umd.cs.findbugs.util;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.apache.bcel.Const;
