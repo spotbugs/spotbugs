@@ -1,0 +1,9 @@
+apply plugin: 'pmd'
+
+pmd {
+    consoleOutput = true
+    ruleSetFiles = files("${rootDir}/gradle/pmd.xml")
+    toolVersion = "7.16.0"
+}
+
+tasks.check.dependsOn(pmdMain)

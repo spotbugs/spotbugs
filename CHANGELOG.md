@@ -12,6 +12,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - `CWO_CLOSED_WITHOUT_OPENED` false positive ([#3616](https://github.com/spotbugs/spotbugs/issues/3616))
 - `SF_SWITCH_NO_DEFAULT` false positive fix for switch-arrow ([#3645](https://github.com/spotbugs/spotbugs/issues/3645))
 
+### Added
+- Introduce `PMD` covering S1144: Unused "private" methods should be removed ([#3658](https://github.com/spotbugs/spotbugs/pull/3658))
+
 ### Cleanup
 - S1481: Unused local variables should be removed ([#3654](https://github.com/spotbugs/spotbugs/pull/3654))
 

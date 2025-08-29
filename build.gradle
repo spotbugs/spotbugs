@@ -9,6 +9,7 @@ import org.gradle.api.publish.maven.MavenArtifact;
 import org.gradle.api.tasks.util.PatternFilterable;
 
 plugins {
+  id 'pmd'
   id 'org.sonarqube' version '6.3.1.5724'
   id 'org.gradle.crypto.checksum' version '1.4.0'
   id 'com.github.spotbugs' version '6.2.6'
@@ -36,6 +37,7 @@ subprojects {
 }
 
 allprojects {
+  apply from: "${rootDir}/gradle/pmd.gradle"
   repositories {
     mavenCentral()
   }
