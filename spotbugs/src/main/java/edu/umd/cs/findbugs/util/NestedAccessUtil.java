@@ -155,15 +155,6 @@ public class NestedAccessUtil {
     }
 
     @CheckForNull
-    private static String getHostDottedClassName(JavaClass javaClass) {
-        String hostClassName = getHostClassName(javaClass);
-        if (hostClassName != null) {
-            return ClassName.toDottedClassName(hostClassName);
-        }
-        return null;
-    }
-
-    @CheckForNull
     private static String getHostClassName(JavaClass javaClass) {
         Attribute[] attributes = javaClass.getAttributes();
         for (Attribute attribute : attributes) {

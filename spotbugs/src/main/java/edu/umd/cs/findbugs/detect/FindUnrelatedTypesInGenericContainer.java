@@ -32,7 +32,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.bcel.Const;
-import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -46,7 +45,6 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
@@ -844,53 +842,6 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
             }
         }
         return IncompatibleTypes.SEEMS_OK;
-    }
-
-    // old version of compare types
-    private boolean compareTypesOld(Type parmType, Type argType) {
-        // XXX equality not implemented for GenericObjectType
-        // if (parmType.equals(argType)) return true;
-        // Compare type signatures instead
-        if (GenericUtilities.getString(parmType).equals(GenericUtilities.getString(argType))) {
-            return true;
-        }
-
-        if (parmType instanceof GenericObjectType) {
-            GenericObjectType o = (GenericObjectType) parmType;
-            if (o.getTypeCategory() == GenericUtilities.TypeCategory.WILDCARD_EXTENDS) {
-                return compareTypesOld(o.getExtension(), argType);
-            }
-        }
-        // ignore type variables for now
-        if (parmType instanceof GenericObjectType && !((GenericObjectType) parmType).hasParameters()) {
-            return true;
-        }
-        if (argType instanceof GenericObjectType && !((GenericObjectType) argType).hasParameters()) {
-            return true;
-        }
-
-        // Case: Both are generic containers
-        if (parmType instanceof GenericObjectType && argType instanceof GenericObjectType) {
-            return true;
-        } else {
-            // Don't consider non reference types (should not be possible)
-            if (!(parmType instanceof ReferenceType && argType instanceof ReferenceType)) {
-                return true;
-            }
-
-            // Don't consider non object types (for now)
-            if (!(parmType instanceof ObjectType && argType instanceof ObjectType)) {
-                return true;
-            }
-
-            // Otherwise, compare base types ignoring generic information
-            try {
-                return Repository.instanceOf(((ObjectType) argType).getClassName(), ((ObjectType) parmType).getClassName());
-            } catch (ClassNotFoundException e) {
-            }
-        }
-
-        return true;
     }
 
     /**
