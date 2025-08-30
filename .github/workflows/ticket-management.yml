@@ -7,6 +7,10 @@ on:
     # https://github.com/spotbugs/spotbugs/releases/tag/3.1.0
     - cron: '25 10 * * *'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: true
+
 permissions:
   issues: write
   pull-requests: write
@@ -16,6 +20,7 @@ jobs:
     # Mark stale issues and PRs, then close them 30 days later.
     if: github.repository_owner == 'spotbugs'
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/stale@v9
         with:
