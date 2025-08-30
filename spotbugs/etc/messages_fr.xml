@@ -1688,7 +1688,7 @@ synchronized() {}
   <LongDescription>{1} devrait être sorti de l'interface et mis en package protected</LongDescription>
   <Details>
 <![CDATA[
-<p>Un champ final static défini dans une interface référence un objet modifiable tel qu'un tableau ou une table de hachage. Cet objet pourrait être modifié par accident ou par du code sournois d'un autre paquetage. Pour résoudre cela et éviter cette vulnérabilité, le champ doit être intégré dans une classe et sa visibilité modifiée en package protected.</p>
+<p>Un champ static final défini dans une interface référence un objet modifiable tel qu'un tableau ou une table de hachage. Cet objet pourrait être modifié par accident ou par du code sournois d'un autre paquetage. Pour résoudre cela et éviter cette vulnérabilité, le champ doit être intégré dans une classe et sa visibilité modifiée en package protected.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1734,7 +1734,7 @@ Cependant l'initialisation du champ comporte plusieurs écriture, ce qui requier
   <LongDescription>{1} une Hashtable modifiable</LongDescription>
   <Details>
 <![CDATA[
-<p>Le champ est une référence final static à une <code>Hashtable</code> et peut-être modifié par accident ou par du code malveillant d'un autre paquetage. Ce code peut librement modifier le contenu de la <code>Hashtable</code>.</p>
+<p>Le champ est une référence static final à une <code>Hashtable</code> et peut-être modifié par accident ou par du code malveillant d'un autre paquetage. Ce code peut librement modifier le contenu de la <code>Hashtable</code>.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1743,7 +1743,7 @@ Cependant l'initialisation du champ comporte plusieurs écriture, ce qui requier
   <LongDescription>{1} est un tableau modifiable</LongDescription>
   <Details>
 <![CDATA[
-<p>Le champ est une référence final static à un tableau et peut-être modifié par accident ou par du code malveillant d'un autre paquetage. Ce code peut librement modifier le contenu du tableau.</p>
+<p>Le champ est une référence static final à un tableau et peut-être modifié par accident ou par du code malveillant d'un autre paquetage. Ce code peut librement modifier le contenu du tableau.</p>
 ]]>
   </Details>
  </BugPattern>
