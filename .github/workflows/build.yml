@@ -4,6 +4,10 @@ on: [push, pull_request]
 permissions:
   contents: read # to fetch code (actions/checkout)
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: true
+
 env:
   eclipse-version: 4.24
   eclipse-date: 202206070700
@@ -16,6 +20,7 @@ jobs:
         java: [17.0.1+12, 17, 21, 24]
       max-parallel: 6
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
     continue-on-error: true
 
     steps:
