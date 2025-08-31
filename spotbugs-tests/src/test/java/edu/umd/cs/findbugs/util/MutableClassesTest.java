@@ -2,10 +2,19 @@ package edu.umd.cs.findbugs.util;
 
 import javax.annotation.concurrent.Immutable;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
+
+import edu.umd.cs.findbugs.FindBugs2;
+import edu.umd.cs.findbugs.PrintingBugReporter;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
+import edu.umd.cs.findbugs.classfile.impl.ClassPathImpl;
 
 @Immutable
 class Annotated {
@@ -21,7 +30,18 @@ class Annotated {
     }
 }
 
-class MutableClassesTest {
+class MutableClassesTest {    
+	@BeforeEach
+	void setUp() {
+		IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(new ClassPathImpl(), new PrintingBugReporter());
+		Global.setAnalysisCacheForCurrentThread(analysisCache);
+		FindBugs2.registerBuiltInAnalysisEngines(analysisCache);
+	}
+
+    @AfterEach
+    void teardown() {
+        Global.removeAnalysisCacheForCurrentThread();
+    }
 
     @Test
     void testKnownMutable() {
