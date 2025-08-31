@@ -30,13 +30,13 @@ class Annotated {
     }
 }
 
-class MutableClassesTest {    
-	@BeforeEach
-	void setUp() {
-		IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(new ClassPathImpl(), new PrintingBugReporter());
-		Global.setAnalysisCacheForCurrentThread(analysisCache);
-		FindBugs2.registerBuiltInAnalysisEngines(analysisCache);
-	}
+class MutableClassesTest {
+    @BeforeEach
+    void setUp() {
+        IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(new ClassPathImpl(), new PrintingBugReporter());
+        Global.setAnalysisCacheForCurrentThread(analysisCache);
+        FindBugs2.registerBuiltInAnalysisEngines(analysisCache);
+    }
 
     @AfterEach
     void teardown() {
