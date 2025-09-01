@@ -13,13 +13,16 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix for an error when a record method has the `@SuppressFBWarnings` annotation ([#3622](https://github.com/spotbugs/spotbugs/pull/3622))
 - Fix `SF_SWITCH_FALLTHROUGH` false positive when continuing a loop ([#3617](https://github.com/spotbugs/spotbugs/issues/3617))
 - `CWO_CLOSED_WITHOUT_OPENED` false positive ([#3616](https://github.com/spotbugs/spotbugs/issues/3616))
+- `SF_SWITCH_NO_DEFAULT` false positive fix for switch-arrow ([#3645](https://github.com/spotbugs/spotbugs/issues/3645))
+
+### Cleanup
+- S1481: Unused local variables should be removed ([#3654](https://github.com/spotbugs/spotbugs/pull/3654))
 
 ## 4.9.4 - 2025-08-07
 ### Changed
 - `AnnotationMatcher` can now ignore bugs if annotation is also applied on methods or fields. Previously only annotations on classes were considered.
 - Add relevant CWE ids to bugs and refer the CWEs in the bug messages ([#3354](https://github.com/spotbugs/spotbugs/pull/3354)).
 - Replace `LOCAL_VARIABLE_UNKNOWN` with exact method name for `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` ([#3485](https://github.com/spotbugs/spotbugs/pull/3485))
-- `SF_SWITCH_NO_DEFAULT` false positive fix for switch-arrow ([#3645](https://github.com/spotbugs/spotbugs/issues/3645))
 
 
 ### Fixed
