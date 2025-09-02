@@ -316,6 +316,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
      *
      * @return <code>true</code> if:
      * <ul>
+     * <li> the branch target is a GOTO instruction as it is the case for a no-op (empty block) in an arrow-syntax switch
      * <li> the branch target is after the next switch offset as it is the case for a switch break</li>
      * <li> or the branch target is before the PC corresponding to the switch instruction</li>
      * <li> or there's no next switch case (as it is the case for the default case)</li>
@@ -323,6 +324,10 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
      */
     public boolean isBranchTargetOutsideOfNextCase() {
         int branchTarget = getBranchTarget();
+        if (getCodeByte(branchTarget) == Const.GOTO) {
+            return true;
+        }
+
         SwitchDetails nextSwitchDetails = switchHdlr.getNextSwitchDetails(this);
 
         if (nextSwitchDetails != null) {
