@@ -2,6 +2,8 @@ package edu.umd.cs.findbugs.util;
 
 import javax.annotation.concurrent.Immutable;
 
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,11 +38,16 @@ class MutableClassesTest {
         IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(new ClassPathImpl(), new PrintingBugReporter());
         Global.setAnalysisCacheForCurrentThread(analysisCache);
         FindBugs2.registerBuiltInAnalysisEngines(analysisCache);
+
+        Project project = new Project();
+        AnalysisContext analysisContext = new AnalysisContext(project);
+        AnalysisContext.setCurrentAnalysisContext(analysisContext);
     }
 
     @AfterEach
     void teardown() {
         Global.removeAnalysisCacheForCurrentThread();
+        AnalysisContext.removeCurrentAnalysisContext();
     }
 
     @Test
