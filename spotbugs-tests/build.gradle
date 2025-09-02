@@ -36,9 +36,11 @@ tasks.named('compileJava', JavaCompile).configure {
 tasks.named('jacocoTestReport', JacocoReport).configure {
   additionalSourceDirs.setFrom files(project(':spotbugs').sourceSets.main.java.srcDirs)
   additionalClassDirs.setFrom files(project(':spotbugs').sourceSets.main.output.classesDirs)
+  executionData.setFrom files(layout.buildDirectory.file('jacoco/test.exec'))
 }
 
 test {
+  dependsOn ':spotbugsTestCases:build'
   useJUnitPlatform()
 }
 

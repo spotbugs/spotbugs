@@ -2,19 +2,16 @@ package edu.umd.cs.findbugs.util;
 
 import javax.annotation.concurrent.Immutable;
 
-import org.junit.jupiter.api.AfterEach;
+import org.apache.bcel.Repository;
+import org.apache.bcel.util.SyntheticRepository;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 
-import edu.umd.cs.findbugs.FindBugs2;
-import edu.umd.cs.findbugs.PrintingBugReporter;
-import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
-import edu.umd.cs.findbugs.classfile.impl.ClassPathImpl;
+import edu.umd.cs.findbugs.classfile.ICodeBase;
+import edu.umd.cs.findbugs.classfile.impl.SingleFileCodeBase;
 
 @Immutable
 class Annotated {
@@ -31,16 +28,10 @@ class Annotated {
 }
 
 class MutableClassesTest {
-    @BeforeEach
-    void setUp() {
-        IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(new ClassPathImpl(), new PrintingBugReporter());
-        Global.setAnalysisCacheForCurrentThread(analysisCache);
-        FindBugs2.registerBuiltInAnalysisEngines(analysisCache);
-    }
-
-    @AfterEach
-    void teardown() {
-        Global.removeAnalysisCacheForCurrentThread();
+    @BeforeAll
+    static void setUp() {
+        // When running inside the build other tests might set the spotbugs repository
+        Repository.setRepository(SyntheticRepository.getInstance());
     }
 
     @Test
@@ -122,6 +113,9 @@ class MutableClassesTest {
 
     @Test
     void testImmutable() {
+        ICodeBase codeBase = new SingleFileCodeBase(null, "build/classes/java/main/edu/umd/cs/findbugs/util/MutableClassesTest$Immutable.class");
+        //classPath.addCodeBase(codeBase);
+
         Assertions.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/MutableClassesTest$Immutable;"));
     }
 
