@@ -32,6 +32,7 @@ java {
 tasks.named('compileJava', JavaCompile).configure {
   options.release = 11
 }
+
 tasks.named('jacocoTestReport', JacocoReport).configure {
   dependsOn('unstableTest')
   additionalSourceDirs.setFrom files(project(':spotbugs').sourceSets.main.java.srcDirs)
@@ -62,6 +63,7 @@ test {
     excludeTestsMatching 'MutableClassesTest'
   }
 }
+
 
 spotbugs {
   ignoreFailures = true
