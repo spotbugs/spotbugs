@@ -1,5 +1,8 @@
 package edu.umd.cs.findbugs.util;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import javax.annotation.concurrent.Immutable;
 
 import org.junit.jupiter.api.Assertions;
@@ -97,6 +100,10 @@ class MutableClassesTest {
 
         public static void setImmutable(Immutable imm) {
             immutable = imm;
+        }
+
+        public void writeToStream(OutputStream os) throws IOException {
+            os.write(n);
         }
     }
 
