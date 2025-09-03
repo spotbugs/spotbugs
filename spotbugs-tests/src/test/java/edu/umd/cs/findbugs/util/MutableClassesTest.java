@@ -10,9 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 
-import edu.umd.cs.findbugs.classfile.ICodeBase;
-import edu.umd.cs.findbugs.classfile.impl.SingleFileCodeBase;
-
 @Immutable
 class Annotated {
     int n;
@@ -113,9 +110,6 @@ class MutableClassesTest {
 
     @Test
     void testImmutable() {
-        ICodeBase codeBase = new SingleFileCodeBase(null, "build/classes/java/main/edu/umd/cs/findbugs/util/MutableClassesTest$Immutable.class");
-        //classPath.addCodeBase(codeBase);
-
         Assertions.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/MutableClassesTest$Immutable;"));
     }
 
