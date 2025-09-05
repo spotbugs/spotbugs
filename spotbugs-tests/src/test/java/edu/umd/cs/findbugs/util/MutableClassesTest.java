@@ -2,21 +2,23 @@ package edu.umd.cs.findbugs.util;
 
 import javax.annotation.concurrent.Immutable;
 
-import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnJre;
-import org.junit.jupiter.api.condition.JRE;
-
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.PrintingBugReporter;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.classfile.impl.ClassPathImpl;
+import org.apache.bcel.Repository;
+import org.apache.bcel.util.SyntheticRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 @Immutable
 class Annotated {
@@ -33,8 +35,14 @@ class Annotated {
 }
 
 class MutableClassesTest {
+    @BeforeAll
+    static void setUp() {
+        // When running inside the build other tests might set the spotbugs repository
+        Repository.setRepository(SyntheticRepository.getInstance());
+    }
+
     @BeforeEach
-    void setUp() {
+    void setUpEach() {
         IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(new ClassPathImpl(), new PrintingBugReporter());
         Global.setAnalysisCacheForCurrentThread(analysisCache);
         FindBugs2.registerBuiltInAnalysisEngines(analysisCache);
