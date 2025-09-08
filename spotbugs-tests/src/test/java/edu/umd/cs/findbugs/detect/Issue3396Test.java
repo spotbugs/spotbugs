@@ -7,7 +7,7 @@ class Issue3396Test extends AbstractIntegrationTest {
 
     @Test
     void testClassLevelSuppression() {
-        performAnalysis("ghIssues/issue3396/Issue3396.class");
+        performAnalysis("ghIssues/issue3396/Issue3396.class", "ghIssues/issue3396/Generated.class");
 
         assertBugInClassCount("US_USELESS_SUPPRESSION_ON_CLASS", "ghIssues.issue3396.Issue3396", 0);
         assertBugInClassCount("US_USELESS_SUPPRESSION_ON_FIELD", "ghIssues.issue3396.Issue3396", 0);
@@ -17,7 +17,7 @@ class Issue3396Test extends AbstractIntegrationTest {
 
     @Test
     void testPackageLevelSuppression() {
-        performAnalysis("ghIssues/issue3396/package-info.class");
+        performAnalysis("ghIssues/issue3396/package-info.class", "ghIssues/issue3396/Generated.class");
 
         assertBugInClassCount("US_USELESS_SUPPRESSION_ON_PACKAGE", "ghIssues.issue3396.Issue3396", 0);
     }
