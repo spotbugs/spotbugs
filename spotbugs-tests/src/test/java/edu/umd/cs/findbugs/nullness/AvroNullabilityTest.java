@@ -25,14 +25,16 @@ class AvroNullabilityTest {
     @Test
     void checkedAvroNullableReturn_isOk(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
-                Paths.get("../spotbugsTestCases/build/classes/java/main/CheckedAvroNullableReturn.class"));
+                Paths.get("../spotbugsTestCases/build/classes/java/main/CheckedAvroNullableReturn.class"),
+                Paths.get("../spotbugsTestCases/build/classes/java/main/org/apache/avro/reflect/Nullable.class"));
         assertThat(bugCollection, emptyIterable());
     }
 
     @Test
     void uncheckedAvroNullableReturn_isDetected(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
-                Paths.get("../spotbugsTestCases/build/classes/java/main/UncheckedAvroNullableReturn.class"));
+                Paths.get("../spotbugsTestCases/build/classes/java/main/UncheckedAvroNullableReturn.class"),
+                Paths.get("../spotbugsTestCases/build/classes/java/main/org/apache/avro/reflect/Nullable.class"));
 
         assertThat(bugCollection, containsExactly(1, bug()));
     }
