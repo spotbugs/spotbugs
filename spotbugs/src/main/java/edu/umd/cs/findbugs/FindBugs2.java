@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -893,7 +894,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
         // If needed, load SourceInfoMap
         if (sourceInfoFileName != null) {
             SourceInfoMap sourceInfoMap = analysisContext.getSourceInfoMap();
-            sourceInfoMap.read(new FileInputStream(sourceInfoFileName));
+            sourceInfoMap.read(Files.newInputStream(Path.of(sourceInfoFileName)));
         }
     }
 

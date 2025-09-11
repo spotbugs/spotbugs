@@ -29,8 +29,6 @@ package edu.umd.cs.findbugs.config;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -166,7 +164,7 @@ public class UserPreferences implements Cloneable {
             return;
         }
         try {
-            read(new FileInputStream(prefFile));
+            read(Files.newInputStream(prefFile.toPath()));
         } catch (IOException e) {
             // Ignore - just use default preferences
         }
@@ -266,7 +264,7 @@ public class UserPreferences implements Cloneable {
     public void write() {
         try {
             File prefFile = new File(SystemProperties.getProperty("user.home"), PREF_FILE_NAME);
-            write(new FileOutputStream(prefFile));
+            write(Files.newOutputStream(prefFile.toPath()));
         } catch (IOException e) {
             if (FindBugs.DEBUG) {
                 e.printStackTrace(); // Ignore

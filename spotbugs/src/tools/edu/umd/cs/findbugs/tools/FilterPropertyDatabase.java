@@ -1,17 +1,16 @@
 package edu.umd.cs.findbugs.tools;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.tools.FilterAndCombineBitfieldPropertyDatabase.Status;
-import edu.umd.cs.findbugs.util.Util;
 
 /*
  * FindBugs - Find Bugs in Java programs
@@ -47,7 +46,7 @@ public class FilterPropertyDatabase {
     public static void main(String[] args) throws IOException {
         InputStream inSource = System.in;
         if (args.length > 0) {
-            inSource = new FileInputStream(args[0]);
+            inSource = Files.newInputStream(Path.of(args[0]));
         }
         process(inSource);
 
@@ -55,13 +54,10 @@ public class FilterPropertyDatabase {
 
     /**
      * @param inSource
-     * @throws UnsupportedEncodingException
      * @throws IOException
      */
-    private static void process(@WillClose InputStream inSource) throws UnsupportedEncodingException, IOException {
-        BufferedReader in = null;
-        try {
-            in = new BufferedReader(Util.getReader(inSource));
+    private static void process(@WillClose InputStream inSource) throws IOException {
+        try (BufferedReader in = new BufferedReader(Util.getReader(inSource))) {
 
             Pattern p = Pattern.compile("^(([^,]+),.+),([0-9]+)\\|(.+)$");
 
@@ -84,8 +80,6 @@ public class FilterPropertyDatabase {
                 }
 
             }
-        } finally {
-            Util.closeSilently(in);
         }
     }
 

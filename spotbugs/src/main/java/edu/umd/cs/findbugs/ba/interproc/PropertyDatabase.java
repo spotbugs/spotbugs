@@ -21,14 +21,14 @@ package edu.umd.cs.findbugs.ba.interproc;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -123,7 +123,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
      * @throws PropertyDatabaseFormatException
      */
     public void readFromFile(String fileName) throws IOException, PropertyDatabaseFormatException {
-        read(new FileInputStream(fileName));
+        read(Files.newInputStream(Path.of(fileName)));
     }
 
     /**
@@ -164,7 +164,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
      * @throws IOException
      */
     public void writeToFile(String fileName) throws IOException {
-        write(new FileOutputStream(fileName));
+        write(Files.newOutputStream(Path.of(fileName)));
     }
 
     // @SuppressWarnings("unchecked")
