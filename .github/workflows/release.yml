@@ -22,7 +22,7 @@ jobs:
       contents: write # to push pages branch (peaceiris/actions-gh-pages)
 
     if: github.repository_owner == 'spotbugs'
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 30
 
     steps:
@@ -48,12 +48,9 @@ jobs:
       - uses: gradle/actions/wrapper-validation@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
       - name: Download Eclipse
         run: |
-          Remove-item alias:curl
-          curl --continue-at - --create-dirs --location 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-win32-x86_64.zip&mirror_id=1' --output eclipse-sdk/eclipse.zip
-          Expand-Archive "eclipse-sdk/eclipse.zip" -DestinationPath "." -Force
-          $escapedPwd = $pwd.Path -replace '\\', '\\'
-          [System.IO.File]::WriteAllLines("$pwd\\eclipsePlugin\\local.properties", "eclipseRoot.dir=$escapedPwd\\eclipse")
-        shell: powershell
+          curl --continue-at - --create-dirs --location 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-linux-gtk-x86_64.tar.gz&mirror_id=1' --output eclipse-sdk/eclipse.tar.gz
+          tar xzf eclipse-sdk/eclipse.tar.gz eclipse
+          echo "eclipseRoot.dir=$(pwd)/eclipse" | tee eclipsePlugin/local.properties
       - name: Build on tag
         if: github.ref_type == 'tag'
         run: |

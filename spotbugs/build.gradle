@@ -246,7 +246,7 @@ TaskProvider<Copy> scripts = tasks.register('scripts', Copy) {
 
   into(layout.buildDirectory.dir('bin'))
   duplicatesStrategy = DuplicatesStrategy.FAIL
-  filePermissions{
+  filePermissions {
     unix (0755)
   }
 }
@@ -313,7 +313,7 @@ tasks.named('distTar', Tar) {
 }
 TaskProvider<Zip> distZip = tasks.named('distZip', Zip) {
   duplicatesStrategy = DuplicatesStrategy.FAIL
-  filePermissions{
+  filePermissions {
     unix (0755)
   }
 }
