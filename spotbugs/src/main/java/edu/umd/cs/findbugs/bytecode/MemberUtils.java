@@ -17,21 +17,21 @@
  */
 package edu.umd.cs.findbugs.bytecode;
 
+import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.FieldOrMethod;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Synthetic;
 import org.apache.bcel.generic.AnnotationEntryGen;
-import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldGenOrMethodGen;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.ba.ClassMember;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
-import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 
 /**
  * Utility to analyze class members.
@@ -89,12 +89,12 @@ public final class MemberUtils {
     }
 
     private static boolean isGeneratedMethod(final FieldGenOrMethodGen m) {
-        ConstantPoolGen constantPool = m.getConstantPool();
+        ConstantPool constantPool = m.getConstantPool().getConstantPool();
 
         for (AnnotationEntryGen a : m.getAnnotationEntries()) {
             // We could call a.getAnnotation().getAnnotationType() but (as of BCEL 6.10.0) this logs "Duplicating value: ..."
             // See: https://github.com/spotbugs/spotbugs/issues/3621
-            String typeName = constantPool.getConstantPool().getConstantUtf8(a.getTypeIndex()).getBytes();
+            String typeName = constantPool.getConstantUtf8(a.getTypeIndex()).getBytes();
 
             if (typeName.endsWith(GENERATED_NAME_SUFFIX)) {
                 return true;
