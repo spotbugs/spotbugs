@@ -64,7 +64,7 @@ public class ViewCFG implements Detector {
 
             try (OutputStream outputStream = Files.newOutputStream(methodFile);
                     BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
-                    PrintStream out = new PrintStream(bufferedOutputStream, false, Charset.defaultCharset().name())) {
+                    PrintStream out = new PrintStream(bufferedOutputStream, false, Charset.defaultCharset())) {
                 analyzeMethod(classContext, method, out);
             } catch (CFGBuilderException e) {
                 bugReporter.logError("Error analyzing method", e);

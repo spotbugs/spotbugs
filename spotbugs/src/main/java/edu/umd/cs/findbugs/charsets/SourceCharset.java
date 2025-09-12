@@ -37,12 +37,6 @@ import java.nio.file.Path;
  */
 public class SourceCharset {
 
-    public static final Charset charset;
-
-    static {
-        charset = Charset.defaultCharset();
-    }
-
     public static Writer fileWriter(File fileName) throws IOException {
         return new OutputStreamWriter(Files.newOutputStream(fileName.toPath()), Charset.defaultCharset());
     }
@@ -60,7 +54,7 @@ public class SourceCharset {
     }
 
     public static BufferedReader bufferedReader(InputStream in) {
-        return new BufferedReader(new InputStreamReader(in, charset));
+        return new BufferedReader(new InputStreamReader(in, Charset.defaultCharset()));
     }
 
 }

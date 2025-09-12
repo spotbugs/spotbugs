@@ -30,7 +30,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -43,21 +42,12 @@ import javax.annotation.WillCloseWhenClosed;
  */
 public class UTF8 {
 
-    /**
-     *
-     */
-    private static final String UTF_8 = StandardCharsets.UTF_8.name();
-
     public static PrintStream printStream(OutputStream out) {
         return printStream(out, false);
     }
 
     public static PrintStream printStream(OutputStream out, boolean autoflush) {
-        try {
-            return new PrintStream(out, autoflush, UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            throw new AssertionError("UTF-8 not supported");
-        }
+        return new PrintStream(out, autoflush, StandardCharsets.UTF_8);
     }
 
     public static Writer writer(OutputStream out) {
