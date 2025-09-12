@@ -192,25 +192,6 @@ public class IO {
     }
 
     /**
-     * Close given InputStream, ignoring any resulting exception.
-     *
-     * @param inputStream
-     *            the InputStream to close; may be null (in which case nothing
-     *            happens)
-     */
-    public static void close(@CheckForNull InputStream inputStream) {
-        if (inputStream == null) {
-            return;
-        }
-
-        try {
-            inputStream.close();
-        } catch (IOException e) {
-            // Ignore
-        }
-    }
-
-    /**
      * Close given OutputStream, ignoring any resulting exception.
      *
      * @param outputStream

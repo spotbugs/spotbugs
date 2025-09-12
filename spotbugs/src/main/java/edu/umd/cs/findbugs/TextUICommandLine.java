@@ -22,8 +22,6 @@ package edu.umd.cs.findbugs;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -463,7 +461,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
             try {
                 @WillCloseWhenClosed
-                OutputStream oStream = new BufferedOutputStream(new FileOutputStream(outputFile));
+                OutputStream oStream = new BufferedOutputStream(Files.newOutputStream(outputFile.toPath()));
                 if (fileName.endsWith(".gz")) {
                     oStream = new GZIPOutputStream(oStream);
                 }
@@ -616,7 +614,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
             project.addSourceDirs(sourceDirs);
         } else if (USER_PREFS.equals(option)) {
             UserPreferences prefs = UserPreferences.createDefaultUserPreferences();
-            prefs.read(new FileInputStream(argument));
+            prefs.read(Files.newInputStream(Path.of(argument)));
             project.setConfiguration(prefs);
         } else {
             super.handleOptionWithArgument(option, argument);
