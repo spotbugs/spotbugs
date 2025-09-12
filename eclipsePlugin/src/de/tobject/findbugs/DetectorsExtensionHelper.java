@@ -19,8 +19,9 @@
 package de.tobject.findbugs;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.SortedMap;
@@ -36,8 +37,6 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
-
-import de.tobject.findbugs.io.IO;
 
 /**
  * Helper class to read contributions for the "detectorPlugins" extension point
@@ -191,14 +190,10 @@ public class DetectorsExtensionHelper {
         Properties props = new Properties();
         File buildProps = new File(sourceDir, "build.properties");
         if (buildProps.isFile()) {
-            FileInputStream inStream = null;
-            try {
-                inStream = new FileInputStream(buildProps);
+            try (InputStream inStream = Files.newInputStream(buildProps.toPath())) {
                 props.load(inStream);
             } catch (IOException e) {
                 FindbugsPlugin.getDefault().logException(e, "Failed to read build.properties for bundle " + bundleName);
-            } finally {
-                IO.closeQuietly(inStream);
             }
         }
         // this works only for plugins which are self-contained and do not

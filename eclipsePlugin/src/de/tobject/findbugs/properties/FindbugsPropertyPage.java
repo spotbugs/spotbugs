@@ -34,7 +34,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.preference.IPreferencePage;
@@ -180,7 +180,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
     }
 
     private void initPreferencesStore(IProject currProject) {
-        workspaceStore = new ScopedPreferenceStore(new InstanceScope(), FindbugsPlugin.PLUGIN_ID);
+        workspaceStore = new ScopedPreferenceStore(ConfigurationScope.INSTANCE, FindbugsPlugin.PLUGIN_ID);
         if (currProject != null) {
             projectStore = new ScopedPreferenceStore(new ProjectScope(currProject), FindbugsPlugin.PLUGIN_ID);
             projectPropsInitiallyEnabled = FindbugsPlugin.isProjectSettingsEnabled(currProject);

@@ -39,12 +39,6 @@ import javax.annotation.WillCloseWhenClosed;
  */
 public class UserTextFile {
 
-    public static final Charset charset;
-
-    static {
-        charset = Charset.defaultCharset();
-    }
-
     public static Writer fileWriter(String fileName) throws IOException {
         return new OutputStreamWriter(Files.newOutputStream(Path.of(fileName)), Charset.defaultCharset());
     }
@@ -55,7 +49,7 @@ public class UserTextFile {
 
 
     public static Reader reader(@WillCloseWhenClosed InputStream in) {
-        return new InputStreamReader(in, charset);
+        return new InputStreamReader(in, Charset.defaultCharset());
     }
 
     public static BufferedReader bufferedReader(@WillCloseWhenClosed InputStream in) {

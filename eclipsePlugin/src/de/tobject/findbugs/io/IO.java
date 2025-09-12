@@ -23,8 +23,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
 
 import javax.annotation.Nonnull;
 
@@ -102,7 +103,7 @@ public abstract class IO {
      *            the FileOutput object responsible for generating the data
      */
     public static void writeFile(final File file, final FileOutput output, final IProgressMonitor monitor) throws CoreException {
-        try (FileOutputStream fout = new FileOutputStream(file);
+        try (OutputStream fout = Files.newOutputStream(file.toPath());
                 BufferedOutputStream bout = new BufferedOutputStream(fout)) {
             if (monitor != null) {
                 monitor.subTask("writing data to " + file.getName());

@@ -20,9 +20,9 @@
 
 package de.tobject.findbugs.builder;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +48,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.tobject.findbugs.EclipseGuiCallback;
 import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.io.IO;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.MarkerUtil;
@@ -533,18 +532,12 @@ public class FindBugsWorker {
 
     private void reportFromXml(final String xmlFileName, final Project findBugsProject, final Reporter bugReporter) {
         if (!"".equals(xmlFileName)) {
-            FileInputStream input = null;
-            try {
-                input = new FileInputStream(xmlFileName);
+            try (InputStream input = Files.newInputStream(java.nio.file.Path.of(xmlFileName))) {
                 bugReporter.reportBugsFromXml(input, findBugsProject);
-            } catch (FileNotFoundException e) {
-                FindbugsPlugin.getDefault().logException(e, "XML file not found: " + xmlFileName);
             } catch (DocumentException e) {
                 FindbugsPlugin.getDefault().logException(e, "Invalid XML file: " + xmlFileName);
             } catch (IOException e) {
                 FindbugsPlugin.getDefault().logException(e, "Error loading SpotBugs results xml file: " + xmlFileName);
-            } finally {
-                IO.closeQuietly(input);
             }
         }
     }

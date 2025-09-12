@@ -11,11 +11,11 @@
 package org.eclipse.jdt.testplugin;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.zip.ZipFile;
@@ -62,8 +62,6 @@ import org.junit.jupiter.api.Assertions;
 public class JavaProjectHelper {
 
     public static final IPath RT_STUBS_15 = new Path("testresources/rtstubs15.jar");
-
-    private static final int MAX_RETRY = 5;
 
     /**
      * Creates a IJavaProject.
@@ -381,7 +379,7 @@ public class JavaProjectHelper {
             IPath sourceAttachRoot) throws IOException, CoreException {
         IProject project = jproject.getProject();
         IFile newFile = project.getFile(jarPath.lastSegment());
-        try (InputStream inputStream = new FileInputStream(jarPath.toFile())) {
+        try (InputStream inputStream = Files.newInputStream(jarPath.toFile().toPath())) {
             newFile.create(inputStream, true, null);
         }
         return addLibrary(jproject, newFile.getFullPath(), sourceAttachPath, sourceAttachRoot);
