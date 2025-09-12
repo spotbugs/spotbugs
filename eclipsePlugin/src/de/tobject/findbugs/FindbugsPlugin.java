@@ -146,7 +146,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     /** Controls debugging of the plugin */
     public static boolean DEBUG;
 
-
     public static final String OLD_PLUGIN_ID = "edu.umd.cs.findbugs.plugin.eclipse";
 
     /**
@@ -425,12 +424,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         }
         // need to call from UI thread
         final IWorkbenchWindow[] window = new IWorkbenchWindow[1];
-        Display.getDefault().syncExec(new Runnable() {
-            @Override
-            public void run() {
-                window[0] = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-            }
-        });
+        Display.getDefault().syncExec(() -> window[0] = PlatformUI.getWorkbench().getActiveWorkbenchWindow());
         return window[0];
     }
 
