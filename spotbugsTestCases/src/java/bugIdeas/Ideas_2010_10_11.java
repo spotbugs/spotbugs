@@ -2,8 +2,8 @@ package bugIdeas;
 
 import java.util.Collection;
 
-import javax.ejb.EJBLocalObject;
-import javax.ejb.RemoveException;
+import jakarta.ejb.EJBLocalObject;
+import jakarta.ejb.RemoveException;
 
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;

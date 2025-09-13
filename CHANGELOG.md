@@ -16,6 +16,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Cleanup
 - S1481: Unused local variables should be removed ([#3654](https://github.com/spotbugs/spotbugs/pull/3654))
+- Moved test libraries to jakarta namespace including switching off jsr305 where possible for jakarta.annotatoin ([#3695](https://github.com/spotbugs/spotbugs/pull/3695))
 
 ## 4.9.4 - 2025-08-07
 ### Changed

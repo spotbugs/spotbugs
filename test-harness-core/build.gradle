@@ -6,6 +6,7 @@ dependencies {
   api (project(':spotbugs')) {
     transitive = true
   }
+  compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
 }
 
 java {

@@ -3,7 +3,7 @@ package edu.umd.cs.findbugs.test;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.IFindBugsEngine;
 
