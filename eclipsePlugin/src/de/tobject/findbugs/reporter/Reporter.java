@@ -25,7 +25,6 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -141,12 +140,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
         // Report unique errors in order of their sequence
         List<Error> errorList = new ArrayList<>(getQueuedErrors());
         if (!errorList.isEmpty()) {
-            Collections.sort(errorList, new Comparator<Error>() {
-                @Override
-                public int compare(Error o1, Error o2) {
-                    return o1.getSequence() - o2.getSequence();
-                }
-            });
+            Collections.sort(errorList, (o1, o2) -> o1.getSequence() - o2.getSequence());
 
             MultiStatus status = new MultiStatus(FindbugsPlugin.PLUGIN_ID, IStatus.ERROR,
                     "The following errors occurred during SpotBugs analysis:", null);
