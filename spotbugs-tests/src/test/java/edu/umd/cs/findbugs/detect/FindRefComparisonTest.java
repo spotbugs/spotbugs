@@ -52,7 +52,8 @@ class FindRefComparisonTest extends AbstractIntegrationTest {
         setPriorityAdjustment(-1); // raise priority
         SystemProperties.setProperty("findbugs.refcomp.reportAll", "false");
 
-        performAnalysis("RefComparisons.class");
+        performAnalysis("RefComparisons.class", "RefComparisons$MyEnum.class", "RefComparisons$MyClass2.class",
+                "RefComparisons$MyClass1.class", "RefComparisons$MyClass3.class");
         assertBugTypeCount("RC_REF_COMPARISON", 1);
         assertBugInMethodAtLineWithConfidence("RC_REF_COMPARISON", "RefComparisons", "integerBadComparison", 5, Confidence.HIGH);
     }
