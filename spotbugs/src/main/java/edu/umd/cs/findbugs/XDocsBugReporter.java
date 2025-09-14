@@ -129,8 +129,9 @@ public class XDocsBugReporter extends TextUIBugReporter {
     private void writeXML(Writer out, Project project) throws IOException {
         Document doc = endDocument(project);
 
-        XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
-        writer.write(doc);
+        try (XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint())) {
+            writer.write(doc);
+        }
     }
 
     private Document endDocument(Project project) {
