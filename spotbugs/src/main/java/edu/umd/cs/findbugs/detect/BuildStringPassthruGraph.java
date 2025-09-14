@@ -103,6 +103,7 @@ public class BuildStringPassthruGraph extends OpcodeStackDetector implements Non
                 new MethodDescriptor("java/io/File", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
                 new MethodDescriptor("java/io/File", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;)V"),
                 new MethodDescriptor("java/io/RandomAccessFile", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;Ljava/lang/String;)V"),
+                new MethodDescriptor("java/nio/file/Path", "of", "(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;", true),
                 new MethodDescriptor("java/nio/file/Paths", "get", "(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;", true),
                 new MethodDescriptor("java/io/FileReader", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
                 new MethodDescriptor("java/io/FileWriter", Const.CONSTRUCTOR_NAME, "(Ljava/lang/String;)V"),
