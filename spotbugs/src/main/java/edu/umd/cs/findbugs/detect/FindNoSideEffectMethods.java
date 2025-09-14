@@ -829,7 +829,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         String className = m.getSlashedClassName();
         return isObjectOnlyClass(className)
                 || (className.startsWith("javax/xml/") && methodName.startsWith("next"))
-                || ((className.startsWith("java/net/") || className.startsWith("javax/servlet"))
+                || ((className.startsWith("java/net/") || className.startsWith("javax/servlet") || className.startsWith("jakarta/servlet"))
                         && (methodName.startsWith("remove") || methodName.startsWith("add") || methodName.startsWith("set")))
                 || OBJECT_ONLY_METHODS.contains(m);
     }
