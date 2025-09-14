@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  */
 public class FilterAndCombineBitfieldPropertyDatabase {
 
-    final static int FLAGS = Const.ACC_PROTECTED | Const.ACC_PUBLIC;
+    static final int FLAGS = Const.ACC_PROTECTED | Const.ACC_PUBLIC;
 
     /**
      * @param args

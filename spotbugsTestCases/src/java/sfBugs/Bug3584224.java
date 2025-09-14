@@ -13,9 +13,9 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 @NoWarning("OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE")
 public class Bug3584224 {
 
-    final static String PROPERTIES_FILENAME = "properies.txt";
+    static final String PROPERTIES_FILENAME = "properies.txt";
 
-    final static Logger LOGGER = Logger.getLogger(Bug3584224.class.getSimpleName());
+    static final Logger LOGGER = Logger.getLogger(Bug3584224.class.getSimpleName());
 
     public Properties test(Properties props, InputStream stream) {
         try {

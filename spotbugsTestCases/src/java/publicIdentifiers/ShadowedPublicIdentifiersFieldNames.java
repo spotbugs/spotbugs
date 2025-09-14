@@ -1,7 +1,7 @@
 package publicIdentifiers;
 
 public class ShadowedPublicIdentifiersFieldNames {
-    private final static String String = "String";
+    private static final String String = "String";
     public Integer Integer = 4;
 
     public void myMethod() {

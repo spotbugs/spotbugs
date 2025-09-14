@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.tools.FilterAndCombineBitfieldPropertyDatabase.Status
  */
 public class FilterPropertyDatabase {
 
-    final static int FLAGS = Const.ACC_PROTECTED | Const.ACC_PUBLIC;
+    static final int FLAGS = Const.ACC_PROTECTED | Const.ACC_PUBLIC;
 
     /**
      * @param args

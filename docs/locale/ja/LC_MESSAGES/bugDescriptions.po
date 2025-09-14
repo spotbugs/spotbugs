@@ -4615,7 +4615,7 @@ msgstr ""
 #: ../../generated/bugDescriptionList.inc:4572
 msgid ""
 "<p>\n"
-" A final static field that is\n"
+" A static final field that is\n"
 "defined in an interface references a mutable\n"
 "   object such as an array or hashtable.\n"
 "   This mutable object could\n"
@@ -4692,7 +4692,7 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:4662
 msgid ""
-"<p>A final static field references a Hashtable\n"
+"<p>A static final field references a Hashtable\n"
 "  and can be accessed by malicious code or\n"
 "       by accident from another package.\n"
 "  This code can freely modify the contents of the Hashtable.</p>"
@@ -4704,7 +4704,7 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:4677
 msgid ""
-"<p> A final static field references an array\n"
+"<p> A static final field references an array\n"
 "   and can be accessed by malicious code or\n"
 "        by accident from another package.\n"
 "   This code can freely modify the contents of the array.</p>"
@@ -4716,7 +4716,7 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:4692
 msgid ""
-"<p>A mutable collection instance is assigned to a final static field,\n"
+"<p>A mutable collection instance is assigned to a static final field,\n"
 "  thus can be changed by malicious code or by accident from another "
 "package.\n"
 "  Consider wrapping this field into "
@@ -4732,7 +4732,7 @@ msgstr ""
 
 #: ../../generated/bugDescriptionList.inc:4707
 msgid ""
-"<p>A mutable collection instance is assigned to a final static field,\n"
+"<p>A mutable collection instance is assigned to a static final field,\n"
 "  thus can be changed by malicious code or by accident from another "
 "package.\n"
 "  The field could be made package protected to avoid this vulnerability.\n"
