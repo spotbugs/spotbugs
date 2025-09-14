@@ -314,7 +314,7 @@ public class DetectorFactoryCollection {
                 }
             }
         }
-        String classFilePath = FindBugs.class.getName().replaceAll("\\.", "/") + ".class";
+        String classFilePath = FindBugs.class.getName().replace('.', '/') + ".class";
         URL resource = FindBugs.class.getClassLoader().getResource(classFilePath);
         if (resource != null && "file".equals(resource.getProtocol())) {
             String classfile = URLDecoder.decode(resource.getPath(), Charset.defaultCharset());
