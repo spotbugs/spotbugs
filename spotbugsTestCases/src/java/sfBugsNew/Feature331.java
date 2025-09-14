@@ -3,7 +3,7 @@ package sfBugsNew;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -16,6 +16,6 @@ public class Feature331 {
     }
 
     private byte[] readFile(String fileName) throws IOException {
-        return Files.readAllBytes(Paths.get(fileName));
+        return Files.readAllBytes(Path.of(fileName));
     }
 }

@@ -34,7 +34,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -730,7 +729,7 @@ public class UserPreferences implements Cloneable {
      */
     public void resolveRelativePaths(String preferencesPath) {
         try {
-            Path prefsDir = Paths.get(preferencesPath).getParent();
+            Path prefsDir = Path.of(preferencesPath).getParent();
             if (prefsDir == null || !Files.isDirectory(prefsDir)) {
                 return; // no parent directory, nothing to resolve
             }
@@ -752,7 +751,7 @@ public class UserPreferences implements Cloneable {
     }
 
     private static String resolveRelativePath(final String maybeRelativePath, Path prefsDir) {
-        Path filterPath = Paths.get(maybeRelativePath);
+        Path filterPath = Path.of(maybeRelativePath);
         if (filterPath.isAbsolute()) {
             return maybeRelativePath;
         }

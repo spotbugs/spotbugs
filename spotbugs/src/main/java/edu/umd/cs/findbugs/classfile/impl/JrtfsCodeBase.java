@@ -29,7 +29,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.HashMap;
@@ -79,7 +78,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
         this.fileName = fileName;
         URL url;
         try {
-            url = Paths.get(fileName).toUri().toURL();
+            url = Path.of(fileName).toUri().toURL();
             URLClassLoader loader = new URLClassLoader(new URL[] { url });
             fs = FileSystems.newFileSystem(URI.create("jrt:/"), Collections.emptyMap(), loader);
             root = fs.getPath("modules");

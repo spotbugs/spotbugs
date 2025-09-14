@@ -11,7 +11,6 @@ import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -174,7 +173,7 @@ public class AnalysisRunner {
         Path tempJar = File.createTempFile("SpotBugsAnalysisRunner", ".jar").toPath();
         try (OutputStream output = Files.newOutputStream(tempJar, StandardOpenOption.WRITE);
                 JarOutputStream jar = new JarOutputStream(output)) {
-            Path resourceRoot = Paths.get(uri).getParent();
+            Path resourceRoot = Path.of(uri).getParent();
 
             byte[] data = new byte[4 * 1024];
             Files.walkFileTree(resourceRoot, new SimpleFileVisitor<Path>() {
