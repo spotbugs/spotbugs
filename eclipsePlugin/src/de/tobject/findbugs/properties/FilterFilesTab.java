@@ -206,7 +206,7 @@ public class FilterFilesTab extends Composite {
         return filterProvider;
     }
 
-    public static enum FilterKind {
+    public enum FilterKind {
         INCLUDE("property.includefilter") {
             @Override
             Map<String, Boolean> selectedPaths(UserPreferences u) {
