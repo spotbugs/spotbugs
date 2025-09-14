@@ -189,9 +189,9 @@ public class AddMessages {
         AddMessages addMessages = new AddMessages(inputCollection, document);
         addMessages.execute();
 
-        XMLWriter writer = new XMLWriter(new BufferedOutputStream(Files.newOutputStream(Path.of(outputFile))),
-                OutputFormat.createPrettyPrint());
-        writer.write(document);
-        writer.close();
+        try (XMLWriter writer = new XMLWriter(new BufferedOutputStream(Files.newOutputStream(Path.of(outputFile))),
+                OutputFormat.createPrettyPrint())) {
+            writer.write(document);
+        }
     }
 }
