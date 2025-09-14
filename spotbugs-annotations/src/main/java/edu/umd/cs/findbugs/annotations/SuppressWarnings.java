@@ -23,7 +23,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
 /**
  * Was used to suppress FindBugs warnings but generates name conflicts with {@link java.lang.SuppressWarnings}.
  *
