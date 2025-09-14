@@ -32,7 +32,7 @@ import java.net.URLConnection;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -358,7 +358,7 @@ public class SourceFinder implements AutoCloseable {
 
         public ZipSourceRepository(@WillCloseWhenClosed ZipFile zipFile) throws IOException {
             this.zipFile = zipFile;
-            this.zipFileSystem = FileSystems.newFileSystem(Paths.get(zipFile.getName()), (ClassLoader) null);
+            this.zipFileSystem = FileSystems.newFileSystem(Path.of(zipFile.getName()), (ClassLoader) null);
         }
 
         @Override

@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -400,7 +399,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
         }
 
         if (isJava9orLater()) {
-            Path jrtFsJar = Paths.get(System.getProperty("java.home", ""), "lib/jrt-fs.jar");
+            Path jrtFsJar = Path.of(System.getProperty("java.home", ""), "lib/jrt-fs.jar");
             if (Files.isRegularFile(jrtFsJar)) {
                 addWorkListItemsForClasspath(workList, jrtFsJar.toString());
             }

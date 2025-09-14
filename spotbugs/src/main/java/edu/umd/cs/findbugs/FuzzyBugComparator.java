@@ -107,7 +107,7 @@ public class FuzzyBugComparator implements WarningComparator {
     private ClassNameRewriter classNameRewriter;
 
     /**
-     * Map of class hashes to canonicate class names used for comparison
+     * Map of class hashes to canonical class names used for comparison
      * purposes.
      */
     // private Map<ClassHash, String> classHashToCanonicalClassNameMap;

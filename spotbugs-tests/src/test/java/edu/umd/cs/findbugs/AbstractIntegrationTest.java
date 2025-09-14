@@ -30,7 +30,6 @@ import java.io.UncheckedIOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -78,15 +77,15 @@ public abstract class AbstractIntegrationTest {
      */
     private static final List<Path> BUILD_CLASS_SEARCH_PREFIXES = List.of(
             // Build path if running command line build
-            Paths.get("build/classes/java/main"),
-            Paths.get("build/classes/groovy/main"),
+            Path.of("build/classes/java/main"),
+            Path.of("build/classes/groovy/main"),
             // Build path if running in Eclipse
-            Paths.get("classesEclipse"));
+            Path.of("classesEclipse"));
 
     private BugCollectionBugReporter bugReporter;
 
     private static Path getFindbugsTestCases() {
-        final Path p = Paths.get(SystemProperties.getProperty("spotbugsTestCases.home", "../spotbugsTestCases"));
+        final Path p = Path.of(SystemProperties.getProperty("spotbugsTestCases.home", "../spotbugsTestCases"));
         assertTrue(Files.exists(p), "'spotbugsTestCases' directory not found");
         assertTrue(Files.isDirectory(p));
         assertTrue(Files.isReadable(p));
@@ -133,7 +132,7 @@ public abstract class AbstractIntegrationTest {
         try {
             final List<String> lines = Files.readAllLines(dependencies);
             for (String line : lines) {
-                Path path = Paths.get(line);
+                Path path = Path.of(line);
                 if (Files.isReadable(path)) {
                     runner.addAuxClasspathEntry(path);
                 }
