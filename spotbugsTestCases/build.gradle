@@ -17,7 +17,7 @@ sourceSets {
 }
 
 dependencies {
-  implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+  implementation 'jakarta.servlet:jakarta.servlet-api:6.1.0'
   implementation 'jakarta.ejb:jakarta.ejb-api:4.0.1'
   implementation 'com.google.code.gson:gson:2.13.2'
   implementation 'com.google.guava:guava:33.4.8-jre'
