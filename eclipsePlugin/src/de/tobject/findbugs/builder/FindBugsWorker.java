@@ -362,8 +362,7 @@ public class FindBugsWorker {
             resultCollection.getProject().setGuiCallback(new EclipseGuiCallback(project));
             resultCollection.setTimestamp(System.currentTimeMillis());
 
-            // will store bugs in the default FB file + Eclipse project session
-            // props
+            // will store bugs in the default FB file + Eclipse project session props
             st.newPoint("storeBugCollection");
             FindbugsPlugin.storeBugCollection(project, resultCollection, monitor);
         } catch (CoreException e) {
@@ -378,10 +377,8 @@ public class FindBugsWorker {
     private SortedBugCollection mergeBugCollections(SortedBugCollection firstCollection, SortedBugCollection secondCollection,
             boolean incremental) {
         Update update = new Update();
-        // TODO copyDeadBugs must be true, otherwise incremental compile leads
-        // to
-        // unknown bug instances appearing (merged collection doesn't contain
-        // all bugs)
+        // TODO copyDeadBugs must be true, otherwise incremental compile leads to
+        // unknown bug instances appearing (merged collection doesn't contain all bugs)
         boolean copyDeadBugs = incremental;
         return (SortedBugCollection) (update.mergeCollections(firstCollection, secondCollection, copyDeadBugs, incremental));
     }
@@ -505,7 +502,7 @@ public class FindBugsWorker {
         IPath defaultOutputLocation = ResourceUtils.relativeToAbsolute(javaProject.getOutputLocation());
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
         // path to the project without project name itself
-        IClasspathEntry entries[] = javaProject.getResolvedClasspath(true);
+        IClasspathEntry[] entries = javaProject.getResolvedClasspath(true);
         for (int i = 0; i < entries.length; i++) {
             IClasspathEntry classpathEntry = entries[i];
             if (classpathEntry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
