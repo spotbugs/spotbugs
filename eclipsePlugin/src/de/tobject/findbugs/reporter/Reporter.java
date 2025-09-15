@@ -130,6 +130,10 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
             if (bugCollection.add(bug)) {
                 notifyObservers(bug);
                 bugCount++;
+                if (DEBUG) {
+                    System.out.println(
+                            "Bug added: " + bug + ", Priority: " + bug.getPriority() + ", Rank: " + bug.getBugRank());
+                }
             } else if (DEBUG) {
                 System.out.println("Duplicated bug added: " + bug);
             }

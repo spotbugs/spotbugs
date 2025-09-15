@@ -504,6 +504,40 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
         // setAnalysisFeatureSettings(userPreferences.getAnalysisFeatureSettings());
 
         configureFilters(userPreferences);
+        configureAdjustPriority(userPreferences);
+    }
+
+    private void configureAdjustPriority(UserPreferences userPreferences) {
+        if (userPreferences.getAdjustPriority() != null) {
+            for (Map.Entry<String, String> entry : userPreferences.getAdjustPriority().entrySet()) {
+                String adjustmentTarget = entry.getKey();
+                String adjustment = entry.getValue();
+
+                int adjustmentAmount;
+                if ("raise".equals(adjustment)) {
+                    adjustmentAmount = -1;
+                } else if ("lower".equals(adjustment)) {
+                    adjustmentAmount = +1;
+                } else if ("suppress".equals(adjustment)) {
+                    adjustmentAmount = +100;
+                } else {
+                    throw new IllegalArgumentException("Illegal priority adjustment value: " + adjustment);
+                }
+
+                DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(adjustmentTarget);
+                if (factory != null) {
+                    factory.setPriorityAdjustment(adjustmentAmount);
+                } else {
+                    //
+                    DetectorFactoryCollection i18n = DetectorFactoryCollection.instance();
+                    BugPattern pattern = i18n.lookupBugPattern(adjustmentTarget);
+                    if (pattern == null) {
+                        throw new IllegalArgumentException("Unknown detector: " + adjustmentTarget);
+                    }
+                    pattern.adjustPriority(adjustmentAmount);
+                }
+            }
+        }
     }
 
     protected void configureFilters(UserPreferences userPreferences) {

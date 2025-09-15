@@ -20,24 +20,34 @@ package de.tobject.findbugs.properties;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Text;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.preferences.FindBugsConstants;
@@ -86,6 +96,8 @@ public class ReportConfigurationTab extends Composite {
 
     private final Button mergeSimilarWarnings;
 
+    private Text adjustPriorityText;
+
     public ReportConfigurationTab(TabFolder parent, FindbugsPropertyPage page, int style) {
         super(parent, style);
         this.propertyPage = page;
@@ -116,6 +128,7 @@ public class ReportConfigurationTab extends Composite {
 
         createBugCategoriesGroup(rankAndPrioGroup, page.getProject());
         createBugSeverityGroup(rankAndPrioGroup);
+        createAdjustPriorityGroup(this);
     }
 
     private void createBugSeverityGroup(Composite parent) {
@@ -225,6 +238,67 @@ public class ReportConfigurationTab extends Composite {
         rankValueLabel = new Label(prioGroup, SWT.NONE);
         rankValueLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
         updateRankValueLabel();
+    }
+
+    private void createAdjustPriorityGroup(Composite parent) {
+        Composite prioGroup = new Composite(parent, SWT.NONE);
+        prioGroup.setLayout(new GridLayout());
+
+        Label titleLabel = new Label(prioGroup, SWT.NONE);
+        titleLabel.setText(getMessage("property.adjustPriorityLabel"));
+        Link label = new Link(prioGroup, SWT.NONE);
+        label.setText("(One adjustment per line. Commas can be omitted. "
+                + "<a href=\"https://spotbugs.readthedocs.io/en/latest/running.html#detector-visitor-configuration-options\">Details...</a>)");
+        label.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(e.text);
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+                // noop
+            }
+        });
+        adjustPriorityText = new Text(prioGroup, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+
+        GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+        gd.heightHint = 160;
+        gd.widthHint = 400;
+        adjustPriorityText.setLayoutData(gd);
+
+        adjustPriorityText.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                updateAdjustPriority();
+            }
+        });
+
+        updateAdjustPriorityText(getCurrentProps().getAdjustPriority());
+    }
+
+    /**
+     *
+     */
+    protected void updateAdjustPriority() {
+        if (adjustPriorityText.getText() != null) {
+            StringTokenizer tokenizer = new StringTokenizer(adjustPriorityText.getText(), "\n,");
+            Map<String, String> adjustPriority = new TreeMap<>();
+            while (tokenizer.hasMoreElements()) {
+                String token = tokenizer.nextToken();
+                int equalPos = token.indexOf('=');
+                if (equalPos > 0) {
+                    String key = token.substring(0, equalPos).trim();
+                    String value = token.substring(equalPos + 1).trim();
+                    if (!key.isEmpty() && !value.isEmpty()) {
+                        adjustPriority.put(key, value);
+                    }
+                }
+            }
+            getCurrentProps().setAdjustPriority(adjustPriority);
+            updateAdjustPriorityText(adjustPriority);
+        }
+
     }
 
     private void updateRankValueLabel() {
@@ -367,6 +441,14 @@ public class ReportConfigurationTab extends Composite {
         }
         syncSelectedCategories();
         mergeSimilarWarnings.setSelection(prefs.getMergeSimilarWarnings());
+        updateAdjustPriorityText(prefs.getAdjustPriority());
+    }
+
+    private void updateAdjustPriorityText(Map<String, String> adjustPriorityMap) {
+        adjustPriorityText.setText(adjustPriorityMap.entrySet() //
+                .stream() //
+                .map(entry -> entry.getKey() + "=" + entry.getValue()) //
+                .collect(Collectors.joining("\n")));
     }
 
     protected List<Button> getChkEnableBugCategoryList() {

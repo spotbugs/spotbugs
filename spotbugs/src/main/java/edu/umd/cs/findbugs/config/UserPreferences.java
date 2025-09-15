@@ -43,8 +43,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.annotation.WillClose;
 
@@ -111,6 +113,8 @@ public class UserPreferences implements Cloneable {
 
     private static final String KEY_MERGE_SIMILAR_WARNINGS = "mergeSimilarWarnings";
 
+    private static final String KEY_ADJUST_PRIORITY = "adjust_priority";
+
     // Fields
 
     private LinkedList<String> recentProjectsList;
@@ -133,6 +137,8 @@ public class UserPreferences implements Cloneable {
 
     private boolean mergeSimilarWarnings;
 
+    private Map<String, String> adjustPriority;
+
     private UserPreferences() {
         filterSettings = ProjectFilterSettings.createDefault();
         recentProjectsList = new LinkedList<>();
@@ -143,6 +149,7 @@ public class UserPreferences implements Cloneable {
         excludeFilterFiles = new TreeMap<>();
         excludeBugsFiles = new TreeMap<>();
         customPlugins = new TreeMap<>();
+        adjustPriority = new TreeMap<>();
     }
 
     /**
@@ -256,6 +263,20 @@ public class UserPreferences implements Cloneable {
         excludeBugsFiles = readProperties(props, KEY_EXCLUDE_BUGS);
         customPlugins = readProperties(props, KEY_PLUGIN);
         mergeSimilarWarnings = Boolean.parseBoolean(props.getProperty(KEY_MERGE_SIMILAR_WARNINGS));
+        if (props.get(KEY_ADJUST_PRIORITY) != null) {
+            StringTokenizer tokenizer = new StringTokenizer(props.getProperty(KEY_ADJUST_PRIORITY), ",");
+            while (tokenizer.hasMoreElements()) {
+                String token = tokenizer.nextToken();
+                int equalPos = token.indexOf('=');
+                if (equalPos > 0) {
+                    String key = token.substring(0, equalPos).trim();
+                    String value = token.substring(equalPos + 1).trim();
+                    if (!key.isEmpty() && !value.isEmpty()) {
+                        adjustPriority.put(key, value);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -309,7 +330,10 @@ public class UserPreferences implements Cloneable {
         writeProperties(props, KEY_EXCLUDE_FILTER, excludeFilterFiles);
         writeProperties(props, KEY_EXCLUDE_BUGS, excludeBugsFiles);
         writeProperties(props, KEY_PLUGIN, customPlugins);
-
+        props.put(KEY_ADJUST_PRIORITY, adjustPriority.entrySet() //
+                .stream() //
+                .map(entry -> entry.getKey() + "=" + entry.getValue()) //
+                .collect(Collectors.joining(",")));
         try (OutputStream prefStream = new BufferedOutputStream(out)) {
             props.store(prefStream, "SpotBugs User Preferences");
             prefStream.flush();
@@ -483,14 +507,16 @@ public class UserPreferences implements Cloneable {
                 && effort.equals(other.effort) && includeFilterFiles.equals(other.includeFilterFiles)
                 && excludeFilterFiles.equals(other.excludeFilterFiles) && excludeBugsFiles.equals(other.excludeBugsFiles)
                 && customPlugins.equals(other.customPlugins)
-                && mergeSimilarWarnings == other.mergeSimilarWarnings;
+                && mergeSimilarWarnings == other.mergeSimilarWarnings
+                && adjustPriority.equals(other.adjustPriority);
     }
 
     @Override
     public int hashCode() {
         return recentProjectsList.hashCode() + detectorEnablementMap.hashCode() + filterSettings.hashCode() + effort.hashCode()
                 + includeFilterFiles.hashCode() + excludeFilterFiles.hashCode() + (runAtFullBuild ? 1 : 0)
-                + excludeBugsFiles.hashCode() + customPlugins.hashCode() + (mergeSimilarWarnings ? 1 : 0);
+                + excludeBugsFiles.hashCode() + customPlugins.hashCode() + (mergeSimilarWarnings ? 1 : 0)
+                + adjustPriority.hashCode();
     }
 
     @Override
@@ -505,6 +531,7 @@ public class UserPreferences implements Cloneable {
             dup.excludeFilterFiles = new TreeMap<>(excludeFilterFiles);
             dup.excludeBugsFiles = new TreeMap<>(excludeBugsFiles);
             dup.customPlugins = new TreeMap<>(customPlugins);
+            dup.adjustPriority = new TreeMap<>(adjustPriority);
             return dup;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
@@ -772,4 +799,20 @@ public class UserPreferences implements Cloneable {
         // no match, return the original path
         return maybeRelativePath;
     }
+
+    /**
+     * @return Returns the adjustPriority.
+     */
+    public Map<String, String> getAdjustPriority() {
+        return adjustPriority;
+    }
+
+    /**
+     * @param adjustPriority
+     *            The adjustPriority to set.
+     */
+    public void setAdjustPriority(Map<String, String> adjustPriority) {
+        this.adjustPriority = new TreeMap<>(adjustPriority);
+    }
+
 }
