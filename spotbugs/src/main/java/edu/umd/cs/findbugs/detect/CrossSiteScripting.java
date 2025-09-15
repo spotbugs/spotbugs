@@ -120,7 +120,8 @@ public class CrossSiteScripting extends OpcodeStackDetector {
             String calledMethodName = getNameConstantOperand();
             String calledMethodSig = getSigConstantOperand();
 
-            if ("javax/servlet/http/Cookie".equals(calledClassName) && Const.CONSTRUCTOR_NAME.equals(calledMethodName)
+            if (("javax/servlet/http/Cookie".equals(calledClassName) || "jakarta/servlet/http/Cookie".equals(calledClassName))
+                    && Const.CONSTRUCTOR_NAME.equals(calledMethodName)
                     && "(Ljava/lang/String;Ljava/lang/String;)V".equals(calledMethodSig)) {
                 OpcodeStack.Item value = stack.getStackItem(0);
                 OpcodeStack.Item name = stack.getStackItem(1);
@@ -136,12 +137,15 @@ public class CrossSiteScripting extends OpcodeStackDetector {
             String calledClassName = getClassConstantOperand();
             String calledMethodName = getNameConstantOperand();
             String calledMethodSig = getSigConstantOperand();
-            if ("javax/servlet/http/HttpServletResponse".equals(calledClassName) && "setContentType".equals(calledMethodName)) {
+            if (("javax/servlet/http/HttpServletResponse".equals(calledClassName) || "jakarta/servlet/http/HttpServletResponse".equals(
+                    calledClassName))
+                    && "setContentType".equals(calledMethodName)) {
                 OpcodeStack.Item writing = stack.getStackItem(0);
                 if ("text/plain".equals(writing.getConstant())) {
                     isPlainText = true;
                 }
-            } else if ("javax/servlet/http/HttpSession".equals(calledClassName) && "setAttribute".equals(calledMethodName)) {
+            } else if (("javax/servlet/http/HttpSession".equals(calledClassName) || "jakarta/servlet/http/HttpSession".equals(calledClassName))
+                    && "setAttribute".equals(calledMethodName)) {
 
                 OpcodeStack.Item value = stack.getStackItem(0);
                 OpcodeStack.Item name = stack.getStackItem(1);
@@ -149,7 +153,8 @@ public class CrossSiteScripting extends OpcodeStackDetector {
                 if (nameConstant instanceof String) {
                     map.put((String) nameConstant, value);
                 }
-            } else if ("javax/servlet/http/HttpSession".equals(calledClassName) && "getAttribute".equals(calledMethodName)) {
+            } else if (("javax/servlet/http/HttpSession".equals(calledClassName) || "jakarta/servlet/http/HttpSession".equals(calledClassName))
+                    && "getAttribute".equals(calledMethodName)) {
                 OpcodeStack.Item name = stack.getStackItem(0);
                 Object nameConstant = name.getConstant();
                 if (nameConstant instanceof String) {
@@ -159,7 +164,8 @@ public class CrossSiteScripting extends OpcodeStackDetector {
                         replaceTop = top;
                     }
                 }
-            } else if ("javax/servlet/http/HttpServletResponse".equals(calledClassName)
+            } else if (("javax/servlet/http/HttpServletResponse".equals(calledClassName) || "jakarta/servlet/http/HttpServletResponse".equals(
+                    calledClassName))
                     && (calledMethodName.startsWith("send") || calledMethodName.endsWith("Header"))
                     && calledMethodSig.endsWith("Ljava/lang/String;)V")) {
 
@@ -185,7 +191,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
             String calledMethodSig = getSigConstantOperand();
 
             if ((calledMethodName.startsWith("print") || "write".equals(calledMethodName))
-                    && "javax/servlet/jsp/JspWriter".equals(calledClassName)
+                    && ("javax/servlet/jsp/JspWriter".equals(calledClassName) || "jakarta/servlet/jsp/JspWriter".equals(calledClassName))
                     && ("(Ljava/lang/Object;)V".equals(calledMethodSig) || "(Ljava/lang/String;)V".equals(calledMethodSig))) {
                 OpcodeStack.Item writing = stack.getStackItem(0);
                 // System.out.println(SourceLineAnnotation.fromVisitedInstruction(this)
@@ -241,7 +247,8 @@ public class CrossSiteScripting extends OpcodeStackDetector {
         if (!m.getName().equals("getParameter"))
             return false;
         String clsName = m.getClassName();
-        return  clsName.equals("javax/servlet/http/HttpServletRequest") || clsName.equals("javax/servlet/http/ServletRequest");
+        return clsName.equals("javax/servlet/http/HttpServletRequest") || clsName.equals("javax/servlet/http/ServletRequest")
+                || clsName.equals("jakarta/servlet/http/HttpServletRequest") || clsName.equals("jakarta/servlet/http/ServletRequest");
     }
      */
 

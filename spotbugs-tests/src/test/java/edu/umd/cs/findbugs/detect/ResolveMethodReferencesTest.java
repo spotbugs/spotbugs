@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +24,7 @@ class ResolveMethodReferencesTest {
      */
     @Test
     void testIssue338(SpotBugsRunner spotbugs) {
-        BugCollection bugCollection = spotbugs.performAnalysis(Paths.get("../spotbugsTestCases/build/classes/java/main/lambdas/Issue338.class"));
+        BugCollection bugCollection = spotbugs.performAnalysis(Path.of("../spotbugsTestCases/build/classes/java/main/lambdas/Issue338.class"));
         assertThat(bugCollection, is(emptyIterable()));
         assertThat(bugCollection, instanceOf(SortedBugCollection.class));
         assertThat(((SortedBugCollection) bugCollection).missingClassIterator().hasNext(), is(false));

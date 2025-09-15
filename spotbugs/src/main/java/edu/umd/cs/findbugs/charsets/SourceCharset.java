@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.charsets;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,20 +29,16 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * @author pugh
  */
 public class SourceCharset {
 
-    public static final Charset charset;
-
-    static {
-        charset = Charset.defaultCharset();
-    }
-
     public static Writer fileWriter(File fileName) throws IOException {
-        return new OutputStreamWriter(new FileOutputStream(fileName), charset);
+        return new OutputStreamWriter(Files.newOutputStream(fileName.toPath()), Charset.defaultCharset());
     }
 
     public static PrintWriter printWriter(File fileName) throws IOException {
@@ -51,7 +46,7 @@ public class SourceCharset {
     }
 
     public static Writer fileWriter(String fileName) throws IOException {
-        return new OutputStreamWriter(new FileOutputStream(fileName), charset);
+        return new OutputStreamWriter(Files.newOutputStream(Path.of(fileName)), Charset.defaultCharset());
     }
 
     public static PrintWriter printWriter(String fileName) throws IOException {
@@ -59,7 +54,7 @@ public class SourceCharset {
     }
 
     public static BufferedReader bufferedReader(InputStream in) {
-        return new BufferedReader(new InputStreamReader(in, charset));
+        return new BufferedReader(new InputStreamReader(in, Charset.defaultCharset()));
     }
 
 }

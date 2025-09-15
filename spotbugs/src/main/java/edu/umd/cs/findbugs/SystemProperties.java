@@ -19,11 +19,13 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.IllegalFormatException;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -31,7 +33,6 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.io.IO;
 
 /**
  * @author pugh
@@ -66,15 +67,11 @@ public class SystemProperties {
         OS_NAME = osName;
         loadPropertiesFromConfigFile();
         if (getBoolean("findbugs.dumpProperties")) {
-            FileOutputStream out = null;
-            try {
-                out = new FileOutputStream("/tmp/outProperties.txt");
+            try (OutputStream out = Files.newOutputStream(Path.of("/tmp/outProperties.txt"))) {
                 System.getProperties().store(out, "System properties dump");
                 properties.store(out, "SpotBugs properties dump");
             } catch (IOException e) {
                 assert true;
-            } finally {
-                IO.close(out);
             }
         }
     }
@@ -116,14 +113,10 @@ public class SystemProperties {
         if (url == null) {
             return;
         }
-        InputStream in = null;
-        try {
-            in = url.openStream();
+        try (InputStream in = url.openStream()) {
             properties.load(in);
         } catch (IOException e) {
             AnalysisContext.logError("Unable to load properties from " + url, e);
-        } finally {
-            IO.close(in);
         }
     }
 

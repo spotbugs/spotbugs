@@ -92,17 +92,16 @@ dependencies {
   api 'org.apache.commons:commons-text:1.14.0'
   api 'org.slf4j:slf4j-api:2.0.17'
   implementation 'jaxen:jaxen:2.0.0' // only transitive through org.dom4j:dom4j:2.1.4, which has an *optional* dependency on jaxen:jaxen.
-  implementation 'net.sf.saxon:Saxon-HE:12.8'
+  implementation 'net.sf.saxon:Saxon-HE:12.9'
   implementation libs.log4j.core
   logBinding (libs.log4j.slf4j2.impl) {
     exclude group: 'org.slf4j'
   }
 
-  // These annotations are repackaged to spotbugs.jar, to keep backward compatibility for Ant task.
-  // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
+  // These annotations are provided as a separate jar (spotbugs-annotations). Ant and plugin users must add a dependency on spotbugs-annotations if they need annotation classes.
   api project(':spotbugs-annotations')
 
-  api 'com.google.code.gson:gson:2.13.1'
+  api 'com.google.code.gson:gson:2.13.2'
 
   guiImplementation sourceSets.main.runtimeClasspath
   guiCompileOnly project(':spotbugs-annotations')
@@ -246,7 +245,7 @@ TaskProvider<Copy> scripts = tasks.register('scripts', Copy) {
 
   into(layout.buildDirectory.dir('bin'))
   duplicatesStrategy = DuplicatesStrategy.FAIL
-  filePermissions{
+  filePermissions {
     unix (0755)
   }
 }
@@ -313,7 +312,7 @@ tasks.named('distTar', Tar) {
 }
 TaskProvider<Zip> distZip = tasks.named('distZip', Zip) {
   duplicatesStrategy = DuplicatesStrategy.FAIL
-  filePermissions{
+  filePermissions {
     unix (0755)
   }
 }

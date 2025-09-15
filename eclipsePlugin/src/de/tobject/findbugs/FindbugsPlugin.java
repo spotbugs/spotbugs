@@ -23,12 +23,12 @@ package de.tobject.findbugs;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -145,7 +145,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     /** Controls debugging of the plugin */
     public static boolean DEBUG;
-
 
     public static final String OLD_PLUGIN_ID = "edu.umd.cs.findbugs.plugin.eclipse";
 
@@ -425,12 +424,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         }
         // need to call from UI thread
         final IWorkbenchWindow[] window = new IWorkbenchWindow[1];
-        Display.getDefault().syncExec(new Runnable() {
-            @Override
-            public void run() {
-                window[0] = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-            }
-        });
+        Display.getDefault().syncExec(() -> window[0] = PlatformUI.getWorkbench().getActiveWorkbenchWindow());
         return window[0];
     }
 
@@ -685,13 +679,13 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      * Read saved bug collection and findbugs project from file. Will populate
      * the bug collection and findbugs project session properties if successful.
      * If there is no saved bug collection and project for the eclipse project,
-     * then FileNotFoundException will be thrown.
+     * then IOException will be thrown.
      *
      * @param project
      *            the eclipse project
      * @param monitor
      *            a progress monitor
-     * @throws java.io.FileNotFoundException
+     * @throws java.io.IOException
      *             the saved bug collection doesn't exist
      * @throws IOException
      * @throws DocumentException
@@ -708,7 +702,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         File bugCollectionFile = bugCollectionPath.toFile();
         if (!bugCollectionFile.exists()) {
             // throw new
-            // FileNotFoundException(bugCollectionFile.getLocation().toOSString());
+            // IOException(bugCollectionFile.getLocation().toOSString());
             getDefault().logInfo("creating new bug collection: " + bugCollectionPath.toOSString());
             createDefaultEmptyBugCollection(project); // since we no longer
             // throw, have to do this
@@ -925,9 +919,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             return userPrefs;
         }
         // load custom settings over defaults
-        FileInputStream in;
-        try {
-            in = new FileInputStream(prefsFile);
+        try (InputStream in = Files.newInputStream(prefsFile.toPath())) {
             userPrefs.read(in);
         } catch (IOException e) {
             FindbugsPlugin.getDefault().logException(e, "Error reading custom SpotBugs preferences for workspace");

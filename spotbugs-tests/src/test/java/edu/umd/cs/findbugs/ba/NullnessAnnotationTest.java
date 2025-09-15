@@ -38,8 +38,8 @@ class NullnessAnnotationTest {
                 Arguments.of(edu.umd.cs.findbugs.annotations.PossiblyNull.class.getName(), NullnessAnnotation.CHECK_FOR_NULL),
 
                 Arguments.of(javax.annotation.CheckForNull.class.getName(), NullnessAnnotation.CHECK_FOR_NULL),
-                Arguments.of(javax.annotation.Nonnull.class.getName(), NullnessAnnotation.NONNULL),
-                Arguments.of(javax.annotation.Nullable.class.getName(), NullnessAnnotation.NULLABLE),
+                Arguments.of(jakarta.annotation.Nonnull.class.getName(), NullnessAnnotation.NONNULL),
+                Arguments.of(jakarta.annotation.Nullable.class.getName(), NullnessAnnotation.NULLABLE),
 
                 Arguments.of("something different", null));
     }

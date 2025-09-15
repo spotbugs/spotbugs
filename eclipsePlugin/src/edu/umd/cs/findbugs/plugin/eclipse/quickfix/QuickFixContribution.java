@@ -56,7 +56,7 @@ public class QuickFixContribution {
                 params.put(keyValueArr[0], keyValueArr[1]);
             }
         }
-        return params.size() == 0 ? Collections.EMPTY_MAP : Collections.unmodifiableMap(params);
+        return params.size() == 0 ? Collections.emptyMap() : Collections.unmodifiableMap(params);
     }
 
     @Override

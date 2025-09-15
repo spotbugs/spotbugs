@@ -106,7 +106,9 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
             for (AnnotationEntry a : obj.getAnnotationEntries()) {
                 String typeName = a.getAnnotationType();
                 if ("Ljavax/annotation/PostConstruct;".equals(typeName)
-                        || "Ljavax/annotation/PreDestroy;".equals(typeName)) {
+                        || "Ljavax/annotation/PreDestroy;".equals(typeName)
+                        || "Ljakarta/annotation/PostConstruct;".equals(typeName)
+                        || "Ljakarta/annotation/PreDestroy;".equals(typeName)) {
                     return;
                 }
             }

@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.charsets;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,6 +29,8 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.annotation.WillCloseWhenClosed;
 
@@ -38,14 +39,8 @@ import javax.annotation.WillCloseWhenClosed;
  */
 public class UserTextFile {
 
-    public static final Charset charset;
-
-    static {
-        charset = Charset.defaultCharset();
-    }
-
     public static Writer fileWriter(String fileName) throws IOException {
-        return new OutputStreamWriter(new FileOutputStream(fileName), charset);
+        return new OutputStreamWriter(Files.newOutputStream(Path.of(fileName)), Charset.defaultCharset());
     }
 
     public static PrintWriter printWriter(String fileName) throws IOException {
@@ -54,7 +49,7 @@ public class UserTextFile {
 
 
     public static Reader reader(@WillCloseWhenClosed InputStream in) {
-        return new InputStreamReader(in, charset);
+        return new InputStreamReader(in, Charset.defaultCharset());
     }
 
     public static BufferedReader bufferedReader(@WillCloseWhenClosed InputStream in) {
