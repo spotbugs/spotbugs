@@ -1872,7 +1872,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     public String getAbridgedMessage() {
         BugPattern bugPattern = getBugPattern();
 
-        String pattern = getLongDescription().replaceAll(" in \\{1\\}", "");
+        String pattern = getLongDescription().replace(" in {1}", "");
         String shortPattern = bugPattern.getShortDescription();
 
         try {
