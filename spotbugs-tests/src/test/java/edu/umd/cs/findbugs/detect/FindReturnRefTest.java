@@ -17,6 +17,7 @@ class FindReturnRefTest extends AbstractIntegrationTest {
 
     @Test
     void testInnerField() {
+        // issue #3283
         performAnalysis("exposemutable/InnerField.class",
                 "exposemutable/InnerField$PreferenceTreeNode.class");
 
