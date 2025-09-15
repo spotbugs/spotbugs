@@ -120,11 +120,11 @@ jobs:
           for asset in ./spotbugs/build/distributions/*; do
             assets+=("-a" "$asset")
           done
-          bin/hub release create "${assets[@]}" -F build/release.md "${{ steps.get_version.outputs.VERSION }}" --draft
+          gh release create "${assets[@]}" -F build/release.md "${{ steps.get_version.outputs.VERSION }}" --draft
       - name: Publish draft Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: github.ref_type == 'tag'
         shell: bash
         run: |
-          bin/hub release edit ${{ github.ref_name }} --draft=false
+          gh release edit ${{ github.ref_name }} --draft=false
