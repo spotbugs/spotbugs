@@ -43,16 +43,16 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.WillCloseWhenClosed;
 
-import edu.umd.cs.findbugs.sarif.SarifBugReporter;
 import org.dom4j.DocumentException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
+import edu.umd.cs.findbugs.sarif.SarifBugReporter;
 import edu.umd.cs.findbugs.util.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Helper class to parse the command line and configure the IFindBugsEngine
@@ -211,7 +211,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
         addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
         addOption("-chooseVisitors", "+v1,-v2,...", "selectively enable/disable detectors");
         addOption("-choosePlugins", "+p1,-p2,...", "selectively enable/disable plugins");
-        addOption("-adjustPriority", "v1=(raise|lower)[,...]", "raise/lower priority of warnings for given visitor(s)");
+        addOption("-adjustPriority", "v1=(raise|lower|suppress)[,...]",
+                "raise/lower priority of warnings for given visitor(s), or suppress them completely");
 
         startOptionGroup("Project configuration options:");
         addOption("-auxclasspath", "classpath", "set aux classpath for analysis");
