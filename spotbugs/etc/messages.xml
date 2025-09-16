@@ -9689,8 +9689,8 @@ Using floating-point variables should not be used as loop counters, as they are 
     </Details>
   </BugPattern>
   <BugPattern type="AT_NONATOMIC_64BIT_PRIMITIVE">
-    <ShortDescription>This write of this 64-bit primitive variable may not atomic</ShortDescription>
-    <LongDescription>This write of the 64-bit primitive variable "{2.name}" may not atomic</LongDescription>
+    <ShortDescription>This write of this 64-bit primitive variable may not be atomic</ShortDescription>
+    <LongDescription>This write of the 64-bit primitive variable "{2.name}" may not be atomic</LongDescription>
     <Details>
       <![CDATA[
         <p>
