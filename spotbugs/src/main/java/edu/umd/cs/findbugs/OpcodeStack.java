@@ -2631,7 +2631,7 @@ public class OpcodeStack {
             }
         } else if (seen == Const.INVOKEINTERFACE && "getParameter".equals(method)
                 && ("javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)
-                || "jakarta/servlet/http/HttpServletRequest".equals(clsName) || "jakarta/servlet/http/ServletRequest".equals(clsName))) {
+                        || "jakarta/servlet/http/HttpServletRequest".equals(clsName) || "jakarta/servlet/http/ServletRequest".equals(clsName))) {
             Item requestParameter = pop();
             pop();
             Item result = new Item("Ljava/lang/String;");
