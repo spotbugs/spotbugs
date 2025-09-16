@@ -18,6 +18,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Added
 - Add 'java.nio.file.Path.of' to known types for path traversal checks ([#3699](https://github.com/spotbugs/spotbugs/pull/3699))
+- Added Java 25 support ([#3569](https://github.com/spotbugs/spotbugs/issues/3569))
 
 ### Cleanup
 - S1481: Unused local variables should be removed ([#3654](https://github.com/spotbugs/spotbugs/pull/3654))

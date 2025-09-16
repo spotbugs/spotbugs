@@ -38,6 +38,9 @@ subprojects {
 allprojects {
   repositories {
     mavenCentral()
+    maven {
+      url = uri("https://repository.apache.org/content/repositories/snapshots/")
+    }
   }
   dependencies {
     String junitVersion = '5.13.4'
