@@ -115,12 +115,11 @@ jobs:
         shell: bash
         run: |
           set -x
-          curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.2
-          assets=("-a" "./eclipsePlugin/build/distributions/eclipsePlugin.zip")
+          assets=("./eclipsePlugin/build/distributions/eclipsePlugin.zip")
           for asset in ./spotbugs/build/distributions/*; do
-            assets+=("-a" "$asset")
+            assets+=("$asset")
           done
-          gh release create "${assets[@]}" -F build/release.md "${{ steps.get_version.outputs.VERSION }}" --draft
+          gh release create ${{ github.ref_name }} "${assets[@]}" --notes-file build/release.md --title "${{ steps.get_version.outputs.VERSION }}" --draft
       - name: Publish draft Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
