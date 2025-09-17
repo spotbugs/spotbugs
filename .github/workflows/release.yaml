@@ -56,7 +56,7 @@ jobs:
         run: |
           # Disable gpg decryption of certificate for time being until we get new keys established
           # gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
-          ./gradlew assemble createReleaseBody --no-daemon
+          ./gradlew assemble publishToSonatype closeAndReleaseSonatypeStagingRepository createReleaseBody --no-daemon
         env:
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
           ORG_GRADLE_PROJECT_ossrhUsername: ${{ secrets.OSSRH_USERNAME }}
@@ -69,7 +69,7 @@ jobs:
         run: |
           # Disable gpg decryption of certificate on for time being until we get new keys established
           # gpg --quiet --batch --yes --decrypt --passphrase="$GPG_SECRET_PASSPHRASE" --output spotbugs.jks .github/workflows/spotbugs.jks.gpg
-          ./gradlew assemble createReleaseBody --no-daemon
+          ./gradlew assemble publishToSonatype createReleaseBody --no-daemon
         env:
           GPG_SECRET_PASSPHRASE: ${{ secrets.GPG_SECRET_PASSPHRASE }}
           ORG_GRADLE_PROJECT_ossrhUsername: ${{ secrets.OSSRH_USERNAME }}
