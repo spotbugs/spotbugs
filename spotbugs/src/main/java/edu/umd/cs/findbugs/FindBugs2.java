@@ -85,6 +85,7 @@ import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.TopologicalSort;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
 
 /**
@@ -859,8 +860,8 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
     }
 
     public List<ClassDescriptor> sortByCallGraph(Collection<ClassDescriptor> classList, OutEdges<ClassDescriptor> outEdges) {
-        List<ClassDescriptor> evaluationOrder = edu.umd.cs.findbugs.util.TopologicalSort.sortByCallGraph(classList, outEdges);
-        edu.umd.cs.findbugs.util.TopologicalSort.countBadEdges(evaluationOrder, outEdges);
+        List<ClassDescriptor> evaluationOrder = TopologicalSort.sortByCallGraph(classList, outEdges);
+        TopologicalSort.countBadEdges(evaluationOrder, outEdges);
         return evaluationOrder;
 
     }
