@@ -6,6 +6,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
+
+## 4.9.6 - 2025-09-16
 ### Fixed
 - Fix exception throw when analyzing `jakarta.servlet.http.HttpServletRequest` method calls ([#3711](https://github.com/spotbugs/spotbugs/issues/3711))
 
