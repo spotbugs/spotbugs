@@ -930,7 +930,7 @@ msgid "Selectively enable/disable plugins."
 msgstr "Habilita ou desabilita o plugin especificado."
 
 #: ../../running.rst:334
-msgid "-adjustPriority <v1=(raise|lower)[,...]>:"
+msgid "-adjustPriority <v1=(raise|lower|suppress)[,...]>:"
 msgstr ""
 
 #: ../../running.rst:334

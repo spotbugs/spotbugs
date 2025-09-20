@@ -117,6 +117,8 @@ public class AnalysisRunner {
             } catch (final InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new AssertionError("Analysis failed with exception", e);
+            } finally {
+                FindBugs2.resetPriorityAdjustments();
             }
             if (!bugReporter.getQueuedErrors().isEmpty()) {
                 bugReporter.reportQueuedErrors();
