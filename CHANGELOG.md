@@ -7,6 +7,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2025-??-??
 
+### Fixed
+- Classes containing only methods throwing `UnsupportedOperationException` with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
+
 ## 4.9.6 - 2025-09-16
 ### Fixed
 - Fix exception throw when analyzing `jakarta.servlet.http.HttpServletRequest` method calls ([#3711](https://github.com/spotbugs/spotbugs/issues/3711))
