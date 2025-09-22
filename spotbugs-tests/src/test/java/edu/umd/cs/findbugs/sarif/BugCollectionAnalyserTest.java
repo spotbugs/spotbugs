@@ -2,6 +2,8 @@ package edu.umd.cs.findbugs.sarif;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.jupiter.api.Test;
@@ -169,5 +171,120 @@ class BugCollectionAnalyserTest {
 
         /* test result */
         assertThat(analyser.getResults().size(), is(5));
+    }
+
+    @Test
+    void testRuleContainsHelpTextFromDetailText() {
+        String type = "TEST_HELP_TYPE";
+        String detailText = "<p>This is a test detail text with <strong>HTML markup</strong>.</p>";
+
+        BugPattern bugPattern = new BugPattern(type, "abbrev", "category", false, "shortDescription",
+                "longDescription", detailText, "https://example.com/help.html", 0);
+        DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
+
+        BugCollection bugCollection = new SortedBugCollection();
+
+        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+                .addInt(10)
+                .addClass("TestClass");
+
+        SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
+        bug.addSourceLine(lineAnnotation);
+
+        bugCollection.add(bug);
+        bugCollection.bugsPopulated();
+
+        BugCollectionAnalyser analyser = new BugCollectionAnalyser(bugCollection);
+
+        /* test that rule contains help text from detail text */
+        JsonArray rules = analyser.getRules();
+        assertThat(rules.size(), is(1));
+
+        JsonObject ruleJson = rules.get(0).getAsJsonObject();
+        assertThat(ruleJson.get("id").getAsString(), is(type));
+
+        // Verify help section exists and contains the detail text
+        assertThat(ruleJson.has("help"), is(true));
+        JsonObject help = ruleJson.get("help").getAsJsonObject();
+        assertThat(help.has("text"), is(true));
+        String helpText = help.get("text").getAsString();
+        assertThat(helpText, notNullValue());
+        assertThat(helpText, containsString("This is a test detail text"));
+        assertThat(helpText, containsString("<strong>HTML markup</strong>"));
+    }
+
+    @Test
+    void testRuleHelpTextIsEmptyWhenDetailTextIsNull() {
+        String type = "TEST_NULL_DETAIL_TYPE";
+
+        BugPattern bugPattern = new BugPattern(type, "abbrev", "category", false, "shortDescription",
+                "longDescription", null, "https://example.com/help.html", 0);
+        DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
+
+        BugCollection bugCollection = new SortedBugCollection();
+
+        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+                .addInt(10)
+                .addClass("TestClass");
+
+        SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
+        bug.addSourceLine(lineAnnotation);
+
+        bugCollection.add(bug);
+        bugCollection.bugsPopulated();
+
+        BugCollectionAnalyser analyser = new BugCollectionAnalyser(bugCollection);
+
+        /* test that rule has help section even when detail text is null */
+        JsonArray rules = analyser.getRules();
+        assertThat(rules.size(), is(1));
+
+        JsonObject ruleJson = rules.get(0).getAsJsonObject();
+        assertThat(ruleJson.get("id").getAsString(), is(type));
+
+        // Verify help section exists but is empty when detail text is null
+        assertThat(ruleJson.has("help"), is(true));
+        JsonObject help = ruleJson.get("help").getAsJsonObject();
+        assertThat(help.has("text"), is(true));
+        String helpText = help.get("text").getAsString();
+        assertThat(helpText, notNullValue());
+    }
+
+    @Test
+    void testRuleHelpTextHandlesEmptyDetailText() {
+        String type = "TEST_EMPTY_DETAIL_TYPE";
+
+        BugPattern bugPattern = new BugPattern(type, "abbrev", "category", false, "shortDescription",
+                "longDescription", "", "https://example.com/help.html", 0);
+        DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
+
+        BugCollection bugCollection = new SortedBugCollection();
+
+        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+                .addInt(10)
+                .addClass("TestClass");
+
+        SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
+        bug.addSourceLine(lineAnnotation);
+
+        bugCollection.add(bug);
+        bugCollection.bugsPopulated();
+
+        BugCollectionAnalyser analyser = new BugCollectionAnalyser(bugCollection);
+
+        /* test that rule has help section when detail text is empty */
+        JsonArray rules = analyser.getRules();
+        assertThat(rules.size(), is(1));
+
+        JsonObject ruleJson = rules.get(0).getAsJsonObject();
+        assertThat(ruleJson.get("id").getAsString(), is(type));
+
+        // Verify help section exists and contains empty text
+        assertThat(ruleJson.has("help"), is(true));
+        JsonObject help = ruleJson.get("help").getAsJsonObject();
+        assertThat(help.has("text"), is(true));
+        String helpText = help.get("text").getAsString();
+        assertThat(helpText, notNullValue());
+        assertThat(helpText, is(""));
     }
 }
