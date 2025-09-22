@@ -39,8 +39,8 @@ final class Rule {
     final int cweid;
 
     Rule(@NonNull String id, @NonNull String shortDescription, @Nullable String fullDescription, @NonNull String defaultText,
-         @Nullable String detailText, @Nullable URI helpUri,
-         @NonNull List<String> tags, @NonNull int cweid) {
+            @Nullable String detailText, @Nullable URI helpUri,
+            @NonNull List<String> tags, @NonNull int cweid) {
         this.id = Objects.requireNonNull(id);
         this.shortDescription = Objects.requireNonNull(shortDescription);
         this.fullDescription = fullDescription != null ? fullDescription : "";
