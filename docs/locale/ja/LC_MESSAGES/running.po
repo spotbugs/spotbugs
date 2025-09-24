@@ -869,7 +869,7 @@ msgid "Selectively enable/disable plugins."
 msgstr "指定されたプラグインを有効化したり無効化したりします。"
 
 #: ../../running.rst:334
-msgid "-adjustPriority <v1=(raise|lower)[,...]>:"
+msgid "-adjustPriority <v1=(raise|lower|suppress)[,...]>:"
 msgstr ""
 
 #: ../../running.rst:334

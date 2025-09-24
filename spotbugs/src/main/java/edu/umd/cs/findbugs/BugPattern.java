@@ -135,6 +135,10 @@ public class BugPattern implements Comparable<BugPattern> {
         return priorityAdjustment;
     }
 
+    public void setPriorityAdjustment(int priorityAdjustment) {
+        this.priorityAdjustment = priorityAdjustment;
+    }
+
     public void adjustPriority(int change) {
         priorityAdjustment += change;
     }

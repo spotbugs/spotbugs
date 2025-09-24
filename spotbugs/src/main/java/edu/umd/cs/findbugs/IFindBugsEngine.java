@@ -98,9 +98,10 @@ public interface IFindBugsEngine {
     void excludeBaselineBugs(String baselineBugs) throws IOException, DocumentException;
 
     /**
-     * Set the UserPreferences representing which Detectors should be used. If
-     * UserPreferences are not set explicitly, the default set of Detectors will
-     * be used.
+     * Set the UserPreferences representing which Detectors should be used. If UserPreferences are not set explicitly,
+     * the default set of Detectors will be used. NOTE: calling this function also potentially changes priority
+     * adjustments on detectors and bug patterns. Clients should call
+     * {@link edu.umd.cs.findbugs.FindBugs2#resetPriorityAdjustments()} after engine execution.
      *
      * @param userPreferences
      *            the UserPreferences

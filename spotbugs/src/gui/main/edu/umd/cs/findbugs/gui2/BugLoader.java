@@ -98,7 +98,11 @@ public class BugLoader {
         fb.setProgressCallback(progressCallback);
         fb.setProjectName(p.getProjectName());
 
-        fb.execute();
+        try {
+            fb.execute();
+        } finally {
+            FindBugs2.resetPriorityAdjustments();
+        }
         String warnings = stringWriter.toString();
         if (warnings.length() > 0) {
             JTextArea tp = new JTextArea(warnings);

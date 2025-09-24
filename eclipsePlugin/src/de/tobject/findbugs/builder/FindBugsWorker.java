@@ -216,7 +216,12 @@ public class FindBugsWorker {
             FindbugsPlugin.log("Running SpotBugs");
         }
 
-        runFindBugs(findBugs);
+        try {
+            runFindBugs(findBugs);
+        } finally {
+            FindBugs2.resetPriorityAdjustments();
+        }
+
         if (DEBUG) {
             FindbugsPlugin.log("Done running SpotBugs");
         }
@@ -503,8 +508,7 @@ public class FindBugsWorker {
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
         // path to the project without project name itself
         IClasspathEntry[] entries = javaProject.getResolvedClasspath(true);
-        for (int i = 0; i < entries.length; i++) {
-            IClasspathEntry classpathEntry = entries[i];
+        for (IClasspathEntry classpathEntry : entries) {
             if (classpathEntry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
                 IPath outputLocation = ResourceUtils.getOutputLocation(classpathEntry, defaultOutputLocation);
                 if (outputLocation == null) {
