@@ -36,7 +36,7 @@ jobs:
       - uses: gradle/actions/wrapper-validation@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
       - name: Cache Eclipse
         id: cache-eclipse
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: eclipse-sdk
           key: eclipse-sdk-${{ matrix.os }}-${{ env.eclipse-version }}-${{ env.eclipse-date }}
