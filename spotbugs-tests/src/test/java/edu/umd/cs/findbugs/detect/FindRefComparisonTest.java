@@ -14,7 +14,6 @@ class FindRefComparisonTest extends AbstractIntegrationTest {
     @AfterAll
     static void tearDown() {
         SystemProperties.removeProperty("findbugs.refcomp.reportAll");
-        setPriorityAdjustment(0); // reset priority
     }
 
     private void performAnalysisForRefComp() {
@@ -26,7 +25,6 @@ class FindRefComparisonTest extends AbstractIntegrationTest {
     void testComparisonsNotEnabled() {
         // When there is no priority adjustment, and we enable ref comparison for
         // all, we only get an integer ref comparison bug.
-        setPriorityAdjustment(0); // reset priority
         SystemProperties.setProperty("findbugs.refcomp.reportAll", "true"); // enable ref comparison
 
         performAnalysisForRefComp();
