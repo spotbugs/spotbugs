@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.detect;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import org.junit.jupiter.api.condition.DisabledOnJre;
@@ -78,6 +79,22 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
         assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD");
         assertNoBugType("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE");
         assertNoBugType("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED");
+    }
+
+    @Test
+    void cloneableSingletonWithoutCloneMethodTest() {
+        // See https://github.com/spotbugs/spotbugs/issues/3727
+        Assertions.assertDoesNotThrow(() -> {
+            performAnalysis("singletons/CloneableSingletonWithoutCloneMethod.class");
+            assertBugTypeCount("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 1);
+            assertBugInClass("SING_SINGLETON_IMPLEMENTS_CLONEABLE", "CloneableSingletonWithoutCloneMethod");
+
+            assertNoBugType("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR");
+            assertNoBugType("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE");
+            assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD");
+            assertNoBugType("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE");
+            assertNoBugType("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED");
+        });
     }
 
     @Test
