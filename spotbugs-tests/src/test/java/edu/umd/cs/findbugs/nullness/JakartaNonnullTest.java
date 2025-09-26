@@ -1,3 +1,5 @@
+package edu.umd.cs.findbugs.nullness;
+
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.test.SpotBugsExtension;
 import edu.umd.cs.findbugs.test.SpotBugsRunner;
@@ -10,15 +12,19 @@ import java.nio.file.Paths;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.emptyIterable;
 
+/**
+ * Check if Nonnull annotation from jakarta.annotations is detected.
+ *
+ * @author pkini07
+ */
 @ExtendWith(SpotBugsExtension.class)
 class JakartaNonnullTest {
     @Test
     void checkedJakartaNonnullReturn_isOk(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
                 Paths.get("../spotbugsTestCases/build/classes/java/main/CheckedJakartaNonnullReturn.class"));
-        assertThat(bugCollection, emptyIterable());
+        assertThat(bugCollection, containsExactly(0, bug()));
     }
 
     @Test

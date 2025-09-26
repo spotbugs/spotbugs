@@ -12,10 +12,9 @@ import java.nio.file.Paths;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.emptyIterable;
 
 /**
- * Check if Nullable annotation from org.apache.avro.reflect is detected.
+ * Check if Nullable annotation from jakarta.annotations is detected.
  *
  * @author pkini07
  */
@@ -26,7 +25,7 @@ class JakartaNullabilityTest {
     void checkedJakartaNullableReturn_isOk(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
                 Paths.get("../spotbugsTestCases/build/classes/java/main/CheckedJakartaNullableReturn.class"));
-        assertThat(bugCollection, emptyIterable());
+        assertThat(bugCollection, containsExactly(0, bug()));
     }
 
     @Test
