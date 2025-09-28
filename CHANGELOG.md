@@ -9,6 +9,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 - Enhanced SARIF output with full description sections for each rule, incorporating comprehensive bug pattern descriptions from SpotBugs message database ([#2339](https://github.com/spotbugs/spotbugs/issues/2339))
 
+### Fixed
+- Fix exception throw when singleton implementing Cloneable has no clone() method ([#3727](https://github.com/spotbugs/spotbugs/issues/3727)) 
+
 ## 4.9.6 - 2025-09-16
 ### Fixed
 - Fix exception throw when analyzing `jakarta.servlet.http.HttpServletRequest` method calls ([#3711](https://github.com/spotbugs/spotbugs/issues/3711))

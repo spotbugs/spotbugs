@@ -30,7 +30,7 @@ dependencies {
   implementation 'org.springframework:spring-core:6.2.11'
   compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
   implementation 'org.checkerframework:checker-qual:3.51.0'
-  implementation 'com.sun.xml.bind:jaxb-impl:4.0.5'
+  implementation 'com.sun.xml.bind:jaxb-impl:4.0.6'
 
   implementation 'org.junit.jupiter:junit-jupiter-engine:5.13.4'
   implementation 'org.junit.jupiter:junit-jupiter-params:5.13.4'
@@ -39,7 +39,7 @@ dependencies {
   implementation project(':spotbugs')
   api project(':spotbugs-annotations')
   implementation 'org.apache.groovy:groovy-all:5.0.1'
-  implementation 'org.apache.commons:commons-lang3:3.18.0'
+  implementation 'org.apache.commons:commons-lang3:3.19.0'
   implementation 'org.mockito:mockito-core:5.20.0'
 }
 
