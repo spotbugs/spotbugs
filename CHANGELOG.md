@@ -6,8 +6,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
-### Added
-- Enhanced SARIF output with detailed help sections for each rule, incorporating comprehensive bug pattern descriptions from SpotBugs message database ([#3725](https://github.com/spotbugs/spotbugs/pull/3725))
+### Fixed
+- Enhanced SARIF output with full description sections for each rule, incorporating comprehensive bug pattern descriptions from SpotBugs message database ([#2339](https://github.com/spotbugs/spotbugs/issues/2339))
 
 ## 4.9.6 - 2025-09-16
 ### Fixed

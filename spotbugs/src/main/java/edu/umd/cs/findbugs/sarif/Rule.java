@@ -29,8 +29,6 @@ final class Rule {
     final String fullDescription;
     @NonNull
     final String defaultText;
-    @NonNull
-    final String detailText;
     @Nullable
     final URI helpUri;
     @NonNull
@@ -39,13 +37,11 @@ final class Rule {
     final int cweid;
 
     Rule(@NonNull String id, @NonNull String shortDescription, @Nullable String fullDescription, @NonNull String defaultText,
-            @Nullable String detailText, @Nullable URI helpUri,
-            @NonNull List<String> tags, @NonNull int cweid) {
+            @Nullable URI helpUri, @NonNull List<String> tags, @NonNull int cweid) {
         this.id = Objects.requireNonNull(id);
         this.shortDescription = Objects.requireNonNull(shortDescription);
-        this.fullDescription = fullDescription != null ? fullDescription : "";
+        this.fullDescription = (fullDescription != null && !fullDescription.equals("null")) ? fullDescription : "";
         this.defaultText = Objects.requireNonNull(defaultText);
-        this.detailText = detailText != null ? detailText : "";
         this.helpUri = helpUri;
         this.tags = Collections.unmodifiableList(tags);
         this.cweid = cweid;
@@ -61,15 +57,14 @@ final class Rule {
         JsonObject messageStrings = new JsonObject();
         messageStrings.add("default", textJson);
 
-        // TODO put 'fullDescription' with both of text and markdown representations
+        JsonObject fullDescJson = new JsonObject();
+        fullDescJson.addProperty("text", fullDescription);
+
         JsonObject result = new JsonObject();
         result.addProperty("id", id);
         result.add("shortDescription", shortDescJson);
+        result.add("fullDescription", fullDescJson);
         result.add("messageStrings", messageStrings);
-
-        JsonObject helpJson = new JsonObject();
-        helpJson.addProperty("text", detailText);
-        result.add("help", helpJson);
 
         if (helpUri != null) {
             result.addProperty("helpUri", helpUri.toString());
@@ -133,8 +128,7 @@ final class Rule {
             tags = Collections.singletonList(category);
         }
 
-        return new Rule(bugPattern.getType(), bugPattern.getShortDescription(), bugPattern.getDetailText(), formattedMessage, bugPattern
-                .getDetailText(), helpUri,
-                tags, bugPattern.getCWEid());
+        return new Rule(bugPattern.getType(), bugPattern.getShortDescription(), bugPattern.getDetailPlainText(), formattedMessage,
+                helpUri, tags, bugPattern.getCWEid());
     }
 }
