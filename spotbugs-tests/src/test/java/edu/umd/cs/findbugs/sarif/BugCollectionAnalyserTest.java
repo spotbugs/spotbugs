@@ -234,23 +234,23 @@ class BugCollectionAnalyserTest {
 
         BugCollectionAnalyser analyser = new BugCollectionAnalyser(bugCollection);
 
-        /* test that rule handles null detail text properly - null values should be converted to empty strings */
+        /* test that rule handles null detail text properly - null values should be converted to template text */
         JsonArray rules = analyser.getRules();
         assertThat(rules.size(), is(1));
 
         JsonObject ruleJson = rules.get(0).getAsJsonObject();
         assertThat(ruleJson.get("id").getAsString(), is(type));
 
-        /* test that fullDescription exists and null detail text is handled as empty string */
+        /* test that fullDescription exists and null detail text is handled with template text */
         assertTrue(ruleJson.has("fullDescription"));
         JsonObject fullDescription = ruleJson.get("fullDescription").getAsJsonObject();
         assertTrue(fullDescription.has("text"));
 
-        /* null values should be converted to empty strings */
+        /* null values should be converted to template text */
         String fullDescText = fullDescription.get("text").getAsString();
 
         assertNotNull(fullDescText);
-        assertTrue(fullDescText.isEmpty());
+        assertThat(fullDescText, is("No detailed description available for this bug pattern."));
     }
 
     @Test
@@ -274,14 +274,14 @@ class BugCollectionAnalyserTest {
 
         BugCollectionAnalyser analyser = new BugCollectionAnalyser(bugCollection);
 
-        /* test that rule handles empty detail text properly - empty strings should be valid */
+        /* test that rule handles empty detail text properly - empty strings should get template text */
         JsonArray rules = analyser.getRules();
         assertThat(rules.size(), is(1));
 
         JsonObject ruleJson = rules.get(0).getAsJsonObject();
         assertThat(ruleJson.get("id").getAsString(), is(type));
 
-        /* test that fullDescription exists and empty detail text is preserved */
+        /* test that fullDescription exists and empty detail text gets template text */
         assertTrue(ruleJson.has("fullDescription"));
         JsonObject fullDescription = ruleJson.get("fullDescription").getAsJsonObject();
         assertTrue(fullDescription.has("text"));
@@ -289,6 +289,48 @@ class BugCollectionAnalyserTest {
         String fullDescText = fullDescription.get("text").getAsString();
 
         assertNotNull(fullDescText);
-        assertTrue(fullDescText.isEmpty());
+        assertThat(fullDescText, is("No detailed description available for this bug pattern."));
+    }
+
+    @Test
+    void testRuleFullDescriptionHandlesHtmlDetailText() {
+        String type = "TEST_HTML_DETAIL_TYPE";
+        String htmlDetailText = "<p>This is a <strong>test</strong> with <em>HTML</em> markup.</p>";
+        String expectedPlainText = "This is a test with HTML markup.";
+
+        BugPattern bugPattern = new BugPattern(type, "abbrev", "category", false, "shortDescription",
+                "longDescription", htmlDetailText, "https://example.com/help.html", 0);
+        DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
+
+        BugCollection bugCollection = new SortedBugCollection();
+
+        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+                .addInt(10).addClass("TestClass");
+
+        SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
+        bug.addSourceLine(lineAnnotation);
+
+        bugCollection.add(bug);
+        bugCollection.bugsPopulated();
+
+        BugCollectionAnalyser analyser = new BugCollectionAnalyser(bugCollection);
+
+        /* test that rule converts HTML detail text to plain text */
+        JsonArray rules = analyser.getRules();
+        assertThat(rules.size(), is(1));
+
+        JsonObject ruleJson = rules.get(0).getAsJsonObject();
+        assertThat(ruleJson.get("id").getAsString(), is(type));
+
+        /* test that fullDescription exists and HTML is converted to plain text */
+        assertTrue(ruleJson.has("fullDescription"));
+        JsonObject fullDescription = ruleJson.get("fullDescription").getAsJsonObject();
+        assertTrue(fullDescription.has("text"));
+
+        String fullDescText = fullDescription.get("text").getAsString();
+
+        assertNotNull(fullDescText);
+        /* HTML conversion may add trailing whitespace, so we trim it */
+        assertThat(fullDescText.trim(), is(expectedPlainText));
     }
 }

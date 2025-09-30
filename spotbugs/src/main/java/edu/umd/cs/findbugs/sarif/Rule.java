@@ -40,7 +40,9 @@ final class Rule {
             @Nullable URI helpUri, @NonNull List<String> tags, @NonNull int cweid) {
         this.id = Objects.requireNonNull(id);
         this.shortDescription = Objects.requireNonNull(shortDescription);
-        this.fullDescription = (fullDescription != null && !fullDescription.equals("null")) ? fullDescription : "";
+        this.fullDescription = (fullDescription != null && !fullDescription.equals("null") && !fullDescription.trim().isEmpty()) 
+            ? fullDescription 
+            : "No detailed description available for this bug pattern.";
         this.defaultText = Objects.requireNonNull(defaultText);
         this.helpUri = helpUri;
         this.tags = Collections.unmodifiableList(tags);
