@@ -7,6 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2025-??-??
 ### Fixed
+- Fix Eclipse not always using latest preferences file state ([#3740](https://github.com/spotbugs/spotbugs/issues/3740)) 
 - Fix exception throw when singleton implementing Cloneable has no clone() method ([#3727](https://github.com/spotbugs/spotbugs/issues/3727)) 
 
 ## 4.9.6 - 2025-09-16
