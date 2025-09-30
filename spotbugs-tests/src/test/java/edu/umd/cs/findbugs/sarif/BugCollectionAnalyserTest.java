@@ -1,9 +1,10 @@
 package edu.umd.cs.findbugs.sarif;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +27,7 @@ class BugCollectionAnalyserTest {
         BugCollectionAnalyser analyser = new BugCollectionAnalyser(bugCollection);
 
         /* test taxonomy */
-        assertThat(analyser.getCweTaxonomy(), nullValue());
+        assertNull(analyser.getCweTaxonomy());
 
         /* test rules */
         assertThat(analyser.getRules().size(), is(0));
@@ -105,7 +106,7 @@ class BugCollectionAnalyserTest {
         BugCollectionAnalyser analyser = new BugCollectionAnalyser(bugCollection);
 
         /* test taxonomy */
-        assertThat(analyser.getCweTaxonomy(), nullValue());
+        assertNull(analyser.getCweTaxonomy());
 
         /* test rules */
         JsonObject ruleJson = analyser.getRules().get(0).getAsJsonObject();
@@ -163,7 +164,7 @@ class BugCollectionAnalyserTest {
         BugCollectionAnalyser analyser = new BugCollectionAnalyser(bugCollection);
 
         /* test taxonomy */
-        assertThat(analyser.getCweTaxonomy(), nullValue());
+        assertNull(analyser.getCweTaxonomy());
 
         /* test rules */
         assertThat(analyser.getRules().size(), is(2));
@@ -202,13 +203,13 @@ class BugCollectionAnalyserTest {
         assertThat(ruleJson.get("id").getAsString(), is(type));
 
         /* test that fullDescription exists and contains the detail text */
-        assertThat(ruleJson.has("fullDescription"), is(true));
+        assertTrue(ruleJson.has("fullDescription"));
         JsonObject fullDescription = ruleJson.get("fullDescription").getAsJsonObject();
-        assertThat(fullDescription.has("text"), is(true));
+        assertTrue(fullDescription.has("text"));
 
         String fullDescText = fullDescription.get("text").getAsString();
 
-        assertThat(fullDescText, notNullValue());
+        assertNotNull(fullDescText);
         assertThat(fullDescText, is(detailText));
     }
 
@@ -241,15 +242,15 @@ class BugCollectionAnalyserTest {
         assertThat(ruleJson.get("id").getAsString(), is(type));
 
         /* test that fullDescription exists and null detail text is handled as empty string */
-        assertThat(ruleJson.has("fullDescription"), is(true));
+        assertTrue(ruleJson.has("fullDescription"));
         JsonObject fullDescription = ruleJson.get("fullDescription").getAsJsonObject();
-        assertThat(fullDescription.has("text"), is(true));
+        assertTrue(fullDescription.has("text"));
 
         /* null values should be converted to empty strings */
         String fullDescText = fullDescription.get("text").getAsString();
 
-        assertThat(fullDescText, notNullValue());
-        assertThat(fullDescText.isEmpty(), is(true));
+        assertNotNull(fullDescText);
+        assertTrue(fullDescText.isEmpty());
     }
 
     @Test
@@ -281,13 +282,13 @@ class BugCollectionAnalyserTest {
         assertThat(ruleJson.get("id").getAsString(), is(type));
 
         /* test that fullDescription exists and empty detail text is preserved */
-        assertThat(ruleJson.has("fullDescription"), is(true));
+        assertTrue(ruleJson.has("fullDescription"));
         JsonObject fullDescription = ruleJson.get("fullDescription").getAsJsonObject();
-        assertThat(fullDescription.has("text"), is(true));
+        assertTrue(fullDescription.has("text"));
 
         String fullDescText = fullDescription.get("text").getAsString();
 
-        assertThat(fullDescText, notNullValue());
-        assertThat(fullDescText.isEmpty(), is(true));
+        assertNotNull(fullDescText);
+        assertTrue(fullDescText.isEmpty());
     }
 }
