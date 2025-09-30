@@ -36,13 +36,13 @@ final class Rule {
     @NonNull
     final int cweid;
 
-    Rule(@NonNull String id, @NonNull String shortDescription, @Nullable String fullDescription, @NonNull String defaultText,
-            @Nullable URI helpUri, @NonNull List<String> tags, @NonNull int cweid) {
+    Rule(@NonNull String id, @NonNull String shortDescription, @NonNull String fullDescription, @NonNull String defaultText, @Nullable URI helpUri,
+            @NonNull List<String> tags, @NonNull int cweid) {
         this.id = Objects.requireNonNull(id);
         this.shortDescription = Objects.requireNonNull(shortDescription);
-        this.fullDescription = (fullDescription != null && !fullDescription.equals("null") && !fullDescription.trim().isEmpty()) 
-            ? fullDescription 
-            : "No detailed description available for this bug pattern.";
+        this.fullDescription = Objects.requireNonNull(fullDescription).trim().isEmpty()
+                ? "No detailed description available for this bug pattern."
+                : Objects.requireNonNull(fullDescription).trim();
         this.defaultText = Objects.requireNonNull(defaultText);
         this.helpUri = helpUri;
         this.tags = Collections.unmodifiableList(tags);
@@ -59,6 +59,7 @@ final class Rule {
         JsonObject messageStrings = new JsonObject();
         messageStrings.add("default", textJson);
 
+        // TODO add markdown representations to 'fullDescription'
         JsonObject fullDescJson = new JsonObject();
         fullDescJson.addProperty("text", fullDescription);
 

@@ -214,46 +214,6 @@ class BugCollectionAnalyserTest {
     }
 
     @Test
-    void testRuleFullDescriptionHandlesNullDetailText() {
-        String type = "TEST_NULL_DETAIL_TYPE";
-
-        BugPattern bugPattern = new BugPattern(type, "abbrev", "category", false, "shortDescription",
-                "longDescription", null, "https://example.com/help.html", 0);
-        DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
-
-        BugCollection bugCollection = new SortedBugCollection();
-
-        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
-                .addInt(10).addClass("TestClass");
-
-        SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
-        bug.addSourceLine(lineAnnotation);
-
-        bugCollection.add(bug);
-        bugCollection.bugsPopulated();
-
-        BugCollectionAnalyser analyser = new BugCollectionAnalyser(bugCollection);
-
-        /* test that rule handles null detail text properly - null values should be converted to template text */
-        JsonArray rules = analyser.getRules();
-        assertThat(rules.size(), is(1));
-
-        JsonObject ruleJson = rules.get(0).getAsJsonObject();
-        assertThat(ruleJson.get("id").getAsString(), is(type));
-
-        /* test that fullDescription exists and null detail text is handled with template text */
-        assertTrue(ruleJson.has("fullDescription"));
-        JsonObject fullDescription = ruleJson.get("fullDescription").getAsJsonObject();
-        assertTrue(fullDescription.has("text"));
-
-        /* null values should be converted to template text */
-        String fullDescText = fullDescription.get("text").getAsString();
-
-        assertNotNull(fullDescText);
-        assertThat(fullDescText, is("No detailed description available for this bug pattern."));
-    }
-
-    @Test
     void testRuleFullDescriptionHandlesEmptyDetailText() {
         String type = "TEST_EMPTY_DETAIL_TYPE";
 
@@ -331,6 +291,6 @@ class BugCollectionAnalyserTest {
 
         assertNotNull(fullDescText);
         /* HTML conversion may add trailing whitespace, so we trim it */
-        assertThat(fullDescText.trim(), is(expectedPlainText));
+        assertThat(fullDescText, is(expectedPlainText));
     }
 }
