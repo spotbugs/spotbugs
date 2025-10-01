@@ -40,7 +40,9 @@ final class Rule {
             @NonNull List<String> tags, @NonNull int cweid) {
         this.id = Objects.requireNonNull(id);
         this.shortDescription = Objects.requireNonNull(shortDescription);
-        this.fullDescription = Objects.requireNonNull(fullDescription);
+        this.fullDescription = Objects.requireNonNull(fullDescription).trim().isEmpty()
+                ? "No detailed description available for this bug pattern."
+                : Objects.requireNonNull(fullDescription).trim();
         this.defaultText = Objects.requireNonNull(defaultText);
         this.helpUri = helpUri;
         this.tags = Collections.unmodifiableList(tags);
@@ -57,11 +59,16 @@ final class Rule {
         JsonObject messageStrings = new JsonObject();
         messageStrings.add("default", textJson);
 
-        // TODO put 'fullDescription' with both of text and markdown representations
+        // TODO add markdown representations to 'fullDescription'
+        JsonObject fullDescJson = new JsonObject();
+        fullDescJson.addProperty("text", fullDescription);
+
         JsonObject result = new JsonObject();
         result.addProperty("id", id);
         result.add("shortDescription", shortDescJson);
+        result.add("fullDescription", fullDescJson);
         result.add("messageStrings", messageStrings);
+
         if (helpUri != null) {
             result.addProperty("helpUri", helpUri.toString());
         }
@@ -124,7 +131,7 @@ final class Rule {
             tags = Collections.singletonList(category);
         }
 
-        return new Rule(bugPattern.getType(), bugPattern.getShortDescription(), bugPattern.getDetailText(), formattedMessage, helpUri,
-                tags, bugPattern.getCWEid());
+        return new Rule(bugPattern.getType(), bugPattern.getShortDescription(), bugPattern.getDetailPlainText(), formattedMessage,
+                helpUri, tags, bugPattern.getCWEid());
     }
 }
