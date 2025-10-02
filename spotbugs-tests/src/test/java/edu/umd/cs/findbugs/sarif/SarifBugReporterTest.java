@@ -136,7 +136,7 @@ class SarifBugReporterTest {
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
 
         // when
-        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10).addClass("the/target/Class"));
+        reporter.reportBug(new BugInstance(bugPattern.getType(), 0).addInt(10).addClass("the/target/Class"));
         reporter.finish();
 
         // then
@@ -174,7 +174,7 @@ class SarifBugReporterTest {
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
 
         // when
-        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10).addClass("the/target/Class"));
+        reporter.reportBug(new BugInstance(bugPattern.getType(), 0).addInt(10).addClass("the/target/Class"));
         reporter.finish();
 
         // then
@@ -289,7 +289,7 @@ class SarifBugReporterTest {
                 "longDescription", "detailText", "https://example.com/help.html", 0);
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
 
-        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10).addClass("the/target/Class"));
+        reporter.reportBug(new BugInstance(bugPattern.getType(), 0).addInt(10).addClass("the/target/Class"));
         reporter.finish();
 
         String json = writer.toString();
@@ -342,7 +342,7 @@ class SarifBugReporterTest {
                 "longDescription", "detailText", "https://example.com/help.html", 0);
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
 
-        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10).addClass("SampleClass"));
+        reporter.reportBug(new BugInstance(bugPattern.getType(), 0).addInt(10).addClass("SampleClass"));
         reporter.finish();
 
         String json = writer.toString();
@@ -378,7 +378,7 @@ class SarifBugReporterTest {
                 "longDescription", "detailText", "https://example.com/help.html", cweid);
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
 
-        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10)
+        reporter.reportBug(new BugInstance(bugPattern.getType(), 0).addInt(10)
                 .addClass("SampleClass"));
         reporter.finish();
 
@@ -448,7 +448,7 @@ class SarifBugReporterTest {
                 "longDescription", "detailText", "https://example.com/help.html", 0);
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
 
-        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10).addClass("the/target/Class"));
+        reporter.reportBug(new BugInstance(bugPattern.getType(), 0).addInt(10).addClass("the/target/Class"));
         reporter.finish();
 
         String json = writer.toString();

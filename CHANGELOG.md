@@ -9,6 +9,12 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 - Fix Eclipse not always using latest preferences file state ([#3740](https://github.com/spotbugs/spotbugs/issues/3740)) 
 - Fix exception throw when singleton implementing Cloneable has no clone() method ([#3727](https://github.com/spotbugs/spotbugs/issues/3727)) 
+- Fix for missing -adjustPriority parameter in Eclipse preferences ([#3687](https://github.com/spotbugs/spotbugs/issues/3687))
+- Documentation of -adjustPriority parameter
+
+### Changed
+- Support for fully qualified class names for detectors in -adjustPriority parameter
+- Support for numerical and absolute priority adjustments
 
 ## 4.9.6 - 2025-09-16
 ### Fixed

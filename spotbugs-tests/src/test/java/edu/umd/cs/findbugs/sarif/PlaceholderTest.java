@@ -72,7 +72,7 @@ class PlaceholderTest {
 
         JavaClass clazz = Repository.lookupClass(PlaceholderTest.class);
         Method method = Arrays.stream(clazz.getMethods()).filter(m -> m.getName().equals("testFormatWithKey")).findFirst().get();
-        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addClassAndMethod(clazz, method));
+        reporter.reportBug(new BugInstance(bugPattern.getType(), 0).addClassAndMethod(clazz, method));
         reporter.finish();
 
         String json = writer.toString();
