@@ -122,6 +122,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Build
 - Allow our GA builds to work with JDK 25 (and drop support for JDK 24) ([#3564](https://github.com/spotbugs/spotbugs/pull/3564))
 
+### Refactor
+- Remove deprecated 'Priority' annotation originally deprecated in 2011.  Switch to 'Confidence' for same behaviour. ([#xxxx](https://github.com/spotbugs/spotbugs/issues/xxxx))
+
 ## 4.9.6 - 2025-09-16
 ### Fixed
 - Fix exception throw when analyzing `jakarta.servlet.http.HttpServletRequest` method calls ([#3711](https://github.com/spotbugs/spotbugs/issues/3711))
