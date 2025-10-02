@@ -63,6 +63,13 @@ public interface BugReporter extends RepositoryLookupFailureCallback, IClassObse
     void setPriorityThreshold(int threshold);
 
     /**
+     * Set an optional priority adjuster.
+     *
+     * @param priorityAdjuster the priority adjuster
+     */
+    void setPriorityAdjuster(PriorityAdjuster priorityAdjuster);
+
+    /**
      * Report a bug. The implementation may report the bug immediately, or queue
      * it for later.
      *
