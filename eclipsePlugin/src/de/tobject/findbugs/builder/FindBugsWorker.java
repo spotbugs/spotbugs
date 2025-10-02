@@ -32,6 +32,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import edu.umd.cs.findbugs.PriorityAdjuster;
 import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -158,7 +159,9 @@ public class FindBugsWorker {
             bugReporter.setReportingStream(FindBugsConsole.getConsole().newOutputStream());
         }
         bugReporter.setPriorityThreshold(userPrefs.getUserDetectorThreshold());
-
+        if (userPrefs.getAdjustPriority() != null && !userPrefs.getAdjustPriority().isEmpty()) {
+            bugReporter.setPriorityAdjuster(new PriorityAdjuster(userPrefs.getAdjustPriority()));
+        }
         FindBugs.setHome(FindbugsPlugin.getFindBugsEnginePluginLocation());
 
         Map<IPath, IPath> outLocations = createOutputLocations();
@@ -503,8 +506,7 @@ public class FindBugsWorker {
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
         // path to the project without project name itself
         IClasspathEntry[] entries = javaProject.getResolvedClasspath(true);
-        for (int i = 0; i < entries.length; i++) {
-            IClasspathEntry classpathEntry = entries[i];
+        for (IClasspathEntry classpathEntry : entries) {
             if (classpathEntry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
                 IPath outputLocation = ResourceUtils.getOutputLocation(classpathEntry, defaultOutputLocation);
                 if (outputLocation == null) {

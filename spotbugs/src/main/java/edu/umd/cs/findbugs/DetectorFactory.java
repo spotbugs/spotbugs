@@ -73,8 +73,6 @@ public class DetectorFactory {
 
     private String detailHTML;
 
-    private int priorityAdjustment;
-
     private boolean enabledButNonReporting;
 
     private boolean hidden;
@@ -172,7 +170,6 @@ public class DetectorFactory {
         this.speed = speed;
         this.reports = reports;
         this.requireJRE = requireJRE;
-        this.priorityAdjustment = 0;
         this.hidden = false;
     }
 
@@ -296,16 +293,6 @@ public class DetectorFactory {
         return defEnabled;
     }
 
-    /**
-     * Set the priority adjustment for the detector produced by this factory.
-     *
-     * @param priorityAdjustment
-     *            the priority adjustment
-     */
-    public void setPriorityAdjustment(int priorityAdjustment) {
-        this.priorityAdjustment = priorityAdjustment;
-    }
-
     public void setEnabledButNonReporting(boolean notReporting) {
         this.enabledButNonReporting = notReporting;
     }
@@ -319,7 +306,7 @@ public class DetectorFactory {
         if (enabledButNonReporting) {
             return 100;
         }
-        return priorityAdjustment;
+        return 0;
     }
 
     /**

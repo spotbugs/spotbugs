@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import edu.umd.cs.findbugs.annotations.Confidence;
+import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.test.AnalysisRunner;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
@@ -71,6 +72,8 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
  * @author jmsotuyo
  */
 public abstract class AbstractIntegrationTest {
+
+    protected UserPreferences userPreferences;
 
     /**
      * Build prefix directories to search for classes
@@ -145,7 +148,7 @@ public abstract class AbstractIntegrationTest {
         Path[] paths = Arrays.stream(analyzeMe)
                 .map(AbstractIntegrationTest::getFindbugsTestCasesFile)
                 .toArray(Path[]::new);
-        bugReporter = runner.run(paths);
+        bugReporter = runner.run(userPreferences, paths);
     }
 
     /**

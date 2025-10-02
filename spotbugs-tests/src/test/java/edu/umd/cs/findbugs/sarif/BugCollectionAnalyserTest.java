@@ -45,7 +45,7 @@ class BugCollectionAnalyserTest {
 
         BugCollection bugCollection = new SortedBugCollection();
 
-        BugInstance bug1 = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10)
+        BugInstance bug1 = new BugInstance(bugPattern.getType(), 0).addInt(10)
                 .addClass("SampleClass");
 
         SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("SimpleTest", "Test.java", 1, 3, 0, 0);
@@ -91,7 +91,7 @@ class BugCollectionAnalyserTest {
 
         BugCollection bugCollection = new SortedBugCollection();
 
-        BugInstance bug1 = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+        BugInstance bug1 = new BugInstance(bugPattern.getType(), 0)
                 .addInt(10)
                 .addClass("SampleClass");
 
@@ -131,19 +131,19 @@ class BugCollectionAnalyserTest {
 
         BugCollection bugCollection = new SortedBugCollection();
 
-        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10)
+        BugInstance bug = new BugInstance(bugPattern.getType(), 0).addInt(10)
                 .addClass("SampleClass");
 
-        BugInstance bug2 = new BugInstance(bugPattern2.getType(), bugPattern2.getPriorityAdjustment()).addInt(3)
+        BugInstance bug2 = new BugInstance(bugPattern2.getType(), 0).addInt(3)
                 .addClass("ExampleClass");
 
-        BugInstance bug3 = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10)
+        BugInstance bug3 = new BugInstance(bugPattern.getType(), 0).addInt(10)
                 .addClass("TestClass");
 
-        BugInstance bug4 = new BugInstance(bugPattern2.getType(), bugPattern2.getPriorityAdjustment()).addInt(10)
+        BugInstance bug4 = new BugInstance(bugPattern2.getType(), 0).addInt(10)
                 .addClass("SimpleClass");
 
-        BugInstance bug5 = new BugInstance(bugPattern2.getType(), bugPattern2.getPriorityAdjustment()).addInt(10)
+        BugInstance bug5 = new BugInstance(bugPattern2.getType(), 0).addInt(10)
                 .addClass("NoClass");
 
         bug.addSourceLine(new SourceLineAnnotation("SimpleTest", "Test.java", 1, 3, 0, 0));

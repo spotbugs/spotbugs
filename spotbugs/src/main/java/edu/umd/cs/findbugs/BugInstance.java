@@ -193,8 +193,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
                 String msg = "Can't find definition of bug type " + type;
                 AnalysisContext.logError(msg, new NoSuchBugPattern(type));
             }
-        } else {
-            this.priority += p.getPriorityAdjustment();
         }
         if (adjustExperimental && isExperimental()) {
             this.priority = Priorities.EXP_PRIORITY;
