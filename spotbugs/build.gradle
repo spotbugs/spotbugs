@@ -172,19 +172,26 @@ TaskProvider<Copy> copyLibsForEclipse = tasks.register('copyLibsForEclipse', Cop
 }
 
 TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
-  inputs.file "${projectDir}/META-INF/MANIFEST-TEMPLATE.MF"
-  outputs.file "${projectDir}/META-INF/MANIFEST.MF"
+  File manifestTemplate = file("${projectDir}/META-INF/MANIFEST-TEMPLATE.MF")
+  File manifestOutput = file("${projectDir}/META-INF/MANIFEST.MF")
+  String version = project.version.replace('-', '.')
+  String mainClass = 'edu.umd.cs.findbugs.LaunchAppropriateUI'
+  Provider<String> bundleClassPath = provider {
+    List<String> libs = fileTree(dir: '.libs').collect { File file -> projectDir.toPath().relativize(file.toPath()).toString() }
+    return 'spotbugs.jar,' + libs.join(',')
+  }
+  inputs.file manifestTemplate
+  outputs.file manifestOutput
   dependsOn configurations.runtimeClasspath, copyLibsForEclipse
-  String version = project.version
   doLast {
     Manifest manifestSpec = java.manifest {
-      from "${projectDir}/META-INF/MANIFEST-TEMPLATE.MF"
-      attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
-               'Bundle-Version': version.replace('-', '.'),
-               'Bundle-ClassPath': 'spotbugs.jar,' +  fileTree(dir: '.libs').collect { File file -> projectDir.toPath().relativize(file.toPath()).toString() }.join(',')
+      from manifestTemplate
+      attributes 'Main-Class': mainClass,
+                 'Bundle-Version': version,
+                 'Bundle-ClassPath': bundleClassPath.get()
     }
     // write manifests
-    manifestSpec.writeTo("${projectDir}/META-INF/MANIFEST.MF")
+    manifestSpec.writeTo(manifestOutput)
   }
 }
 tasks.eclipse.dependsOn(updateManifest)
