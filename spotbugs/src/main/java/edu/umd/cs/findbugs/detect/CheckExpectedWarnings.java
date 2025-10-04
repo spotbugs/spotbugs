@@ -48,7 +48,6 @@ import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
-import edu.umd.cs.findbugs.annotations.Priority;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
@@ -262,7 +261,6 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
 
             String expectedBugCodes = (String) expect.getValue("value");
             EnumValue wantedConfidence = (EnumValue) expect.getValue("confidence");
-            EnumValue wantedPriority = (EnumValue) expect.getValue("priority");
             Integer num = (Integer) expect.getValue("num");
             if (num == null) {
                 num = (expectWarnings ? 1 : 0);
@@ -275,8 +273,6 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
             int minPriority = Confidence.LOW.getConfidenceValue();
             if (wantedConfidence != null) {
                 minPriority = Confidence.valueOf(wantedConfidence.value).getConfidenceValue();
-            } else if (wantedPriority != null) {
-                minPriority = Priority.valueOf(wantedPriority.value).getPriorityValue();
             }
 
             if (DEBUG) {
