@@ -15,6 +15,7 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.cwe.WeaknessCatalog;
+import edu.umd.cs.findbugs.util.HTML;
 
 /**
  * Object which represents reportingDescriptor in {@code run.driver.rules} property. (§3.19.23)
@@ -40,9 +41,7 @@ final class Rule {
             @NonNull List<String> tags, @NonNull int cweid) {
         this.id = Objects.requireNonNull(id);
         this.shortDescription = Objects.requireNonNull(shortDescription);
-        this.fullDescription = Objects.requireNonNull(fullDescription).trim().isEmpty()
-                ? "No detailed description available for this bug pattern."
-                : Objects.requireNonNull(fullDescription).trim();
+        this.fullDescription = Objects.requireNonNull(fullDescription);
         this.defaultText = Objects.requireNonNull(defaultText);
         this.helpUri = helpUri;
         this.tags = Collections.unmodifiableList(tags);
@@ -61,7 +60,18 @@ final class Rule {
 
         // TODO add markdown representations to 'fullDescription'
         JsonObject fullDescJson = new JsonObject();
-        fullDescJson.addProperty("text", fullDescription);
+        String plainTextDescription;
+        try {
+            plainTextDescription = HTML.convertHtmlSnippetToText(fullDescription);
+            if (plainTextDescription.trim().isEmpty()) {
+                plainTextDescription = "No detailed description available for this bug pattern.";
+            } else {
+                plainTextDescription = plainTextDescription.trim();
+            }
+        } catch (Exception e) {
+            plainTextDescription = fullDescription; // Fallback to original if conversion fails
+        }
+        fullDescJson.addProperty("text", plainTextDescription);
 
         JsonObject result = new JsonObject();
         result.addProperty("id", id);
@@ -131,7 +141,7 @@ final class Rule {
             tags = Collections.singletonList(category);
         }
 
-        return new Rule(bugPattern.getType(), bugPattern.getShortDescription(), bugPattern.getDetailPlainText(), formattedMessage,
+        return new Rule(bugPattern.getType(), bugPattern.getShortDescription(), bugPattern.getDetailText(), formattedMessage,
                 helpUri, tags, bugPattern.getCWEid());
     }
 }
