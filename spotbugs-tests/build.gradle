@@ -31,7 +31,7 @@ java {
 
 
 tasks.named('compileJava', JavaCompile).configure {
-  options.release = 11
+  options.release = 17
 }
 
 tasks.named('jacocoTestReport', JacocoReport).configure {
