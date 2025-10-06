@@ -171,6 +171,7 @@ public abstract class AbstractBugReporter implements BugReporter {
      *
      * @param priorityAdjuster the priority adjuster
      */
+    @Override
     public void setPriorityAdjuster(PriorityAdjuster priorityAdjuster) {
         this.priorityAdjuster = priorityAdjuster;
     }
@@ -434,4 +435,9 @@ public abstract class AbstractBugReporter implements BugReporter {
      *            the name of the class
      */
     public abstract void reportMissingClass(String string);
+
+    @Override
+    public PriorityAdjuster getPriorityAdjuster() {
+        return priorityAdjuster;
+    }
 }

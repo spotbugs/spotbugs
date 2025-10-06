@@ -73,8 +73,6 @@ public class DetectorFactory {
 
     private String detailHTML;
 
-    private boolean enabledButNonReporting;
-
     private boolean hidden;
 
     static class ReflectionDetectorCreator {
@@ -293,19 +291,12 @@ public class DetectorFactory {
         return defEnabled;
     }
 
+    @Deprecated(forRemoval = true)
     public void setEnabledButNonReporting(boolean notReporting) {
-        this.enabledButNonReporting = notReporting;
     }
 
-    /**
-     * Get the priority adjustment for the detector produced by this factory.
-     *
-     * @return the priority adjustment
-     */
+    @Deprecated(forRemoval = true)
     public int getPriorityAdjustment() {
-        if (enabledButNonReporting) {
-            return 100;
-        }
         return 0;
     }
 

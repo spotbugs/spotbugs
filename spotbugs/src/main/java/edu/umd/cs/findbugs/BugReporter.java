@@ -108,4 +108,12 @@ public interface BugReporter extends RepositoryLookupFailureCallback, IClassObse
      */
     @CheckForNull
     BugCollection getBugCollection();
+
+    /**
+     * @return the PriorityAdjuster set for this BugReporter, or null if none was set
+     */
+    @CheckForNull
+    default PriorityAdjuster getPriorityAdjuster() {
+        return null;
+    }
 }
