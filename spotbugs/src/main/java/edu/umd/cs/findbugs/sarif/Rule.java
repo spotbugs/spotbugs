@@ -58,7 +58,7 @@ final class Rule {
         JsonObject messageStrings = new JsonObject();
         messageStrings.add("default", textJson);
 
-        // TODO add markdown representations to 'fullDescription'
+        // TODO add markdown representation to 'fullDescription'
         JsonObject fullDescJson = new JsonObject();
         String plainTextDescription;
         try {
