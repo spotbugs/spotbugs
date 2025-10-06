@@ -22,8 +22,13 @@ package edu.umd.cs.findbugs;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.plan.ExecutionPlan;
+
 public class PriorityAdjuster {
     Map<String, PriorityAdjustment> adjustments;
+    private DetectorFactoryChooser factoryChooser;
 
     public PriorityAdjuster(Map<String, String> adjustments) {
         this.adjustments = new HashMap<>();
@@ -65,7 +70,9 @@ public class PriorityAdjuster {
         if (adjustments.isEmpty()) {
             return bugInstance;
         }
+
         int priority = bugInstance.getPriority();
+        priority += adjustForDetector(bugInstance);
         DetectorFactory detectorFactory = bugInstance.getDetectorFactory();
         if (detectorFactory != null) {
             String detectorFactoryName = detectorFactory.getClass().getName();
@@ -79,11 +86,40 @@ public class PriorityAdjuster {
         if (patternAdjustment != null) {
             priority = patternAdjustment.adjust(priority);
         }
+        priority = BugInstance.boundedPriority(priority);
         if (priority == bugInstance.getPriority()) {
             return bugInstance;
         }
         BugInstance clone = ((BugInstance) bugInstance.clone());
         clone.setPriority(priority);
         return clone;
+    }
+
+    /**
+     * Adjust priority if the factory was forcibly enabled by {@link ExecutionPlan} although the user did not select it.
+     *
+     * @param bugInstance
+     * @return adjusted bug priority
+     */
+    public int adjustForDetector(BugInstance bugInstance) {
+        DetectorFactory factory = bugInstance.getDetectorFactory();
+        if (factory != null && factoryChooser != null && !factoryChooser.wasFactoryEnabled(factory)) {
+            BugPattern bugPattern = bugInstance.getBugPattern();
+            if (SystemProperties.ASSERTIONS_ENABLED && !"EXPERIMENTAL".equals(bugPattern.getCategory())
+                    && !factory.getReportedBugPatterns().contains(bugPattern)) {
+                AnalysisContext.logError(factory.getShortName() + " doesn't note that it reports " + bugPattern
+                        + " in category " + bugPattern.getCategory());
+            }
+            return 100;
+        }
+        return 0;
+    }
+
+    /**
+     * Set the factory chooser used by {@link ExecutionPlan}
+     * @param factoryChooser the factory chooser, never null
+     */
+    public void setFactoryChooser(@NonNull DetectorFactoryChooser factoryChooser) {
+        this.factoryChooser = factoryChooser;
     }
 }
