@@ -724,19 +724,6 @@ public class Hierarchy {
     }
 
     /**
-     * Return whether or not the given method is concrete.
-     *
-     * @param xmethod
-     *            the method
-     * @return true if the method is concrete, false otherwise
-     */
-    @Deprecated
-    public static boolean isConcrete(XMethod xmethod) {
-        int accessFlags = xmethod.getAccessFlags();
-        return (accessFlags & Const.ACC_ABSTRACT) == 0 && (accessFlags & Const.ACC_NATIVE) == 0;
-    }
-
-    /**
      * Find a field with given name defined in given class.
      *
      * @param className
