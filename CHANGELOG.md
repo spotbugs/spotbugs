@@ -32,6 +32,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `getElementSignature()` method from `edu.umd.cs.findbugs.OpcodeStack.Item` deprecated since 2008,
   - `getFieldAnnotation()` method from `edu.umd.cs.findbugs.OpcodeStack.Item` deprecated since 2006,
   - `PluginLoader(URL)` and `PluginLoader(URL, ClassLoader)` constructors from `edu.umd.cs.findbugs.PluginLoader` deprecated since 2010,
+  - `addSourceDir(String)` method from `edu.umd.cs.findbugs.Project` deprecated since 2017,
 
 ## 4.9.6 - 2025-09-16
 ### Fixed
