@@ -45,6 +45,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `findXMethod(JavaClass[], String, String, JavaClassAndMethodChooser)` method from `edu.umd.cs.findbugs.ba.Hierarchy` deprecated since 2007,
   - `findMethod(JavaClass[], String, String)` method from `edu.umd.cs.findbugs.ba.Hierarchy` deprecated since 2007,
   - `isConcrete(XMethod)` method from `edu.umd.cs.findbugs.ba.Hierarchy` deprecated since 2007,
+  - `doesMethodUnconditionallyThrowException(XMethod, JavaClass, Method)` method from `edu.umd.cs.findbugs.ba.PruneUnconditionalExceptionThrowerEdges` deprecated since 2008,
 - Removed old deprecated fields:
   - String `RELEASE` from `edu.umd.cs.findbugs.Version` deprecated since 2018,
 
