@@ -35,6 +35,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `addSourceDir(String)` method from `edu.umd.cs.findbugs.Project` deprecated since 2017,
   - `getImplicitClasspathEntryList()` method from `edu.umd.cs.findbugs.Project` deprecated since 2008,
   - `write(String, boolean, String)` method from `edu.umd.cs.findbugs.Project` deprecated since 2007,
+  - `getInteger(String, int)` method from `edu.umd.cs.findbugs.SystemProperties` deprecated since 2010,
 
 ## 4.9.6 - 2025-09-16
 ### Fixed
