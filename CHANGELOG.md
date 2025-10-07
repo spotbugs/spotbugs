@@ -22,8 +22,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Removed
 - Removed old deprecated methods: 
-  - `assertPresentBugPattern(String, IMarker[])` protected method from `de.tobject.findbugs.test.AbstractQuickfixTest` deprecated since 2014.
-  - `setFontSizeHelper(Component[], float)` protected method from `edu.umd.cs.findbugs.gui2.FBFrame` deprecated since 2010. 
+  - `assertPresentBugPattern(String, IMarker[])` protected method from `de.tobject.findbugs.test.AbstractQuickfixTest` deprecated since 2014,
+  - `setFontSizeHelper(Component[], float)` protected method from `edu.umd.cs.findbugs.gui2.FBFrame` deprecated since 2010,
+  - `matchedPrefixes(String[], String)` method from `edu.umd.cs.findbugs.gui2.ViewFilter` deprecated since 2010,
 
 ## 4.9.6 - 2025-09-16
 ### Fixed
