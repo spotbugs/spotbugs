@@ -228,14 +228,6 @@ public class XFactory {
     }
 
     /**
-     * @see DescriptorFactory#canonicalizeString(String)
-     */
-    @Deprecated
-    public static String canonicalizeString(String s) {
-        return s;
-    }
-
-    /**
      * Create an XMethod object from a BCEL Method.
      *
      * @param className
