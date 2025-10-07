@@ -850,12 +850,6 @@ public class OpcodeStack {
             return constValue;
         }
 
-        /** Use getXField instead */
-        @Deprecated
-        public FieldAnnotation getFieldAnnotation() {
-            return FieldAnnotation.fromXField(getXField());
-        }
-
         public XField getXField() {
             if (source instanceof XField) {
                 return (XField) source;

@@ -30,6 +30,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `instantiateDetectorsInPass(BugReporter)` method from `edu.umd.cs.findbugs.plan.AnalysisPass` deprecated since 2008,
   - `getMessage(String)` method from `edu.umd.cs.findbugs.I18N` deprecated since 2019,
   - `getElementSignature()` method from `edu.umd.cs.findbugs.OpcodeStack.Item` deprecated since 2008,
+  - `getFieldAnnotation()` method from `edu.umd.cs.findbugs.OpcodeStack.Item` deprecated since 2006,
 
 ## 4.9.6 - 2025-09-16
 ### Fixed
