@@ -470,37 +470,6 @@ public class Hierarchy {
      *            the name of the method
      * @param methodSig
      *            the signature of the method
-     * @return the JavaClassAndMethod, or null if no such method exists in the
-     *         class
-     */
-    @Deprecated
-    public static @CheckForNull JavaClassAndMethod findConcreteMethod(JavaClass javaClass, String methodName, String methodSig) {
-
-        if (DEBUG_METHOD_LOOKUP) {
-            System.out.println("Check " + javaClass.getClassName());
-        }
-        Method[] methodList = javaClass.getMethods();
-        for (Method method : methodList) {
-            if (method.getName().equals(methodName) && method.getSignature().equals(methodSig)
-                    && accessFlagsAreConcrete(method.getAccessFlags())) {
-                return new JavaClassAndMethod(javaClass, method);
-            }
-        }
-        if (DEBUG_METHOD_LOOKUP) {
-            System.out.println("\t==> NOT FOUND");
-        }
-        return null;
-    }
-
-    /**
-     * Find a method in given class.
-     *
-     * @param javaClass
-     *            the class
-     * @param methodName
-     *            the name of the method
-     * @param methodSig
-     *            the signature of the method
      * @param chooser
      *            the JavaClassAndMethodChooser to use to screen possible
      *            candidates
