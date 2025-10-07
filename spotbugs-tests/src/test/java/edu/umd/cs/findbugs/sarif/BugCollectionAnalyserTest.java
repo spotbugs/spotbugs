@@ -290,7 +290,265 @@ class BugCollectionAnalyserTest {
         String fullDescText = fullDescription.get("text").getAsString();
 
         assertNotNull(fullDescText);
-        /* HTML conversion may add trailing whitespace, so we trim it */
+        assertThat(fullDescText, is(expectedPlainText));
+    }
+
+    @Test
+    void testRuleFullDescriptionHandlesCdataSection() {
+        String type = "TEST_CDATA_TYPE";
+        String cdataDetailText = "<![CDATA[\n<p>\nThis plugin contains all of the standard SpotBugs detectors.\n</p>\n]]>";
+        String expectedPlainText = "This plugin contains all of the standard SpotBugs detectors. ]]>";
+
+        BugPattern bugPattern = new BugPattern(type, "abbrev", "category", false, "shortDescription",
+                "longDescription", cdataDetailText, "https://example.com/help.html", 0);
+        DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
+
+        BugCollection bugCollection = new SortedBugCollection();
+
+        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+                .addInt(10).addClass("TestClass");
+
+        SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
+        bug.addSourceLine(lineAnnotation);
+
+        bugCollection.add(bug);
+        bugCollection.bugsPopulated();
+
+        BugCollectionAnalyser analyser = new BugCollectionAnalyser(bugCollection);
+
+        JsonArray rules = analyser.getRules();
+        assertThat(rules.size(), is(1));
+
+        JsonObject ruleJson = rules.get(0).getAsJsonObject();
+        assertThat(ruleJson.get("id").getAsString(), is(type));
+
+        assertTrue(ruleJson.has("fullDescription"));
+        JsonObject fullDescription = ruleJson.get("fullDescription").getAsJsonObject();
+        assertTrue(fullDescription.has("text"));
+
+        String fullDescText = fullDescription.get("text").getAsString();
+
+        assertNotNull(fullDescText);
+        assertThat(fullDescText, is(expectedPlainText));
+    }
+
+    @Test
+    void testRuleFullDescriptionHandlesCodeBlocks() {
+        String type = "TEST_CODE_BLOCK_TYPE";
+        String codeDetailText =
+                "<p>Example code:</p><pre><code>public void foo() {\n    int x = 3;\n    x = x;\n}</code></pre><p>Such assignments are useless.</p>";
+        String expectedPlainText = "Example code: \npublic void foo() {\n    int x = 3;\n    x = x;\n}\nSuch assignments are useless.";
+
+        BugPattern bugPattern = new BugPattern(type, "abbrev", "category", false, "shortDescription",
+                "longDescription", codeDetailText, "https://example.com/help.html", 0);
+        DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
+
+        BugCollection bugCollection = new SortedBugCollection();
+
+        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+                .addInt(10).addClass("TestClass");
+
+        SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
+        bug.addSourceLine(lineAnnotation);
+
+        bugCollection.add(bug);
+        bugCollection.bugsPopulated();
+
+        BugCollectionAnalyser analyser = new BugCollectionAnalyser(bugCollection);
+
+        JsonArray rules = analyser.getRules();
+        assertThat(rules.size(), is(1));
+
+        JsonObject ruleJson = rules.get(0).getAsJsonObject();
+        assertThat(ruleJson.get("id").getAsString(), is(type));
+
+        assertTrue(ruleJson.has("fullDescription"));
+        JsonObject fullDescription = ruleJson.get("fullDescription").getAsJsonObject();
+        assertTrue(fullDescription.has("text"));
+
+        String fullDescText = fullDescription.get("text").getAsString();
+
+        assertNotNull(fullDescText);
+        assertThat(fullDescText, is(expectedPlainText));
+    }
+
+    @Test
+    void testRuleFullDescriptionHandlesTable() {
+        String type = "TEST_TABLE_TYPE";
+        String tableDetailText = "<p>Mapping of corresponding Java System properties:</p>" +
+                "<table>" +
+                "<tr><th>Environment variable</th><th>Property</th></tr>" +
+                "<tr><td>JAVA_HOME</td><td>java.home</td></tr>" +
+                "<tr><td>USER</td><td>user.name</td></tr>" +
+                "</table>";
+        String expectedPlainText =
+                "Mapping of corresponding Java System properties: \nEnvironment variable Property JAVA_HOME java.home USER user.name";
+
+        BugPattern bugPattern = new BugPattern(type, "abbrev", "category", false, "shortDescription",
+                "longDescription", tableDetailText, "https://example.com/help.html", 0);
+        DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
+
+        BugCollection bugCollection = new SortedBugCollection();
+
+        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+                .addInt(10).addClass("TestClass");
+
+        SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
+        bug.addSourceLine(lineAnnotation);
+
+        bugCollection.add(bug);
+        bugCollection.bugsPopulated();
+
+        BugCollectionAnalyser analyser = new BugCollectionAnalyser(bugCollection);
+
+        JsonArray rules = analyser.getRules();
+        assertThat(rules.size(), is(1));
+
+        JsonObject ruleJson = rules.get(0).getAsJsonObject();
+        assertThat(ruleJson.get("id").getAsString(), is(type));
+
+        assertTrue(ruleJson.has("fullDescription"));
+        JsonObject fullDescription = ruleJson.get("fullDescription").getAsJsonObject();
+        assertTrue(fullDescription.has("text"));
+
+        String fullDescText = fullDescription.get("text").getAsString();
+
+        assertNotNull(fullDescText);
+        assertThat(fullDescText, is(expectedPlainText));
+    }
+
+    @Test
+    void testRuleFullDescriptionHandlesListsAndLinks() {
+        String type = "TEST_LIST_LINK_TYPE";
+        String listDetailText = "<p>A few key points to keep in mind:</p>" +
+                "<ul>" +
+                "<li>Use meaningful prefixes or namespaces</li>" +
+                "<li>Use descriptive names: <a href=\"https://example.com\">see documentation</a></li>" +
+                "<li>Follow naming conventions</li>" +
+                "</ul>";
+        String expectedPlainText =
+                "A few key points to keep in mind: \n  * Use meaningful prefixes or namespaces \n  * Use descriptive names: see documentation \n  * Follow naming conventions";
+
+        BugPattern bugPattern = new BugPattern(type, "abbrev", "category", false, "shortDescription",
+                "longDescription", listDetailText, "https://example.com/help.html", 0);
+        DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
+
+        BugCollection bugCollection = new SortedBugCollection();
+
+        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+                .addInt(10).addClass("TestClass");
+
+        SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
+        bug.addSourceLine(lineAnnotation);
+
+        bugCollection.add(bug);
+        bugCollection.bugsPopulated();
+
+        BugCollectionAnalyser analyser = new BugCollectionAnalyser(bugCollection);
+
+        JsonArray rules = analyser.getRules();
+        assertThat(rules.size(), is(1));
+
+        JsonObject ruleJson = rules.get(0).getAsJsonObject();
+        assertThat(ruleJson.get("id").getAsString(), is(type));
+
+        assertTrue(ruleJson.has("fullDescription"));
+        JsonObject fullDescription = ruleJson.get("fullDescription").getAsJsonObject();
+        assertTrue(fullDescription.has("text"));
+
+        String fullDescText = fullDescription.get("text").getAsString();
+
+        assertNotNull(fullDescText);
+        assertThat(fullDescText, is(expectedPlainText));
+    }
+
+    @Test
+    void testRuleFullDescriptionHandlesComplexNestedHtml() {
+        String type = "TEST_COMPLEX_HTML_TYPE";
+        String complexDetailText =
+                "<p>This code creates a <code>java.util.Random</code> object, uses it to generate one random number, and then discards " +
+                        "the Random object. This produces <em>mediocre quality</em> random numbers and is <strong>inefficient</strong>.</p>" +
+                        "<p>If it is important that the generated Random numbers not be guessable, you <em>must</em> not create a new Random for each random "
+                        +
+                        "number; the values are too easily guessable. You should strongly consider using a <code>java.security.SecureRandom</code> instead.</p>";
+        String expectedPlainText =
+                "This code creates a java.util.Random object, uses it to generate one random \nnumber, and then discards the Random object. This produces mediocre quality \nrandom numbers and is inefficient. \nIf it is important that the generated Random numbers not be guessable, you must \nnot create a new Random for each random number; the values are too easily \nguessable. You should strongly consider using a java.security.SecureRandom \ninstead.";
+
+        BugPattern bugPattern = new BugPattern(type, "abbrev", "category", false, "shortDescription",
+                "longDescription", complexDetailText, "https://example.com/help.html", 0);
+        DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
+
+        BugCollection bugCollection = new SortedBugCollection();
+
+        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+                .addInt(10).addClass("TestClass");
+
+        SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
+        bug.addSourceLine(lineAnnotation);
+
+        bugCollection.add(bug);
+        bugCollection.bugsPopulated();
+
+        BugCollectionAnalyser analyser = new BugCollectionAnalyser(bugCollection);
+
+        JsonArray rules = analyser.getRules();
+        assertThat(rules.size(), is(1));
+
+        JsonObject ruleJson = rules.get(0).getAsJsonObject();
+        assertThat(ruleJson.get("id").getAsString(), is(type));
+
+        assertTrue(ruleJson.has("fullDescription"));
+        JsonObject fullDescription = ruleJson.get("fullDescription").getAsJsonObject();
+        assertTrue(fullDescription.has("text"));
+
+        String fullDescText = fullDescription.get("text").getAsString();
+
+        assertNotNull(fullDescText);
+        assertThat(fullDescText, is(expectedPlainText));
+    }
+
+    @Test
+    void testRuleFullDescriptionHandlesBlockquoteAndBr() {
+        String type = "TEST_BLOCKQUOTE_BR_TYPE";
+        String blockquoteDetailText = "<p>From the JavaDoc for the compareTo method in the Comparable interface:</p>" +
+                "<blockquote>" +
+                "It is strongly recommended, but not strictly required that <code>(x.compareTo(y)==0) == (x.equals(y))</code>.<br/>" +
+                "Generally speaking, any class that implements the Comparable interface and violates this condition<br>" +
+                "should clearly indicate this fact." +
+                "</blockquote>";
+        String expectedPlainText =
+                "From the JavaDoc for the compareTo method in the Comparable interface: \nIt is strongly recommended, but not strictly required that (x.compareTo(y)==0) \n== (x.equals(y)).Generally speaking, any class that implements the Comparable \ninterface and violates this conditionshould clearly indicate this fact.";
+
+        BugPattern bugPattern = new BugPattern(type, "abbrev", "category", false, "shortDescription",
+                "longDescription", blockquoteDetailText, "https://example.com/help.html", 0);
+        DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
+
+        BugCollection bugCollection = new SortedBugCollection();
+
+        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+                .addInt(10).addClass("TestClass");
+
+        SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
+        bug.addSourceLine(lineAnnotation);
+
+        bugCollection.add(bug);
+        bugCollection.bugsPopulated();
+
+        BugCollectionAnalyser analyser = new BugCollectionAnalyser(bugCollection);
+
+        JsonArray rules = analyser.getRules();
+        assertThat(rules.size(), is(1));
+
+        JsonObject ruleJson = rules.get(0).getAsJsonObject();
+        assertThat(ruleJson.get("id").getAsString(), is(type));
+
+        assertTrue(ruleJson.has("fullDescription"));
+        JsonObject fullDescription = ruleJson.get("fullDescription").getAsJsonObject();
+        assertTrue(fullDescription.has("text"));
+
+        String fullDescText = fullDescription.get("text").getAsString();
+
+        assertNotNull(fullDescText);
         assertThat(fullDescText, is(expectedPlainText));
     }
 }

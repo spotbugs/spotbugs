@@ -1,10 +1,15 @@
 package edu.umd.cs.findbugs.sarif;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.text.BadLocationException;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,6 +27,8 @@ import edu.umd.cs.findbugs.util.HTML;
  * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317836">3.49 reportingDescriptor object</a>
  */
 final class Rule {
+    private static final Logger LOGGER = Logger.getLogger(Rule.class.getName());
+
     @NonNull
     final String id;
     @NonNull
@@ -41,7 +48,7 @@ final class Rule {
             @NonNull List<String> tags, @NonNull int cweid) {
         this.id = Objects.requireNonNull(id);
         this.shortDescription = Objects.requireNonNull(shortDescription);
-        this.fullDescription = Objects.requireNonNull(fullDescription);
+        this.fullDescription = Objects.requireNonNull(fullDescription.trim());
         this.defaultText = Objects.requireNonNull(defaultText);
         this.helpUri = helpUri;
         this.tags = Collections.unmodifiableList(tags);
@@ -60,17 +67,7 @@ final class Rule {
 
         // TODO add markdown representation to 'fullDescription'
         JsonObject fullDescJson = new JsonObject();
-        String plainTextDescription;
-        try {
-            plainTextDescription = HTML.convertHtmlSnippetToText(fullDescription);
-            if (plainTextDescription.trim().isEmpty()) {
-                plainTextDescription = "No detailed description available for this bug pattern.";
-            } else {
-                plainTextDescription = plainTextDescription.trim();
-            }
-        } catch (Exception e) {
-            plainTextDescription = fullDescription; // Fallback to original if conversion fails
-        }
+        String plainTextDescription = convertHtmlToPlainText(fullDescription);
         fullDescJson.addProperty("text", plainTextDescription);
 
         JsonObject result = new JsonObject();
@@ -129,6 +126,25 @@ final class Rule {
         return cweRelationship;
     }
 
+    /**
+     * Converts HTML text to plain text for use in SARIF output.
+     *
+     * @param htmlText the HTML text to convert
+     * @return plain text representation, or a default message if conversion fails
+     */
+    private String convertHtmlToPlainText(String htmlText) {
+        try {
+            String plainText = HTML.convertHtmlSnippetToText(htmlText);
+            if (plainText == null || plainText.trim().isEmpty()) {
+                return "No detailed description available for this bug pattern.";
+            }
+            return plainText.trim();
+        } catch (IOException | BadLocationException e) {
+            LOGGER.log(Level.WARNING, "Failed to convert HTML to plain text for rule: " + id, e);
+            return htmlText; // Fallback to original text
+        }
+    }
+
     @NonNull
     static Rule fromBugPattern(BugPattern bugPattern, String formattedMessage) {
         URI helpUri = bugPattern.getUri().orElse(null);
@@ -141,7 +157,7 @@ final class Rule {
             tags = Collections.singletonList(category);
         }
 
-        return new Rule(bugPattern.getType(), bugPattern.getShortDescription(), bugPattern.getDetailText(), formattedMessage,
-                helpUri, tags, bugPattern.getCWEid());
+        return new Rule(bugPattern.getType(), bugPattern.getShortDescription(), bugPattern.getDetailText(), formattedMessage, helpUri,
+                tags, bugPattern.getCWEid());
     }
 }

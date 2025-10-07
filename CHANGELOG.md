@@ -7,11 +7,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2025-??-??
 ### Fixed
-- Enhanced SARIF output with full description sections for each rule, incorporating comprehensive bug pattern descriptions from SpotBugs message database - adding markdown is still am open issue ([#2339](https://github.com/spotbugs/spotbugs/issues/2339))
-
-### Fixed
 - Fix Eclipse not always using latest preferences file state ([#3740](https://github.com/spotbugs/spotbugs/issues/3740)) 
 - Fix exception throw when singleton implementing Cloneable has no clone() method ([#3727](https://github.com/spotbugs/spotbugs/issues/3727)) 
+- Enhanced SARIF output with full description sections - adding markdown is still an open issue ([#2339](https://github.com/spotbugs/spotbugs/issues/2339))
 
 ## 4.9.6 - 2025-09-16
 ### Fixed
