@@ -817,23 +817,6 @@ public class OpcodeStack {
             return signature.startsWith("[");
         }
 
-        @Deprecated
-        public String getElementSignature() {
-            if (!isArray()) {
-                return signature;
-            } else {
-                int pos = 0;
-                int len = signature.length();
-                while (pos < len) {
-                    if (signature.charAt(pos) != '[') {
-                        break;
-                    }
-                    pos++;
-                }
-                return signature.substring(pos);
-            }
-        }
-
         public boolean isNonNegative() {
             if (specialKind == NON_NEGATIVE) {
                 return true;
