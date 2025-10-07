@@ -40,6 +40,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `getArgument(InvokeInstruction, ConstantPoolGen, int, int)` method from `edu.umd.cs.findbugs.ba.Frame` deprecated since 2010,
   - `findDeclaredExceptions(InvokeInstruction, ConstantPoolGen)` method from `edu.umd.cs.findbugs.ba.Hierarchy` deprecated since 2008,
   - `findConcreteMethod(JavaClass, String, String)` method from `edu.umd.cs.findbugs.ba.Hierarchy` deprecated since 2007,
+  - `findXMethod(JavaClass, String, String, JavaClassAndMethodChooser)` method from `edu.umd.cs.findbugs.ba.Hierarchy` deprecated since 2007,
 - Removed old deprecated fields:
   - String `RELEASE` from `edu.umd.cs.findbugs.Version` deprecated since 2018,
 

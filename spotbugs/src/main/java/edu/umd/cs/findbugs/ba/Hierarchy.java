@@ -462,26 +462,6 @@ public class Hierarchy {
     }
 
     /**
-     * Find a method in given class.
-     *
-     * @param javaClass
-     *            the class
-     * @param methodName
-     *            the name of the method
-     * @param methodSig
-     *            the signature of the method
-     * @param chooser
-     *            the JavaClassAndMethodChooser to use to screen possible
-     *            candidates
-     * @return the XMethod, or null if no such method exists in the class
-     */
-    @Deprecated
-    public static @CheckForNull XMethod findXMethod(JavaClass javaClass, String methodName, String methodSig, JavaClassAndMethodChooser chooser) {
-        JavaClassAndMethod result = findMethod(javaClass, methodName, methodSig, chooser);
-        return result == null ? null : XFactory.createXMethod(result.getJavaClass(), result.getMethod());
-    }
-
-    /**
      * JavaClassAndMethodChooser which accepts any method.
      */
     public static final JavaClassAndMethodChooser ANY_METHOD = new JavaClassAndMethodChooser() {
