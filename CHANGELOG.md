@@ -26,6 +26,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `setFontSizeHelper(Component[], float)` protected method from `edu.umd.cs.findbugs.gui2.FBFrame` deprecated since 2010,
   - `matchedPrefixes(String[], String)` method from `edu.umd.cs.findbugs.gui2.ViewFilter` deprecated since 2010,
   - `lookupFromUniqueId(String)` method from `edu.umd.cs.findbugs.BugCollection` and `edu.umd.cs.findbugs.SortedBugCollection` deprecated since 2006,
+  - `create(BugReporter)` method from `edu.umd.cs.findbugs.DetectorFactory` deprecated since 2008,
+  - `instantiateDetectorsInPass(BugReporter)` method from `edu.umd.cs.findbugs.plan.AnalysisPass` deprecated since 2008,
 
 ## 4.9.6 - 2025-09-16
 ### Fixed
