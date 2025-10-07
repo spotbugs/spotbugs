@@ -568,23 +568,6 @@ public class Hierarchy {
      *            the name of the method
      * @param methodSig
      *            the signature of the method
-     * @return the XMethod, or null if no such method exists in the class
-     */
-    @Deprecated
-    public static XMethod findXMethod(JavaClass[] classList, String methodName, String methodSig) {
-        return findXMethod(classList, methodName, methodSig, ANY_METHOD);
-    }
-
-    /**
-     * Find XMethod for method in given list of classes, searching the classes
-     * in order.
-     *
-     * @param classList
-     *            list of classes in which to search
-     * @param methodName
-     *            the name of the method
-     * @param methodSig
-     *            the signature of the method
      * @param chooser
      *            JavaClassAndMethodChooser to select which methods are
      *            considered; it must return true for a method to be returned
