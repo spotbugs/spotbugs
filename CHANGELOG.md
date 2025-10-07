@@ -28,6 +28,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `lookupFromUniqueId(String)` method from `edu.umd.cs.findbugs.BugCollection` and `edu.umd.cs.findbugs.SortedBugCollection` deprecated since 2006,
   - `create(BugReporter)` method from `edu.umd.cs.findbugs.DetectorFactory` deprecated since 2008,
   - `instantiateDetectorsInPass(BugReporter)` method from `edu.umd.cs.findbugs.plan.AnalysisPass` deprecated since 2008,
+  - `getMessage(String)` method from `edu.umd.cs.findbugs.I18N` deprecated since 2019,
 
 ## 4.9.6 - 2025-09-16
 ### Fixed
