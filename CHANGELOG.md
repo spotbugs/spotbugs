@@ -16,6 +16,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Support for fully qualified class names for detectors in -adjustPriority parameter
 - Support for numerical and absolute priority adjustments
 
+### Deprecated
+- Add back and deprecate `edu.umd.cs.findbugs.io.IO.close(InputStream)` method. ([#3756](https://github.com/spotbugs/spotbugs/pull/3756))
+
 ## 4.9.6 - 2025-09-16
 ### Fixed
 - Fix exception throw when analyzing `jakarta.servlet.http.HttpServletRequest` method calls ([#3711](https://github.com/spotbugs/spotbugs/issues/3711))
