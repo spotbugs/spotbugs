@@ -34,14 +34,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -66,7 +64,6 @@ import org.xml.sax.XMLReader;
 
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.URLClassPath;
-import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.io.IO;
@@ -582,57 +579,6 @@ public class Project implements XMLWriteable, AutoCloseable {
 
     // Option keys
     public static final String RELATIVE_PATHS = "relative_paths";
-
-    /**
-     * Save the project to an output file.
-     *
-     * @param outputFile
-     *            name of output file
-     * @param useRelativePaths
-     *            true if the project should be written using only relative
-     *            paths
-     * @param relativeBase
-     *            if useRelativePaths is true, this file is taken as the base
-     *            directory in terms of which all files should be made relative
-     * @throws IOException
-     *             if an error occurs while writing
-     */
-    @Deprecated
-    public void write(String outputFile, boolean useRelativePaths, String relativeBase) throws IOException {
-        try (PrintWriter writer = UTF8.printWriter(outputFile)) {
-            writer.println(JAR_FILES_KEY);
-            for (String jarFile : analysisTargets) {
-                if (useRelativePaths) {
-                    jarFile = convertToRelative(jarFile, relativeBase);
-                }
-                writer.println(jarFile);
-            }
-
-            writer.println(SRC_DIRS_KEY);
-            for (String srcDir : srcDirList) {
-                if (useRelativePaths) {
-                    srcDir = convertToRelative(srcDir, relativeBase);
-                }
-                writer.println(srcDir);
-            }
-
-            writer.println(AUX_CLASSPATH_ENTRIES_KEY);
-            for (String auxClasspathEntry : auxClasspathEntryList) {
-                if (useRelativePaths) {
-                    auxClasspathEntry = convertToRelative(auxClasspathEntry, relativeBase);
-                }
-                writer.println(auxClasspathEntry);
-            }
-
-            if (useRelativePaths) {
-                writer.println(OPTIONS_KEY);
-                writer.println(RELATIVE_PATHS + "=true");
-            }
-        }
-
-        // Project successfully saved
-        isModified = false;
-    }
 
     public static Project readXML(File f) throws IOException, SAXException, ParserConfigurationException {
         @SuppressWarnings("resource") // will be closed by caller

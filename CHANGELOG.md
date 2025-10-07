@@ -34,6 +34,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `PluginLoader(URL)` and `PluginLoader(URL, ClassLoader)` constructors from `edu.umd.cs.findbugs.PluginLoader` deprecated since 2010,
   - `addSourceDir(String)` method from `edu.umd.cs.findbugs.Project` deprecated since 2017,
   - `getImplicitClasspathEntryList()` method from `edu.umd.cs.findbugs.Project` deprecated since 2008,
+  - `write(String, boolean, String)` method from `edu.umd.cs.findbugs.Project` deprecated since 2007,
 
 ## 4.9.6 - 2025-09-16
 ### Fixed
