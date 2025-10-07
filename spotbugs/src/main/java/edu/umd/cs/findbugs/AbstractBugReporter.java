@@ -132,6 +132,8 @@ public abstract class AbstractBugReporter implements BugReporter {
 
     private final ProjectStats projectStats;
 
+    private PriorityAdjuster priorityAdjuster;
+
     protected AbstractBugReporter() {
         super();
         verbosityLevel = NORMAL;
@@ -163,6 +165,17 @@ public abstract class AbstractBugReporter implements BugReporter {
         this.relaxedSet = true;
     }
 
+    /**
+     * Allows to adjust priorities when bugs are reported. Bugs imported from XML
+     * (see {@link #reportBugsFromXml(InputStream, Project)} are not affected.
+     *
+     * @param priorityAdjuster the priority adjuster
+     */
+    @Override
+    public void setPriorityAdjuster(PriorityAdjuster priorityAdjuster) {
+        this.priorityAdjuster = priorityAdjuster;
+    }
+
     protected boolean isRelaxed() {
         if (!relaxedSet) {
             if (FindBugsAnalysisFeatures.isRelaxedMode()) {
@@ -181,6 +194,7 @@ public abstract class AbstractBugReporter implements BugReporter {
             doReportBug(bugInstance);
             return;
         }
+        bugInstance = priorityAdjuster != null ? priorityAdjuster.adjustPriority(bugInstance) : bugInstance;
         if (priorityThreshold == 0) {
             throw new IllegalStateException("Priority threshold not set");
         }
@@ -421,4 +435,9 @@ public abstract class AbstractBugReporter implements BugReporter {
      *            the name of the class
      */
     public abstract void reportMissingClass(String string);
+
+    @Override
+    public PriorityAdjuster getPriorityAdjuster() {
+        return priorityAdjuster;
+    }
 }
