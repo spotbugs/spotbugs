@@ -530,43 +530,6 @@ public class Project implements XMLWriteable, AutoCloseable {
     }
 
     /**
-     * Return the list of implicit classpath entries. The implicit classpath is
-     * computed from the closure of the set of jar files that are referenced by
-     * the <code>"Class-Path"</code> attribute of the manifest of the any jar
-     * file that is part of this project or by the <code>"Class-Path"</code>
-     * attribute of any directly or indirectly referenced jar. The referenced
-     * jar files that exist are the list of implicit classpath entries.
-     *
-     * @deprecated FindBugs2 and ClassPathBuilder take care of this
-     *             automatically
-     */
-    @Deprecated
-    public List<String> getImplicitClasspathEntryList() {
-        final LinkedList<String> implicitClasspath = new LinkedList<>();
-        WorkList workList = new WorkList();
-
-        // Prime the worklist by adding the zip/jar files
-        // in the project.
-        for (String fileName : analysisTargets) {
-            try {
-                URL url = workList.createURL(fileName);
-                WorkListItem item = new WorkListItem(url);
-                workList.add(item);
-            } catch (MalformedURLException ignore) {
-                // Ignore
-            }
-        }
-
-        // Scan recursively.
-        while (!workList.isEmpty()) {
-            WorkListItem item = workList.getNextItem();
-            processComponentJar(item.getURL(), workList, implicitClasspath);
-        }
-
-        return implicitClasspath;
-    }
-
-    /**
      * Examine the manifest of a single zip/jar file for implicit classapth
      * entries.
      *
