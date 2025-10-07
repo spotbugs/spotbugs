@@ -394,25 +394,6 @@ public class Hierarchy {
     }
 
     /**
-     * Find the declared exceptions for the method called by given instruction.
-     *
-     * @param inv
-     *            the InvokeInstruction
-     * @param cpg
-     *            the ConstantPoolGen used by the class the InvokeInstruction
-     *            belongs to
-     * @return array of ObjectTypes of thrown exceptions, or null if we can't
-     *         find the list of declared exceptions
-     * @deprecated Use
-     *             {@link Hierarchy2#findDeclaredExceptions(InvokeInstruction,ConstantPoolGen)}
-     *             instead
-     */
-    @Deprecated
-    public static ObjectType[] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg) {
-        return Hierarchy2.findDeclaredExceptions(inv, cpg);
-    }
-
-    /**
      * Find a method in given class.
      *
      * @param javaClass
