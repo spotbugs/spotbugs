@@ -15,6 +15,7 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 
@@ -184,7 +185,7 @@ class BugCollectionAnalyserTest {
 
         BugCollection bugCollection = new SortedBugCollection();
 
-        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+        BugInstance bug = new BugInstance(bugPattern.getType(), Priorities.NORMAL_PRIORITY)
                 .addInt(10).addClass("TestClass");
 
         SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
@@ -223,7 +224,7 @@ class BugCollectionAnalyserTest {
 
         BugCollection bugCollection = new SortedBugCollection();
 
-        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+        BugInstance bug = new BugInstance(bugPattern.getType(), Priorities.NORMAL_PRIORITY)
                 .addInt(10).addClass("TestClass");
 
         SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
@@ -264,7 +265,7 @@ class BugCollectionAnalyserTest {
 
         BugCollection bugCollection = new SortedBugCollection();
 
-        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+        BugInstance bug = new BugInstance(bugPattern.getType(), Priorities.NORMAL_PRIORITY)
                 .addInt(10).addClass("TestClass");
 
         SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
@@ -305,7 +306,7 @@ class BugCollectionAnalyserTest {
 
         BugCollection bugCollection = new SortedBugCollection();
 
-        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+        BugInstance bug = new BugInstance(bugPattern.getType(), Priorities.NORMAL_PRIORITY)
                 .addInt(10).addClass("TestClass");
 
         SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
@@ -345,7 +346,7 @@ class BugCollectionAnalyserTest {
 
         BugCollection bugCollection = new SortedBugCollection();
 
-        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+        BugInstance bug = new BugInstance(bugPattern.getType(), Priorities.NORMAL_PRIORITY)
                 .addInt(10).addClass("TestClass");
 
         SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
@@ -390,7 +391,7 @@ class BugCollectionAnalyserTest {
 
         BugCollection bugCollection = new SortedBugCollection();
 
-        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+        BugInstance bug = new BugInstance(bugPattern.getType(), Priorities.NORMAL_PRIORITY)
                 .addInt(10).addClass("TestClass");
 
         SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
@@ -435,7 +436,7 @@ class BugCollectionAnalyserTest {
 
         BugCollection bugCollection = new SortedBugCollection();
 
-        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+        BugInstance bug = new BugInstance(bugPattern.getType(), Priorities.NORMAL_PRIORITY)
                 .addInt(10).addClass("TestClass");
 
         SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
@@ -480,7 +481,7 @@ class BugCollectionAnalyserTest {
 
         BugCollection bugCollection = new SortedBugCollection();
 
-        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+        BugInstance bug = new BugInstance(bugPattern.getType(), Priorities.NORMAL_PRIORITY)
                 .addInt(10).addClass("TestClass");
 
         SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
@@ -525,7 +526,7 @@ class BugCollectionAnalyserTest {
 
         BugCollection bugCollection = new SortedBugCollection();
 
-        BugInstance bug = new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment())
+        BugInstance bug = new BugInstance(bugPattern.getType(), Priorities.NORMAL_PRIORITY)
                 .addInt(10).addClass("TestClass");
 
         SourceLineAnnotation lineAnnotation = new SourceLineAnnotation("TestFile", "Test.java", 1, 1, 0, 0);
