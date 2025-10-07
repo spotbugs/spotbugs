@@ -36,6 +36,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `getImplicitClasspathEntryList()` method from `edu.umd.cs.findbugs.Project` deprecated since 2008,
   - `write(String, boolean, String)` method from `edu.umd.cs.findbugs.Project` deprecated since 2007,
   - `getInteger(String, int)` method from `edu.umd.cs.findbugs.SystemProperties` deprecated since 2010,
+  - `getId()` method from `edu.umd.cs.findbugs.ba.BasicBlock` deprecated since 2010,
 - Removed old deprecated fields:
   - String `RELEASE` from `edu.umd.cs.findbugs.Version` deprecated since 2018,
 
