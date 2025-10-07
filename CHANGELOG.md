@@ -47,6 +47,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `isConcrete(XMethod)` method from `edu.umd.cs.findbugs.ba.Hierarchy` deprecated since 2007,
   - `doesMethodUnconditionallyThrowException(XMethod, JavaClass, Method)` method from `edu.umd.cs.findbugs.ba.PruneUnconditionalExceptionThrowerEdges` deprecated since 2008,
   - `nameAndSignatureIsCalled(XMethod)` method from `edu.umd.cs.findbugs.ba.XFactory` deprecated since 2020,
+  - `isInterned(XMethod)` method from `edu.umd.cs.findbugs.ba.XFactory` deprecated since 2007,
 - Removed old deprecated fields:
   - String `RELEASE` from `edu.umd.cs.findbugs.Version` deprecated since 2018,
 

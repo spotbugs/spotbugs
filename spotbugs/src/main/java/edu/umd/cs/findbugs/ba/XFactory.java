@@ -227,11 +227,6 @@ public class XFactory {
 
     }
 
-    @Deprecated
-    public boolean isInterned(XMethod m) {
-        return m.isResolved();
-    }
-
     /**
      * @see DescriptorFactory#canonicalizeString(String)
      */
