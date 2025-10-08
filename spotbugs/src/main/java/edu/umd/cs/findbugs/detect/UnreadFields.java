@@ -134,14 +134,6 @@ public class UnreadFields extends OpcodeStackDetector {
     private final ClassDescriptor junitNestedAnnotation = DescriptorFactory.createClassDescriptor("org/junit/jupiter/api/Nested");
 
     /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#getWrittenFields()} instead
-     */
-    @Deprecated
-    public Set<? extends XField> getWrittenFields() {
-        return data.getWrittenFields();
-    }
-
-    /**
      * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isWrittenOutsideOfInitialization(XField)} instead
      */
     @Deprecated
