@@ -53,6 +53,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `findFieldAnnotationFromValueNumber(Method, Location, ValueNumber, ValueNumberFrame)` method from `edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder` deprecated since 2008,
   - `findLocalAnnotationFromValueNumber(Method, Location, ValueNumber, ValueNumberFrame)` method from `edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder` deprecated since 2008,
   - `findAnnotationFromValueNumber(Method, Location, ValueNumber, ValueNumberFrame)` method from `edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder` deprecated since 2008,
+  - `compact(int[], int)` method from `edu.umd.cs.findbugs.ba.vna.ValueNumberFactory` deprecated since 2008,
 - Removed old deprecated fields:
   - String `RELEASE` from `edu.umd.cs.findbugs.Version` deprecated since 2018,
 
