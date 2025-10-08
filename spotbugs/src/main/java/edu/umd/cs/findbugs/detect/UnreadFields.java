@@ -133,14 +133,6 @@ public class UnreadFields extends OpcodeStackDetector {
 
     private final ClassDescriptor junitNestedAnnotation = DescriptorFactory.createClassDescriptor("org/junit/jupiter/api/Nested");
 
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isWrittenInConstructor(XField)} instead
-     */
-    @Deprecated
-    public boolean isWrittenInConstructor(XField f) {
-        return data.isWrittenInConstructor(f);
-    }
-
     static final int DO_NOT_CONSIDER = Const.ACC_PUBLIC | Const.ACC_PROTECTED;
 
     final ClassDescriptor externalizable = DescriptorFactory.createClassDescriptor(java.io.Externalizable.class);
