@@ -894,17 +894,6 @@ public class NullDerefAndRedundantComparisonFinder {
         collector.foundNullDeref(location, valueNumber, refValue, vnaFrame, isConsistent);
     }
 
-    /**
-     * @deprecated Use
-     *             {@link ValueNumberSourceInfo#findRequiredAnnotationFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame, String)}
-     *             instead
-     */
-    @Deprecated
-    public static BugAnnotation findAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber,
-            ValueNumberFrame vnaFrame) {
-        return ValueNumberSourceInfo.findRequiredAnnotationFromValueNumber(method, location, valueNumber, vnaFrame, null);
-    }
-
     private static int getLineNumber(Method method, InstructionHandle handle) {
         LineNumberTable table = method.getCode().getLineNumberTable();
         if (table == null) {
