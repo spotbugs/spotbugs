@@ -117,16 +117,6 @@ public class UnreadFields extends OpcodeStackDetector {
             DescriptorFactory.createClassDescriptor("jakarta/xml/bind/annotation/XmlValue"),
             DescriptorFactory.createClassDescriptor("org/junit/jupiter/api/extension/RegisterExtension"));
 
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isContainerField(XField)} instead
-     */
-    @Deprecated
-    public boolean isContainerField(XField f) {
-        return data.isContainerField(f);
-    }
-
-
-
     boolean hasNativeMethods;
 
     boolean isSerializable;
