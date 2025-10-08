@@ -148,21 +148,6 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
     }
 
     /**
-     * Create a class descriptor from a resource name.
-     *
-     * @param resourceName
-     *            the resource name
-     * @return the class descriptor
-     * @deprecated Use
-     *             {@link DescriptorFactory#createClassDescriptorFromResourceName(String)}
-     *             instead
-     */
-    @Deprecated
-    public static ClassDescriptor fromResourceName(String resourceName) {
-        return DescriptorFactory.createClassDescriptorFromResourceName(resourceName);
-    }
-
-    /**
      * Create a class descriptor from a field signature
      *
      * @deprecated Use
