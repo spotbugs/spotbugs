@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.classfile;
 import java.io.Serializable;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
 
 import org.apache.bcel.classfile.JavaClass;
 
@@ -145,19 +144,6 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 
     public boolean isArray() {
         return className.charAt(0) == '[';
-    }
-
-    /**
-     * Create a class descriptor from a field signature
-     *
-     * @deprecated Use
-     *             {@link DescriptorFactory#createClassDescriptorFromFieldSignature(String)}
-     *             instead
-     *
-     */
-    @Deprecated
-    public static @CheckForNull ClassDescriptor fromFieldSignature(String signature) {
-        return DescriptorFactory.createClassDescriptorFromFieldSignature(signature);
     }
 
     /**
