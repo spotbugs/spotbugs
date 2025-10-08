@@ -153,14 +153,6 @@ public class UnreadFields extends OpcodeStackDetector {
     }
 
     /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#strongEvidenceForIntendedSerialization(ClassDescriptor)} instead
-     */
-    @Deprecated
-    public void strongEvidenceForIntendedSerialization(ClassDescriptor c) {
-        data.strongEvidenceForIntendedSerialization(c);
-    }
-
-    /**
      * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#existsStrongEvidenceForIntendedSerialization(ClassDescriptor)} instead
      */
     @Deprecated
