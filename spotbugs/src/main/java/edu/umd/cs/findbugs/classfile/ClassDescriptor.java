@@ -147,16 +147,6 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
     }
 
     /**
-     * @deprecated Use
-     *             {@link DescriptorFactory#createClassDescriptorFromSignature(String)}
-     *             instead
-     */
-    @Deprecated
-    public static ClassDescriptor createClassDescriptorFromSignature(String signature) {
-        return DescriptorFactory.createClassDescriptorFromSignature(signature);
-    }
-
-    /**
      * @deprecated Use {@link DescriptorFactory#createClassDescriptor(String)}
      *             instead
      */
