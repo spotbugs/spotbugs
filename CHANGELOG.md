@@ -56,6 +56,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `compact(int[], int)` method from `edu.umd.cs.findbugs.ba.vna.ValueNumberFactory` deprecated since 2008,
   - `fromResourceName(String)` method from `edu.umd.cs.findbugs.classfile.ClassDescriptor` deprecated since 2008,
   - `fromFieldSignature(String)` method from `edu.umd.cs.findbugs.classfile.ClassDescriptor` deprecated since 2008,
+  - `isClassResource(String)` method from `edu.umd.cs.findbugs.classfile.ClassDescriptor` deprecated since 2008,
 - Removed old deprecated fields:
   - String `RELEASE` from `edu.umd.cs.findbugs.Version` deprecated since 2018,
 

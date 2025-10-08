@@ -147,19 +147,6 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
     }
 
     /**
-     * Determine whether or not the given resource name refers to a class.
-     *
-     * @param resourceName
-     *            the resource name
-     * @return true if the resource is a class, false otherwise
-     * @deprecated Use {@link DescriptorFactory#isClassResource(String)} instead
-     */
-    @Deprecated
-    public static boolean isClassResource(String resourceName) {
-        return DescriptorFactory.isClassResource(resourceName);
-    }
-
-    /**
      * @deprecated Use
      *             {@link DescriptorFactory#createClassDescriptorFromSignature(String)}
      *             instead
