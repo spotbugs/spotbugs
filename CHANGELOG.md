@@ -73,6 +73,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `existsStrongEvidenceForIntendedSerialization(ClassDescriptor)` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
   - `isReflexive(XField)` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
   - `RelationalOp(String)` private constructor from `edu.umd.cs.findbugs.filter.RelationalOp` deprecated since 2008,
+  - `isLibraryFileName(String)` method from `edu.umd.cs.findbugs.util.Archive` deprecated since 2022,
 - Removed old deprecated fields:
   - String `RELEASE` from `edu.umd.cs.findbugs.Version` deprecated since 2018,
 
