@@ -80,6 +80,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `closeSilently(Closeable)` method from `edu.umd.cs.findbugs.util.Util` deprecated since 2018,
   - `closeSilently(ZipFile)` method from `edu.umd.cs.findbugs.util.Util` deprecated since 2018,
   - `getRefConstantOperand()` method from `edu.umd.cs.findbugs.visitclass.DismantleBytecode` deprecated since 2010,
+  - `getDottedFieldSig()` method from `edu.umd.cs.findbugs.visitclass.PreorderVisitor` deprecated since 2006,
 - Removed old deprecated fields:
   - String `RELEASE` from `edu.umd.cs.findbugs.Version` deprecated since 2018,
 
