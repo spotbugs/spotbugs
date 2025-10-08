@@ -243,19 +243,6 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 
     /**
      * @param xMethod
-     * @param javaClass
-     * @param method
-     * @return true if method unconditionally throws
-     * @deprecated Use {@link #doesMethodUnconditionallyThrowException(XMethod)}
-     *             instead
-     */
-    @Deprecated
-    public static Boolean doesMethodUnconditionallyThrowException(XMethod xMethod, JavaClass javaClass, Method method) {
-        return doesMethodUnconditionallyThrowException(xMethod);
-    }
-
-    /**
-     * @param xMethod
      * @return true if method unconditionally throws
      */
     public static boolean doesMethodUnconditionallyThrowException(XMethod xMethod) {

@@ -379,27 +379,6 @@ public abstract class Frame<ValueType> {
      *            the ConstantPoolGen for the class containing the method
      * @param i
      *            index of the argument; 0 for the first argument, etc.
-     * @param numArguments
-     *            total number of arguments to the method
-     * @return the <i>i</i>th argument
-     * @throws DataflowAnalysisException
-     */
-    @Deprecated
-    public ValueType getArgument(InvokeInstruction ins, ConstantPoolGen cpg, int i, int numArguments)
-            throws DataflowAnalysisException {
-        SignatureParser sigParser = new SignatureParser(ins.getSignature(cpg));
-        return getArgument(ins, cpg, i, sigParser);
-    }
-
-    /**
-     * Get the <i>i</i>th argument passed to given method invocation.
-     *
-     * @param ins
-     *            the method invocation instruction
-     * @param cpg
-     *            the ConstantPoolGen for the class containing the method
-     * @param i
-     *            index of the argument; 0 for the first argument, etc.
      * @return the <i>i</i>th argument
      * @throws DataflowAnalysisException
      */
