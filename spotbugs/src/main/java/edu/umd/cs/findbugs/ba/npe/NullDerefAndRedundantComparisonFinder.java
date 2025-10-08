@@ -896,17 +896,6 @@ public class NullDerefAndRedundantComparisonFinder {
 
     /**
      * @deprecated Use
-     *             {@link ValueNumberSourceInfo#findLocalAnnotationFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame)}
-     *             instead
-     */
-    @Deprecated
-    public static LocalVariableAnnotation findLocalAnnotationFromValueNumber(Method method, Location location,
-            ValueNumber valueNumber, ValueNumberFrame vnaFrame) {
-        return ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, location, valueNumber, vnaFrame);
-    }
-
-    /**
-     * @deprecated Use
      *             {@link ValueNumberSourceInfo#findRequiredAnnotationFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame, String)}
      *             instead
      */
