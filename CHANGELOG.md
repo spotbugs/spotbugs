@@ -62,6 +62,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `createClassDescriptor(String[])` method from `edu.umd.cs.findbugs.classfile.ClassDescriptor` deprecated since 2008,
   - `createClassDescriptorFromDottedClassName(String)` method from `edu.umd.cs.findbugs.classfile.ClassDescriptor` deprecated since 2008,
   - `createClassDescriptor(JavaClass)` method from `edu.umd.cs.findbugs.classfile.ClassDescriptor` deprecated since 2008,
+  - `canonicalizeString(String)` method from `edu.umd.cs.findbugs.classfile.DescriptorFactory` deprecated since 2017,
 - Removed old deprecated fields:
   - String `RELEASE` from `edu.umd.cs.findbugs.Version` deprecated since 2018,
 
