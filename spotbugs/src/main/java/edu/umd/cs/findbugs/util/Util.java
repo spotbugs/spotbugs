@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipFile;
 
 import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
@@ -164,20 +163,6 @@ public class Util {
         try {
             if (in != null) {
                 in.close();
-            }
-        } catch (IOException e) {
-            assert true;
-        }
-    }
-
-    /**
-     * @deprecated Use try-with-resources instead.
-     */
-    @Deprecated
-    public static void closeSilently(@WillClose ZipFile zip) {
-        try {
-            if (zip != null) {
-                zip.close();
             }
         } catch (IOException e) {
             assert true;
