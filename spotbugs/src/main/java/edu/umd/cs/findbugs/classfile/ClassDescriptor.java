@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.regex.Pattern;
 
 
-import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -144,16 +143,6 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 
     public boolean isArray() {
         return className.charAt(0) == '[';
-    }
-
-    /**
-     * @deprecated Use
-     *             {@link DescriptorFactory#createClassDescriptor(JavaClass)}
-     *             instead
-     */
-    @Deprecated
-    public static ClassDescriptor createClassDescriptor(JavaClass c) {
-        return DescriptorFactory.createClassDescriptor(c);
     }
 
     /*
