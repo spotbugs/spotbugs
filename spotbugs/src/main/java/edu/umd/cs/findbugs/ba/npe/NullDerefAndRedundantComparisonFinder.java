@@ -60,7 +60,6 @@ import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.PostDominatorsAnalysis;
-import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -894,17 +893,6 @@ public class NullDerefAndRedundantComparisonFinder {
         }
         // Issue a warning
         collector.foundNullDeref(location, valueNumber, refValue, vnaFrame, isConsistent);
-    }
-
-    /**
-     * @deprecated Use
-     *             {@link ValueNumberSourceInfo#findXFieldFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame)}
-     *             instead
-     */
-    @Deprecated
-    public static XField findXFieldFromValueNumber(Method method, Location location, ValueNumber valueNumber,
-            ValueNumberFrame vnaFrame) {
-        return ValueNumberSourceInfo.findXFieldFromValueNumber(method, location, valueNumber, vnaFrame);
     }
 
     /**
