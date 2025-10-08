@@ -33,30 +33,6 @@ import org.apache.commons.text.StringEscapeUtils;
  * @author Brian Cole
  */
 public class Strings {
-
-    /**
-     * This is intended to be semantically equivalent to
-     * <code>source.replace(find, repl)</code> but also compatible with JDK 1.4.
-     *
-     * @param source
-     *            The String on which to operate
-     * @param find
-     *            The literal substring to be replaced
-     * @param repl
-     *            The literal replacement substring
-     * @return The resultant String after substitution
-     * @throws NullPointerException
-     *             if any of the arguments are null
-     * @throws IllegalArgumentException
-     *             if <code>find</code> has zero length
-     * @see java.lang.String#replace(CharSequence target, CharSequence
-     *      replacement)
-     */
-    @Deprecated
-    public static String replace(String source, String find, String repl) {
-        return source.replace(find, repl);
-    }
-
     /**
      * This is intended to be equivalent to <code>Arrays.toString(a)</code> but
      * also compatible with JDK 1.4. This concatenates the results of calling
