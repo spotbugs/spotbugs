@@ -152,14 +152,6 @@ public class UnreadFields extends OpcodeStackDetector {
         context.setUnreadFields(this);
     }
 
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#existsStrongEvidenceForIntendedSerialization(ClassDescriptor)} instead
-     */
-    @Deprecated
-    public boolean existsStrongEvidenceForIntendedSerialization(ClassDescriptor c) {
-        return data.existsStrongEvidenceForIntendedSerialization(c);
-    }
-
     @Override
     public void visit(JavaClass obj) {
         data.calledFromConstructors.clear();
