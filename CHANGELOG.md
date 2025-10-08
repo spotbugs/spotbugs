@@ -75,6 +75,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `RelationalOp(String)` private constructor from `edu.umd.cs.findbugs.filter.RelationalOp` deprecated since 2008,
   - `isLibraryFileName(String)` method from `edu.umd.cs.findbugs.util.Archive` deprecated since 2022,
   - `replace(String, String, String)` method from `edu.umd.cs.findbugs.util.Strings` deprecated since 2010,
+  - `toString(Object[])` method from `edu.umd.cs.findbugs.util.Strings` deprecated since 2010,
 - Removed old deprecated fields:
   - String `RELEASE` from `edu.umd.cs.findbugs.Version` deprecated since 2018,
 

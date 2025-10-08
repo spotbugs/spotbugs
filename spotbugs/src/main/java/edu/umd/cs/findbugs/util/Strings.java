@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.util;
 
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -33,21 +32,6 @@ import org.apache.commons.text.StringEscapeUtils;
  * @author Brian Cole
  */
 public class Strings {
-    /**
-     * This is intended to be equivalent to <code>Arrays.toString(a)</code> but
-     * also compatible with JDK 1.4. This concatenates the results of calling
-     * String.valueOf() on each element of the array, so this won't work well
-     * for multi-dimensional arrays.
-     *
-     * @see java.lang.String#valueOf(Object)
-     * @see java.util.Arrays#toString(Object[])
-     * @see java.util.Arrays#deepToString(Object[])
-     */
-    @Deprecated
-    public static String toString(final Object[] a) {
-        return Arrays.toString(a);
-    }
-
     /**
      * Trim trailing comma from given string.
      *
