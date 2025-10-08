@@ -67,6 +67,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `getReadFields()` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
   - `getWrittenFields()` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
   - `isWrittenOutsideOfInitialization(XField)` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
+  - `isWrittenDuringInitialization(XField)` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
 - Removed old deprecated fields:
   - String `RELEASE` from `edu.umd.cs.findbugs.Version` deprecated since 2018,
 
