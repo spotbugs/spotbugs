@@ -147,15 +147,6 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
     }
 
     /**
-     * @deprecated Use {@link DescriptorFactory#createClassDescriptor(String)}
-     *             instead
-     */
-    @Deprecated
-    public static ClassDescriptor createClassDescriptor(@SlashedClassName String className) {
-        return DescriptorFactory.createClassDescriptor(className);
-    }
-
-    /**
      * @deprecated Use {@link DescriptorFactory#createClassDescriptor(String[])}
      *             instead
      */
