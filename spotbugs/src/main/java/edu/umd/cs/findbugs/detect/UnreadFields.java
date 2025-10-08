@@ -807,14 +807,6 @@ public class UnreadFields extends OpcodeStackDetector {
         return false;
     }
 
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isReflexive(XField)} instead
-     */
-    @Deprecated
-    public boolean isReflexive(XField f) {
-        return data.isReflexive(f);
-    }
-
     static Pattern dontComplainAbout = Pattern.compile("class[$]");
 
     static Pattern withinAnonymousClass = Pattern.compile("[$][0-9].*[$]");

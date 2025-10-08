@@ -71,6 +71,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `isWrittenInConstructor(XField)` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
   - `strongEvidenceForIntendedSerialization(ClassDescriptor)` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
   - `existsStrongEvidenceForIntendedSerialization(ClassDescriptor)` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
+  - `isReflexive(XField)` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
 - Removed old deprecated fields:
   - String `RELEASE` from `edu.umd.cs.findbugs.Version` deprecated since 2018,
 
