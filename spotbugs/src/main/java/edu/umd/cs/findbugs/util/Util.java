@@ -176,21 +176,6 @@ public class Util {
      *             is not good to ignore.
      */
     @Deprecated
-    public static void closeSilently(@WillClose OutputStream out) {
-        try {
-            if (out != null) {
-                out.close();
-            }
-        } catch (IOException e) {
-            assert true;
-        }
-    }
-
-    /**
-     * @deprecated Use try-with-resources instead. And basically {@link IOException} from {@link OutputStream#close()}
-     *             is not good to ignore.
-     */
-    @Deprecated
     public static void closeSilently(@WillClose Closeable out) {
         try {
             if (out != null) {
