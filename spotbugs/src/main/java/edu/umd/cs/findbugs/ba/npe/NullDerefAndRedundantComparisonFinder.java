@@ -42,7 +42,6 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 
 import edu.umd.cs.findbugs.BugAnnotation;
-import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -893,17 +892,6 @@ public class NullDerefAndRedundantComparisonFinder {
         }
         // Issue a warning
         collector.foundNullDeref(location, valueNumber, refValue, vnaFrame, isConsistent);
-    }
-
-    /**
-     * @deprecated Use
-     *             {@link ValueNumberSourceInfo#findFieldAnnotationFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame)}
-     *             instead
-     */
-    @Deprecated
-    public static FieldAnnotation findFieldAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber,
-            ValueNumberFrame vnaFrame) {
-        return ValueNumberSourceInfo.findFieldAnnotationFromValueNumber(method, location, valueNumber, vnaFrame);
     }
 
     /**
