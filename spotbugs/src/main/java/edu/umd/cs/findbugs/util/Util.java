@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.util;
 
 import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -165,21 +164,6 @@ public class Util {
         try {
             if (in != null) {
                 in.close();
-            }
-        } catch (IOException e) {
-            assert true;
-        }
-    }
-
-    /**
-     * @deprecated Use try-with-resources instead. And basically {@link IOException} from {@link OutputStream#close()}
-     *             is not good to ignore.
-     */
-    @Deprecated
-    public static void closeSilently(@WillClose Closeable out) {
-        try {
-            if (out != null) {
-                out.close();
             }
         } catch (IOException e) {
             assert true;
