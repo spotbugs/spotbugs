@@ -5,6 +5,8 @@ This small scaffold helps extract a list of SpotBugs visitor/detector classes an
 Files added:
 - `docs/visitors-reference.rst` - starter document (generated or edited)
 - `scripts/ExtractVisitors.java` - small scanner that finds likely detector classes in a SpotBugs source tree and emits an RST table to stdout
+- `scripts/ExtractVisitorsImproved.java` - improved version that uses findbugs.xml as authoritative source
+- `generated/visitors.inc` - auto-generated include file (committed for convenience, can be regenerated)
 
 Quick usage
 
@@ -21,4 +23,15 @@ Quick usage
 
 Notes
 
-- The scanner is heuristic-based: it looks for classes whose name or inheritance suggest they are detectors. Manual review is still required to add accurate descriptions and bug pattern mappings.
+- The original scanner (`ExtractVisitors.java`) is heuristic-based: it looks for classes whose name or inheritance suggest they are detectors. 
+- The improved version (`ExtractVisitorsImproved.java`) uses `findbugs.xml` as the authoritative source for all detector classes.
+- Manual review is still required to add accurate descriptions and bug pattern mappings.
+
+## Generated Files Policy
+
+The `generated/visitors.inc` file is committed to git for convenience and to show the current state of the documentation. This follows common practices in documentation projects where generated content is committed when:
+- It provides immediate value to reviewers and users
+- The generation process requires specific build environment setup
+- The generated content is relatively stable and doesn't change frequently
+
+The file can always be regenerated using the scripts, but committing it allows others to see the current documentation state without running the generation tools.

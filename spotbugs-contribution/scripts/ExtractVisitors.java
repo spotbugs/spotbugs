@@ -52,8 +52,8 @@ public class ExtractVisitors {
                         if (parts.length >= 2) {
                             String after = parts[1].trim();
                             String className = after.split("\\s+|\\{|\\(|;")[0];
-                            // Heuristic: class name contains Detector or Visitor or Pattern or starts with Find
-                            if (className.endsWith("Detector") || className.contains("Detector") || className.endsWith("Visitor") || className.contains("Visitor") || className.contains("Pattern") || className.startsWith("Find")) {
+                            // Heuristic: class name contains Detector, Visitor, Pattern or starts with Find
+                            if (className.contains("Detector") || className.contains("Visitor") || className.contains("Pattern") || className.startsWith("Find")) {
                                 String rel = root.relativize(p).toString().replace('\\', '/');
 
                                 // Try to extract a Javadoc comment immediately above the declaration
