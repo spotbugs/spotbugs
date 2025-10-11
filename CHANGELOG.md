@@ -16,6 +16,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Changed
 - Support for fully qualified class names for detectors in -adjustPriority parameter
 - Support for numerical and absolute priority adjustments
+- Bump up Apache Commons BCEL to the version 6.11.0 ([#3569](https://github.com/spotbugs/spotbugs/issues/3569))
 
 ### Deprecated
 - Add back and deprecate `edu.umd.cs.findbugs.io.IO.close(InputStream)` method. ([#3756](https://github.com/spotbugs/spotbugs/pull/3756))
