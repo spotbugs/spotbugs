@@ -21,6 +21,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Deprecated
 - Add back and deprecate `edu.umd.cs.findbugs.io.IO.close(InputStream)` method. ([#3756](https://github.com/spotbugs/spotbugs/pull/3756))
 
+### Build
+- Allow our GA builds to work with JDK 25 (and drop support for JDK 24) ([#3564](https://github.com/spotbugs/spotbugs/pull/3564))
+
 ## 4.9.6 - 2025-09-16
 ### Fixed
 - Fix exception throw when analyzing `jakarta.servlet.http.HttpServletRequest` method calls ([#3711](https://github.com/spotbugs/spotbugs/issues/3711))

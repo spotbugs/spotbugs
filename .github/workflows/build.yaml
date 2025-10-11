@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        java: [17.0.1+12, 17, 21, 24]
+        java: [17.0.1+12, 17, 21, 25]
       max-parallel: 6
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
