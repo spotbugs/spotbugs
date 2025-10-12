@@ -9,6 +9,7 @@ class Issue3460Test extends AbstractIntegrationTest {
     void testIssue() {
         performAnalysis("infiniteLoop/Issue3460.class");
 
-        assertBugTypeCount("IL_INFINITE_LOOP", 1);
+        // unconditional loops are assumed to be intentional
+        assertBugTypeCount("IL_INFINITE_LOOP", 0);
     }
 }
