@@ -1408,6 +1408,10 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         if (deref.isMethodReturnValue()) {
             if (deref.isReadlineValue()) {
                 bugType = "NP_DEREFERENCE_OF_READLINE_VALUE";
+            } else if (deref.isAlwaysCheckForNullMethodReturn()
+                    && deref.getDerefLocationSet().stream().allMatch(this::callToAssertionMethod)) {
+                // The value was the return of a CheckForNull annotated-method and the code is deliberately asserting its nullness
+                return;
             } else {
                 bugType = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE";
             }

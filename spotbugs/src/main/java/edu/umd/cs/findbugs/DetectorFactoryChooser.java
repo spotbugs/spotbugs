@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.plan.ExecutionPlan;
+
 /**
  * Predicate for choosing DetectorFactory objects.
  *
@@ -41,4 +44,16 @@ public interface DetectorFactoryChooser {
      * @param factory
      */
     void enable(DetectorFactory factory);
+
+    /**
+     * Check whether the given factory was enabled by {@link ExecutionPlan#build()}
+     *
+     * @param factory
+     *            the DetectorFactory to check, not null
+     * @return returns true by default
+     * @see ExecutionPlan#build()
+     */
+    default boolean wasFactoryEnabled(@NonNull DetectorFactory factory) {
+        return true;
+    }
 }

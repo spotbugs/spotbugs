@@ -23,7 +23,7 @@ public class Bug2311502 {
     /**
      * Should flag code as unsafe.
      */
-    static public class NonNullFalseNegative {
+    public static class NonNullFalseNegative {
 
         @CheckForNull
         private Object junkField;
@@ -42,7 +42,7 @@ public class Bug2311502 {
 
     }
 
-    static public @ReturnValuesAreNonnullByDefault
+    public static @ReturnValuesAreNonnullByDefault
     class NPNonNullReturnViolationBug {
 
         @CheckForNull

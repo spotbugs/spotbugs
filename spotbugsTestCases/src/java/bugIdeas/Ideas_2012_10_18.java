@@ -5,8 +5,8 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Ideas_2012_10_18 {
 
-    final static int DEFAULT_PORT = 80;
-    final static Integer DEFAULT_BOXED_PORT = 80;
+    static final int DEFAULT_PORT = 80;
+    static final Integer DEFAULT_BOXED_PORT = 80;
 
     Integer port;
     int p;

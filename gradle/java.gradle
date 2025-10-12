@@ -2,41 +2,41 @@ apply plugin: 'java-library'
 apply plugin: 'com.github.spotbugs'
 
 tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
+  options.encoding = 'UTF-8'
 }
 tasks.withType(Javadoc).configureEach {
-    options.encoding = 'UTF-8'
+  options.encoding = 'UTF-8'
 }
 tasks.named('compileJava', JavaCompile).configure {
-    options.release = 11
+  options.release = 11
 }
 
 // make the build reproducible https://reproducible-builds.org/
 tasks.withType(AbstractArchiveTask).configureEach {
   preserveFileTimestamps = false
   reproducibleFileOrder = true
-  dirPermissions{
+  dirPermissions {
     unix (0775)
   }
-  filePermissions{
+  filePermissions {
     unix (0664)
   }
 }
 
-def classLoader = plugins['com.github.spotbugs'].class.classLoader
-def SpotBugsTask = classLoader.findLoadedClass( 'com.github.spotbugs.snom.SpotBugsTask' )
-def SpotBugsEffort = classLoader.findLoadedClass( 'com.github.spotbugs.snom.Effort' )
-def SpotBugsConfidence = classLoader.findLoadedClass( 'com.github.spotbugs.snom.Confidence' )
+ClassLoader classLoader = plugins['com.github.spotbugs'].class.classLoader
+Class<?> SpotBugsTask = classLoader.findLoadedClass('com.github.spotbugs.snom.SpotBugsTask')
+Class<?> SpotBugsEffort = classLoader.findLoadedClass('com.github.spotbugs.snom.Effort')
+Class<?> SpotBugsConfidence = classLoader.findLoadedClass('com.github.spotbugs.snom.Confidence')
 spotbugs {
-    effort = SpotBugsEffort.MAX
-    reportLevel = SpotBugsConfidence.HIGH
-    maxHeapSize = '1g'
+  effort = SpotBugsEffort.MAX
+  reportLevel = SpotBugsConfidence.HIGH
+  maxHeapSize = '1g'
 }
 tasks.withType(SpotBugsTask).configureEach {
-    reports {
-        html {
-            required = true
-            stylesheet = 'fancy-hist.xsl'
-        }
+  reports {
+    html {
+      required = true
+      stylesheet = 'fancy-hist.xsl'
     }
+  }
 }

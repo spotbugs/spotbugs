@@ -21,8 +21,8 @@ package edu.umd.cs.findbugs.classfile.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -62,7 +62,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 
         this.file = file;
         setLastModifiedTime(file.lastModified());
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(file))) {
+        try (ZipInputStream zis = new ZipInputStream(Files.newInputStream(file.toPath()))) {
             ZipEntry ze;
 
             if (DEBUG) {
@@ -111,7 +111,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
             if (z != null) {
                 return z;
             }
-            try (ZipInputStream zis = new ZipInputStream(new FileInputStream(file))) {
+            try (ZipInputStream zis = new ZipInputStream(Files.newInputStream(file.toPath()))) {
                 ZipEntry ze;
 
                 boolean found = false;
@@ -162,7 +162,7 @@ public class ZipInputStreamCodeBase extends AbstractScannableCodeBase {
 
         MyIterator() {
             try {
-                zis = new ZipInputStream(new FileInputStream(file));
+                zis = new ZipInputStream(Files.newInputStream(file.toPath()));
                 ze = zis.getNextEntry();
             } catch (IOException e) {
                 throw new RuntimeException(e);

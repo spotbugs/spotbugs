@@ -2,8 +2,6 @@ package sfBugs;
 
 import java.net.URI;
 
-import javax.annotation.Nonnull;
-
 import com.google.common.base.Function;
 
 import edu.umd.cs.findbugs.annotations.NoWarning;

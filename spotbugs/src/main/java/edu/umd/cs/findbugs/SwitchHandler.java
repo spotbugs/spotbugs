@@ -123,6 +123,27 @@ public class SwitchHandler {
         return -1;
     }
 
+    @CheckForNull
+    public SwitchDetails getNextSwitchDetails(DismantleBytecode dbc) {
+        int size = switchOffsetStack.size();
+        while (size > 0) {
+            SwitchDetails details = switchOffsetStack.get(size - 1);
+
+            int nextSwitchOffset = details.getNextSwitchOffset(dbc.getPC());
+            if (nextSwitchOffset >= 0) {
+                return details;
+            }
+
+            if (dbc.getPC() <= details.getDefaultOffset()) {
+                return null;
+            }
+            switchOffsetStack.remove(size - 1);
+            size--;
+        }
+
+        return null;
+    }
+
     public int getDefaultOffset() {
         int size = switchOffsetStack.size();
         if (size == 0) {
@@ -293,6 +314,13 @@ public class SwitchHandler {
 
         private int getLastOffset() {
             return swOffsets.length > 0 ? swOffsets[swOffsets.length - 1] : 0;
+        }
+
+        /**
+         * @return The PC of the switch instruction
+         */
+        public int getSwitchPC() {
+            return switchPC;
         }
     }
 }

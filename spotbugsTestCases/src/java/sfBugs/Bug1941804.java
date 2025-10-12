@@ -5,7 +5,7 @@ public class Bug1941804 {
 
     private String nsLOCK = "LOCK";
 
-    private final static String fLOCK = "LOCK";
+    private static final String fLOCK = "LOCK";
 
     private final String fnsLOCK = "LOCK";
 

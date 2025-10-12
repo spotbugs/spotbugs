@@ -1,9 +1,9 @@
-apply from: "$rootDir/gradle/checkstyle.gradle"
-apply from: "$rootDir/gradle/javadoc.gradle"
-apply from: "$rootDir/gradle/maven.gradle"
+apply from: "${rootDir}/gradle/checkstyle.gradle"
+apply from: "${rootDir}/gradle/javadoc.gradle"
+apply from: "${rootDir}/gradle/maven.gradle"
 
 dependencies {
-  compileOnly 'org.junit.jupiter:junit-jupiter-engine:5.13.3'
+  compileOnly 'org.junit.jupiter:junit-jupiter-engine:5.14.0'
   compileOnly 'org.hamcrest:hamcrest:3.0'
   testImplementation project(':spotbugs')
   api project(':test-harness-core')
@@ -24,4 +24,4 @@ publishing.publications.maven {
 // Module name should be reverse-DNS (com.github.spotbugs) just like package name
 // http://blog.joda.org/2017/04/java-se-9-jpms-module-naming.html
 ext.moduleName = 'com.github.spotbugs.test'
-apply from: "$rootDir/gradle/jigsaw.gradle"
+apply from: "${rootDir}/gradle/jigsaw.gradle"

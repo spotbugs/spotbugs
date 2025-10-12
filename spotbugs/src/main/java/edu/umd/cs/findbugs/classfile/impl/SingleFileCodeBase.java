@@ -22,9 +22,10 @@ package edu.umd.cs.findbugs.classfile.impl;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.NoSuchElementException;
 
 import edu.umd.cs.findbugs.FindBugs;
@@ -39,7 +40,6 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.classfile.engine.ClassParser;
 import edu.umd.cs.findbugs.classfile.engine.ClassParserInterface;
-import edu.umd.cs.findbugs.io.IO;
 
 /**
  * Implementation of ICodeBase for a single classfile.
@@ -219,7 +219,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
     }
 
     InputStream openFile() throws IOException {
-        return new BufferedInputStream(new FileInputStream(fileName));
+        return new BufferedInputStream(Files.newInputStream(Path.of(fileName)));
     }
 
     /*
@@ -259,21 +259,13 @@ public class SingleFileCodeBase implements IScannableCodeBase {
     }
 
     ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException {
-        DataInputStream in = null;
-        try {
-            try {
-                in = new DataInputStream(new BufferedInputStream(new FileInputStream(fileName)));
-                ClassParserInterface classParser = new ClassParser(in, null, new SingleFileCodeBaseEntry(this));
-                ClassNameAndSuperclassInfo.Builder builder = new ClassNameAndSuperclassInfo.Builder();
+        try (DataInputStream in = new DataInputStream(new BufferedInputStream(Files.newInputStream(Path.of(fileName))))) {
+            ClassParserInterface classParser = new ClassParser(in, null, new SingleFileCodeBaseEntry(this));
+            ClassNameAndSuperclassInfo.Builder builder = new ClassNameAndSuperclassInfo.Builder();
 
-                classParser.parse(builder);
+            classParser.parse(builder);
 
-                return builder.build().getClassDescriptor();
-            } finally {
-                if (in != null) {
-                    IO.close(in);
-                }
-            }
+            return builder.build().getClassDescriptor();
         } catch (IOException e) {
             // XXX: file name isn't really the resource name, but whatever
             throw new ResourceNotFoundException(fileName);

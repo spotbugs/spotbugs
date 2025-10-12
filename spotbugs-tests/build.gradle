@@ -1,5 +1,5 @@
-apply from: "$rootDir/gradle/checkstyle.gradle"
-apply from: "$rootDir/gradle/jacoco.gradle"
+apply from: "${rootDir}/gradle/checkstyle.gradle"
+apply from: "${rootDir}/gradle/jacoco.gradle"
 
 dependencies {
   implementation(project(':spotbugs')) {
@@ -12,15 +12,17 @@ dependencies {
   implementation project(':test-harness')
   implementation project(':test-harness-jupiter')
 
-  implementation 'org.junit.jupiter:junit-jupiter-engine:5.13.3'
-  implementation 'org.junit.jupiter:junit-jupiter-params:5.13.3'
+  implementation 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+  implementation 'org.junit.jupiter:junit-jupiter-engine:5.14.0'
+  implementation 'org.junit.jupiter:junit-jupiter-params:5.14.0'
   implementation 'org.hamcrest:hamcrest:3.0'
-  implementation 'org.mockito:mockito-junit-jupiter:5.18.0'
+  implementation 'org.mockito:mockito-junit-jupiter:5.20.0'
   implementation 'org.apache.ant:ant:1.10.15'
   implementation libs.log4j.core
   implementation libs.log4j.slf4j2.impl
-  implementation 'com.google.errorprone:error_prone_annotations:2.40.0'
-  implementation files(project(":spotbugs").sourceSets.gui.output)
+  implementation 'com.google.errorprone:error_prone_annotations:2.42.0'
+  implementation files(project(':spotbugs').sourceSets.gui.output)
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 java {
@@ -32,39 +34,16 @@ tasks.named('compileJava', JavaCompile).configure {
   options.release = 11
 }
 
-artifacts {
-  archives sourcesJar
-}
-
 tasks.named('jacocoTestReport', JacocoReport).configure {
-  dependsOn('unstableTest')
   additionalSourceDirs.setFrom files(project(':spotbugs').sourceSets.main.java.srcDirs)
   additionalClassDirs.setFrom files(project(':spotbugs').sourceSets.main.output.classesDirs)
-  executionData.setFrom files(layout.buildDirectory.file("jacoco/unstableTest.exec"), layout.buildDirectory.file("jacoco/test.exec"))
-}
-
-// Tests below fail if executed with other tests
-// So we run them before all other tests are executed
-tasks.register("unstableTest", Test.class) {
-  useJUnitPlatform()
-  filter {
-    includeTestsMatching "PlaceholderTest"
-    includeTestsMatching "MutableClassesTest"
-  }
-  testLogging {
-    events "passed", "skipped", "failed"
-  }
+  executionData.setFrom files(layout.buildDirectory.file('jacoco/test.exec'))
 }
 
 test {
-  dependsOn ':spotbugsTestCases:build', 'unstableTest'
+  dependsOn ':spotbugsTestCases:build'
   useJUnitPlatform()
-  filter {
-    excludeTestsMatching "PlaceholderTest"
-    excludeTestsMatching "MutableClassesTest"
-  }
 }
-
 
 spotbugs {
   ignoreFailures = true

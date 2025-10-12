@@ -37,5 +37,5 @@ public interface CustomLabelVisitor {
      * @return the string that should replace YYY in the label to make a complete message.
      */
     @CheckForNull
-    public abstract String getLabelReplacement();
+    String getLabelReplacement();
 }
