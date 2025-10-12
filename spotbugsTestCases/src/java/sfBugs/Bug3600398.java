@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.annotation.WillClose;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;

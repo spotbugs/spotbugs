@@ -1,10 +1,10 @@
 package edu.umd.cs.findbugs.tools;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,7 +15,6 @@ import java.util.regex.Pattern;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-import edu.umd.cs.findbugs.util.Util;
 
 /*
  * FindBugs - Find Bugs in Java programs
@@ -42,7 +41,7 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class FilterAndCombineBitfieldPropertyDatabase {
 
-    final static int FLAGS = Const.ACC_PROTECTED | Const.ACC_PUBLIC;
+    static final int FLAGS = Const.ACC_PROTECTED | Const.ACC_PUBLIC;
 
     /**
      * @param args
@@ -56,7 +55,7 @@ public class FilterAndCombineBitfieldPropertyDatabase {
             process(System.in, properties, accessFlags);
         } else {
             for (String f : args) {
-                process(new FileInputStream(f), properties, accessFlags);
+                process(Files.newInputStream(Path.of(f)), properties, accessFlags);
             }
         }
 
@@ -100,14 +99,12 @@ public class FilterAndCombineBitfieldPropertyDatabase {
 
     /**
      * @param inSource
-     * @throws UnsupportedEncodingException
      * @throws IOException
      */
     private static void process(@WillClose InputStream inSource, Map<String, Integer> properties, Map<String, Integer> accessFlags)
-            throws UnsupportedEncodingException, IOException {
-        BufferedReader in = new BufferedReader(Util.getReader(inSource));
+            throws IOException {
         Pattern p = Pattern.compile("^(([^,]+),.+),([0-9]+)\\|([0-9]+)$");
-        try {
+        try (BufferedReader in = new BufferedReader(Util.getReader(inSource))) {
             while (true) {
                 String s = in.readLine();
                 if (s == null) {
@@ -133,8 +130,6 @@ public class FilterAndCombineBitfieldPropertyDatabase {
                 }
 
             }
-        } finally {
-            Util.closeSilently(in);
         }
     }
 

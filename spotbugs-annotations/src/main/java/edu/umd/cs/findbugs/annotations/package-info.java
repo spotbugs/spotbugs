@@ -7,6 +7,5 @@
  *  <li>{@link edu.umd.cs.findbugs.annotations.CreatesObligation}
  *  <li>{@link edu.umd.cs.findbugs.annotations.DischargesObligation}
  *  </ul>
-
  */
 package edu.umd.cs.findbugs.annotations;

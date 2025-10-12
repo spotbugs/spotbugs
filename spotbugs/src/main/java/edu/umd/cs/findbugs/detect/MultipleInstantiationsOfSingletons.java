@@ -250,8 +250,11 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         if (!cloneOnlyThrowsCloneNotSupportedException) { // no or not only CloneNotSupportedException
             if (isCloneable) {
                 if (implementsCloneableDirectly) { // directly
-                    bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_IMPLEMENTS_CLONEABLE", NORMAL_PRIORITY).addClass(this)
-                            .addMethod(cloneMethod));
+                    BugInstance bi = new BugInstance(this, "SING_SINGLETON_IMPLEMENTS_CLONEABLE", NORMAL_PRIORITY).addClass(this);
+                    if (cloneMethod != null) {
+                        bi.addMethod(cloneMethod);
+                    }
+                    bugReporter.reportBug(bi);
                 } else { // indirectly
                     bugReporter.reportBug(new BugInstance(this, "SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE", NORMAL_PRIORITY).addClass(this));
                 }

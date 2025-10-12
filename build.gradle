@@ -9,14 +9,14 @@ import org.gradle.api.publish.maven.MavenArtifact;
 import org.gradle.api.tasks.util.PatternFilterable;
 
 plugins {
-  id 'org.sonarqube' version '6.2.0.5505'
+  id 'org.sonarqube' version '6.3.1.5724'
   id 'org.gradle.crypto.checksum' version '1.4.0'
-  id 'com.github.spotbugs' version '6.2.4'
+  id 'com.github.spotbugs' version '6.4.2'
   id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
 group = 'com.github.spotbugs'
-version = '4.9.5-SNAPSHOT'
+version = '4.9.7-SNAPSHOT'
 
 apply from: "${rootDir}/gradle/java.gradle"
 apply from: "${rootDir}/gradle/jacoco.gradle"
@@ -40,7 +40,7 @@ allprojects {
     mavenCentral()
   }
   dependencies {
-    String junitVersion = '5.13.4'
+    String junitVersion = '5.14.0'
     implementation platform("org.junit:junit-bom:${junitVersion}")
     testImplementation platform("org.junit:junit-bom:${junitVersion}")
   }

@@ -37,7 +37,7 @@ import javax.annotation.meta.When;
  * @deprecated - use CheckForNull instead; the name of which more clearly
  *             indicates that not only could the value be null, but that good
  *             coding practice requires that the value be checked for null.
- **/
+ */
 @Documented
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE })
 @Retention(RetentionPolicy.CLASS)

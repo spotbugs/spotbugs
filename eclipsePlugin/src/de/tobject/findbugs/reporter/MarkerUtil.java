@@ -684,7 +684,6 @@ public final class MarkerUtil {
                 if (errorCode != IResourceStatus.MARKER_NOT_FOUND && errorCode != IResourceStatus.RESOURCE_NOT_FOUND) {
                     FindbugsPlugin.getDefault().logException(e, "Marker does not contain valid java element id");
                 }
-                continue;
             }
         }
         return markers;
@@ -864,9 +863,9 @@ public final class MarkerUtil {
             markers.addAll(new WorkItem((IJavaElement) obj).getMarkers(true));
         } else if (obj instanceof IAdaptable) {
             IAdaptable adapter = (IAdaptable) obj;
-            IMarker marker = (IMarker) adapter.getAdapter(IMarker.class);
+            IMarker marker = adapter.getAdapter(IMarker.class);
             if (marker == null) {
-                IResource resource = (IResource) adapter.getAdapter(IResource.class);
+                IResource resource = adapter.getAdapter(IResource.class);
                 if (resource == null) {
                     return markers;
                 }
@@ -895,7 +894,7 @@ public final class MarkerUtil {
         if (resource != null) {
             allMarkers = getMarkers(resource, IResource.DEPTH_ZERO);
         } else {
-            IClassFile classFile = (IClassFile) editor.getEditorInput().getAdapter(IClassFile.class);
+            IClassFile classFile = editor.getEditorInput().getAdapter(IClassFile.class);
             if (!(classFile instanceof IOrdinaryClassFile)) {
                 return null;
             }
@@ -953,7 +952,7 @@ public final class MarkerUtil {
             return null;
         } else if (next instanceof IAdaptable) {
             IAdaptable adapter = (IAdaptable) next;
-            IMarker marker = (IMarker) adapter.getAdapter(IMarker.class);
+            IMarker marker = adapter.getAdapter(IMarker.class);
             if (!isFindBugsMarker(marker)) {
                 return null;
             }

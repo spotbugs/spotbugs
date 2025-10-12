@@ -2,7 +2,10 @@ package edu.umd.cs.findbugs.util;
 
 import javax.annotation.concurrent.Immutable;
 
+import org.apache.bcel.Repository;
+import org.apache.bcel.util.SyntheticRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
@@ -22,6 +25,11 @@ class Annotated {
 }
 
 class MutableClassesTest {
+    @BeforeAll
+    static void setUp() {
+        // When running inside the build other tests might set the spotbugs repository
+        Repository.setRepository(SyntheticRepository.getInstance());
+    }
 
     @Test
     void testKnownMutable() {

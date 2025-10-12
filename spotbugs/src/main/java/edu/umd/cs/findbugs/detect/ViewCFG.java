@@ -7,7 +7,6 @@ import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
@@ -53,7 +52,7 @@ public class ViewCFG implements Detector {
         Path classDir;
 
         try {
-            classDir = Files.createDirectory(Paths.get(tempDir.toString(), classDirName));
+            classDir = Files.createDirectory(Path.of(tempDir.toString(), classDirName));
         } catch (IOException e) {
             bugReporter.logError("Could not create directory for class " + cls.getClassName(), e);
             return;
@@ -64,7 +63,7 @@ public class ViewCFG implements Detector {
 
             try (OutputStream outputStream = Files.newOutputStream(methodFile);
                     BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
-                    PrintStream out = new PrintStream(bufferedOutputStream, false, Charset.defaultCharset().name())) {
+                    PrintStream out = new PrintStream(bufferedOutputStream, false, Charset.defaultCharset())) {
                 analyzeMethod(classContext, method, out);
             } catch (CFGBuilderException e) {
                 bugReporter.logError("Error analyzing method", e);
@@ -171,7 +170,7 @@ public class ViewCFG implements Detector {
 
         String methodFileName = methodFileNameBase;
         do {
-            methodFile = Paths.get(classDir.toString(), methodFileName + ".dot");
+            methodFile = Path.of(classDir.toString(), methodFileName + ".dot");
             methodFileName = methodFileNameBase + ++index;
         } while (Files.exists(methodFile));
         return methodFile;
