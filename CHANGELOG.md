@@ -6,6 +6,9 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
+### Added
+- New bug type is introduced: `NCR_NOT_PROPERLY_CHECKED_READ`. Improper validation of the return value from the read() method in InputStream and Reader classes may result in an array not being fully filled.
+
 ### Fixed
 - Fix Eclipse not always using latest preferences file state ([#3740](https://github.com/spotbugs/spotbugs/issues/3740)) 
 - Fix exception throw when singleton implementing Cloneable has no clone() method ([#3727](https://github.com/spotbugs/spotbugs/issues/3727)) 
