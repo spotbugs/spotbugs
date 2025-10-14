@@ -12,6 +12,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix for missing -adjustPriority parameter in Eclipse preferences ([#3687](https://github.com/spotbugs/spotbugs/issues/3687))
 - Documentation of -adjustPriority parameter
 - Functionality from DetectorFactory setEnabledButNonReporting(), getPriorityAdjustment() methods and BugInstance.adjustForDetector() is deprecated and moved to PriorityAdjuster ([#3753](https://github.com/spotbugs/spotbugs/issues/3753))
+- Improved `FindNakedNotify` to handle the case when the lock is loaded from a field ([#3634](https://github.com/spotbugs/spotbugs/issues/3634))
 
 ### Changed
 - Support for fully qualified class names for detectors in -adjustPriority parameter
