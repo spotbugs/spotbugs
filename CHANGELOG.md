@@ -6,6 +6,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
+
+## 4.9.7 - 2025-10-14
 ### Fixed
 - Fix Eclipse not always using latest preferences file state ([#3740](https://github.com/spotbugs/spotbugs/issues/3740)) 
 - Fix exception throw when singleton implementing Cloneable has no clone() method ([#3727](https://github.com/spotbugs/spotbugs/issues/3727)) 
