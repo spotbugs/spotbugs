@@ -20,7 +20,7 @@ html_context = {
   'full_version' : '4.9.6',
   'maven_plugin_version' : '4.9.6.0',
   'gradle_plugin_version' : '6.4.2',
-  'archetype_version' : '0.4.7'
+  'archetype_version' : '0.4.9'
 }
 
 # If extensions (or modules to document with autodoc) are in another directory,
