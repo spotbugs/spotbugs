@@ -140,6 +140,10 @@ public class UnionResults {
             System.exit(1);
             return;
         }
+
+        results.getProjectStats().getPackageStats().forEach(s -> s.recomputeFromClassStats());
+        results.getProjectStats().recomputeFromComponents();
+
         results.setWithMessages(commandLine.withMessages);
         if (commandLine.outputFile == null) {
             results.writeXML(System.out);

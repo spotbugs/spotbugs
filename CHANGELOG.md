@@ -11,6 +11,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix exception throw when singleton implementing Cloneable has no clone() method ([#3727](https://github.com/spotbugs/spotbugs/issues/3727)) 
 - Fix for missing -adjustPriority parameter in Eclipse preferences ([#3687](https://github.com/spotbugs/spotbugs/issues/3687))
 - Documentation of -adjustPriority parameter
+- Fix incorrect bug counts and sizes when unioning reports ([#3721](https://github.com/spotbugs/spotbugs/issues/3721))
 
 ### Changed
 - Support for fully qualified class names for detectors in -adjustPriority parameter
