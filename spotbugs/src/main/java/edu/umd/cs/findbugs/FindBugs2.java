@@ -944,6 +944,11 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                 forcedEnabled.add(factory);
             }
 
+            @Override
+            public boolean wasForciblyEnabled(DetectorFactory factory) {
+                return forcedEnabled.contains(factory);
+            }
+
         };
         executionPlan.setDetectorFactoryChooser(detectorFactoryChooser);
 
