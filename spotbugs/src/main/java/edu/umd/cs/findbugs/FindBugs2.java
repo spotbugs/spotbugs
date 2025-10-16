@@ -942,7 +942,6 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
             @Override
             public void enable(DetectorFactory factory) {
                 forcedEnabled.add(factory);
-                factory.setEnabledButNonReporting(true);
             }
 
         };
@@ -977,6 +976,11 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
     private void analyzeApplication() throws InterruptedException {
         int passCount = 0;
         Profiler profiler = bugReporter.getProjectStats().getProfiler();
+        PriorityAdjuster priorityAdjuster = bugReporter.getPriorityAdjuster();
+        if (priorityAdjuster != null) {
+            priorityAdjuster.setFactoryChooser(executionPlan.getFactoryChooser());
+        }
+
         profiler.start(this.getClass());
         AnalysisContext.currentXFactory().canonicalizeAll();
         try {

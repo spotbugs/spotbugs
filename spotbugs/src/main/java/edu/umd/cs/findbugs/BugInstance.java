@@ -19,18 +19,30 @@
 
 package edu.umd.cs.findbugs;
 
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -51,6 +63,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.ba.AccessMethodDatabase;
+import edu.umd.cs.findbugs.ba.AccessMethodDatabase.AccessMethodLocation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -63,7 +76,6 @@ import edu.umd.cs.findbugs.ba.OpcodeStackScanner.UnreachableCodeException;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.AccessMethodDatabase.AccessMethodLocation;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberSourceInfo;
 import edu.umd.cs.findbugs.bytecode.MemberUtils;
@@ -243,29 +255,22 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     public BugInstance(Detector detector, String type, int priority) {
         this(type, priority);
         if (detector != null) {
-            // Adjust priority if required
             String detectorName = detector.getClass().getName();
-            adjustForDetector(detectorName);
+            rememberDetectorFactory(detectorName);
         }
 
+    }
+
+    @Deprecated(forRemoval = true)
+    public void adjustForDetector(String detectorName) {
+        rememberDetectorFactory(detectorName);
     }
 
     /**
      * @param detectorName
      */
-    public void adjustForDetector(String detectorName) {
-        DetectorFactory factory = DetectorFactoryCollection.instance().getFactoryByClassName(detectorName);
-        detectorFactory = factory;
-        if (factory != null) {
-            this.priority += factory.getPriorityAdjustment();
-            boundPriority();
-            BugPattern bugPattern = getBugPattern();
-            if (SystemProperties.ASSERTIONS_ENABLED && !"EXPERIMENTAL".equals(bugPattern.getCategory())
-                    && !factory.getReportedBugPatterns().contains(bugPattern)) {
-                AnalysisContext.logError(factory.getShortName() + " doesn't note that it reports "
-                        + bugPattern + " in category " + bugPattern.getCategory());
-            }
-        }
+    public void rememberDetectorFactory(String detectorName) {
+        detectorFactory = DetectorFactoryCollection.instance().getFactoryByClassName(detectorName);
     }
 
     /**
@@ -283,9 +288,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         this(type, priority);
 
         if (detector != null) {
-            // Adjust priority if required
             String detectorName = detector.getDetectorClassName();
-            adjustForDetector(detectorName);
+            rememberDetectorFactory(detectorName);
         }
 
     }
@@ -393,7 +397,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         priority = boundedPriority(p);
     }
 
-    private int boundedPriority(int p) {
+    public static int boundedPriority(int p) {
         return Math.max(Priorities.HIGH_PRIORITY, Math.min(Priorities.IGNORE_PRIORITY, p));
     }
 

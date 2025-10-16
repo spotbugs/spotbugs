@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 //   9:   monitorexit
 
 public class FindNakedNotify extends BytecodeScanningDetector implements StatelessDetector {
-    int stage = 0;
+    private Stage stage = Stage.START;
 
     private final BugReporter bugReporter;
 
@@ -56,9 +56,9 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
 
     @Override
     public void visit(Code obj) {
-        stage = synchronizedMethod ? 1 : 0;
+        stage = synchronizedMethod ? Stage.MONITOR_ENTERED : Stage.START;
         super.visit(obj);
-        if (synchronizedMethod && stage == 4) {
+        if (synchronizedMethod && stage == Stage.LOCK_LOADED) {
             bugReporter.reportBug(new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY).addClassAndMethod(this)
                     .addSourceLine(this, notifyPC));
         }
@@ -67,41 +67,54 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
     @Override
     public void sawOpcode(int seen) {
         switch (stage) {
-        case 0:
+        case START:
             if (seen == Const.MONITORENTER) {
-                stage = 1;
+                stage = Stage.MONITOR_ENTERED;
             }
             break;
-        case 1:
-            stage = 2;
+        case MONITOR_ENTERED:
+            if (isRegisterLoad() || seen == Const.GETSTATIC || seen == Const.GETFIELD) {
+                stage = Stage.LOADED;
+            }
             break;
-        case 2:
-            if (seen == Const.INVOKEVIRTUAL
+        case LOADED:
+            if (isRegisterLoad() || seen == Const.GETSTATIC || seen == Const.GETFIELD) {
+                break;
+            } else if (seen == Const.INVOKEVIRTUAL
                     && ("notify".equals(getNameConstantOperand()) || "notifyAll".equals(getNameConstantOperand()))
                     && "()V".equals(getSigConstantOperand())) {
-                stage = 3;
+                stage = Stage.NOTIFY_CALLED;
                 notifyPC = getPC();
             } else {
-                stage = 0;
+                stage = Stage.START;
             }
             break;
-        case 3:
-            stage = 4;
+        case NOTIFY_CALLED:
+            stage = Stage.LOCK_LOADED;
             break;
-        case 4:
+        case LOCK_LOADED:
             if (seen == Const.MONITOREXIT) {
                 bugReporter.reportBug(new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY).addClassAndMethod(this)
                         .addSourceLine(this, notifyPC));
-                stage = 5;
+                stage = Stage.MONITOR_EXITED;
             } else {
-                stage = 0;
+                stage = Stage.START;
             }
             break;
-        case 5:
+        case MONITOR_EXITED:
             break;
         default:
             assert false;
         }
 
+    }
+
+    private enum Stage {
+        START,
+        MONITOR_ENTERED,
+        LOADED,
+        NOTIFY_CALLED,
+        LOCK_LOADED,
+        MONITOR_EXITED
     }
 }
