@@ -1,19 +1,28 @@
-apply from: "$rootDir/gradle/jacoco.gradle"
-apply from: "$rootDir/gradle/checkstyle.gradle"
-apply from: "$rootDir/gradle/javadoc.gradle"
-apply from: "$rootDir/gradle/maven.gradle"
+apply from: "${rootDir}/gradle/jacoco.gradle"
+apply from: "${rootDir}/gradle/checkstyle.gradle"
+apply from: "${rootDir}/gradle/javadoc.gradle"
+apply from: "${rootDir}/gradle/maven.gradle"
 
 dependencies {
   implementation project(':spotbugs')
   compileOnly 'org.apache.ant:ant:1.10.15'
 
   testImplementation 'org.apache.ant:ant:1.10.15'
-  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.13.2'
+  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.14.0'
   testImplementation 'org.hamcrest:hamcrest:3.0'
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+// This disables hundreds of javadoc warnings on missing tags etc, see #340
 tasks.named('javadoc', Javadoc).configure {
   options.with {
+    // This is supposed to enable everything except "missing" but doesn't work with gradle
+    // See https://docs.oracle.com/en/java/javase/11/tools/javadoc.html
+    addBooleanOption('Xdoclint:all,-missing', true)
+
+    // TODO remove command and warning below if the doclint can be properly configured
+    addStringOption('Xmaxwarns', '3')
+
     memberLevel = JavadocMemberLevel.PUBLIC
     docTitle = 'SpotBugs Ant Task Documentation'
   }
@@ -29,6 +38,10 @@ java {
   withSourcesJar()
 }
 
+test {
+  useJUnitPlatform()
+}
+
 publishing.publications.maven {
   pom {
     name = 'SpotBugs Ant Task'
@@ -39,4 +52,4 @@ publishing.publications.maven {
 // Module name should be reverse-DNS (com.github.spotbugs) just like package name
 // http://blog.joda.org/2017/04/java-se-9-jpms-module-naming.html
 ext.moduleName = 'com.github.spotbugs.ant'
-apply from: "$rootDir/gradle/jigsaw.gradle"
+apply from: "${rootDir}/gradle/jigsaw.gradle"

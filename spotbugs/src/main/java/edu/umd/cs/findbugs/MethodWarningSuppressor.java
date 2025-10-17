@@ -49,7 +49,7 @@ public class MethodWarningSuppressor extends ClassWarningSuppressor {
         return new BugInstance(detector, BUG_TYPE, PRIORITY)
                 .addClass(clazz.getClassDescriptor())
                 .addMethod(method)
-                .addString(bugPattern);
+                .addString(adjustBugPatternForMessage());
     }
 
     @Override

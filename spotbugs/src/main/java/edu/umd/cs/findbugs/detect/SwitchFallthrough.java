@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.SwitchHandler;
+import edu.umd.cs.findbugs.SwitchHandler.SwitchDetails;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -77,8 +78,6 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
     private int priority;
 
-    private int fallthroughDistance;
-
     public SwitchFallthrough(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
@@ -103,7 +102,6 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         clearAllDeadStores();
         deadStore = null;
         priority = NORMAL_PRIORITY;
-        fallthroughDistance = 1000;
         enumType = null;
         super.visit(obj);
         enumType = null;
@@ -163,7 +161,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             if (DEBUG) {
                 System.out.println("Fallthrough at : " + getPC() + ": " + Const.getOpcodeName(seen));
             }
-            fallthroughDistance = 0;
+
             potentiallyDeadStoresFromBeforeFallthrough = (BitSet) potentiallyDeadStores.clone();
             potentiallyDeadFieldsFromBeforeFallthrough = new HashSet<>(potentiallyDeadFields);
             if (!hasFallThruComment(lastPC + 1, getPC() - 1)) {
@@ -183,8 +181,9 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
         }
 
-        if (isBranch(seen) || isSwitch(seen) || seen == Const.GOTO || seen == Const.ARETURN || seen == Const.IRETURN || seen == Const.RETURN
-                || seen == Const.LRETURN || seen == Const.DRETURN || seen == Const.FRETURN) {
+        if (isSwitch(seen)
+                || isReturn(seen)
+                || (isBranch(seen) && isBranchTargetOutsideOfNextCase())) {
             clearAllDeadStores();
         }
 
@@ -275,14 +274,17 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
         case Const.GOTO_W:
         case Const.GOTO:
-            if (biggestJumpTarget < getBranchTarget()) {
-                biggestJumpTarget = getBranchTarget();
-                if (DEBUG) {
-                    System.out.printf("  Setting BJT to %d%n", biggestJumpTarget);
+            if (isBranchTargetOutsideOfNextCase() || switchHdlr.getDefaultOffset() == getBranchTarget()) {
+                if (biggestJumpTarget < getBranchTarget()) {
+                    biggestJumpTarget = getBranchTarget();
+                    if (DEBUG) {
+                        System.out.printf("  Setting BJT to %d%n", biggestJumpTarget);
+                    }
                 }
+
+                reachable = false;
             }
 
-            reachable = false;
             break;
 
         case Const.ATHROW:
@@ -305,7 +307,34 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
         justSawHashcode = seen == Const.INVOKEVIRTUAL && "hashCode".equals(getNameConstantOperand()) && "()I".equals(getSigConstantOperand());
         lastPC = getPC();
-        fallthroughDistance++;
+    }
+
+    /**
+     * A GOTO might correspond to a <code>break</code> or to a do/while/for loop.
+     * For loops the branch target will be before the offset of the next case, for breaks we're exiting the switch so the target is actually even after the end of the last case.
+     * The branch target might be before the switch when we're inside another structure such as a loop.
+     *
+     * @return <code>true</code> if:
+     * <ul>
+     * <li> the branch target is a GOTO instruction as it is the case for a no-op (empty block) in an arrow-syntax switch
+     * <li> the branch target is after the next switch offset as it is the case for a switch break</li>
+     * <li> or the branch target is before the PC corresponding to the switch instruction</li>
+     * <li> or there's no next switch case (as it is the case for the default case)</li>
+     * </ul>
+     */
+    public boolean isBranchTargetOutsideOfNextCase() {
+        int branchTarget = getBranchTarget();
+        if (getCodeByte(branchTarget) == Const.GOTO) {
+            return true;
+        }
+
+        SwitchDetails nextSwitchDetails = switchHdlr.getNextSwitchDetails(this);
+
+        if (nextSwitchDetails != null) {
+            return branchTarget > nextSwitchDetails.getNextSwitchOffset(getPC()) || branchTarget < nextSwitchDetails.getSwitchPC();
+        } else {
+            return true;
+        }
     }
 
     boolean justSawHashcode;

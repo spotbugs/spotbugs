@@ -22,11 +22,10 @@ package edu.umd.cs.findbugs.workflow;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -575,9 +574,9 @@ public class RejarClassesForAnalysis {
         System.out.println("All done");
     }
 
-    private ZipOutputStream createZipFile(String fileName) throws FileNotFoundException {
+    private ZipOutputStream createZipFile(String fileName) throws IOException {
         File newFile = new File(commandLine.outputDir, fileName);
-        return new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(newFile)));
+        return new ZipOutputStream(new BufferedOutputStream(Files.newOutputStream(newFile.toPath())));
     }
 
 

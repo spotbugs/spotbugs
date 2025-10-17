@@ -55,9 +55,9 @@ import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -240,9 +240,11 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
         case Const.INVOKESTATIC:
             String className = getClassConstantOperand();
             if (!className.startsWith("[")) {
+                ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptor(className);
+
                 try {
-                    XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class,
-                            DescriptorFactory.createClassDescriptor(className));
+                    XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class, classDescriptor);
+
                     XMethod m = Hierarchy2.findInvocationLeastUpperBound(c, getNameConstantOperand(), getSigConstantOperand(),
                             seen == Const.INVOKESTATIC, seen == Const.INVOKEINTERFACE);
                     if (m == null) {
@@ -254,10 +256,8 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
                             throwList.add(new ExceptionThrown(ClassName.toDottedClassName(name), getPC()));
                         }
                     }
-                } catch (MissingClassException e) {
-                    bugReporter.reportMissingClass(e.getClassDescriptor());
                 } catch (CheckedAnalysisException e) {
-                    bugReporter.logError("Error looking up " + className, e);
+                    bugReporter.reportMissingClass(classDescriptor, e);
                 }
             }
             break;

@@ -20,10 +20,9 @@
 package edu.umd.cs.findbugs.anttask;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -113,9 +112,9 @@ public class UnionBugs2 extends AbstractFindBugsTask {
             throw new BuildException("unable to create temporary argument file", e);
         }
         String pathAsString = tempFile.toAbsolutePath().toString();
-        try (PrintWriter writer = new PrintWriter(tempFile.toFile(), "UTF-8")) {
+        try (PrintWriter writer = new PrintWriter(tempFile.toFile(), StandardCharsets.UTF_8)) {
             writer.print(builder);
-        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+        } catch (IOException e) {
             throw new BuildException(String.format("unable to write to temporary argument file: '%s'", pathAsString), e);
         }
         addArg(pathAsString);

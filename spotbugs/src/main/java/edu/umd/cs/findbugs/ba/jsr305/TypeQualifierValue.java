@@ -36,7 +36,6 @@ import javax.annotation.meta.When;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -124,11 +123,10 @@ public class TypeQualifierValue<A extends Annotation> {
                     break;
                 }
             }
-        } catch (MissingClassException e) {
-            AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassNotFoundException());
         } catch (CheckedAnalysisException e) {
-            AnalysisContext.logError("Error looking up annotation class " + typeQualifier.toDottedClassName(), e);
+            AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(typeQualifier, e);
         }
+
         this.isStrict = isStrict1;
         this.isExclusive = isExclusive1;
         this.isExhaustive = isExhaustive1;

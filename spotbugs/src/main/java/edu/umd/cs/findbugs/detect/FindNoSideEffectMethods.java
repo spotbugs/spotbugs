@@ -353,6 +353,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                         sawCall(new MethodCall(matchingMethod.getMethodDescriptor(), TARGET_THIS), false);
                     }
                 } catch (CheckedAnalysisException e) {
+                    AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(subtype, e);
                 }
             }
         }
@@ -828,7 +829,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         String className = m.getSlashedClassName();
         return isObjectOnlyClass(className)
                 || (className.startsWith("javax/xml/") && methodName.startsWith("next"))
-                || ((className.startsWith("java/net/") || className.startsWith("javax/servlet"))
+                || ((className.startsWith("java/net/") || className.startsWith("javax/servlet") || className.startsWith("jakarta/servlet"))
                         && (methodName.startsWith("remove") || methodName.startsWith("add") || methodName.startsWith("set")))
                 || OBJECT_ONLY_METHODS.contains(m);
     }
@@ -883,7 +884,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                          */
                         continue;
                     }
-                    if (m.getName().startsWith("access$") && (!(m instanceof XMethod) || ((XMethod) m).getAccessMethodForMethod() == null)) {
+                    if (m.isAccessMethod() && (!(m instanceof XMethod) || ((XMethod) m).getAccessMethodForMethod() == null)) {
                         /* We skip field access methods, because they can unnecessarily be used for static calls
                          * (probably by older javac)
                          */

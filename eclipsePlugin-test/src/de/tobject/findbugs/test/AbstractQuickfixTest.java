@@ -268,20 +268,14 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
     }
 
     private String readFileContents(URL url) throws IOException {
-        StringWriter writer = new StringWriter();
-        InputStream input = null;
-        try {
-            input = url.openStream();
+        try (StringWriter writer = new StringWriter();
+                InputStream input = url.openStream()) {
             int nextChar;
             while ((nextChar = input.read()) != -1) {
                 writer.write(nextChar);
             }
-        } finally {
-            if (input != null) {
-                input.close();
-            }
+            return writer.toString();
         }
-        return writer.toString();
     }
 
     public static class QuickFixTestPackage {

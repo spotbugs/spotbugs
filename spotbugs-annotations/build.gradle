@@ -1,16 +1,16 @@
-apply from: "$rootDir/gradle/checkstyle.gradle"
-apply from: "$rootDir/gradle/javadoc.gradle"
-apply from: "$rootDir/gradle/maven.gradle"
+apply from: "${rootDir}/gradle/checkstyle.gradle"
+apply from: "${rootDir}/gradle/javadoc.gradle"
+apply from: "${rootDir}/gradle/maven.gradle"
 
 tasks.named('compileJava', JavaCompile).configure {
-    options.release = 8
+  options.release = 8
 }
 
 eclipse {
   jdt {
-    sourceCompatibility = 11
-    targetCompatibility = 11
-    javaRuntimeName = "JavaSE-11"
+    sourceCompatibility = 8
+    targetCompatibility = 8
+    javaRuntimeName = 'JavaSE-1.8'
   }
 }
 
@@ -18,7 +18,7 @@ dependencies {
   api 'com.google.code.findbugs:jsr305:3.0.2'
 }
 
-def manifestSpec = java.manifest {
+Manifest manifestSpec = java.manifest {
   attributes 'Bundle-Name': 'spotbugs-annotations',
                'Bundle-SymbolicName': 'spotbugs-annotations',
                'Bundle-Version': project.version.replace('-', '.'),
@@ -27,15 +27,17 @@ def manifestSpec = java.manifest {
                'Bundle-ManifestVersion': '2'
 }
 
-def updateManifest = tasks.register('updateManifest') {
-    // write manifests
-    manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
+TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
+  // write manifests
+  doLast {
+    manifestSpec.writeTo("${projectDir}/META-INF/MANIFEST.MF")
+  }
 }
 tasks.eclipse.dependsOn(updateManifest)
 
-def jar = tasks.named('jar', Jar) {
+TaskProvider<Jar> jar = tasks.named('jar', Jar) {
   // To keep backward compatibility, delete version number from jar name
-  archiveFileName = "${archiveBaseName.get()}.${archiveExtension.get()}"
+  archiveFileName = archiveBaseName.get() + '.' + archiveExtension.get()
   manifest {
     attributes 'Bundle-Name': 'spotbugs-annotations',
                'Bundle-SymbolicName': 'spotbugs-annotations',
@@ -46,15 +48,21 @@ def jar = tasks.named('jar', Jar) {
   }
 }
 
+// This disables hundreds of javadoc warnings on missing tags etc, see #340
 tasks.named('javadoc', Javadoc).configure {
   options.with {
     memberLevel = JavadocMemberLevel.PUBLIC
     docTitle = 'SpotBugs Annotation Documentation'
   }
   doFirst {
-    // This is supposed to enable everything except "missing" but doesn't work with gradle
-    // See https://docs.oracle.com/en/java/javase/11/tools/javadoc.html
-    options.addBooleanOption('Xdoclint:all,-missing', true)
+    options.with {
+      // This is supposed to enable everything except "missing" but doesn't work with gradle
+      // See https://docs.oracle.com/en/java/javase/11/tools/javadoc.html
+      addBooleanOption('Xdoclint:all,-missing', true)
+
+      // TODO remove command and warning below if the doclint can be properly configured
+      addStringOption('Xmaxwarns', '3')
+    }
   }
   doLast {
     logger.warn('Javadoc: "missing" warnings are disabled, see #340!')
@@ -76,4 +84,4 @@ publishing.publications.maven {
 // Module name should be reverse-DNS (com.github.spotbugs) just like package name
 // http://blog.joda.org/2017/04/java-se-9-jpms-module-naming.html
 ext.moduleName = 'com.github.spotbugs.annotations'
-apply from: "$rootDir/gradle/jigsaw.gradle"
+apply from: "${rootDir}/gradle/jigsaw.gradle"

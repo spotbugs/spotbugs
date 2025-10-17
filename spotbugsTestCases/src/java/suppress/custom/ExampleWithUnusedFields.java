@@ -1,6 +1,6 @@
 package suppress.custom;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class ExampleWithUnusedFields {
     @SuppressFBWarnings("XYZ") // Expecting US_USELESS_SUPPRESSION_ON_FIELD and UUF_UNUSED_FIELD here
