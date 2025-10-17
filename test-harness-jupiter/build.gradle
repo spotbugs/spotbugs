@@ -5,6 +5,7 @@ apply from: "${rootDir}/gradle/maven.gradle"
 
 dependencies {
   compileOnly project(':spotbugs')
+  compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
   compileOnly 'org.junit.jupiter:junit-jupiter-api'
   implementation project(':test-harness-core')
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'

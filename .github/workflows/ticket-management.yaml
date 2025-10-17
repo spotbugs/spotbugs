@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v9
+      - uses: actions/stale@5f858e3efba33a5ca4407a664cc011ad407f2008 # v10
         with:
           days-before-stale: 30
           days-before-close: -1

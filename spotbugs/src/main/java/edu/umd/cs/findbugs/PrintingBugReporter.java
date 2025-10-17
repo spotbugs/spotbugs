@@ -20,8 +20,9 @@
 package edu.umd.cs.findbugs;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -166,7 +167,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
         }
 
         if (argCount < args.length) {
-            reporter.setOutputStream(UTF8.printStream(new FileOutputStream(args[argCount++]), true));
+            reporter.setOutputStream(UTF8.printStream(Files.newOutputStream(Path.of(args[argCount++])), true));
         }
         boolean bugsReported = false;
         RuntimeException storedException = null;
@@ -232,7 +233,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
         }
 
         if (argCount < args.length) {
-            reporter.setOutputStream(UTF8.printStream(new FileOutputStream(args[argCount++]), true));
+            reporter.setOutputStream(UTF8.printStream(Files.newOutputStream(Path.of(args[argCount++])), true));
         }
 
         reporter.finish();

@@ -30,11 +30,11 @@ import java.io.UncheckedIOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
 import edu.umd.cs.findbugs.annotations.Confidence;
+import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.test.AnalysisRunner;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
@@ -73,20 +73,22 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
  */
 public abstract class AbstractIntegrationTest {
 
+    protected UserPreferences userPreferences;
+
     /**
      * Build prefix directories to search for classes
      */
     private static final List<Path> BUILD_CLASS_SEARCH_PREFIXES = List.of(
             // Build path if running command line build
-            Paths.get("build/classes/java/main"),
-            Paths.get("build/classes/groovy/main"),
+            Path.of("build/classes/java/main"),
+            Path.of("build/classes/groovy/main"),
             // Build path if running in Eclipse
-            Paths.get("classesEclipse"));
+            Path.of("classesEclipse"));
 
     private BugCollectionBugReporter bugReporter;
 
     private static Path getFindbugsTestCases() {
-        final Path p = Paths.get(SystemProperties.getProperty("spotbugsTestCases.home", "../spotbugsTestCases"));
+        final Path p = Path.of(SystemProperties.getProperty("spotbugsTestCases.home", "../spotbugsTestCases"));
         assertTrue(Files.exists(p), "'spotbugsTestCases' directory not found");
         assertTrue(Files.isDirectory(p));
         assertTrue(Files.isReadable(p));
@@ -133,7 +135,7 @@ public abstract class AbstractIntegrationTest {
         try {
             final List<String> lines = Files.readAllLines(dependencies);
             for (String line : lines) {
-                Path path = Paths.get(line);
+                Path path = Path.of(line);
                 if (Files.isReadable(path)) {
                     runner.addAuxClasspathEntry(path);
                 }
@@ -146,7 +148,7 @@ public abstract class AbstractIntegrationTest {
         Path[] paths = Arrays.stream(analyzeMe)
                 .map(AbstractIntegrationTest::getFindbugsTestCasesFile)
                 .toArray(Path[]::new);
-        bugReporter = runner.run(paths);
+        bugReporter = runner.run(userPreferences, paths);
     }
 
     /**

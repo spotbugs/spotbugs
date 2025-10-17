@@ -43,9 +43,7 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     static final String ERRORS_ELEMENT_NAME = "Errors";
 
-    static final String ANALYSIS_ERROR_ELEMENT_NAME = "AnalysisError"; // 0.8.6
-    // and
-    // earlier
+    static final String ANALYSIS_ERROR_ELEMENT_NAME = "AnalysisError"; // 0.8.6 and earlier
 
     static final String ERROR_ELEMENT_NAME = "Error"; // 0.8.7 and later
 

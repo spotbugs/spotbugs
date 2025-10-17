@@ -160,7 +160,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         // in our case this is a Java Project (IJavaProject).
         IAdaptable resource = getElement();
         if (resource != null) {
-            project = (IProject) resource.getAdapter(IProject.class);
+            project = resource.getAdapter(IProject.class);
         }
 
         initPreferencesStore(project);

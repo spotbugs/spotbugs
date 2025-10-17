@@ -22,7 +22,7 @@ jobs:
       contents: write # to push pages branch (peaceiris/actions-gh-pages)
 
     if: github.repository_owner == 'spotbugs'
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 30
 
     steps:
@@ -45,15 +45,12 @@ jobs:
           java-version: '21'
           distribution: temurin
           cache: gradle
-      - uses: gradle/actions/wrapper-validation@017a9effdb900e5b5b2fddfb590a105619dca3c3 # v4
+      - uses: gradle/actions/wrapper-validation@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5
       - name: Download Eclipse
         run: |
-          Remove-item alias:curl
-          curl --continue-at - --create-dirs --location 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-win32-x86_64.zip&mirror_id=1' --output eclipse-sdk/eclipse.zip
-          Expand-Archive "eclipse-sdk/eclipse.zip" -DestinationPath "." -Force
-          $escapedPwd = $pwd.Path -replace '\\', '\\'
-          [System.IO.File]::WriteAllLines("$pwd\\eclipsePlugin\\local.properties", "eclipseRoot.dir=$escapedPwd\\eclipse")
-        shell: powershell
+          curl --continue-at - --create-dirs --location 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-linux-gtk-x86_64.tar.gz&mirror_id=1' --output eclipse-sdk/eclipse.tar.gz
+          tar xzf eclipse-sdk/eclipse.tar.gz eclipse
+          echo "eclipseRoot.dir=$(pwd)/eclipse" | tee eclipsePlugin/local.properties
       - name: Build on tag
         if: github.ref_type == 'tag'
         run: |
@@ -118,16 +115,15 @@ jobs:
         shell: bash
         run: |
           set -x
-          curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.2
-          assets=("-a" "./eclipsePlugin/build/distributions/eclipsePlugin.zip")
+          assets=("./eclipsePlugin/build/distributions/eclipsePlugin.zip")
           for asset in ./spotbugs/build/distributions/*; do
-            assets+=("-a" "$asset")
+            assets+=("$asset")
           done
-          bin/hub release create "${assets[@]}" -F build/release.md "${{ steps.get_version.outputs.VERSION }}" --draft
+          gh release create ${{ github.ref_name }} "${assets[@]}" --notes-file build/release.md --title "${{ steps.get_version.outputs.VERSION }}" --draft
       - name: Publish draft Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: github.ref_type == 'tag'
         shell: bash
         run: |
-          bin/hub release edit ${{ github.ref_name }} --draft=false
+          gh release edit ${{ github.ref_name }} --draft=false
