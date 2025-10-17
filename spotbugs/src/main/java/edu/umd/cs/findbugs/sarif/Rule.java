@@ -48,7 +48,7 @@ final class Rule {
             @NonNull List<String> tags, @NonNull int cweid) {
         this.id = Objects.requireNonNull(id);
         this.shortDescription = Objects.requireNonNull(shortDescription);
-        this.fullDescription = Objects.requireNonNull(fullDescription.trim());
+        this.fullDescription = Objects.requireNonNull(fullDescription).trim();
         this.defaultText = Objects.requireNonNull(defaultText);
         this.helpUri = helpUri;
         this.tags = Collections.unmodifiableList(tags);
