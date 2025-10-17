@@ -7,7 +7,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2025-??-??
 ### Fixed
-- Maven plugin reporting issue if -adjustPriority is not set ([#3774](https://github.com/spotbugs/spotbugs/issues/3774)) 
+- Maven plugin reporting issue if -adjustPriority is not set ([#3774](https://github.com/spotbugs/spotbugs/issues/3774))
+- Classes containing only methods throwing `UnsupportedOperationException` with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
 
 ## 4.9.7 - 2025-10-14
 ### Fixed
@@ -28,9 +29,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Build
 - Allow our GA builds to work with JDK 25 (and drop support for JDK 24) ([#3564](https://github.com/spotbugs/spotbugs/pull/3564))
-
-### Fixed
-- Classes containing only methods throwing `UnsupportedOperationException` with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
 
 ## 4.9.6 - 2025-09-16
 ### Fixed
