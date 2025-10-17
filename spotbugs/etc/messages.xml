@@ -2259,7 +2259,7 @@ visible), they could trigger listener notification on the event dispatch thread.
     <Details>
 <![CDATA[
 <p>This loop doesn't seem to have a way to terminate (other than by perhaps
-throwing an exception).</p>
+throwing an exception). Unconditional loops such as <code>while (true) {...}</code> are assumed to be intentional and are not reported as bugs.</p>
 <p>See <a href="https://cwe.mitre.org/data/definitions/835.html">CWE-835: Loop with Unreachable Exit Condition ('Infinite Loop')</a>.
 </p>
 ]]>

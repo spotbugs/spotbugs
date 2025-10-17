@@ -956,7 +956,7 @@ Un accesseur spécial est généré dans ce cas par la compilateur pour écrire 
   <LongDescription>Il y a apparemment une boucle infinie dans {1}</LongDescription>
   <Details>
 <![CDATA[
-<p>Cette boucle ne semble pas avoir un moyen de se terminer (autrement que, peut être, en déclenchant une exception).</p>
+<p>Cette boucle ne semble pas avoir un moyen de se terminer (autrement que, peut être, en déclenchant une exception). Les boucles sans condition comme <code>while (true) {...}</code> sont considerées comme intentionnelles et ne sont pas reportées comme des bugs</p>
 ]]>
   </Details>
  </BugPattern>
