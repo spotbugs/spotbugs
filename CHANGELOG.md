@@ -6,6 +6,28 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
+### Fixed
+- Maven plugin reporting issue if -adjustPriority is not set ([#3774](https://github.com/spotbugs/spotbugs/issues/3774)) 
+
+## 4.9.7 - 2025-10-14
+### Fixed
+- Fix Eclipse not always using latest preferences file state ([#3740](https://github.com/spotbugs/spotbugs/issues/3740)) 
+- Fix exception throw when singleton implementing Cloneable has no clone() method ([#3727](https://github.com/spotbugs/spotbugs/issues/3727)) 
+- Fix for missing -adjustPriority parameter in Eclipse preferences ([#3687](https://github.com/spotbugs/spotbugs/issues/3687))
+- Documentation of -adjustPriority parameter
+- Functionality from DetectorFactory setEnabledButNonReporting(), getPriorityAdjustment() methods and BugInstance.adjustForDetector() is deprecated and moved to PriorityAdjuster ([#3753](https://github.com/spotbugs/spotbugs/issues/3753))
+- Improved `FindNakedNotify` to handle the case when the lock is loaded from a field ([#3634](https://github.com/spotbugs/spotbugs/issues/3634))
+
+### Changed
+- Support for fully qualified class names for detectors in -adjustPriority parameter
+- Support for numerical and absolute priority adjustments
+- Bump up Apache Commons BCEL to the version 6.11.0 ([#3569](https://github.com/spotbugs/spotbugs/issues/3569))
+
+### Deprecated
+- Add back and deprecate `edu.umd.cs.findbugs.io.IO.close(InputStream)` method. ([#3756](https://github.com/spotbugs/spotbugs/pull/3756))
+
+### Build
+- Allow our GA builds to work with JDK 25 (and drop support for JDK 24) ([#3564](https://github.com/spotbugs/spotbugs/pull/3564))
 
 ### Fixed
 - Classes containing only methods throwing `UnsupportedOperationException` with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))

@@ -43,16 +43,16 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.WillCloseWhenClosed;
 
-import edu.umd.cs.findbugs.sarif.SarifBugReporter;
 import org.dom4j.DocumentException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
+import edu.umd.cs.findbugs.sarif.SarifBugReporter;
 import edu.umd.cs.findbugs.util.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Helper class to parse the command line and configure the IFindBugsEngine
@@ -211,7 +211,10 @@ public class TextUICommandLine extends FindBugsCommandLine {
         addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
         addOption("-chooseVisitors", "+v1,-v2,...", "selectively enable/disable detectors");
         addOption("-choosePlugins", "+p1,-p2,...", "selectively enable/disable plugins");
-        addOption("-adjustPriority", "v1=(raise|lower)[,...]", "raise/lower priority of warnings for given visitor(s)");
+        addOption("-adjustPriority", "v1=(+[int]|-[int]|[int]|raise|lower|suppress)[,...]",
+                "adjust the priority of warnings for given detectors (simple or fully qualified class names) or bug patterns, or suppress them completely. "
+                        +
+                        "[int] sets it to an absolute value. Note that -1 is equivalent to raise, and semantically increases the priority.");
 
         startOptionGroup("Project configuration options:");
         addOption("-auxclasspath", "classpath", "set aux classpath for analysis");
@@ -263,7 +266,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     Map<String, String> parsedOptions = new LinkedHashMap<>();
 
-    private List<TextUIBugReporter> reporters = new ArrayList<>();
+    private final List<TextUIBugReporter> reporters = new ArrayList<>();
+
+    private PriorityAdjuster priorityAdjuster;
 
     /**
      * Parse {@code optionExtraPart} and configure {@Link TextUIBugReporter} if it contains the
@@ -537,45 +542,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 plugin.setGloballyEnabled(enabled);
             });
         } else if ("-adjustPriority".equals(option)) {
-            // Selectively raise or lower the priority of warnings
-            // produced by specified detectors.
-
-            StringTokenizer tok = new StringTokenizer(argument, ",");
-            while (tok.hasMoreTokens()) {
-                String token = tok.nextToken();
-                int eq = token.indexOf('=');
-                if (eq < 0) {
-                    throw new IllegalArgumentException("Illegal priority adjustment: " + token);
-                }
-
-                String adjustmentTarget = token.substring(0, eq);
-                String adjustment = token.substring(eq + 1);
-
-                int adjustmentAmount;
-                if ("raise".equals(adjustment)) {
-                    adjustmentAmount = -1;
-                } else if ("lower".equals(adjustment)) {
-                    adjustmentAmount = +1;
-                } else if ("suppress".equals(adjustment)) {
-                    adjustmentAmount = +100;
-                } else {
-                    throw new IllegalArgumentException("Illegal priority adjustment value: " + adjustment);
-                }
-
-                DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(adjustmentTarget);
-                if (factory != null) {
-                    factory.setPriorityAdjustment(adjustmentAmount);
-                } else {
-                    //
-                    DetectorFactoryCollection i18n = DetectorFactoryCollection.instance();
-                    BugPattern pattern = i18n.lookupBugPattern(adjustmentTarget);
-                    if (pattern == null) {
-                        throw new IllegalArgumentException("Unknown detector: " + adjustmentTarget);
-                    }
-                    pattern.adjustPriority(adjustmentAmount);
-                }
-
-            }
+            // Selectively raise, lower, suppress or set the priority of warnings
+            priorityAdjuster = new PriorityAdjuster(UserPreferences.parseAdjustPriorities(argument));
         } else if ("-bugCategories".equals(option)) {
             this.bugCategorySet = FindBugs.handleBugCategories(argument);
         } else if ("-onlyAnalyze".equals(option)) {
@@ -693,6 +661,13 @@ public class TextUICommandLine extends FindBugsCommandLine {
         if (reporters.isEmpty()) {
             throw new IllegalStateException("No bug reporter configured");
         }
+
+        if (priorityAdjuster != null) {
+            for (TextUIBugReporter reporter : reporters) {
+                reporter.setPriorityAdjuster(priorityAdjuster);
+            }
+        }
+
         ConfigurableBugReporter textuiBugReporter = reporters.size() == 1 ? reporters.get(0) : new BugReportDispatcher(reporters);
         if (quiet) {
             textuiBugReporter.setErrorVerbosity(BugReporter.SILENT);

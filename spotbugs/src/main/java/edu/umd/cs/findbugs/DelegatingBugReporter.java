@@ -60,6 +60,16 @@ public class DelegatingBugReporter implements BugReporter {
     }
 
     @Override
+    public void setPriorityAdjuster(PriorityAdjuster priorityAdjuster) {
+        delegate.setPriorityAdjuster(priorityAdjuster);
+    }
+
+    @Override
+    public PriorityAdjuster getPriorityAdjuster() {
+        return delegate.getPriorityAdjuster();
+    }
+
+    @Override
     public void observeClass(ClassDescriptor classDescriptor) {
         delegate.observeClass(classDescriptor);
     }
