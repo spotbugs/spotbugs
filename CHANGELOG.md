@@ -8,6 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2025-??-??
 ### Fixed
 - Maven plugin reporting issue if -adjustPriority is not set ([#3774](https://github.com/spotbugs/spotbugs/issues/3774)) 
+- Fix incorrect bug counts and sizes when unioning reports ([#3721](https://github.com/spotbugs/spotbugs/issues/3721))
 
 ## 4.9.7 - 2025-10-14
 ### Fixed
@@ -17,7 +18,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Documentation of -adjustPriority parameter
 - Functionality from DetectorFactory setEnabledButNonReporting(), getPriorityAdjustment() methods and BugInstance.adjustForDetector() is deprecated and moved to PriorityAdjuster ([#3753](https://github.com/spotbugs/spotbugs/issues/3753))
 - Improved `FindNakedNotify` to handle the case when the lock is loaded from a field ([#3634](https://github.com/spotbugs/spotbugs/issues/3634))
-- Fix incorrect bug counts and sizes when unioning reports ([#3721](https://github.com/spotbugs/spotbugs/issues/3721))
 
 ### Changed
 - Support for fully qualified class names for detectors in -adjustPriority parameter
