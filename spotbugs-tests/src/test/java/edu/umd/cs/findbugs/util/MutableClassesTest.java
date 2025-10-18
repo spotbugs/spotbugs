@@ -2,10 +2,20 @@ package edu.umd.cs.findbugs.util;
 
 import javax.annotation.concurrent.Immutable;
 
+import edu.umd.cs.findbugs.FindBugs2;
+import edu.umd.cs.findbugs.PrintingBugReporter;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
+import edu.umd.cs.findbugs.classfile.impl.ClassPathImpl;
 import org.apache.bcel.Repository;
 import org.apache.bcel.util.SyntheticRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
@@ -29,6 +39,23 @@ class MutableClassesTest {
     static void setUp() {
         // When running inside the build other tests might set the spotbugs repository
         Repository.setRepository(SyntheticRepository.getInstance());
+    }
+
+    @BeforeEach
+    void setUpEach() {
+        IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(new ClassPathImpl(), new PrintingBugReporter());
+        Global.setAnalysisCacheForCurrentThread(analysisCache);
+        FindBugs2.registerBuiltInAnalysisEngines(analysisCache);
+
+        Project project = new Project();
+        AnalysisContext analysisContext = new AnalysisContext(project);
+        AnalysisContext.setCurrentAnalysisContext(analysisContext);
+    }
+
+    @AfterEach
+    void teardown() {
+        Global.removeAnalysisCacheForCurrentThread();
+        AnalysisContext.removeCurrentAnalysisContext();
     }
 
     @Test
@@ -97,6 +124,14 @@ class MutableClassesTest {
 
         public Immutable setN(int n) {
             return new Immutable(n);
+        }
+
+        public void setNUnsupported(int n) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void setNUnsupported2(int n) {
+            throw new UnsupportedOperationException("This class is immutable, setters are unsupported.");
         }
 
         public static Immutable getImmutable() {
