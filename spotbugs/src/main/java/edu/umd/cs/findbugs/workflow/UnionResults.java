@@ -120,6 +120,9 @@ public class UnionResults {
         for (AnalysisError error : from.getErrors()) {
             into.addError(error);
         }
+
+        into.getProjectStats().getPackageStats().forEach(s -> s.recomputeFromClassStats());
+        into.getProjectStats().recomputeFromComponents();
     }
 
     public static void main(String[] argv) throws IOException {
@@ -140,6 +143,7 @@ public class UnionResults {
             System.exit(1);
             return;
         }
+
         results.setWithMessages(commandLine.withMessages);
         if (commandLine.outputFile == null) {
             results.writeXML(System.out);
