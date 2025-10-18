@@ -44,12 +44,12 @@ public class PriorityAdjuster {
         DetectorFactory factory = factoryCollection.getFactoryByClassName(adjustmentTarget);
         if (factory != null) {
             // return the factory's FQCN
-            return factory.getClass().getName();
+            return factory.getFullName();
         }
         factory = factoryCollection.getFactory(adjustmentTarget);
         if (factory != null) {
             // return the factory's FQCN
-            return factory.getClass().getName();
+            return factory.getFullName();
         }
         BugPattern pattern = factoryCollection.lookupBugPattern(adjustmentTarget);
         if (pattern == null) {
@@ -67,24 +67,23 @@ public class PriorityAdjuster {
      * @return the cloned and changed bug instance, or the original one in case that no change is necessary
      */
     BugInstance adjustPriority(BugInstance bugInstance) {
-        if (adjustments.isEmpty()) {
-            return bugInstance;
-        }
-
         int priority = bugInstance.getPriority();
         priority += adjustForDetector(bugInstance);
-        DetectorFactory detectorFactory = bugInstance.getDetectorFactory();
-        if (detectorFactory != null) {
-            String detectorFactoryName = detectorFactory.getClass().getName();
-            PriorityAdjustment factoryAdjustment = adjustments.get(detectorFactoryName);
-            if (factoryAdjustment != null) {
-                priority = factoryAdjustment.adjust(priority);
+
+        if (!adjustments.isEmpty()) {
+            DetectorFactory detectorFactory = bugInstance.getDetectorFactory();
+            if (detectorFactory != null) {
+                String detectorFactoryName = detectorFactory.getFullName();
+                PriorityAdjustment factoryAdjustment = adjustments.get(detectorFactoryName);
+                if (factoryAdjustment != null) {
+                    priority = factoryAdjustment.adjust(priority);
+                }
             }
-        }
-        String bugPattern = bugInstance.getBugPattern().getType();
-        PriorityAdjustment patternAdjustment = adjustments.get(bugPattern);
-        if (patternAdjustment != null) {
-            priority = patternAdjustment.adjust(priority);
+            String bugPattern = bugInstance.getBugPattern().getType();
+            PriorityAdjustment patternAdjustment = adjustments.get(bugPattern);
+            if (patternAdjustment != null) {
+                priority = patternAdjustment.adjust(priority);
+            }
         }
         priority = BugInstance.boundedPriority(priority);
         if (priority == bugInstance.getPriority()) {
@@ -103,7 +102,7 @@ public class PriorityAdjuster {
      */
     public int adjustForDetector(BugInstance bugInstance) {
         DetectorFactory factory = bugInstance.getDetectorFactory();
-        if (factory != null && factoryChooser != null && !factoryChooser.wasFactoryEnabled(factory)) {
+        if (factory != null && factoryChooser != null && factoryChooser.wasForciblyEnabled(factory)) {
             BugPattern bugPattern = bugInstance.getBugPattern();
             if (SystemProperties.ASSERTIONS_ENABLED && !"EXPERIMENTAL".equals(bugPattern.getCategory())
                     && !factory.getReportedBugPatterns().contains(bugPattern)) {
