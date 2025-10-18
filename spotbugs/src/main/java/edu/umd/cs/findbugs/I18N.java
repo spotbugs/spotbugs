@@ -60,22 +60,6 @@ public class I18N {
     }
 
     /**
-     * Get a message string. This is a format pattern for describing an entire
-     * bug instance in a single line.
-     *
-     * @param key
-     *            which message to retrieve
-     */
-    @Deprecated
-    public @Nonnull String getMessage(String key) {
-        BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(key);
-        if (bugPattern == null) {
-            return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
-        }
-        return bugPattern.getAbbrev() + ": " + bugPattern.getLongDescription();
-    }
-
-    /**
      * Get a short message string. This is a concrete string (not a format
      * pattern) which briefly describes the type of bug, without mentioning
      * particular a particular class/method/field.

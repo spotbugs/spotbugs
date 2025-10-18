@@ -117,16 +117,6 @@ public class UnreadFields extends OpcodeStackDetector {
             DescriptorFactory.createClassDescriptor("jakarta/xml/bind/annotation/XmlValue"),
             DescriptorFactory.createClassDescriptor("org/junit/jupiter/api/extension/RegisterExtension"));
 
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isContainerField(XField)} instead
-     */
-    @Deprecated
-    public boolean isContainerField(XField f) {
-        return data.isContainerField(f);
-    }
-
-
-
     boolean hasNativeMethods;
 
     boolean isSerializable;
@@ -142,46 +132,6 @@ public class UnreadFields extends OpcodeStackDetector {
     private final Map<String, List<BugAnnotation>> anonymousClassAnnotation = new HashMap<>();
 
     private final ClassDescriptor junitNestedAnnotation = DescriptorFactory.createClassDescriptor("org/junit/jupiter/api/Nested");
-
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#getReadFields()} instead
-     */
-    @Deprecated
-    public Set<? extends XField> getReadFields() {
-        return data.getReadFields();
-    }
-
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#getWrittenFields()} instead
-     */
-    @Deprecated
-    public Set<? extends XField> getWrittenFields() {
-        return data.getWrittenFields();
-    }
-
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isWrittenOutsideOfInitialization(XField)} instead
-     */
-    @Deprecated
-    public boolean isWrittenOutsideOfInitialization(XField f) {
-        return data.isWrittenOutsideOfInitialization(f);
-    }
-
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isWrittenDuringInitialization(XField)} instead
-     */
-    @Deprecated
-    public boolean isWrittenDuringInitialization(XField f) {
-        return data.isWrittenDuringInitialization(f);
-    }
-
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isWrittenInConstructor(XField)} instead
-     */
-    @Deprecated
-    public boolean isWrittenInConstructor(XField f) {
-        return data.isWrittenInConstructor(f);
-    }
 
     static final int DO_NOT_CONSIDER = Const.ACC_PUBLIC | Const.ACC_PROTECTED;
 
@@ -200,22 +150,6 @@ public class UnreadFields extends OpcodeStackDetector {
         data.reflectiveFields.add(XFactory.createXField("java.lang.System", "err", "Ljava/io/PrintStream;", true));
         data = context.getUnreadFieldsData();
         context.setUnreadFields(this);
-    }
-
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#strongEvidenceForIntendedSerialization(ClassDescriptor)} instead
-     */
-    @Deprecated
-    public void strongEvidenceForIntendedSerialization(ClassDescriptor c) {
-        data.strongEvidenceForIntendedSerialization(c);
-    }
-
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#existsStrongEvidenceForIntendedSerialization(ClassDescriptor)} instead
-     */
-    @Deprecated
-    public boolean existsStrongEvidenceForIntendedSerialization(ClassDescriptor c) {
-        return data.existsStrongEvidenceForIntendedSerialization(c);
     }
 
     @Override
@@ -871,14 +805,6 @@ public class UnreadFields extends OpcodeStackDetector {
         }
 
         return false;
-    }
-
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isReflexive(XField)} instead
-     */
-    @Deprecated
-    public boolean isReflexive(XField f) {
-        return data.isReflexive(f);
     }
 
     static Pattern dontComplainAbout = Pattern.compile("class[$]");
