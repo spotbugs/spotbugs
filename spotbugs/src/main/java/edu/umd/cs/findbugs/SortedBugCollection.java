@@ -23,8 +23,6 @@ import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,6 +31,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -402,7 +402,7 @@ public class SortedBugCollection implements BugCollection {
      */
     @Override
     public void writeXML(String fileName) throws IOException {
-        OutputStream out = new FileOutputStream(fileName);
+        OutputStream out = Files.newOutputStream(Path.of(fileName));
         if (fileName.endsWith(".gz")) {
             out = new GZIPOutputStream(out);
         }
@@ -416,7 +416,7 @@ public class SortedBugCollection implements BugCollection {
      *            the file to write to
      */
     public void writeXML(File file) throws IOException {
-        OutputStream out = new FileOutputStream(file);
+        OutputStream out = Files.newOutputStream(file.toPath());
         if (file.getName().endsWith(".gz")) {
             out = new GZIPOutputStream(out);
         }
@@ -1254,7 +1254,7 @@ public class SortedBugCollection implements BugCollection {
         if (length > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("File " + f + " is too big at " + length + " bytes");
         }
-        InputStream in = new FileInputStream(f);
+        InputStream in = Files.newInputStream(f.toPath());
         return wrapGzip(progressMonitoredInputStream(in, (int) length, msg), f);
     }
 

@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -80,12 +79,12 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.Bag;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -96,7 +95,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class UnreadFields extends OpcodeStackDetector {
     private static final boolean DEBUG = SystemProperties.getBoolean("unreadfields.debug");
 
-    private static final List<String> INITIALIZER_ANNOTATIONS = Arrays.asList(
+    private static final List<String> INITIALIZER_ANNOTATIONS = List.of(
             "Ljakarta/annotation/PostConstruct;",
             "Ljavax/annotation/PostConstruct;",
             "Lorg/testng/annotations/BeforeClass;",
@@ -108,7 +107,7 @@ public class UnreadFields extends OpcodeStackDetector {
     /**
      * A list of annotations for fields that might be read by frameworks, even though they are private
      */
-    private static final List<ClassDescriptor> READ_BY_FRAMEWORK_ANNOTATIONS = Arrays.asList(
+    private static final List<ClassDescriptor> READ_BY_FRAMEWORK_ANNOTATIONS = List.of(
             DescriptorFactory.createClassDescriptor("com/google/gson/annotations/SerializedName"),
             DescriptorFactory.createClassDescriptor("javax/xml/bind/annotation/XmlElement"),
             DescriptorFactory.createClassDescriptor("javax/xml/bind/annotation/XmlAttribute"),
@@ -336,7 +335,9 @@ public class UnreadFields extends OpcodeStackDetector {
         if (isInjectionAttribute(annotationClass)) {
             data.containerFields.add(XFactory.createXField(this));
         }
-        if (!annotationClass.startsWith("edu.umd.cs.findbugs") && !annotationClass.startsWith("javax.lang")) {
+        if (!annotationClass.startsWith("edu.umd.cs.findbugs")
+                && !annotationClass.startsWith("javax.lang")
+                && !NoteSuppressedWarnings.isSuppressWarnings(annotationClass)) {
             data.unknownAnnotation.add(XFactory.createXField(this), annotationClass);
         }
 
@@ -857,6 +858,16 @@ public class UnreadFields extends OpcodeStackDetector {
             if (INITIALIZER_ANNOTATIONS.contains(typeName)) {
                 return true;
             }
+        }
+
+        try {
+            if ("setUp".equals(getMethodName()) && InvalidJUnitTest.isJunit3TestCase(getXClass())) {
+                return true;
+            }
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
+        } catch (CheckedAnalysisException e) {
+            bugReporter.reportMissingClass(getXClass().getSuperclassDescriptor(), e);
         }
 
         return false;

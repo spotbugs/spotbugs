@@ -31,8 +31,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -40,6 +38,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -691,7 +690,7 @@ public class Project implements XMLWriteable, AutoCloseable {
         @SuppressWarnings("resource") // will be closed by caller
         Project project = new Project();
 
-        try (InputStream in = new BufferedInputStream(new FileInputStream(f))) {
+        try (InputStream in = new BufferedInputStream(Files.newInputStream(f.toPath()))) {
             String tag = Util.getXMLType(in);
             SAXBugCollectionHandler handler;
             if ("Project".equals(tag)) {
@@ -730,7 +729,7 @@ public class Project implements XMLWriteable, AutoCloseable {
     }
 
     public void writeXML(File f, @CheckForNull BugCollection bugCollection) throws IOException {
-        OutputStream out = new FileOutputStream(f);
+        OutputStream out = Files.newOutputStream(f.toPath());
         XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
         try {
             writeXML(xmlOutput, f, bugCollection);

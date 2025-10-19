@@ -97,17 +97,13 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
         }
     }
 
-    private static final Map<String, TypeLongRange> typeRanges;
-
-    static {
-        typeRanges = new HashMap<>();
-        typeRanges.put("Z", new TypeLongRange(0, 1, "Z"));
-        typeRanges.put("B", new TypeLongRange(Byte.MIN_VALUE, Byte.MAX_VALUE, "B"));
-        typeRanges.put("S", new TypeLongRange(Short.MIN_VALUE, Short.MAX_VALUE, "S"));
-        typeRanges.put("I", new TypeLongRange(Integer.MIN_VALUE, Integer.MAX_VALUE, "I"));
-        typeRanges.put("J", new TypeLongRange(Long.MIN_VALUE, Long.MAX_VALUE, "J"));
-        typeRanges.put("C", new TypeLongRange(Character.MIN_VALUE, Character.MAX_VALUE, "C"));
-    }
+    private static final Map<String, TypeLongRange> typeRanges = Map.of(
+            "Z", new TypeLongRange(0, 1, "Z"),
+            "B", new TypeLongRange(Byte.MIN_VALUE, Byte.MAX_VALUE, "B"),
+            "S", new TypeLongRange(Short.MIN_VALUE, Short.MAX_VALUE, "S"),
+            "I", new TypeLongRange(Integer.MIN_VALUE, Integer.MAX_VALUE, "I"),
+            "J", new TypeLongRange(Long.MIN_VALUE, Long.MAX_VALUE, "J"),
+            "C", new TypeLongRange(Character.MIN_VALUE, Character.MAX_VALUE, "C"));
 
     public static class LongRangeSet implements Iterable<LongRangeSet> {
         private final SortedMap<Long, Long> map = new TreeMap<>();
@@ -672,6 +668,9 @@ public class ValueRangeAnalysisFactory implements IMethodAnalysisEngine<ValueRan
                 VariableData data = analyzedArguments.get(valueNumber);
                 if (data == null) {
                     try {
+                        if (condition.value.signature.startsWith("L")) {
+                            continue;
+                        }
                         data = new VariableData(condition.value.signature);
                     } catch (IllegalArgumentException e) {
                         continue;

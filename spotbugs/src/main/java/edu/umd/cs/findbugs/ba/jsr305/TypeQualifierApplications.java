@@ -558,7 +558,7 @@ public class TypeQualifierApplications {
             TypeQualifierValue<?> typeQualifierValue) {
         if (o instanceof XMethod) {
             XMethod m = (XMethod) o;
-            if (m.getName().startsWith("access$")) {
+            if (m.isAccessMethod()) {
                 InnerClassAccessMap icam = AnalysisContext.currentAnalysisContext().getInnerClassAccessMap();
                 try {
                     InnerClassAccess ica = icam.getInnerClassAccess(m.getClassName(), m.getName());

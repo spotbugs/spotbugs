@@ -39,7 +39,6 @@ import java.lang.annotation.Target;
  *
  * @author William Pugh
  */
-
 @Documented
 @Target({ ElementType.TYPE, ElementType.PACKAGE })
 @Retention(RetentionPolicy.CLASS)

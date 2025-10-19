@@ -191,7 +191,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter implements C
      *            one line of the error report
      */
     protected void emitLine(String line) {
-        line = line.replaceAll("\t", "  ");
+        line = line.replace("\t", "  ");
         System.err.println(line);
     }
 

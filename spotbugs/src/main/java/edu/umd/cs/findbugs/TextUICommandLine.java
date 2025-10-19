@@ -22,8 +22,6 @@ package edu.umd.cs.findbugs;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -45,16 +43,16 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.WillCloseWhenClosed;
 
-import edu.umd.cs.findbugs.sarif.SarifBugReporter;
 import org.dom4j.DocumentException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
+import edu.umd.cs.findbugs.sarif.SarifBugReporter;
 import edu.umd.cs.findbugs.util.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Helper class to parse the command line and configure the IFindBugsEngine
@@ -62,6 +60,9 @@ import org.slf4j.LoggerFactory;
  * enable and disable detectors as requested).
  */
 public class TextUICommandLine extends FindBugsCommandLine {
+
+    private static final String USER_PREFS = "-userPrefs";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
@@ -156,7 +157,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
     public TextUICommandLine() {
         addSwitch("-showPlugins", "show list of available detector plugins");
 
-        addOption("-userPrefs", "filename",
+        addOption(USER_PREFS, "filename",
                 "user preferences file, e.g /path/to/project/.settings/edu.umd.cs.findbugs.core.prefs for Eclipse projects");
 
         startOptionGroup("Output options:");
@@ -210,7 +211,10 @@ public class TextUICommandLine extends FindBugsCommandLine {
         addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
         addOption("-chooseVisitors", "+v1,-v2,...", "selectively enable/disable detectors");
         addOption("-choosePlugins", "+p1,-p2,...", "selectively enable/disable plugins");
-        addOption("-adjustPriority", "v1=(raise|lower)[,...]", "raise/lower priority of warnings for given visitor(s)");
+        addOption("-adjustPriority", "v1=(+[int]|-[int]|[int]|raise|lower|suppress)[,...]",
+                "adjust the priority of warnings for given detectors (simple or fully qualified class names) or bug patterns, or suppress them completely. "
+                        +
+                        "[int] sets it to an absolute value. Note that -1 is equivalent to raise, and semantically increases the priority.");
 
         startOptionGroup("Project configuration options:");
         addOption("-auxclasspath", "classpath", "set aux classpath for analysis");
@@ -262,7 +266,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     Map<String, String> parsedOptions = new LinkedHashMap<>();
 
-    private List<TextUIBugReporter> reporters = new ArrayList<>();
+    private final List<TextUIBugReporter> reporters = new ArrayList<>();
+
+    private PriorityAdjuster priorityAdjuster;
 
     /**
      * Parse {@code optionExtraPart} and configure {@Link TextUIBugReporter} if it contains the
@@ -460,7 +466,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
             try {
                 @WillCloseWhenClosed
-                OutputStream oStream = new BufferedOutputStream(new FileOutputStream(outputFile));
+                OutputStream oStream = new BufferedOutputStream(Files.newOutputStream(outputFile.toPath()));
                 if (fileName.endsWith(".gz")) {
                     oStream = new GZIPOutputStream(oStream);
                 }
@@ -536,45 +542,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 plugin.setGloballyEnabled(enabled);
             });
         } else if ("-adjustPriority".equals(option)) {
-            // Selectively raise or lower the priority of warnings
-            // produced by specified detectors.
-
-            StringTokenizer tok = new StringTokenizer(argument, ",");
-            while (tok.hasMoreTokens()) {
-                String token = tok.nextToken();
-                int eq = token.indexOf('=');
-                if (eq < 0) {
-                    throw new IllegalArgumentException("Illegal priority adjustment: " + token);
-                }
-
-                String adjustmentTarget = token.substring(0, eq);
-                String adjustment = token.substring(eq + 1);
-
-                int adjustmentAmount;
-                if ("raise".equals(adjustment)) {
-                    adjustmentAmount = -1;
-                } else if ("lower".equals(adjustment)) {
-                    adjustmentAmount = +1;
-                } else if ("suppress".equals(adjustment)) {
-                    adjustmentAmount = +100;
-                } else {
-                    throw new IllegalArgumentException("Illegal priority adjustment value: " + adjustment);
-                }
-
-                DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(adjustmentTarget);
-                if (factory != null) {
-                    factory.setPriorityAdjustment(adjustmentAmount);
-                } else {
-                    //
-                    DetectorFactoryCollection i18n = DetectorFactoryCollection.instance();
-                    BugPattern pattern = i18n.lookupBugPattern(adjustmentTarget);
-                    if (pattern == null) {
-                        throw new IllegalArgumentException("Unknown detector: " + adjustmentTarget);
-                    }
-                    pattern.adjustPriority(adjustmentAmount);
-                }
-
-            }
+            // Selectively raise, lower, suppress or set the priority of warnings
+            priorityAdjuster = new PriorityAdjuster(UserPreferences.parseAdjustPriorities(argument));
         } else if ("-bugCategories".equals(option)) {
             this.bugCategorySet = FindBugs.handleBugCategories(argument);
         } else if ("-onlyAnalyze".equals(option)) {
@@ -611,9 +580,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
                 sourceDirs.add(new File(tok.nextToken()).getAbsolutePath());
             }
             project.addSourceDirs(sourceDirs);
-        } else if ("-userPrefs".equals(option)) {
+        } else if (USER_PREFS.equals(option)) {
             UserPreferences prefs = UserPreferences.createDefaultUserPreferences();
-            prefs.read(new FileInputStream(argument));
+            prefs.read(Files.newInputStream(Path.of(argument)));
             project.setConfiguration(prefs);
         } else {
             super.handleOptionWithArgument(option, argument);
@@ -692,6 +661,13 @@ public class TextUICommandLine extends FindBugsCommandLine {
         if (reporters.isEmpty()) {
             throw new IllegalStateException("No bug reporter configured");
         }
+
+        if (priorityAdjuster != null) {
+            for (TextUIBugReporter reporter : reporters) {
+                reporter.setPriorityAdjuster(priorityAdjuster);
+            }
+        }
+
         ConfigurableBugReporter textuiBugReporter = reporters.size() == 1 ? reporters.get(0) : new BugReportDispatcher(reporters);
         if (quiet) {
             textuiBugReporter.setErrorVerbosity(BugReporter.SILENT);
@@ -720,7 +696,6 @@ public class TextUICommandLine extends FindBugsCommandLine {
             findBugs.setProgressCallback(new TextUIProgressCallback(System.out));
         }
 
-        findBugs.setUserPreferences(getUserPreferences());
         findBugs.setClassScreener(classScreener);
 
         findBugs.setRelaxedReportingMode(relaxedReportingMode);
@@ -750,6 +725,29 @@ public class TextUICommandLine extends FindBugsCommandLine {
         if (applySuppression) {
             findBugs.setApplySuppression(true);
         }
+
+        UserPreferences userPreferences = getUserPreferences();
+        // Ideally applied last, to make sure if the user preferences file is
+        // given, it overrides the values set by the command line options.
+        if (parsedOptions.containsKey(USER_PREFS)) {
+            // only override values if the user preferences file was given, to avoid re-setting to defaults
+            textuiBugReporter.setPriorityThreshold(userPreferences.getUserDetectorThreshold());
+            textuiBugReporter.setRankThreshold(userPreferences.getFilterSettings().getMinRank());
+            findBugs.setAnalysisFeatureSettings(userPreferences.getAnalysisFeatureSettings());
+            findBugs.setMergeSimilarWarnings(userPreferences.getMergeSimilarWarnings());
+
+            // Paths in user preferences file are relative to the project root, so resolve them
+            userPreferences.resolveRelativePaths(parsedOptions.get(USER_PREFS));
+
+            List<String> overriddenOptions = List.of("-maxRank", "-low", "-medium", "-high", "-dontCombineWarnings");
+            if (parsedOptions.keySet().stream().anyMatch(option -> overriddenOptions.contains(option))) {
+                FindBugs.LOG
+                        .warning("Following given command line options are overridden by the user preferences file: '"
+                                + overriddenOptions + "'. Options from file " + parsedOptions.get(USER_PREFS)
+                                + " will be used.");
+            }
+        }
+        findBugs.setUserPreferences(userPreferences);
 
         findBugs.finishSettings();
     }

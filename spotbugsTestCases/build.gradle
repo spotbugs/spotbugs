@@ -1,3 +1,6 @@
+import org.gradle.api.artifacts.ConfigurationContainer
+import org.gradle.api.artifacts.ResolvedArtifact
+
 plugins {
   id 'groovy'
 }
@@ -14,105 +17,126 @@ sourceSets {
 }
 
 dependencies {
-  implementation 'jakarta.servlet:jakarta.servlet-api:4.0.4'
-  implementation 'jakarta.ejb:jakarta.ejb-api:3.2.6'
-  implementation 'com.google.code.gson:gson:2.12.1'
-  implementation 'com.google.guava:guava:33.4.0-jre'
+  implementation 'jakarta.servlet:jakarta.servlet-api:6.1.0'
+  implementation 'jakarta.ejb:jakarta.ejb-api:4.0.1'
+  implementation 'com.google.code.gson:gson:2.13.2'
+  implementation 'com.google.guava:guava:33.5.0-jre'
   implementation libs.guice
   implementation libs.guice.assistedinject
   implementation libs.guice.servlet
-  implementation 'com.google.truth:truth:1.4.4'
-  implementation 'joda-time:joda-time:2.13.1'
+  implementation 'com.google.truth:truth:1.4.5'
+  implementation 'joda-time:joda-time:2.14.0'
   api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
-  implementation 'org.springframework:spring-core:5.3.39'
-  compileOnly 'jakarta.annotation:jakarta.annotation-api:1.3.5'
-  implementation 'org.checkerframework:checker-qual:3.49.0'
-  implementation 'com.sun.xml.bind:jaxb-impl:4.0.5'
+  implementation 'org.springframework:spring-core:6.2.12'
+  compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+  implementation 'org.checkerframework:checker-qual:3.51.1'
+  implementation 'com.sun.xml.bind:jaxb-impl:4.0.6'
 
-  implementation 'org.junit.jupiter:junit-jupiter-engine:5.12.0'
-  implementation 'org.junit.jupiter:junit-jupiter-params:5.12.0'
+  implementation 'org.junit.jupiter:junit-jupiter-engine:5.14.0'
+  implementation 'org.junit.jupiter:junit-jupiter-params:5.14.0'
   implementation 'org.testng:testng:7.11.0'
 
   implementation project(':spotbugs')
   api project(':spotbugs-annotations')
-  implementation 'org.apache.groovy:groovy-all:4.0.25'
-  implementation 'org.apache.commons:commons-lang3:3.17.0'
-  implementation 'org.mockito:mockito-core:5.15.2'
+  implementation 'org.apache.groovy:groovy-all:5.0.2'
+  implementation 'org.apache.commons:commons-lang3:3.19.0'
+  implementation 'org.mockito:mockito-core:5.20.0'
 }
 
-tasks.withType(JavaCompile).configureEach {
+// spotbugs takes a long time to analyse the module but we don't need that
+project.tasks.getByName('spotbugsMain').enabled = false
+
+// generate a file with the list of runtime dependencies
+tasks.register('exportClasspath') {
+  File dependenciesFile = new File('spotbugsTestCases/build/runtime-classpath.txt')
+
+  ConfigurationContainer configurations = project.configurations
+  doLast {
+    dependenciesFile.delete()
+    dependenciesFile.getParentFile().mkdirs();
+
+    configurations.getByName('runtimeClasspath').resolvedConfiguration.resolvedArtifacts.each { ResolvedArtifact artifact ->
+      dependenciesFile << artifact.file
+      dependenciesFile << '\n'
+    }
+  }
+  doLast {
+      logger.lifecycle("Exported classpath to: ${dependenciesFile}")
+  }
+}
+
+tasks.withType(JavaCompile).configureEach { JavaCompile compileTask ->
   options.compilerArgs << '-Xlint:none'
   options.encoding = 'UTF-8'
-  if (it.name == 'classesJava21') {
+  if (compileTask.name == 'classesJava21') {
     options.release = 21
-  } else if (it.name == 'classesJava17') {
+  } else if (compileTask.name == 'classesJava17') {
     options.release = 17
-  } else if (it.name == 'classesJava11') {
+  } else if (compileTask.name == 'classesJava11') {
     options.release = 11
-  } else if (it.name != 'compileJava') {
+  } else if (compileTask.name != 'compileJava') {
     options.release = 8
   }
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340
-tasks.named('javadoc', Javadoc).configure {
-  // This is supposed to enable everything except "missing" but doesn't work with gradle
-  // See https://docs.oracle.com/en/java/javase/11/tools/javadoc.html
-  options.addBooleanOption('Xdoclint:all,-missing', true)
+tasks.named('javadoc', Javadoc).configure { Javadoc javadocTask ->
+  options.with {
+    // This is supposed to enable everything except "missing" but doesn't work with gradle
+    // See https://docs.oracle.com/en/java/javase/11/tools/javadoc.html
+    addBooleanOption('Xdoclint:all,-missing', true)
 
-  // TODO remove command and warning below if the doclint can be properly configured
-  options.addStringOption('Xmaxwarns', '3')
+    // TODO remove command and warning below if the doclint can be properly configured
+    addStringOption('Xmaxwarns', '3')
+  }
   doLast {
     logger.warn('Javadoc: too many warnings, only first 3 are shown, see #340!')
   }
 }
 
-def classesJava8 = tasks.register('classesJava8', JavaCompile) {
-  destinationDirectory.set(layout.buildDirectory.dir("classes/java/java8"))
+TaskProvider<JavaCompile> classesJava8 = tasks.register('classesJava8', JavaCompile) {
+  destinationDirectory.set(layout.buildDirectory.dir('classes/java/java8'))
   classpath = sourceSets.main.compileClasspath
   source = file('src/java8')
 }
 
-def classesJava11 = tasks.register('classesJava11', JavaCompile) {
-  destinationDirectory.set(layout.buildDirectory.dir("classes/java/java11"))
+TaskProvider<JavaCompile> classesJava11 = tasks.register('classesJava11', JavaCompile) {
+  destinationDirectory.set(layout.buildDirectory.dir('classes/java/java11'))
   classpath = sourceSets.main.compileClasspath
   source = file('src/java11')
 }
 
-def classesJava17 = tasks.register('classesJava17', JavaCompile) {
-  destinationDirectory.set(layout.buildDirectory.dir("classes/java/java17"))
+TaskProvider<JavaCompile> classesJava17 = tasks.register('classesJava17', JavaCompile) {
+  destinationDirectory.set(layout.buildDirectory.dir('classes/java/java17'))
   classpath = sourceSets.main.compileClasspath
   source = file('src/java17')
 }
 
-def classesJava21 = tasks.register('classesJava21', JavaCompile) {
-  destinationDirectory.set(layout.buildDirectory.dir("classes/java/java21"))
+TaskProvider<JavaCompile> classesJava21 = tasks.register('classesJava21', JavaCompile) {
+  destinationDirectory.set(layout.buildDirectory.dir('classes/java/java21'))
   classpath = sourceSets.main.compileClasspath
   source = file('src/java21')
 }
 
-def jvmVersion = JavaVersion.current()
-tasks.named('classes').configure {
+JavaVersion jvmVersion = JavaVersion.current()
+tasks.named('classes').configure { Task classesTask ->
   dependsOn classesJava8
   dependsOn classesJava11
   if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_17)) {
     dependsOn classesJava17
   } else {
-    println "skip tests for Java 17 features"
+    logger.lifecycle('skip tests for Java 17 features')
   }
   if (jvmVersion.isCompatibleWith(JavaVersion.VERSION_21)) {
     dependsOn classesJava21
   } else {
-    println "skip tests for Java 21 features"
+    logger.lifecycle('skip tests for Java 21 features')
   }
+  dependsOn exportClasspath
 }
 
 sonar {
   // this project should not be analyzed with sonarqube
   // as it is test data, not real code
-  skipProject true
-}
-
-spotbugs {
-  ignoreFailures = true
+  skipProject = true
 }

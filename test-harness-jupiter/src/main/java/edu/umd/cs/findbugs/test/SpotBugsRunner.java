@@ -3,7 +3,7 @@ package edu.umd.cs.findbugs.test;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.IFindBugsEngine;
 
@@ -58,7 +58,7 @@ public class SpotBugsRunner {
         if (runner == null) {
             throw new IllegalStateException("Please call this performAnalysis() method in test method");
         }
-        return runner.run(engineCustomization, paths).getBugCollection();
+        return runner.run(engineCustomization, null, paths).getBugCollection();
     }
 
     /**

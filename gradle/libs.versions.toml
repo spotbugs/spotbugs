@@ -1,7 +1,7 @@
 [versions]
-asm = "9.7.1"
-guice = "5.1.0"
-log4j = "2.24.3"
+asm = "9.9"
+guice = "7.0.0"
+log4j = "2.25.2"
 
 [libraries]
 asm = { module = "org.ow2.asm:asm", version.ref = "asm" }

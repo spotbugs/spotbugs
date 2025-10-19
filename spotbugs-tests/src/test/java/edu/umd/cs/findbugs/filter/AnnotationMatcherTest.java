@@ -18,6 +18,14 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
+import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
+import java.util.List;
+import java.util.stream.Collectors;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 import org.apache.tools.ant.filters.StringInputStream;
@@ -130,14 +138,14 @@ class AnnotationMatcherTest {
     @Test
     void testPerformAnalysis(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
-                Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Generated.class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value.class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value$Immutable.class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/FoobarValue.class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue.class"),
-                Paths.get(
+                Path.of("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Generated.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value$Immutable.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/FoobarValue.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue.class"),
+                Path.of(
                         "../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$1.class"),
-                Paths.get(
+                Path.of(
                         "../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$Builder.class"));
 
         AnnotationMatcher bugInstanceMatcher = new AnnotationMatcher(annotationName);
@@ -146,6 +154,46 @@ class AnnotationMatcherTest {
                 .count();
 
         assertEquals(4, numberOfMatchedBugs);
+    }
+
+    @Test
+    void testFilteringWithAnnotationOnClassMembers(SpotBugsRunner spotbugs) {
+        BugCollection bugCollection = spotbugs.performAnalysis(
+                Path.of("../spotbugsTestCases/build/classes/java/main/org/example/GeneratedCode.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/GeneratedOnClassMembers.class"));
+
+        BugInstanceMatcher[] bugsWithGeneratedAnnotation = {
+            new BugInstanceMatcherBuilder()
+                    .bugType("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
+                    .atField("a")
+                    .atLine(9)
+                    .build(),
+            new BugInstanceMatcherBuilder()
+                    .bugType("NP_TOSTRING_COULD_RETURN_NULL")
+                    .inMethod("toString")
+                    .atLine(15)
+                    .build(),
+            new BugInstanceMatcherBuilder()
+                    .bugType("ES_COMPARING_PARAMETER_STRING_WITH_EQ")
+                    .inMethod("test")
+                    .atLine(27)
+                    .build(),
+        };
+        BugInstanceMatcher bugWithoutGeneratedAnnotation = new BugInstanceMatcherBuilder()
+                .bugType("DMI_HARDCODED_ABSOLUTE_FILENAME")
+                .inMethod("test")
+                .atLine(20)
+                .build();
+
+        assertThat(bugCollection, hasItem(bugWithoutGeneratedAnnotation));
+        assertThat(bugCollection, hasItems(bugsWithGeneratedAnnotation));
+        AnnotationMatcher bugInstanceMatcher = new AnnotationMatcher("org.example.GeneratedCode");
+        List<BugInstance> unmatchedBugs = bugCollection.getCollection().stream()
+                .filter(b -> !bugInstanceMatcher.match(b))
+                .collect(Collectors.toUnmodifiableList());
+
+        assertThat(unmatchedBugs, hasItem(bugWithoutGeneratedAnnotation));
+        assertThat(unmatchedBugs, not(hasItems(bugsWithGeneratedAnnotation)));
     }
 
     private String writeXMLAndGetStringOutput(AnnotationMatcher matcher, boolean disabled) throws IOException {

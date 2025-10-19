@@ -1086,13 +1086,14 @@ Returning a zero length array is generally preferred in this context to returnin
   </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock">
     <Details>
-<![CDATA[
-<p> This detector looks for JSR-166 (<code>java.util.concurrent</code>)
-locks which are acquired, but not released on all paths out of the method.&nbsp;
-It is a moderately fast detector.&nbsp; Note that in order to use this
-detector, you need to have the <code>java.util.concurrent</code> package
-in the auxiliary classpath (or be analyzing the package itself).</p>
-]]>
+      <![CDATA[
+        <p> This detector looks for JSR-166 (<code>java.util.concurrent</code>)
+        locks which are acquired, but not released on all paths out of the method.&nbsp;
+        The detector also detects if a lock is released without even being opened in the first place.
+        It is a moderately fast detector.&nbsp; Note that in order to use this
+        detector, you need to have the <code>java.util.concurrent</code> package
+        in the auxiliary classpath (or be analyzing the package itself).</p>
+      ]]>
     </Details>
   </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison">
@@ -1875,6 +1876,20 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.UselessSuppressionDetector">
+    <Details>
+      <![CDATA[
+            <p> Looks for unnecessary uses of the edu.umd.cs.findbugs.annotations.NoteSuppressWarnings annotation.</p>
+      ]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.BuildAccessMethodsDatabase">
+    <Details>
+      <![CDATA[
+            <p>Builds a database with the location of the caller of inner classes access methods.</p>
+      ]]>
+    </Details>
+  </Detector>
 
   <!--
   **********************************************************************
@@ -1930,6 +1945,7 @@ factory pattern to create these objects.</p>
     <Details>
       <![CDATA[
     <p>It's recommended to use the predefined library constant for code clarity and better precision.</p>
+    <p>See <a href="https://cwe.mitre.org/data/definitions/1106.html">CWE-1106: Insufficient Use of Symbolic Constants</a>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1992,7 +2008,8 @@ For example, one might assume that writing new BigDecimal(0.1) in Java creates a
 You probably want to use the BigDecimal.valueOf(double d) method, which uses the String representation
 of the double to create the BigDecimal (e.g., BigDecimal.valueOf(0.1) gives 0.1).
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/1339.html">CWE-1339: Insufficient Precision or Accuracy of a Real Number</a>.
+</p>
 ]]>
     </Details>
     </BugPattern>
@@ -2063,7 +2080,8 @@ While ScheduledThreadPoolExecutor inherits from ThreadPoolExecutor, a few of the
       <![CDATA[
     <p>This code creates a database connect using a blank or empty password. This indicates that the database is not protected by a password.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/259.html">CWE-259: Use of Hard-coded Password</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2075,7 +2093,8 @@ While ScheduledThreadPoolExecutor inherits from ThreadPoolExecutor, a few of the
     <p>This code creates a database connect using a hardcoded, constant password. Anyone with access to either the source code or the compiled code can
     easily learn the password.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/259.html">CWE-259: Use of Hard-coded Password</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2092,7 +2111,8 @@ If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more
 vulnerabilities that SpotBugs doesn't report. If you are concerned about HTTP response splitting, you should seriously
 consider using a commercial static analysis or pen-testing tool.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/113.html">CWE-113: Improper Neutralization of CRLF Sequences in HTTP Headers ('HTTP Request/Response Splitting')</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2109,7 +2129,8 @@ If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more
 vulnerabilities that SpotBugs doesn't report. If you are concerned about HTTP response splitting, you should seriously
 consider using a commercial static analysis or pen-testing tool.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/113.html">CWE-113: Improper Neutralization of CRLF Sequences in HTTP Headers ('HTTP Request/Response Splitting')</a>.
+</p>
 ]]>
         </Details>
   </BugPattern>
@@ -2130,7 +2151,8 @@ If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more
 vulnerabilities that SpotBugs doesn't report. If you are concerned about relative path traversal, you should seriously
 consider using a commercial static analysis or pen-testing tool.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/23.html">CWE-23: Relative Path Traversal</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2149,7 +2171,8 @@ If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more
 vulnerabilities that SpotBugs doesn't report. If you are concerned about absolute path traversal, you should seriously
 consider using a commercial static analysis or pen-testing tool.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/36.html">CWE-36: Absolute Path Traversal</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2167,7 +2190,8 @@ If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more cross si
 vulnerabilities that SpotBugs doesn't report. If you are concerned about cross site scripting, you should seriously
 consider using a commercial static analysis or pen-testing tool.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/79.html">CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2187,7 +2211,9 @@ If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more cross si
 vulnerabilities that SpotBugs doesn't report. If you are concerned about cross site scripting, you should seriously
 consider using a commercial static analysis or pen-testing tool.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/81.html">CWE-81: Improper Neutralization of Script in an Error Message Web Page</a>
+and <a href="https://cwe.mitre.org/data/definitions/79.html">CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2203,6 +2229,8 @@ for more information.</p>
 If SpotBugs found <em>any</em>, you <em>almost certainly</em> have more cross site scripting
 vulnerabilities that SpotBugs doesn't report. If you are concerned about cross site scripting, you should seriously
 consider using a commercial static analysis or pen-testing tool.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/79.html">CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')</a>.
 </p>
 ]]>
     </Details>
@@ -2231,7 +2259,9 @@ visible), they could trigger listener notification on the event dispatch thread.
     <Details>
 <![CDATA[
 <p>This loop doesn't seem to have a way to terminate (other than by perhaps
-throwing an exception).</p>
+throwing an exception). Unconditional loops such as <code>while (true) {...}</code> are assumed to be intentional and are not reported as bugs.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/835.html">CWE-835: Loop with Unreachable Exit Condition ('Infinite Loop')</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2242,6 +2272,9 @@ throwing an exception).</p>
 <![CDATA[
 <p>This method unconditionally invokes itself. This would seem to indicate
 an infinite recursive loop that will result in a stack overflow.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/674.html">CWE-674: Uncontrolled Recursion</a>
+and <a href="https://cwe.mitre.org/data/definitions/835.html">CWE-835: Loop with Unreachable Exit Condition ('Infinite Loop')</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2278,6 +2311,8 @@ in Java 5.0).</p>
 <p>This code increments/decrements a volatile field. Increments/Decrements of volatile fields aren't
 atomic. If more than one thread is incrementing/decrementing the field at the same time,
 increments/decrements could be lost.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/567.html">CWE-567: Unsynchronized Access to Shared Data in a Multithreaded Context</a>.
 </p>
 ]]>
     </Details>
@@ -2341,7 +2376,6 @@ another package.</p>
 If it is null and then synchronized on a NullPointerException will be
 thrown and the check would be pointless. Better to synchronize on
 another field.</p>
-
 ]]>
      </Details>
   </BugPattern>
@@ -2457,6 +2491,8 @@ should be written to the JarFile between the calls to
    The method performs math operations using floating point precision.
    Floating point precision is very imprecise. For example,
    16777216.0f + 1.0f = 16777216.0f. Consider using double math instead.</p>
+   <p>See <a href="https://cwe.mitre.org/data/definitions/1339.html">CWE-1339: Insufficient Precision or Accuracy of a Real Number</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2551,6 +2587,8 @@ which violates the standard contract for clone().</p>
 
 <p> If all clone() methods call super.clone(), then they are guaranteed
 to use Object.clone(), which always returns an object of the correct type.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/580.html">CWE-580: clone() Method Without super.clone()</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2585,6 +2623,8 @@ will need to be changed in order to compile it in later versions of Java.</p>
   <p> This method might drop an exception.&nbsp; In general, exceptions
   should be handled or reported in some way, or they should be thrown
   out of the method.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/754.html">CWE-754: Improper Check for Unusual or Exceptional Conditions</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2596,6 +2636,8 @@ will need to be changed in order to compile it in later versions of Java.</p>
   <p> This method might ignore an exception.&nbsp; In general, exceptions
   should be handled or reported in some way, or they should be thrown
   out of the method.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/754.html">CWE-754: Improper Check for Unusual or Exceptional Conditions</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2610,6 +2652,9 @@ will need to be changed in order to compile it in later versions of Java.</p>
         The <code>java.security.AccessController</code> class, which contains the <code>doPrivileged</code> methods,
         got deprecated in Java 17 (see <a href="https://openjdk.org/jeps/411">JEP 411</a>), and removed in Java 24 (see <a href="https://openjdk.org/jeps/486">JEP 486</a>).
         For this reason, this bug isn't reported in classes targeted Java 17 and above.
+        </p>
+        <p>See <a href="https://cwe.mitre.org/data/definitions/266.html">CWE-266: Incorrect Privilege Assignment</a>.
+        </p>
       ]]>
     </Details>
   </BugPattern>
@@ -2638,6 +2683,9 @@ will need to be changed in order to compile it in later versions of Java.</p>
         The <code>java.security.AccessController</code> class, which contains the <code>doPrivileged</code> methods,
         got deprecated in Java 17 (see <a href="https://openjdk.org/jeps/411">JEP 411</a>), and removed in Java 24 (see <a href="https://openjdk.org/jeps/486">JEP 486</a>).
         For this reason, this bug isn't reported in classes targeted Java 17 and above.
+        </p>
+        <p>See <a href="https://cwe.mitre.org/data/definitions/266.html">CWE-266: Incorrect Privilege Assignment</a>.
+        </p>
       ]]>
     </Details>
   </BugPattern>
@@ -2648,7 +2696,9 @@ will need to be changed in order to compile it in later versions of Java.</p>
 <![CDATA[
   <p> The class is annotated with net.jcip.annotations.Immutable or javax.annotation.concurrent.Immutable,
   and the rules for those annotations require that all fields are final.
-   .</p>
+  </p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/471.html">CWE-471: Modification of Assumed-Immutable Data (MAID)</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2710,6 +2760,8 @@ Consider using <code>java.net.URI</code> instead.
    should only been done when it is appropriate. Such calls make it
    hard or impossible for your code to be invoked by other code.
    Consider throwing a RuntimeException instead.</p>
+   <p>See <a href="https://cwe.mitre.org/data/definitions/382.html">CWE-382: J2EE Bad Practices: Use of System.exit()</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2887,6 +2939,8 @@ to immediately undo the work of the boxing.
 <![CDATA[
   <p>A primitive boxed value constructed and then immediately converted into a different primitive type
 (e.g., <code>new Double(d).intValue()</code>). Just perform direct primitive coercion (e.g., <code>(int) d</code>).</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/192.html">CWE-192: Integer Coercion Error</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3001,6 +3055,8 @@ to be dynamically generated. Consider using
 a prepared statement instead. It is more efficient and less vulnerable to
 SQL injection attacks.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/89.html">CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3012,6 +3068,8 @@ SQL injection attacks.
   <p>The code creates an SQL prepared statement from a nonconstant String.
 If unchecked, tainted data from a user is used in building this String, SQL injection could
 be used to make the prepared statement do something unexpected and undesirable.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/89.html">CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')</a>.
 </p>
 ]]>
     </Details>
@@ -3036,7 +3094,8 @@ be used to make the prepared statement do something unexpected and undesirable.
   This idiom is not correct according to the semantics of the Java memory
   model.&nbsp; For more information, see the web page
   <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html"
-  >http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html</a>.</p>
+  >http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html</a> and
+  <a href="https://cwe.mitre.org/data/definitions/609.html">CWE-609: Double-Checked Locking</a>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3051,6 +3110,8 @@ be used to make the prepared statement do something unexpected and undesirable.
   <p>To fix this problem consider storing the object into the local variable first
   and save it to the volatile field only after it's fully constructed.
   </p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/609.html">CWE-609: Double-Checked Locking</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3082,6 +3143,8 @@ method.</p>
 <![CDATA[
   <p> A class's <code>finalize()</code> method should have protected access,
    not public.</p>
+   <p>See <a href="https://cwe.mitre.org/data/definitions/583.html">CWE-583: finalize() Method Declared Public</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3092,6 +3155,8 @@ method.</p>
 <![CDATA[
   <p> Empty <code>finalize()</code> methods are useless, so they should
   be deleted.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/568.html">CWE-568: finalize() Method Without super.finalize()</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3104,6 +3169,8 @@ method.</p>
   effect of any finalizer defined by its superclass.&nbsp; Any finalizer
   actions defined for the superclass will not be performed.&nbsp;
   Unless this is intended, delete this method.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/568.html">CWE-568: finalize() Method Without super.finalize()</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3127,6 +3194,8 @@ method.</p>
   superclass's <code>finalize()</code> method.&nbsp; So, any finalizer
   actions defined for the superclass will not be performed.&nbsp;
   Add a call to <code>super.finalize()</code>.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/568.html">CWE-568: finalize() Method Without super.finalize()</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3142,6 +3211,8 @@ method.</p>
 finalize method on all the finalizable object, possibly at the same time in different threads.
 Thus, it is a particularly bad idea, in the finalize method for a class X, invoke finalize
 on objects referenced by X, because they may already be getting finalized in a separate thread.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/586.html">CWE-586: Explicit Call to Finalize()</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3278,6 +3349,8 @@ It compares a class literal with the class of the argument (e.g., in class <code
 it might check if <code>Foo.class == o.getClass()</code>).
 It is better to check if <code>this.getClass() == o.getClass()</code>.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/486.html">CWE-486: Comparison of Classes by Name</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3302,6 +3375,8 @@ this code, but it is worth reviewing.
 of their classes are equal. You can have different classes with the same name if they are loaded by
 different class loaders. Just check to see if the class objects are the same.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/486.html">CWE-486: Comparison of Classes by Name</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3312,6 +3387,8 @@ different class loaders. Just check to see if the class objects are the same.
 <![CDATA[
   <p> This class defines an equals method that always returns true. This is imaginative, but not very smart.
 Plus, it means that the equals method is not symmetric.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/571.html">CWE-571: Expression is Always True</a>.
 </p>
 ]]>
     </Details>
@@ -3329,6 +3406,9 @@ superclass, you can use:</p>
     return this == o;
 }
 </code></pre>
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/570.html">CWE-570: Expression is Always False</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3473,6 +3553,8 @@ the recommended <code>hashCode</code> implementation to use is:</p>
     return 42; // any arbitrary constant will do
 }
 </code></pre>
+<p>See <a href="https://cwe.mitre.org/data/definitions/581.html">CWE-581: Object Model Violation: Just One of Equals and Hashcode Defined</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3507,6 +3589,8 @@ is "Note: this class has a natural ordering that is inconsistent with equals."
   <p> This class defines a <code>hashCode()</code> method but not an
   <code>equals()</code> method.&nbsp; Therefore, the class may
   violate the invariant that equal objects must have equal hashcodes.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/581.html">CWE-581: Object Model Violation: Just One of Equals and Hashcode Defined</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3529,6 +3613,8 @@ the recommended <code>hashCode</code> implementation to use is:</p>
     return 42; // any arbitrary constant will do
 }
 </code></pre>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/581.html">CWE-581: Object Model Violation: Just One of Equals and Hashcode Defined</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3548,6 +3634,8 @@ the recommended <code>hashCode</code> implementation to use is:</p>
    believe the object will ever be put into a HashMap/Hashtable,
    define the <code>hashCode()</code> method
    to throw <code>UnsupportedOperationException</code>.</p>
+   <p>See <a href="https://cwe.mitre.org/data/definitions/581.html">CWE-581: Object Model Violation: Just One of Equals and Hashcode Defined</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3559,6 +3647,8 @@ the recommended <code>hashCode</code> implementation to use is:</p>
   <p> This class overrides <code>equals(Object)</code>, but does not
   override <code>hashCode()</code>.&nbsp; Therefore, the class may violate the
   invariant that equal objects must have equal hashcodes.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/581.html">CWE-581: Object Model Violation: Just One of Equals and Hashcode Defined</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3585,6 +3675,8 @@ Unless both strings are either constants in a source file, or have been
 interned using the <code>String.intern()</code> method, the same string
 value may be represented by two different String objects. Consider
 using the <code>equals(Object)</code> method instead.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/595.html">CWE-595: Comparison of Object References Instead of Object Contents</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3598,6 +3690,8 @@ equality using the == or != operators. Requiring callers to
 pass only String constants or interned strings to a method is unnecessarily
 fragile, and rarely leads to measurable performance gains. Consider
 using the <code>equals(Object)</code> method instead.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/595.html">CWE-595: Comparison of Object References Instead of Object Contents</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3620,6 +3714,8 @@ using the <code>equals(Object)</code> method instead.</p>
 <![CDATA[
   <p> This field is annotated with net.jcip.annotations.GuardedBy or javax.annotation.concurrent.GuardedBy,
 but can be accessed in a way that seems to violate those annotations.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/366.html">CWE-366: Race Condition within a Thread</a>.
+</p>
 ]]>
 </Details>
   </BugPattern>
@@ -3666,7 +3762,8 @@ Thus, having a mutable instance field generally creates race conditions.
   a lock is held.&nbsp; Also, even when the detector is accurate in
   distinguishing locked vs. unlocked accesses, the code in question may still
   be correct.</p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/366.html">CWE-366: Race Condition within a Thread</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3713,6 +3810,8 @@ Thus, having a mutable instance field generally creates race conditions.
    the mutable object would compromise security or other
    important properties, you will need to do something different.
   Returning a new copy of the object is better approach in many situations.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/374.html">CWE-374: Passing Mutable Objects to an Untrusted Method</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3728,6 +3827,8 @@ Thus, having a mutable instance field generally creates race conditions.
    the mutable object would compromise security or other
    important properties, you will need to do something different.
   Storing a copy of the object is better approach in many situations.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/374.html">CWE-374: Passing Mutable Objects to an Untrusted Method</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3772,6 +3873,8 @@ Thus, having a mutable instance field generally creates race conditions.
    important properties, you will need to do something different.
   Returning a read-only buffer (using its asReadOnly() method) or copying the array to a new buffer (using its put()
   method) is a better approach in many situations.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/374.html">CWE-374: Passing Mutable Objects to an Untrusted Method</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3787,6 +3890,8 @@ Thus, having a mutable instance field generally creates race conditions.
    the array would compromise security or other
    important properties, you will need to do something different.
   Storing a copy of the array is a better approach in many situations.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/374.html">CWE-374: Passing Mutable Objects to an Untrusted Method</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3813,6 +3918,8 @@ Thus, having a mutable instance field generally creates race conditions.
   In general, classes implement the <code>Runnable</code> interface because
   they are going to have their <code>run()</code> method invoked in a new thread,
   in which case <code>Thread.start()</code> is the right method to call.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/572.html">CWE-572: Call to Thread run() instead of start()</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3825,6 +3932,8 @@ Thus, having a mutable instance field generally creates race conditions.
   may legally hoist the read out of the loop, turning the code into an
   infinite loop.&nbsp; The class should be changed so it uses proper
   synchronization (including wait and notify calls).</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/662.html">CWE-662: Improper Synchronization</a>.
+  </p>
 ]]>
     </Details>
   </BugPattern>
@@ -3883,6 +3992,8 @@ Language Specification</a> for details.
   <p>Waiting on a monitor while two locks are held may cause deadlock.
   Performing a wait only releases the lock on the object being waited on, not any other locks.
   This not necessarily a bug, but is worth examining closely.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/833.html">CWE-833: Deadlock</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3907,6 +4018,8 @@ Language Specification</a> for details.
   <p> This constructor reads a field which has not yet been assigned a value.&nbsp;
   This is often caused when the programmer mistakenly uses the field instead
   of one of the constructor's parameters.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/457.html">CWE-457: Use of Uninitialized Variable</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3945,6 +4058,8 @@ the constructor for the <code>A</code> class is invoked
 Thus, when the constructor for <code>A</code> invokes <code>getValue</code>,
 an uninitialized value is read for <code>value</code>.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/457.html">CWE-457: Use of Uninitialized Variable</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3958,6 +4073,8 @@ an uninitialized value is read for <code>value</code>.
   This may result in incorrect behavior at runtime, as callers of the get
   method will not necessarily see a consistent state for the object.&nbsp;
   The get method should be made synchronized.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/820.html">CWE-820: Missing Synchronization</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3988,6 +4105,8 @@ For example, in the following code, <code>foo</code> will be null.</p>
     static CircularClassInitialization foo = InnerClassSingleton.singleton;
 }
 </code></pre>
+<p>See <a href="https://cwe.mitre.org/data/definitions/457.html">CWE-457: Use of Uninitialized Variable</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4021,7 +4140,11 @@ synchronized(LOCK) {
 is locking on something that other code might also be locking. This could result in very strange and hard to diagnose
 blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forums/t96352.html">http://www.javalobby.org/java/forums/t96352.html</a> and <a href="http://jira.codehaus.org/browse/JETTY-352">http://jira.codehaus.org/browse/JETTY-352</a>.
 </p>
-<p>See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a> for more information.</p>
+<p>
+See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a>
+and <a href="https://cwe.mitre.org/data/definitions/412.html">CWE-412: Unrestricted Externally Accessible Lock</a>
+for more information.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4042,7 +4165,11 @@ synchronized(LOCK) {
 is locking on something that other code might also be locking. This could result in very strange and hard to diagnose
 blocking and deadlock behavior. See <a href="http://www.javalobby.org/java/forums/t96352.html">http://www.javalobby.org/java/forums/t96352.html</a> and <a href="http://jira.codehaus.org/browse/JETTY-352">http://jira.codehaus.org/browse/JETTY-352</a>.
 </p>
-<p>See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a> for more information.</p>
+<p>
+See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a>
+and <a href="https://cwe.mitre.org/data/definitions/412.html">CWE-412: Unrestricted Externally Accessible Lock</a>
+for more information.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4064,7 +4191,11 @@ synchronized(inited) {
 </code></pre>
 <p>Since there normally exist only two Boolean objects, this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
 and possible deadlock.</p>
-<p>See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a> for more information.</p>
+<p>
+See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a>
+and <a href="https://cwe.mitre.org/data/definitions/412.html">CWE-412: Unrestricted Externally Accessible Lock</a>
+for more information.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4091,6 +4222,11 @@ future refactoring, such as the "Remove Boxing" refactoring in IntelliJ,
 might replace this with the use of an interned Integer object shared
 throughout the JVM, leading to very confusing behavior and potential deadlock.
 </p>
+<p>
+See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a>
+and <a href="https://cwe.mitre.org/data/definitions/412.html">CWE-412: Unrestricted Externally Accessible Lock</a>
+for more information.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4110,8 +4246,11 @@ synchronized(count) {
 <p>Since Integer objects can be cached and shared,
 this code could be synchronizing on the same object as other, unrelated code, leading to unresponsiveness
 and possible deadlock.</p>
-<p>See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a> for more information.</p>
-]]>
+<p>
+See CERT <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK01-J.+Do+not+synchronize+on+objects+that+may+be+reused">LCK01-J. Do not synchronize on objects that may be reused</a>
+and <a href="https://cwe.mitre.org/data/definitions/412.html">CWE-412: Unrestricted Externally Accessible Lock</a>
+for more information.
+</p>]]>
     </Details>
   </BugPattern>
   <BugPattern type="ESync_EMPTY_SYNC">
@@ -4127,6 +4266,8 @@ and possible deadlock.</p>
 than most people recognize, and empty synchronized blocks
 are almost never a better solution
 than less contrived solutions.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/585.html">CWE-585: Empty Synchronized Block</a>.
 </p>
 ]]>
     </Details>
@@ -4179,6 +4320,8 @@ private Long getNotificationSequenceNumber() {
      return result;
 }
 </code></pre>
+<p>See <a href="https://cwe.mitre.org/data/definitions/821.html">CWE-821: Incorrect Synchronization</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4191,6 +4334,8 @@ private Long getNotificationSequenceNumber() {
    referenced from a mutable field.
    This is unlikely to have useful semantics, since different
 threads may be synchronizing on different objects.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/821.html">CWE-821: Incorrect Synchronization</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4200,7 +4345,7 @@ threads may be synchronizing on different objects.</p>
     <Details>
 <![CDATA[
 <p>
- A final static field that is
+ A static final field that is
 defined in an interface references a mutable
    object such as an array or hashtable.
    This mutable object could
@@ -4240,6 +4385,8 @@ The field could be made final to avoid
 this vulnerability. However, the static initializer contains more than one write
 to the field, so doing so will require some refactoring.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/500.html">CWE-500: Public Static Field Not Marked Final</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4254,6 +4401,8 @@ could be changed by malicious code or
         by accident from another package.
         The field could be made final to avoid
         this vulnerability.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/500.html">CWE-500: Public Static Field Not Marked Final</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4266,6 +4415,8 @@ could be changed by malicious code or
    by accident.
    The field could be made package protected to avoid
    this vulnerability.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/607.html">CWE-607: Public Static Final Field References Mutable Object</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4274,7 +4425,7 @@ could be changed by malicious code or
     <LongDescription>{1} is a mutable Hashtable</LongDescription>
     <Details>
 <![CDATA[
- <p>A final static field references a Hashtable
+ <p>A static final field references a Hashtable
    and can be accessed by malicious code or
         by accident from another package.
    This code can freely modify the contents of the Hashtable.</p>
@@ -4286,7 +4437,7 @@ could be changed by malicious code or
     <LongDescription>{1} is a mutable collection</LongDescription>
     <Details>
 <![CDATA[
- <p>A mutable collection instance is assigned to a final static field,
+ <p>A mutable collection instance is assigned to a static final field,
    thus can be changed by malicious code or by accident from another package.
    Consider wrapping this field into Collections.unmodifiableSet/List/Map/etc.
    to avoid this vulnerability.</p>
@@ -4298,7 +4449,7 @@ could be changed by malicious code or
     <LongDescription>{1} is a mutable collection which should be package protected</LongDescription>
     <Details>
 <![CDATA[
- <p>A mutable collection instance is assigned to a final static field,
+ <p>A mutable collection instance is assigned to a static final field,
    thus can be changed by malicious code or by accident from another package.
    The field could be made package protected to avoid this vulnerability.
    Alternatively you may wrap this field into Collections.unmodifiableSet/List/Map/etc.
@@ -4311,7 +4462,7 @@ could be changed by malicious code or
     <LongDescription>{1} is a mutable array</LongDescription>
     <Details>
 <![CDATA[
-<p> A final static field references an array
+<p> A static final field references an array
    and can be accessed by malicious code or
         by accident from another package.
    This code can freely modify the contents of the array.</p>
@@ -4602,6 +4753,8 @@ be confusing to users of this class.</p>
   This is a particularly insidious kind of bug, because in many programs,
   reads from input streams usually do read the full amount of data requested,
   causing the program to fail only sporadically.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/252.html">CWE-252: Unchecked Return Value</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4619,6 +4772,8 @@ be confusing to users of this class.</p>
   causing the program to fail only sporadically. With Buffered streams, however,
   skip() will only skip data in the buffer, and will routinely fail to skip the
   requested number of bytes.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/252.html">CWE-252: Unchecked Return Value</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4666,6 +4821,8 @@ This may be leftover marking from a previous version of the code in which the cl
 it may indicate a misunderstanding of how serialization works.
 </p>
 <p><em>This bug is reported only if special option <tt>reportTransientFieldOfNonSerializableClass</tt> is set.</em></p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/1066.html">CWE-1066: Missing Serialization Control Element</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4762,6 +4919,8 @@ will be serializable only if the comparator is also serializable.
 As most comparators have little or no state, making them serializable
 is generally easy and good defensive programming.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/1066.html">CWE-1066: Missing Serialization Control Element</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4772,6 +4931,8 @@ is generally easy and good defensive programming.
 <![CDATA[
   <p> This method contains a switch statement where one case branch will fall through to the next case.
   Usually you need to end this case with a break or return.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/484.html">CWE-484: Omitted Break Statement in Switch</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4784,7 +4945,9 @@ is generally easy and good defensive programming.
   Usually you need to provide a default case.</p>
   <p>Because the analysis only looks at the generated bytecode, this warning can be incorrect triggered if
 the default case is at the end of the switch statement and the switch statement doesn't contain break statements for other
-cases.
+cases.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/478.html">CWE-478: Missing Default Case in Multiple Condition Expression</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4795,6 +4958,8 @@ cases.
 <![CDATA[
   <p> A value stored in the previous switch case is overwritten here due to a switch fall through. It is likely that
     you forgot to put a break or return at the end of the previous case.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/484.html">CWE-484: Omitted Break Statement in Switch</a>.
 </p>
 ]]>
     </Details>
@@ -4808,6 +4973,8 @@ cases.
     an exception is thrown. It is likely that
     you forgot to put a break or return at the end of the previous case.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/484.html">CWE-484: Omitted Break Statement in Switch</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4818,6 +4985,8 @@ cases.
 <![CDATA[
   <p> This class has a <code>writeObject()</code> method which is synchronized;
   however, no other method of the class is synchronized.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/820.html">CWE-820: Missing Synchronization</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4832,6 +5001,8 @@ cases.
   <code>readObject()</code> to be synchronized.&nbsp; If the <code>readObject()</code>
   method itself is causing the object to become visible to another thread,
   that is an example of very dubious coding style.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/820.html">CWE-820: Missing Synchronization</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4952,6 +5123,8 @@ of a serializable class.</p>
     <Details>
 <![CDATA[
   <p> This field is never used.&nbsp; Consider removing it from the class.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4961,6 +5134,8 @@ of a serializable class.</p>
     <Details>
 <![CDATA[
   <p> This field is never read.&nbsp; Consider removing it from the class.</p>
+  <p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4973,6 +5148,8 @@ of a serializable class.</p>
 The field is public or protected, so perhaps
     it is intended to be used with classes not seen as part of the analysis. If not,
 consider removing it from the class.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4985,6 +5162,8 @@ consider removing it from the class.</p>
 The field is public or protected, so perhaps
     it is intended to be used with classes not seen as part of the analysis. If not,
 consider removing it from the class.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -5018,6 +5197,8 @@ Check for errors, or remove it if it is useless.</p>
 <![CDATA[
   <p> No writes were seen to this public/protected field.&nbsp; All reads of it will return the default
 value. Check for errors (should it have been initialized?), or remove it if it is useless.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/457.html">CWE-457: Use of Uninitialized Variable</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -5028,6 +5209,8 @@ value. Check for errors (should it have been initialized?), or remove it if it i
 <![CDATA[
   <p> This field is never written.&nbsp; All reads of it will return the default
 value. Check for errors (should it have been initialized?), or remove it if it is useless.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/457.html">CWE-457: Use of Uninitialized Variable</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -5087,6 +5270,8 @@ to read, readLine() will return null and dereferencing that will generate a null
 Unless the field is initialized via some mechanism not seen by the analysis,
 dereferencing this value will generate a null pointer exception.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/457.html">CWE-457: Use of Uninitialized Variable</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -5099,6 +5284,8 @@ dereferencing this value will generate a null pointer exception.
 field that does not seem to ever have a non-null value written to it.
 Unless the field is initialized via some mechanism not seen by the analysis,
 dereferencing this value will generate a null pointer exception.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/457.html">CWE-457: Use of Uninitialized Variable</a>.
 </p>
 ]]>
     </Details>
@@ -5143,6 +5330,8 @@ the object is constructed. Elsewhere, it is loaded and dereferenced without a nu
 This could be either an error or a questionable design, since
 it means a null pointer exception will be generated if that field is dereferenced
 before being initialized.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/457.html">CWE-457: Use of Uninitialized Variable</a>.
 </p>
 ]]>
     </Details>
@@ -5241,6 +5430,9 @@ Common false-positive cases include:</p>
 <![CDATA[
 <p>This condition always produces the same result as the value of the involved variable that was narrowed before.
 Probably something else was meant or the condition can be removed.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/570.html">CWE-570: Expression is Always False</a>
+and <a href="https://cwe.mitre.org/data/definitions/571.html">CWE-571: Expression is Always True</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -5251,6 +5443,9 @@ Probably something else was meant or the condition can be removed.</p>
 <![CDATA[
 <p>This condition always produces the same result due to the type range of the involved variable.
 Probably something else was meant or the condition can be removed.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/570.html">CWE-570: Expression is Always False</a>
+and <a href="https://cwe.mitre.org/data/definitions/571.html">CWE-571: Expression is Always True</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -5260,8 +5455,8 @@ Probably something else was meant or the condition can be removed.</p>
     <Details>
 <![CDATA[
 <p>Our analysis shows that this object is useless.
-It's created and modified, but its value never go outside of the method or produce any side-effect.
-Either there is a mistake and object was intended to be used or it can be removed.</p>
+It's created and modified, but its value never goes outside the method or produces any side effect.
+Either there is a mistake and object was intended to be used, or it can be removed.</p>
 <p>This analysis rarely produces false-positives. Common false-positive cases include:</p>
 <p>- This object used to implicitly throw some obscure exception.</p>
 <p>- This object used as a stub to generalize the code.</p>
@@ -5274,7 +5469,7 @@ Either there is a mistake and object was intended to be used or it can be remove
     <LongDescription>Useless object created in method {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>This object is created just to perform some modifications which don't have any side-effect.
+<p>This object is created just to perform some modifications which don't have any side effect.
 Probably something else was meant or the object can be removed.</p>
 ]]>
     </Details>
@@ -5285,6 +5480,7 @@ Probably something else was meant or the object can be removed.</p>
     <Details>
 <![CDATA[
    <p> Array operation is performed, but array index is out of bounds, which will result in ArrayIndexOutOfBoundsException at runtime.</p>
+
 ]]>
     </Details>
   </BugPattern>
@@ -5351,8 +5547,7 @@ return value of <code>String.toLowerCase()</code>).
 </p>
 <p>We are guessing that ignoring the return value might be a bad idea just from
 a simple analysis of the body of the method. You can use a @CheckReturnValue annotation
-to instruct SpotBugs as to whether ignoring the return value of this method
-is important or acceptable.
+to instruct SpotBugs that ignoring the return value of this method is acceptable.
 </p>
 <p>Please investigate this closely to decide whether it is OK to ignore the return value.
 </p>
@@ -5400,6 +5595,9 @@ should be corrected to: </p>
 <pre><code>String dateString = getHeaderField(name);
 dateString = dateString.trim();
 </code></pre>
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/252.html">CWE-252: Unchecked Return Value</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -5418,6 +5616,8 @@ throwing an Exception).
 If you don't check the result, you won't notice if the method invocation
 signals unexpected behavior by returning an atypical return value.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/253.html">CWE-253: Incorrect Check of Function Return Value</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -5430,6 +5630,8 @@ signals unexpected behavior by returning an atypical return value.
 such as 1 or -1. When invoking these methods, you should only check the sign of the result, not for any specific
 non-zero value. While many or most compareTo and compare methods only return -1, 0 or 1, some of them
 will return other values.
+<p>See <a href="https://cwe.mitre.org/data/definitions/253.html">CWE-253: Incorrect Check of Function Return Value</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -5716,6 +5918,8 @@ the stream on all paths out of the method.&nbsp; This may result in
 a file descriptor leak.&nbsp; It is generally a good
 idea to use a <code>finally</code> block to ensure that streams are
 closed.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/459.html">CWE-459: Incomplete Cleanup</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -5730,6 +5934,8 @@ it on all possible exception paths out of the method.&nbsp;
 This may result in a file descriptor leak.&nbsp; It is generally a good
 idea to use a <code>finally</code> block to ensure that streams are
 closed.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/459.html">CWE-459: Incomplete Cleanup</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -5793,7 +5999,7 @@ body of an <code>if</code> statement, e.g.:</p>
 be null because it was previously dereferenced and if it were null a null pointer
 exception would have occurred at the earlier dereference.
 Essentially, this code and the previous dereference
-disagree as to whether this value is allowed to be null. Either the check is redundant
+disagree whether this value is allowed to be null. Either the check is redundant
 or the previous dereference is erroneous.</p>
 ]]>
     </Details>
@@ -5855,6 +6061,8 @@ try {
     l.unlock();
 }
 </code></pre>
+<p>See <a href="https://cwe.mitre.org/data/definitions/413.html">CWE-413: Improper Resource Locking</a>
+and <a href="https://cwe.mitre.org/data/definitions/459.html">CWE-459: Incomplete Cleanup</a>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -5875,6 +6083,8 @@ try {
     l.unlock();
 }
 </code></pre>
+<p>See <a href="https://cwe.mitre.org/data/definitions/413.html">CWE-413: Improper Resource Locking</a>
+and <a href="https://cwe.mitre.org/data/definitions/459.html">CWE-459: Incomplete Cleanup</a>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -5896,6 +6106,8 @@ system property with comma-separated classes:</p>
               &lt;frc.suspicious&gt;java.time.LocalDate,java.util.List&lt;/frc.suspicious&gt;
            &lt;/systemPropertyVariables&gt;
 </code></pre>
+<p>See <a href="https://cwe.mitre.org/data/definitions/595.html">CWE-595: Comparison of Object References Instead of Object Contents</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -5911,6 +6123,8 @@ It is possible to create distinct instances that are equal but do not compare as
 they are different objects.
 Examples of classes which should generally
 not be compared by reference are java.lang.Integer, java.lang.Float, etc.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/595.html">CWE-595: Comparison of Object References Instead of Object Contents</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -5926,6 +6140,8 @@ constructor. It is best to avoid such objects, but if they do exist,
 then checking Boolean objects for equality using == or != will give results
 than are different than you would get using <code>.equals(...)</code>.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/595.html">CWE-595: Comparison of Object References Instead of Object Contents</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -5936,6 +6152,8 @@ than are different than you would get using <code>.equals(...)</code>.
 <![CDATA[
 <p> This method uses pointer equality to compare two references that seem to be of
 different types. The result of this comparison will always be false at runtime.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/570.html">CWE-570: Expression is Always False</a>.
 </p>
 ]]>
     </Details>
@@ -5951,6 +6169,8 @@ at runtime. Further, examination of the equals methods that would be invoked sug
 this call will always return false, or else the equals method is not symmetric (which is
 a property required by the contract
 for equals in class Object).
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/570.html">CWE-570: Expression is Always False</a>.
 </p>
 ]]>
     </Details>
@@ -5972,6 +6192,8 @@ objects of different
 classes should always compare as unequal; therefore, according to the
 contract defined by java.lang.Object.equals(Object),
 the result of this comparison will always be false at runtime.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/570.html">CWE-570: Expression is Always False</a>.
 </p>
 ]]>
     </Details>
@@ -5995,6 +6217,8 @@ classes should always compare as unequal; therefore, according to the
 contract defined by java.lang.Object.equals(Object),
 the result of this comparison will always be false at runtime.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/570.html">CWE-570: Expression is Always False</a>.
+</p>
       ]]>
    </Details>
   </BugPattern>
@@ -6006,6 +6230,8 @@ the result of this comparison will always be false at runtime.
 <p> This method calls equals(Object), passing a null value as
 the argument. According to the contract of the equals() method,
 this call should always return <code>false</code>.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/570.html">CWE-570: Expression is Always False</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6180,6 +6406,8 @@ a logic error.  Make sure that you are comparing the right things.
 <p> The arguments to this method call seem to be in the wrong order.
 For example, a call <code>Preconditions.checkNotNull("message", message)</code>
 has reserved arguments: the value to be checked is the first argument.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/683.html">CWE-683: Function Call With Incorrect Order of Arguments</a>.
 </p>
 ]]>
     </Details>
@@ -6483,6 +6711,8 @@ You can make the field volatile to correct the problem.
 For more information, see the
 <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">Java Memory Model web site</a>.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/543.html">CWE-543: Use of Singleton Pattern Without Synchronization in a Multithreaded Context</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6501,6 +6731,8 @@ any other thread from accessing the stored object until it is fully initialized.
 <p>Even if you feel confident that the method is never called by multiple
 threads, it might be better to not set the static field until the value
 you are setting it to is fully populated/initialized.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/543.html">CWE-543: Use of Singleton Pattern Without Synchronization in a Multithreaded Context</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6564,6 +6796,8 @@ possible that the method will be invoked through reflection,
 it is more likely that the method is never used, and should be
 removed.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/561.html">CWE-561: Dead Code</a>.
+</p>
 ]]>
 </Details>
   </BugPattern>
@@ -6578,6 +6812,8 @@ declared in an anonymous class, it seems that this method is uncallable. The met
 might simply be dead code, but it is also possible that the method is intended to
 override a method declared in a superclass, and due to a typo or other error the method does not,
 in fact, override the method it is intended to.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/561.html">CWE-561: Dead Code</a>.
 </p>
 ]]>
 </Details>
@@ -6595,6 +6831,8 @@ close database resources on all paths out of a method may
 result in poor performance, and could cause the application to
 have problems communicating with the database.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/459.html">CWE-459: Incomplete Cleanup</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6610,6 +6848,8 @@ the object on all exception paths out of the method.&nbsp; Failure to
 close database resources on all paths out of a method may
 result in poor performance, and could cause the application to
 have problems communicating with the database.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/459.html">CWE-459: Incomplete Cleanup</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6651,7 +6891,7 @@ String s = buf.toString();
 <![CDATA[
 <p> The method calls Connection.prepareStatement inside the loop passing the constant arguments.
 If the PreparedStatement should be executed several times there's no reason to recreate it for each loop iteration.
-Move this call outside of the loop.</p>
+Move this call outside the loop.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6674,7 +6914,7 @@ Consider storing the length to the variable before the loop.
 <![CDATA[
 <p> The method calls Pattern.compile inside the loop passing the constant arguments.
 If the Pattern should be used several times there's no reason to compile it for each loop iteration.
-Move this call outside of the loop or even into static final field.</p>
+Move this call outside the loop or even into static final field.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6684,7 +6924,7 @@ Move this call outside of the loop or even into static final field.</p>
     <Details>
 <![CDATA[
 <p> The method creates the same regular expression inside the loop, so it will be compiled every iteration.
-It would be more optimal to precompile this regular expression using Pattern.compile outside of the loop.</p>
+It would be more optimal to precompile this regular expression using Pattern.compile outside the loop.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6718,7 +6958,7 @@ f. e. call <code>myString.lastIndexOf('.')</code> instead of <code>myString.last
 <p> This method uses the toArray() method of a collection derived class, and passes
 in a zero-length prototype array argument.  It is more efficient to use
 <code>myCollection.toArray(new Foo[myCollection.size()])</code>
-If the array passed in is big enough to store all of the
+If the array passed in is big enough to store all the
 elements of the collection, then it is populated and returned
 directly. This avoids the need to create a second array
 (by reflection) to return as the result.</p>
@@ -6890,6 +7130,8 @@ of incompatible types (e.g., String[] and StringBuffer[], or String[] and int[])
 They will never be equal. In addition, when equals(...) is used to compare arrays it
 only checks to see if they are the same array, and ignores the contents of the arrays.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/570.html">CWE-570: Expression is Always False</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6930,6 +7172,8 @@ is overwritten here. This often indicates a mistaken belief that
 the write to the parameter will be conveyed back to
 the caller.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6944,6 +7188,8 @@ but the value is not read or used in any subsequent instruction.
 Often, this indicates an error, because the value computed is never
 used. There is a field with the same name as the local variable. Did you
 mean to assign to that variable instead?
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
 </p>
 ]]>
     </Details>
@@ -6964,6 +7210,8 @@ Note that Sun's javac compiler often generates dead stores for
 final local variables. Because SpotBugs is a bytecode-based tool,
 there is no easy way to eliminate these false positives.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6977,6 +7225,8 @@ there is no easy way to eliminate these false positives.
 This statement assigns to a local variable in a return statement. This assignment
 has no effect. Please verify that this statement does the right thing.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -6989,6 +7239,8 @@ has no effect. Please verify that this statement does the right thing.
 A postfix increment/decrement does not impact the value of the expression,
 so this increment/decrement has no effect.
 Please verify that this statement does the right thing.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
 </p>
 ]]>
     </Details>
@@ -7011,6 +7263,8 @@ In Java 5 and later, it does not.
 <p>See Oracle's <a href="http://www.oracle.com/technetwork/java/javase/compatibility-137462.html#literal">article on Java SE compatibility</a>
 for more details and examples, and suggestions on how to force class initialization in Java 5+.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -7022,6 +7276,8 @@ for more details and examples, and suggestions on how to force class initializat
 <p>The code stores null into a local variable, and the stored value is not
 read. This store may have been introduced to assist the garbage collector, but
 as of Java SE 6.0, this is no longer needed or useful.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
 </p>
 ]]>
     </Details>
@@ -7093,6 +7349,8 @@ does not need to be created, just access the static methods directly using the c
     ... deal with all non-runtime exceptions ...
 }
 </code></pre>
+<p>See <a href="https://cwe.mitre.org/data/definitions/396.html">CWE-396: Declaration of Catch for Generic Exception</a>.
+</p>
   ]]>
      </Details>
   </BugPattern>
@@ -7126,6 +7384,9 @@ boolean hasSpace(String m) {
     return names.length != 1;
 }
 </code></pre>
+<p>
+See <a href="https://cwe.mitre.org/data/definitions/395.html">CWE-395: Use of NullPointerException Catch to Detect NULL Pointer Dereference</a>.
+</p>
     ]]>
      </Details>
   </BugPattern>
@@ -7145,6 +7406,8 @@ boolean hasSpace(String m) {
     is the special Not A Number value, use
     <code>Double.isNaN(x)</code> (or <code>Float.isNaN(x)</code> if
     <code>x</code> is floating point precision).
+    </p>
+    <p>See <a href="https://cwe.mitre.org/data/definitions/570.html">CWE-570: Expression is Always False</a>.
     </p>
     ]]>
      </Details>
@@ -7291,7 +7554,7 @@ just use the constant. Methods detected are:
     This class extends from a Struts Action class, and uses an instance member variable. Since only
     one instance of a struts Action class is created by the Struts framework, and used in a
     multithreaded way, this paradigm is highly discouraged and most likely problematic. Consider
-    only using method local variables. Only instance fields that are written outside of a monitor
+    only using method local variables. Only instance fields that are written outside a monitor
     are reported.
     </p>
     ]]>
@@ -7348,6 +7611,8 @@ or
 <pre><code>static final long MILLISECONDS_PER_DAY = 24L*3600*1000;
 long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; }
 </code></pre>
+<p>See <a href="https://cwe.mitre.org/data/definitions/192.html">CWE-192: Integer Coercion Error</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -7376,6 +7641,8 @@ Date getDate(int seconds) { return new Date(seconds * 1000L); }
 // better, works for all dates
 Date getDate(long seconds) { return new Date(seconds * 1000); }
 </code></pre>
+<p>See <a href="https://cwe.mitre.org/data/definitions/192.html">CWE-192: Integer Coercion Error</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -7394,7 +7661,8 @@ It is likely that the operation that generated the value to be passed
 to Math.round was intended to be performed using
 floating point arithmetic.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/192.html">CWE-192: Integer Coercion Error</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -7414,7 +7682,8 @@ It is likely that the operation that generated the value to be passed
 to Math.ceil was intended to be performed using double precision
 floating point arithmetic.
 </p>
-
+<p>See <a href="https://cwe.mitre.org/data/definitions/192.html">CWE-192: Integer Coercion Error</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -7440,24 +7709,28 @@ double value1 = x / y;
 // Right: yields result 0.4
 double value2 = x / (double) y;
 </code></pre>
+<p>See <a href="https://cwe.mitre.org/data/definitions/192.html">CWE-192: Integer Coercion Error</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION">
-    <ShortDescription>Store of non serializable object into HttpSession</ShortDescription>
-    <LongDescription>Store of non serializable {2} into HttpSession in {1}</LongDescription>
+    <ShortDescription>Store of non-serializable object into HttpSession</ShortDescription>
+    <LongDescription>Store of non-serializable {2} into HttpSession in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
 This code seems to be storing a non-serializable object into an HttpSession.
 If this session is passivated or migrated, an error will result.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/579.html">CWE-579: J2EE Bad Practices: Non-serializable Object Stored in Session</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
   <BugPattern type="DMI_NONSERIALIZABLE_OBJECT_WRITTEN">
-    <ShortDescription>Non serializable object written to ObjectOutput</ShortDescription>
-    <LongDescription>Non serializable {2} written to ObjectOutput in {1}</LongDescription>
+    <ShortDescription>Non-serializable object written to ObjectOutput</ShortDescription>
+    <LongDescription>Non-serializable {2} written to ObjectOutput in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -7556,6 +7829,8 @@ Ensure that you are guaranteed that the object is of the type
 you are casting to. If all you need is to be able
 to iterate through a collection, you don't need to cast it to a Set or List.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/704.html">CWE-704: Incorrect Type Conversion or Cast</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -7584,6 +7859,8 @@ Thus, it may have more precise information than just
 the declared type of a variable, and can use this to determine
 that a cast will always throw an exception at runtime.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/704.html">CWE-704: Incorrect Type Conversion or Cast</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -7597,6 +7874,8 @@ This cast will always throw a ClassCastException.
 The analysis believes it knows
 the precise type of the value being cast, and the attempt to
 downcast it to a subtype will always fail by throwing a ClassCastException.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/704.html">CWE-704: Incorrect Type Conversion or Cast</a>.
 </p>
 ]]>
     </Details>
@@ -7626,6 +7905,8 @@ method of lists returned by <code>Arrays.asList(...)</code> will return a covari
 typed array. For example, <code>Arrays.asArray(new String[] { "a" }).toArray()</code>
 will return a <code>String []</code>. SpotBugs attempts to detect and suppress
 such cases, but may miss some.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/704.html">CWE-704: Incorrect Type Conversion or Cast</a>.
 </p>
 ]]>
     </Details>
@@ -7666,6 +7947,8 @@ Although this is safe, make sure it isn't
 an indication of some misunderstanding or some other logic error.
 If you really want to test the value for being null, perhaps it would be clearer to do
 better to do a null test rather than an instanceof test.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/571.html">CWE-571: Expression is Always True</a>.
 </p>
 ]]>
     </Details>
@@ -7732,6 +8015,8 @@ For example
 <p>
 Consider using <code>s.replace(".", "/")</code> or <code>s.split("\\.")</code> instead.
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/185.html">CWE-185: Incorrect Regular Expression</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -7744,6 +8029,8 @@ Consider using <code>s.replace(".", "/")</code> or <code>s.split("\\.")</code> i
 The code here uses a regular expression that is invalid according to the syntax
 for regular expressions. This statement will throw a PatternSyntaxException when
 executed.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/185.html">CWE-185: Incorrect Regular Expression</a>.
 </p>
 ]]>
     </Details>
@@ -7762,6 +8049,8 @@ regular expression as an escape character. Among other options, you can just use
 <code>File.separator</code>
 
 </p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/185.html">CWE-185: Incorrect Regular Expression</a>.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -7774,6 +8063,8 @@ regular expression as an escape character. Among other options, you can just use
 The code performs an increment/decrement operation (e.g., <code>i++</code> / <code>i--</code>) and then
 immediately overwrites it. For example, <code>i = i++</code> / <code>i = i--</code> immediately
 overwrites the incremented/decremented value with the original value.
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/563.html">CWE-563: Assignment to Variable without Use</a>.
 </p>
 ]]>
     </Details>
@@ -7788,6 +8079,8 @@ The code performs an unsigned right shift, whose result is then
 cast to a short or byte, which discards the upper bits of the result.
 Since the upper bits are discarded, there may be no difference between
 a signed and unsigned right shift (depending upon the size of the shift).
+</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/192.html">CWE-192: Integer Coercion Error</a>.
 </p>
 ]]>
     </Details>
@@ -7944,6 +8237,17 @@ This code invokes substring(0) on a String, which returns the original value.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="DMI_MISLEADING_SUBSTRING">
+    <ShortDescription>Invocation of substring(0), which returns the same as toString()</ShortDescription>
+    <LongDescription>{1} invokes substring(0), which might be misleading because it returns the entire String</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This code invokes substring(0) on a StringBuffer or a StringBuilder, which returns the same as toString().
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DMI_CALLING_NEXT_FROM_HASNEXT">
     <ShortDescription>hasNext method invokes next</ShortDescription>
     <LongDescription>{1} invokes {2.givenClass}</LongDescription>
@@ -7969,6 +8273,7 @@ and the next method is supposed to change the state of the iterator.
       wait() on the lock, which releases the lock and allows other threads
       to run.
       </p>
+      <p>See <a href="https://cwe.mitre.org/data/definitions/667.html">CWE-667: Improper Locking</a>.</p>
       ]]>
    </Details>
   </BugPattern>
@@ -7981,6 +8286,7 @@ and the next method is supposed to change the state of the iterator.
       This method uses the same code to implement two branches of a conditional branch.
     Check to ensure that this isn't a coding mistake.
       </p>
+      <p>See <a href="https://cwe.mitre.org/data/definitions/1041.html">CWE-1041: Use of Redundant Code</a>.</p>
       ]]>
    </Details>
   </BugPattern>
@@ -7994,6 +8300,7 @@ and the next method is supposed to change the state of the iterator.
     This could be a case of duplicate code, but it might also indicate
     a coding mistake.
       </p>
+      <p>See <a href="https://cwe.mitre.org/data/definitions/1041.html">CWE-1041: Use of Redundant Code</a>.</p>
       ]]>
    </Details>
   </BugPattern>
@@ -8078,6 +8385,8 @@ and the next method is supposed to change the state of the iterator.
       This method assigns a literal boolean value (true or false) to a boolean variable inside
       an if or while expression. Most probably this was supposed to be a boolean comparison using
       ==, not an assignment using =.
+      </p>
+      <p>See <a href="https://cwe.mitre.org/data/definitions/481.html">CWE-481: Assigning instead of Comparing</a>.
       </p>
       ]]>
     </Details>
@@ -8174,7 +8483,7 @@ always be true, and <code>c.retainAll(c)</code> should have no effect.
      idea was used in several Map implementations, but introduces the possibility
      of nasty coding mistakes. If a map <code>m</code> returns
      such an iterator for an entrySet, then
-     <code>c.addAll(m.entrySet())</code> will go badly wrong. All of
+     <code>c.addAll(m.entrySet())</code> will go badly wrong. All
      the Map implementations in OpenJDK 7 have been rewritten to avoid this,
      you should too.
     </p>
@@ -8480,6 +8789,8 @@ String constructComponentName() {
 }
 </code></pre>
       <p>Bug pattern contributed by Jason Mehrens.</p>
+      <p>See <a href="https://cwe.mitre.org/data/definitions/821.html">CWE-821: Incorrect Synchronization</a>.
+</p>
       ]]>
     </Details>
   </BugPattern>
@@ -8628,6 +8939,7 @@ String constructComponentName() {
         you run the risk of retaining a value that is not the one that is associated with the key in the map.
         If it matters which one you use and you use the one that isn't stored in the map,
         your program will behave incorrectly.
+        <p>See <a href="https://cwe.mitre.org/data/definitions/252.html">CWE-252: Unchecked Return Value</a>.</p>
           ]]>
       </Details>
   </BugPattern>
@@ -8673,6 +8985,12 @@ after the call to initLogging, the logger configuration is lost
         <p>This code contains a sequence of calls to a concurrent  abstraction
             (such as a concurrent hash map).
             These calls will not be executed atomically.
+        </p>
+        <p>See the following references:
+            <a href="https://cwe.mitre.org/data/definitions/362.html">CWE-362: Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')</a>,
+            <a href="https://cwe.mitre.org/data/definitions/366.html">CWE-366: Race Condition within a Thread</a>
+            <a href="https://cwe.mitre.org/data/definitions/662.html">CWE-662: Improper Synchronization</a>
+        </p>
           ]]>
       </Details>
   </BugPattern>
@@ -8688,6 +9006,11 @@ after the call to initLogging, the logger configuration is lost
         <p>See the related SEI CERT rule, but the detector is not restricted to chained methods:
           <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA04-J.+Ensure+that+calls+to+chained+methods+are+atomic">
           VNA04-J. Ensure that calls to chained methods are atomic</a>.
+        </p>
+        <p>See the following references:
+        <a href="https://cwe.mitre.org/data/definitions/362.html">CWE-362: Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')</a>,
+        <a href="https://cwe.mitre.org/data/definitions/366.html">CWE-366: Race Condition within a Thread</a>
+        <a href="https://cwe.mitre.org/data/definitions/662.html">CWE-662: Improper Synchronization</a>
         </p>]]>
     </Details>
   </BugPattern>
@@ -8700,6 +9023,8 @@ after the call to initLogging, the logger configuration is lost
 and will assume that the default platform encoding is suitable. This will cause the application
 behavior to vary between platforms. Use an alternative API and specify a charset name or Charset
 object explicitly.</p>
+<p>See <a href="https://cwe.mitre.org/data/definitions/173.html">CWE-173: Improper Handling of Alternate Encoding</a>.
+</p>
 ]]>
       </Details>
   </BugPattern>
@@ -8769,6 +9094,9 @@ object explicitly.</p>
         be avoided by either making the method non-public or by checking for package access permission on the package.
         A third possibility is to use the java.beans.Beans.instantiate() method instead of java.lang.Class.newInstance()
         which checks whether the Class object being received has any public constructors.
+        </p>
+        <p>
+        See <a href="https://cwe.mitre.org/data/definitions/470.html">CWE-470: Use of Externally-Controlled Input to Select Classes or Code ('Unsafe Reflection')</a>.
         </p>]]>
     </Details>
   </BugPattern>
@@ -8784,13 +9112,16 @@ object explicitly.</p>
         package which are private, protected or package private. An attacker code may call this method and pass such
         field to change it. This should be avoided by either making the method non-public or by checking for package
         access permission on the package.
+        </p>
+        <p>
+        See <a href="https://cwe.mitre.org/data/definitions/470.html">CWE-470: Use of Externally-Controlled Input to Select Classes or Code ('Unsafe Reflection')</a>.
         </p>]]>
     </Details>
   </BugPattern>
 
   <BugPattern type="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR">
     <ShortDescription>An overridable method is called from a constructor</ShortDescription>
-    <LongDescription>Overridable method {2} is called from constructor {1}.</LongDescription>
+    <LongDescription>Overridable method {2.nameAndSignature} is called from constructor {1}.</LongDescription>
     <Details>
       <![CDATA[<p>
       Calling an overridable method during in a constructor may result in the use of uninitialized data. It may also
@@ -8804,7 +9135,7 @@ object explicitly.</p>
 
   <BugPattern type="MC_OVERRIDABLE_METHOD_CALL_IN_CLONE">
     <ShortDescription>An overridable method is called from the clone() method.</ShortDescription>
-    <LongDescription>Overridable method {2} is called from method clone() in class {0}.</LongDescription>
+    <LongDescription>Overridable method {2.nameAndSignature} is called from method clone() in class {0}.</LongDescription>
     <Details>
       <![CDATA[<p>
       Calling overridable methods from the clone() method is insecure because a subclass could override the method,
@@ -8818,7 +9149,7 @@ object explicitly.</p>
   </BugPattern>
   <BugPattern type="MC_OVERRIDABLE_METHOD_CALL_IN_READ_OBJECT">
     <ShortDescription>An overridable method is called from the readObject method.</ShortDescription>
-    <LongDescription>Overridable method {2} is called from readObject.</LongDescription>
+    <LongDescription>Overridable method {2.nameAndSignature} is called from readObject.</LongDescription>
     <Details>
       <![CDATA[<p>
       The readObject() method must not call any overridable methods. Invoking overridable methods from the readObject()
@@ -8841,7 +9172,8 @@ object explicitly.</p>
         If a class using singleton design pattern directly implements the Cloneable interface, it is possible to create a copy of the object, thus violating the singleton pattern.<br>
         Therefore, implementing the Cloneable interface should be avoided.<br><br>
 
-        For more information, see: <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a>.
+        For more information, see: <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a>, and
+        <a href="https://cwe.mitre.org/data/definitions/543.html">CWE-543: Use of Singleton Pattern Without Synchronization in a Multithreaded Context</a>.
         </p>]]>
     </Details>
   </BugPattern>
@@ -8854,7 +9186,8 @@ object explicitly.</p>
         If a class using singleton design pattern indirectly implements the Cloneable interface, it is possible to create a copy of the object, thus violating the singleton pattern.<br>
         Therefore, implementing the Cloneable interface should be avoided. If that's not possible because of an extended super-class, the solution would be overriding the clone method to unconditionally throw CloneNotSupportedException.<br><br>
 
-        For more information, see: <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a>.
+        For more information, see: <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a>, and
+        <a href="https://cwe.mitre.org/data/definitions/543.html">CWE-543: Use of Singleton Pattern Without Synchronization in a Multithreaded Context</a>.
         </p>]]>
     </Details>
   </BugPattern>
@@ -8868,7 +9201,8 @@ object explicitly.</p>
         With that, it is possible to create a copy of the object, thus violating the singleton pattern.<br>
         Therefore, implementing the clone method should be avoided, otherwise the solution would be overriding the clone method to unconditionally throw CloneNotSupportedException.<br><br>
 
-        For more information, see: <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a>.
+        For more information, see: <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a>, and
+        <a href="https://cwe.mitre.org/data/definitions/543.html">CWE-543: Use of Singleton Pattern Without Synchronization in a Multithreaded Context</a>.
         </p>]]>
     </Details>
   </BugPattern>
@@ -8881,7 +9215,8 @@ object explicitly.</p>
         This class is using singleton design pattern and has non-private constructor (please note that a default constructor might exist which is not private). Given that, it is possible to create a copy of the object, thus violating the singleton pattern.<br>
         The easier solution would be making the constructor private.<br><br>
 
-        <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a> rule
+        For more information, see: <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a>, and
+        <a href="https://cwe.mitre.org/data/definitions/543.html">CWE-543: Use of Singleton Pattern Without Synchronization in a Multithreaded Context</a>.
         </p>]]>
     </Details>
   </BugPattern>
@@ -8894,7 +9229,8 @@ object explicitly.</p>
         This class (using singleton design pattern) directly or indirectly implements the Serializable interface, which allows the class to be serialized.<br>
         Deserialization makes multiple instantiation of a singleton class possible, and therefore should be avoided.<br><br>
 
-        <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a> rule
+        For more information, see: <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a>, and
+        <a href="https://cwe.mitre.org/data/definitions/543.html">CWE-543: Use of Singleton Pattern Without Synchronization in a Multithreaded Context</a>.
         </p>]]>
     </Details>
   </BugPattern>
@@ -8907,7 +9243,8 @@ object explicitly.</p>
         Instance-getter method of class using singleton design pattern is not synchronized. When this method is invoked by two or more threads simultaneously,
         multiple instantiation of a singleton class becomes possible.<br><br>
 
-        <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a> rule
+        For more information, see: <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC07-J.+Prevent+multiple+instantiations+of+singleton+objects">SEI CERT MSC07-J</a>, and
+        <a href="https://cwe.mitre.org/data/definitions/543.html">CWE-543: Use of Singleton Pattern Without Synchronization in a Multithreaded Context</a>.
         </p>]]>
     </Details>
   </BugPattern>
@@ -8924,7 +9261,8 @@ object explicitly.</p>
       <p>
       See SEI CERT rule
       <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK06-J.+Do+not+use+an+instance+lock+to+protect+shared+static+data">
-      LCK06-J. Do not use an instance lock to protect shared static data</a>.
+      LCK06-J. Do not use an instance lock to protect shared static data</a>
+      and <a href="https://cwe.mitre.org/data/definitions/667.html">CWE-667: Improper Locking</a>.
       </p>]]>
     </Details>
   </BugPattern>
@@ -8934,7 +9272,8 @@ object explicitly.</p>
     <Details>
       <![CDATA[<p>
 Using floating-point variables should not be used as loop counters, as they are not precise, which may result in incorrect loops. A loop counter is a variable that is changed with each iteration and controls when the loop should terminate. It is decreased or increased by a fixed amount each iteration.</p>
-<p>See rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/NUM09-J.+Do+not+use+floating-point+variables+as+loop+counters">NUM09-J</a>.</p>
+<p>See rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/NUM09-J.+Do+not+use+floating-point+variables+as+loop+counters">NUM09-J</a>
+ and <a href="https://cwe.mitre.org/data/definitions/1339.html">CWE-1339: Insufficient Precision or Accuracy of a Real Number</a>.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -8953,6 +9292,8 @@ Using floating-point variables should not be used as loop counters, as they are 
         <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR08-J.+Do+not+catch+NullPointerException+or+any+of+its+ancestors">SEI CERT ERR08-J rule</a>.<br>
 
         Please note that you can derive from Exception or RuntimeException and may throw a new instance of that exception.
+        </p><p>
+        See <a href="https://cwe.mitre.org/data/definitions/397.html">CWE-397: Declaration of Throws for Generic Exception</a>.
         </p>]]>
     </Details>
   </BugPattern>
@@ -8970,6 +9311,8 @@ Using floating-point variables should not be used as loop counters, as they are 
         contain any meaningful information about the thrown exception).<br><br>
 
         For more information, see the <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR07-J.+Do+not+throw+RuntimeException%2C+Exception%2C+or+Throwable">SEI CERT ERR07-J rule</a>.
+        </p><p>
+        See <a href="https://cwe.mitre.org/data/definitions/397.html">CWE-397: Declaration of Throws for Generic Exception</a>.
         </p>]]>
     </Details>
   </BugPattern>
@@ -8988,6 +9331,8 @@ Using floating-point variables should not be used as loop counters, as they are 
         Furthermore, using Throwable like that is semantically a bad practice, considered that Throwables include Errors as well, but by definition they occur in unrecoverable scenarios.<br><br>
 
         For more information, see the <a href="https://wiki.sei.cmu.edu/confluence/display/java/ERR07-J.+Do+not+throw+RuntimeException%2C+Exception%2C+or+Throwable">SEI CERT ERR07-J rule</a>.
+        </p><p>
+        See <a href="https://cwe.mitre.org/data/definitions/397.html">CWE-397: Declaration of Throws for Generic Exception</a>.
         </p>]]>
     </Details>
   </BugPattern>
@@ -9022,7 +9367,9 @@ Using floating-point variables should not be used as loop counters, as they are 
       the copy constructor of the class used as the type of the formal parameter. This ensures that the
       method behaves exactly as expected.
       <p>
-      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/SEC02-J.+Do+not+base+security+checks+on+untrusted+sources">SEC02-J. Do not base security checks on untrusted sources</a>.
+      See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/SEC02-J.+Do+not+base+security+checks+on+untrusted+sources">SEC02-J. Do not base security checks on untrusted sources</a>,
+      <a href="https://cwe.mitre.org/data/definitions/302.html">CWE-302: Authentication Bypass by Assumed-Immutable Data</a>, and
+      <a href="https://cwe.mitre.org/data/definitions/470.html">CWE-470: Use of Externally-Controlled Input to Select Classes or Code ('Unsafe Reflection')</a>.
       </p>
       The <code>java.security.AccessController</code> class, which contains the <code>doPrivileged</code> methods,
       got deprecated in Java 17 (see <a href="https://openjdk.org/jeps/411">JEP 411</a>), and removed in Java 24 (see <a href="https://openjdk.org/jeps/486">JEP 486</a>).
@@ -9077,6 +9424,7 @@ Using floating-point variables should not be used as loop counters, as they are 
     setters, if necessary. Please note that constructors, initializers and finalizers are
     exceptions, if only they write the field inside the class, the field is not considered as
     written by the class itself.</p>
+    <p>See <a href="https://cwe.mitre.org/data/definitions/766.html">CWE-766: Critical Data Element Declared Public</a>.</p>
     ]]>
     </Details>
   </BugPattern>
@@ -9097,6 +9445,7 @@ Using floating-point variables should not be used as loop counters, as they are 
     provide appropriate setters, if necessary. Please note that constructors, initializers and
     finalizers are exceptions, if only they write the field inside the class, the field is not
     considered as written by the class itself.</p>
+    <p>See <a href="https://cwe.mitre.org/data/definitions/766.html">CWE-766: Critical Data Element Declared Public</a>.</p>
     ]]>
     </Details>
   </BugPattern>
@@ -9118,6 +9467,7 @@ Using floating-point variables should not be used as loop counters, as they are 
     constructors, initializers and finalizers are exceptions, if only they write the field inside
     the class, the field is not considered as written by the class itself. In case of object-type
     fields "writing" means calling methods whose name suggest modification.</p>
+    <p>See <a href="https://cwe.mitre.org/data/definitions/766.html">CWE-766: Critical Data Element Declared Public</a>.</p>
     ]]>
     </Details>
   </BugPattern>
@@ -9144,6 +9494,7 @@ Using floating-point variables should not be used as loop counters, as they are 
 
         <p>
         See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET01-J.+Never+use+assertions+to+validate+method+arguments">MET01-J. Never use assertions to validate method arguments</a>
+        and <a href="https://cwe.mitre.org/data/definitions/617.html">CWE-617: Reachable Assertion</a>
         for more information.
         </p>
         ]]>
@@ -9311,15 +9662,42 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
+  <BugPattern type="CWO_CLOSED_WITHOUT_OPENED">
+    <ShortDescription>Method releases lock without opening it</ShortDescription>
+    <LongDescription>{1} releases lock without acquiring it in the first place</LongDescription>
+    <Details>
+      <![CDATA[
+        <p> This method releases a JSR-166 (<code>java.util.concurrent</code>) lock,
+        but it is possible that the lock is not even acquired at this point,
+        due to an exception thrower method before the locking, moreover even the
+        <code>lock()</code> function can throw an exception depending on the implementation.
+        See the relevant part from the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/locks/Lock.html#lock--">Javadoc</a>:
+        "A Lock implementation may be able to detect erroneous use of the lock, such as an invocation that would cause deadlock,
+        and may throw an (unchecked) exception in such circumstances."
+        </p>
+        In general, the correct idiom for using a JSR-166 lock is:
+        </p>
+        <pre><code>Lock l = ...;
+        l.lock();
+        try {
+            // do something
+        } finally {
+            l.unlock();
+        }
+        </code></pre>
+      ]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="AT_NONATOMIC_64BIT_PRIMITIVE">
-    <ShortDescription>This write of this 64-bit primitive variable may not atomic</ShortDescription>
-    <LongDescription>This write of the 64-bit primitive variable "{2.name}" may not atomic</LongDescription>
+    <ShortDescription>This write of this 64-bit primitive variable may not be atomic</ShortDescription>
+    <LongDescription>This write of the 64-bit primitive variable "{2.name}" may not be atomic</LongDescription>
     <Details>
       <![CDATA[
         <p>
           The long and the double are 64-bit primitive types, and depending on the Java Virtual Machine implementation assigning a value to them can be treated as two separate 32-bit writes, and as such it's not atomic.
           See <a href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-17.html#jls-17.7">JSL 17.7. Non-Atomic Treatment of double and long</a>.
-          See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA05-J.+Ensure+atomicity+when+reading+and+writing+64-bit+values">VNA05-J. Ensure atomicity when reading and writing 64-bit values</a> for more info.
+          See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA05-J.+Ensure+atomicity+when+reading+and+writing+64-bit+values">VNA05-J. Ensure atomicity when reading and writing 64-bit values</a> and
+          <a href="https://cwe.mitre.org/data/definitions/667.html">CWE-667: Improper Locking</a> for more info.
 
           This bug can be ignored in platforms which guarantee that 64-bit long and double type read and write operations are atomic.
         </p>
@@ -9345,6 +9723,11 @@ Using floating-point variables should not be used as loop counters, as they are 
           Declaring the variable volatile may not be enough in some cases: e.g. when the variable is assigned a value which depends on the current value or on the result of nonatomic compound operations.
           This guarantees that 64-bit primitive long and double variables are accessed atomically.
         </p>
+        <p>
+        See also <a href="https://cwe.mitre.org/data/definitions/413.html">CWE-413: Improper Resource Locking</a>,
+        <a href="https://cwe.mitre.org/data/definitions/567.html">CWE-567: Unsynchronized Access to Shared Data in a Multithreaded Context</a>, and
+        <a href="https://cwe.mitre.org/data/definitions/667.html">CWE-667: Improper Locking</a>.
+        </p>
      ]]>
     </Details>
   </BugPattern>
@@ -9356,8 +9739,12 @@ Using floating-point variables should not be used as loop counters, as they are 
         <p>
           This write of a variable shared between functions depends on the current value of the variable (either because it's a compound operation - e.g. +=, ++ - or it simply depends on the current value), as such it consists of more than one discrete operation.
           These operations are not atomic in themselves and need further synchronization.
-          See <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA02-J.+Ensure+that+compound+operations+on+shared+variables+are+atomic">SEI CERT rule VNA02-J</a>.
-
+          See <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA02-J.+Ensure+that+compound+operations+on+shared+variables+are+atomic">SEI CERT rule VNA02-J</a>,
+          <a href="https://cwe.mitre.org/data/definitions/366.html">CWE-366: Race Condition within a Thread</a>,
+          <a href="https://cwe.mitre.org/data/definitions/413.html">CWE-413: Improper Resource Locking</a>,
+          <a href="https://cwe.mitre.org/data/definitions/567.html">CWE-567: Unsynchronized Access to Shared Data in a Multithreaded Context</a>, and
+          <a href="https://cwe.mitre.org/data/definitions/667.html">CWE-667: Improper Locking</a>.
+        </p>
           Simply declaring a variable volatile fails to guarantee the atomicity of compound operations on the variable,
           but synchronizing the writes on top of declaring the variable volatile for read operations is sufficient.
         <p>
@@ -9365,6 +9752,74 @@ Using floating-point variables should not be used as loop counters, as they are 
           use read-write locks, or declare the shared variable with an atomic type.
         </p>
      ]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="US_USELESS_SUPPRESSION_ON_CLASS">
+    <ShortDescription>Useless suppression on a class</ShortDescription>
+    <LongDescription>Suppressing annotation {1}on the class {0} is unnecessary</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
+      Leaving them may result in accidental warnings suppression.
+      The unnecessary annotation is not reported when the class is annotated with an <code>&amp;Generated</code> annotation with retention CLASS or RUNTIME.
+      </p>]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="US_USELESS_SUPPRESSION_ON_FIELD">
+    <ShortDescription>Useless suppression on a field</ShortDescription>
+    <LongDescription>Suppressing annotation {2}on the field {1} is unnecessary</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
+      Leaving them may result in accidental warnings suppression.
+      The annotation was probably added to suppress a warning raised by SpotBugs, but now SpotBugs does not report the bug anymore. Either
+      the bug was solved or SpotBugs was updated, and the bug is no longer raised by that code.
+      The unnecessary annotation is not reported when the class or field is annotated with an <code>&amp;Generated</code> annotation with retention CLASS or RUNTIME.
+      </p>]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="US_USELESS_SUPPRESSION_ON_METHOD">
+    <ShortDescription>Useless suppression on a method</ShortDescription>
+    <LongDescription>Suppressing annotation {2}on the method {1} is unnecessary</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
+      Leaving them may result in accidental warnings suppression.
+      The annotation was probably added to suppress a warning raised by SpotBugs, but now SpotBugs does not report the bug anymore. Either
+      the bug was solved or SpotBugs was updated, and the bug is no longer raised by that code.
+      The unnecessary annotation is not reported when the class or method is annotated with an <code>&amp;Generated</code> annotation with retention CLASS or RUNTIME.
+      </p>]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER">
+    <ShortDescription>Useless suppression on a method parameter</ShortDescription>
+    <LongDescription>Suppressing annotation {3}on the parameter {2} of the method {1} is unnecessary</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      Suppressing annotations <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
+      Leaving them may result in accidental warnings suppression.
+      The annotation was probably added to suppress a warning raised by SpotBugs, but now SpotBugs does not report the bug anymore. Either
+      the bug was solved or SpotBugs was updated, and the bug is no longer raised by that code.
+      The unnecessary annotation is not reported when the class is annotated with an <code>&amp;Generated</code> annotation with retention CLASS or RUNTIME.
+      </p>]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="US_USELESS_SUPPRESSION_ON_PACKAGE">
+    <ShortDescription>Useless suppression on a package</ShortDescription>
+    <LongDescription>Suppressing annotation {1}on the package {0} is unnecessary</LongDescription>
+    <Details>
+      <![CDATA[<p>
+      Suppressing annotation <code>&amp;SuppressFBWarnings</code> should be removed from the source code as soon as they are no more needed.
+      Leaving them may result in accidental warnings suppression.
+      The annotation was probably added to suppress a warning raised by SpotBugs, but now SpotBugs does not report the bug anymore. Either
+      the bug was solved or SpotBugs was updated, and the bug is no longer raised by that code.
+      The unnecessary annotation is not reported when the package's <code>package-info</code> is annotated with an <code>&amp;Generated</code> annotation with retention CLASS or RUNTIME.
+      </p>]]>
     </Details>
   </BugPattern>
   <!--
@@ -9416,7 +9871,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="SC">Constructor invokes Thread.start()</BugCode>
   <BugCode abbrev="MS">Mutable static field</BugCode>
   <BugCode abbrev="ME">Mutable enum field</BugCode>
-  <BugCode abbrev="EI">Method returning array may expose internal representation</BugCode>
+  <BugCode abbrev="EI">Method may expose internal representation</BugCode>
   <BugCode abbrev="Nm">Confusing method name</BugCode>
   <BugCode abbrev="SS">Unread field should be static</BugCode>
   <BugCode abbrev="UuF">Unused field</BugCode>
@@ -9454,7 +9909,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="NS">Suspicious use of non-short-circuit boolean operator</BugCode>
   <BugCode abbrev="ODR">Database resource not closed on all paths</BugCode>
   <BugCode abbrev="SBSC">String concatenation in loop using + operator</BugCode>
-  <BugCode abbrev="IIL">Inefficient code which can be moved outside of the loop</BugCode>
+  <BugCode abbrev="IIL">Inefficient code which can be moved outside the loop</BugCode>
   <BugCode abbrev="IIO">Inefficient use of String.indexOf(String) or String.lastIndexOf(String)</BugCode>
   <BugCode abbrev="ITA">Inefficient use of collection.toArray(new Foo[0])</BugCode>
   <BugCode abbrev="SW">Swing coding rules</BugCode>
@@ -9528,6 +9983,8 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="AA">Misuse of assertions for checking arguments of public methods</BugCode>
   <BugCode abbrev="PI">Do not reuse public identifiers from Java Standard Library</BugCode>
   <BugCode abbrev="ENV">Environment variable is used instead of the corresponding Java property</BugCode>
+  <BugCode abbrev="CWO">Lock closed without being opened in the first place</BugCode>
   <BugCode abbrev="HSM">Avoid method hiding</BugCode>
+  <BugCode abbrev="US">Useless suppression</BugCode>
 </MessageCollection>
 
