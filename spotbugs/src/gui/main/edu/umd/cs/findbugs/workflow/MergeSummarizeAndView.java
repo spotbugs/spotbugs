@@ -138,7 +138,7 @@ public class MergeSummarizeAndView {
         // detector plugins
     }
 
-    static public SortedBugCollection union(SortedBugCollection origCollection, SortedBugCollection newCollection) {
+    public static SortedBugCollection union(SortedBugCollection origCollection, SortedBugCollection newCollection) {
 
         SortedBugCollection result = origCollection.duplicate();
 

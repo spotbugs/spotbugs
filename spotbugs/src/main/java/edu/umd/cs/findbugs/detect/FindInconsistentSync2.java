@@ -199,8 +199,8 @@ public class FindInconsistentSync2 implements Detector {
 
     }
 
-    private static ClassDescriptor servlet = DescriptorFactory.createClassDescriptor("javax/servlet/GenericServlet");
-
+    // Single threaded servlets are only in javax namespace
+    private static ClassDescriptor javaxServlet = DescriptorFactory.createClassDescriptor("javax/servlet/GenericServlet");
     private static ClassDescriptor singleThreadedServlet = DescriptorFactory
             .createClassDescriptor("javax/servlet/SingleThreadModel");
 
@@ -209,7 +209,7 @@ public class FindInconsistentSync2 implements Detector {
 
         try {
             Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
-            if (subtypes2.isSubtype(classDescriptor, servlet) && !subtypes2.isSubtype(classDescriptor, singleThreadedServlet)) {
+            if (subtypes2.isSubtype(classDescriptor, javaxServlet) && !subtypes2.isSubtype(classDescriptor, singleThreadedServlet)) {
                 return true;
             }
         } catch (ClassNotFoundException e) {

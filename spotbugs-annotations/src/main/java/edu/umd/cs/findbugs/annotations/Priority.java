@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.annotations;
 
-
 /**
  * @author pugh
  * @deprecated use {@link Confidence} instead

@@ -6,6 +6,54 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
+### Fixed
+- Narrow the definition of singletons ([#3508](https://github.com/spotbugs/spotbugs/issues/3508))
+
+## 4.9.8 - 2025-10-18
+### Fixed
+- Maven plugin reporting issue if -adjustPriority is not set ([#3774](https://github.com/spotbugs/spotbugs/issues/3774)) 
+
+## 4.9.7 - 2025-10-14
+### Fixed
+- Fix Eclipse not always using latest preferences file state ([#3740](https://github.com/spotbugs/spotbugs/issues/3740)) 
+- Fix exception throw when singleton implementing Cloneable has no clone() method ([#3727](https://github.com/spotbugs/spotbugs/issues/3727)) 
+- Fix for missing -adjustPriority parameter in Eclipse preferences ([#3687](https://github.com/spotbugs/spotbugs/issues/3687))
+- Documentation of -adjustPriority parameter
+- Functionality from DetectorFactory setEnabledButNonReporting(), getPriorityAdjustment() methods and BugInstance.adjustForDetector() is deprecated and moved to PriorityAdjuster ([#3753](https://github.com/spotbugs/spotbugs/issues/3753))
+- Improved `FindNakedNotify` to handle the case when the lock is loaded from a field ([#3634](https://github.com/spotbugs/spotbugs/issues/3634))
+
+### Changed
+- Support for fully qualified class names for detectors in -adjustPriority parameter
+- Support for numerical and absolute priority adjustments
+- Bump up Apache Commons BCEL to the version 6.11.0 ([#3569](https://github.com/spotbugs/spotbugs/issues/3569))
+
+### Deprecated
+- Add back and deprecate `edu.umd.cs.findbugs.io.IO.close(InputStream)` method. ([#3756](https://github.com/spotbugs/spotbugs/pull/3756))
+
+### Build
+- Allow our GA builds to work with JDK 25 (and drop support for JDK 24) ([#3564](https://github.com/spotbugs/spotbugs/pull/3564))
+
+## 4.9.6 - 2025-09-16
+### Fixed
+- Fix exception throw when analyzing `jakarta.servlet.http.HttpServletRequest` method calls ([#3711](https://github.com/spotbugs/spotbugs/issues/3711))
+
+## 4.9.5 - 2025-09-14
+### Fixed
+- Fix for an error when a record method has the `@SuppressFBWarnings` annotation ([#3622](https://github.com/spotbugs/spotbugs/pull/3622))
+- Fix `SF_SWITCH_FALLTHROUGH` false positive when continuing a loop ([#3617](https://github.com/spotbugs/spotbugs/issues/3617))
+- `CWO_CLOSED_WITHOUT_OPENED` false positive ([#3616](https://github.com/spotbugs/spotbugs/issues/3616))
+- `SF_SWITCH_NO_DEFAULT` false positive fix for switch-arrow ([#3645](https://github.com/spotbugs/spotbugs/issues/3645))
+- Fix the issue with BCEL logging `Duplicating value: ...` ([#3621](https://github.com/spotbugs/spotbugs/issues/3621))
+- Add missing jakarta support for servlets / pre/post destroy ([#3694](https://github.com/spotbugs/spotbugs/pull/3694))
+
+### Added
+- Add 'java.nio.file.Path.of' to known types for path traversal checks ([#3699](https://github.com/spotbugs/spotbugs/pull/3699))
+
+### Cleanup
+- S1481: Unused local variables should be removed ([#3654](https://github.com/spotbugs/spotbugs/pull/3654))
+- Moved test libraries to jakarta namespace including switching off jsr305 where possible for jakarta.annotatoin ([#3695](https://github.com/spotbugs/spotbugs/pull/3695))
+
+## 4.9.4 - 2025-08-07
 ### Changed
 - `AnnotationMatcher` can now ignore bugs if annotation is also applied on methods or fields. Previously only annotations on classes were considered.
 - Add relevant CWE ids to bugs and refer the CWEs in the bug messages ([#3354](https://github.com/spotbugs/spotbugs/pull/3354)).
@@ -36,7 +84,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Detect random value cast to int when stored in temporary variable ([#3461](https://github.com/spotbugs/spotbugs/issues/3461))
 - Look for interfaces default methods when searching uncalled private methods ([#1988](https://github.com/spotbugs/spotbugs/issues/1988))
 - Fixed field self assignment false positive ([#2258](https://github.com/spotbugs/spotbugs/issues/2258))
-- Narrow the definition of singletons ([#3508](https://github.com/spotbugs/spotbugs/issues/3508))
+- Fixed `DMI_INVOKING_TOSTRING_ON_ARRAY` on newer JDK ([#1147](https://github.com/spotbugs/spotbugs/issues/1147))
+- Fix `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` false positive with `Objects.requireNonNull` ([#2965](https://github.com/spotbugs/spotbugs/issues/2965)) ([#3573](https://github.com/spotbugs/spotbugs/issues/3573))
+- Track inner classes access methods to correctly report the bugs ([#2029](https://github.com/spotbugs/spotbugs/issues/2029))
+- `SF_SWITCH_NO_DEFAULT` false positive fix ([#1148](https://github.com/spotbugs/spotbugs/issues/1148)) ([#3572](https://github.com/spotbugs/spotbugs/issues/3572))
 
 ### Added
 - Added the unnecessary annotation to the `US_USELESS_SUPPRESSION_ON_*` messages ([#3395](https://github.com/spotbugs/spotbugs/issues/3395))
@@ -45,6 +96,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - Breaking change: changed values and new items in `ResourceValueFrame`.
 - Inline access method for method. ([#3481](https://github.com/spotbugs/spotbugs/issues/3481))
 - Added `DMI_MISLEADING_SUBSTRING` for calling `subString(0)` on a StringBuffer/StringBuilder ([#1928](https://github.com/spotbugs/spotbugs/issues/1928))
+
+### Signing
+- Signing for Eclipse plugin has been removed at the current time due to signing keys being expired.  The expired key produced a warning during install, the same is true without signing.
 
 ## 4.9.3 - 2025-03-14
 ### Added

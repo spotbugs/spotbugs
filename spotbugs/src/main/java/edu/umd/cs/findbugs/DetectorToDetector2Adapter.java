@@ -78,4 +78,9 @@ public class DetectorToDetector2Adapter implements Detector2 {
             profiler.end(detector.getClass());
         }
     }
+
+    @Override
+    public String getDetectorClassName() {
+        return detector.getClass().getName();
+    }
 }

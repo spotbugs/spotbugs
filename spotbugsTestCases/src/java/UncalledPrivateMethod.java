@@ -3,7 +3,7 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 public class UncalledPrivateMethod {
     // Interesting tidbit:
     // Sun's javac makes class initializer methods "default static",
-    // while jikes makes them "private final static", which could
+    // while jikes makes them "private static final", which could
     // lead to spurious warnings.
     private static final Object myObject = new Object();
 

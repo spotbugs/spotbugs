@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -32,6 +31,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -345,14 +345,10 @@ public class PluginLoader implements AutoCloseable {
         File f = new File(url.getPath());
         // default: try with jar/zip/war etc files
         if (!f.isDirectory()) {
-            JarInputStream jis = null;
-            try {
-                jis = new JarInputStream(url.openStream());
+            try (JarInputStream jis = new JarInputStream(url.openStream())) {
                 mf = jis.getManifest();
             } catch (IOException ioe) {
                 throw new PluginException("Failed loading manifest for plugin jar: " + url, ioe);
-            } finally {
-                IO.close(jis);
             }
         } else {
             // If this is not a jar/zip/war etc file, can we can load from directory?
@@ -360,7 +356,7 @@ public class PluginLoader implements AutoCloseable {
             // 3rd party FB plugin projects in Eclipse without packaging them to jars at all)
             File manifest = guessManifest(f);
             if (manifest != null) {
-                try (FileInputStream is = new FileInputStream(manifest)) {
+                try (InputStream is = Files.newInputStream(manifest.toPath())) {
                     mf = new Manifest(is);
                 } catch (IOException e) {
                     throw new PluginException("Failed loading manifest for plugin jar: " + url, e);
