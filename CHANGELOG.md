@@ -6,6 +6,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
+### Refactor
+- Remove deprecated 'Priority' annotation originally deprecated in 2011.  Switch to 'Confidence' for same behaviour. ([#3746](https://github.com/spotbugs/spotbugs/pull/3746))
 
 ### Added
 - Recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3780](https://github.com/spotbugs/spotbugs/pull/3780))
@@ -121,9 +123,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Build
 - Allow our GA builds to work with JDK 25 (and drop support for JDK 24) ([#3564](https://github.com/spotbugs/spotbugs/pull/3564))
-
-### Refactor
-- Remove deprecated 'Priority' annotation originally deprecated in 2011.  Switch to 'Confidence' for same behaviour. ([#3746](https://github.com/spotbugs/spotbugs/issues/3746))
 
 ## 4.9.6 - 2025-09-16
 ### Fixed
