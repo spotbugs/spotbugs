@@ -6,7 +6,6 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
-
 ### Removed
 - Removed old deprecated methods: 
   - `assertPresentBugPattern(String, IMarker[])` protected method from `de.tobject.findbugs.test.AbstractQuickfixTest` deprecated since 2014,
@@ -70,6 +69,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `getDottedFieldSig()` method from `edu.umd.cs.findbugs.visitclass.PreorderVisitor` deprecated since 2006.
 - Removed old deprecated fields:
   - String `RELEASE` from `edu.umd.cs.findbugs.Version` deprecated since 2018.
+
+## 4.9.8 - 2025-10-18
+### Fixed
+- Maven plugin reporting issue if -adjustPriority is not set ([#3774](https://github.com/spotbugs/spotbugs/issues/3774)) 
 
 ## 4.9.7 - 2025-10-14
 ### Fixed

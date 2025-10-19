@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
@@ -144,6 +145,8 @@ public abstract class AbstractBugReporter implements BugReporter {
         // bug 2815983: no bugs are reported anymore
         // there is no info which value should be default, so using the max
         rankThreshold = BugRanker.VISIBLE_RANK_MAX;
+        // using by default empty settings
+        priorityAdjuster = new PriorityAdjuster(Map.of());
     }
 
     @Override
