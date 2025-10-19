@@ -22,12 +22,10 @@ package edu.umd.cs.findbugs.classfile.impl;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -401,7 +399,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
         }
 
         if (isJava9orLater()) {
-            Path jrtFsJar = Paths.get(System.getProperty("java.home", ""), "lib/jrt-fs.jar");
+            Path jrtFsJar = Path.of(System.getProperty("java.home", ""), "lib/jrt-fs.jar");
             if (Files.isRegularFile(jrtFsJar)) {
                 addWorkListItemsForClasspath(workList, jrtFsJar.toString());
             }
@@ -638,15 +636,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
                 scanJarManifestForClassPathEntries(workList, discoveredCodeBase.getCodeBase());
             } catch (IOException e) {
                 if (item.isAppCodeBase() || item.getHowDiscovered() == ICodeBase.Discovered.SPECIFIED) {
-                    if (e instanceof FileNotFoundException) {
-                        if (item.isAppCodeBase()) {
-                            errorLogger.logError("File from project not found: " + item.getCodeBaseLocator(), e);
-                        } else {
-                            errorLogger.logError("File from auxiliary classpath not found: " + item.getCodeBaseLocator(), e);
-                        }
-                    } else {
-                        errorLogger.logError("Cannot open codebase " + item.getCodeBaseLocator(), e);
-                    }
+                    errorLogger.logError("Cannot open codebase " + item.getCodeBaseLocator(), e);
                 }
             } catch (ResourceNotFoundException e) {
                 if (item.getHowDiscovered() == ICodeBase.Discovered.SPECIFIED) {
@@ -759,9 +749,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
         }
 
         // Try to read the manifest
-        InputStream in = null;
-        try {
-            in = manifestEntry.openResource();
+        try (InputStream in = manifestEntry.openResource()) {
             Manifest manifest = new Manifest(in);
 
             Attributes mainAttrs = manifest.getMainAttributes();
@@ -779,10 +767,6 @@ public class ClassPathBuilder implements IClassPathBuilder {
                     // added to the aux classpath, not the application.
                     addToWorkList(workList, new WorkListItem(relativeCodeBaseLocator, false, ICodeBase.Discovered.IN_JAR_MANIFEST));
                 }
-            }
-        } finally {
-            if (in != null) {
-                IO.close(in);
             }
         }
     }

@@ -19,18 +19,30 @@
 
 package edu.umd.cs.findbugs;
 
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -38,6 +50,7 @@ import javax.annotation.meta.When;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationEntry;
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -49,6 +62,8 @@ import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.ba.AccessMethodDatabase;
+import edu.umd.cs.findbugs.ba.AccessMethodDatabase.AccessMethodLocation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -190,8 +205,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
                 String msg = "Can't find definition of bug type " + type;
                 AnalysisContext.logError(msg, new NoSuchBugPattern(type));
             }
-        } else {
-            this.priority += p.getPriorityAdjustment();
         }
         if (adjustExperimental && isExperimental()) {
             this.priority = Priorities.EXP_PRIORITY;
@@ -242,29 +255,22 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     public BugInstance(Detector detector, String type, int priority) {
         this(type, priority);
         if (detector != null) {
-            // Adjust priority if required
             String detectorName = detector.getClass().getName();
-            adjustForDetector(detectorName);
+            rememberDetectorFactory(detectorName);
         }
 
+    }
+
+    @Deprecated(forRemoval = true)
+    public void adjustForDetector(String detectorName) {
+        rememberDetectorFactory(detectorName);
     }
 
     /**
      * @param detectorName
      */
-    public void adjustForDetector(String detectorName) {
-        DetectorFactory factory = DetectorFactoryCollection.instance().getFactoryByClassName(detectorName);
-        detectorFactory = factory;
-        if (factory != null) {
-            this.priority += factory.getPriorityAdjustment();
-            boundPriority();
-            BugPattern bugPattern = getBugPattern();
-            if (SystemProperties.ASSERTIONS_ENABLED && !"EXPERIMENTAL".equals(bugPattern.getCategory())
-                    && !factory.getReportedBugPatterns().contains(bugPattern)) {
-                AnalysisContext.logError(factory.getShortName() + " doesn't note that it reports "
-                        + bugPattern + " in category " + bugPattern.getCategory());
-            }
-        }
+    public void rememberDetectorFactory(String detectorName) {
+        detectorFactory = DetectorFactoryCollection.instance().getFactoryByClassName(detectorName);
     }
 
     /**
@@ -282,9 +288,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         this(type, priority);
 
         if (detector != null) {
-            // Adjust priority if required
             String detectorName = detector.getDetectorClassName();
-            adjustForDetector(detectorName);
+            rememberDetectorFactory(detectorName);
         }
 
     }
@@ -392,7 +397,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         priority = boundedPriority(p);
     }
 
-    private int boundedPriority(int p) {
+    public static int boundedPriority(int p) {
         return Math.max(Priorities.HIGH_PRIORITY, Math.min(Priorities.IGNORE_PRIORITY, p));
     }
 
@@ -843,12 +848,31 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      */
     @Nonnull
     public BugInstance addClassAndMethod(PreorderVisitor visitor) {
-        addClass(visitor);
         XMethod m = visitor.getXMethod();
+        if (m.isAccessMethod()) {
+            // An issue was found in an access method (in the outer class), locate the inner class' method location
+            AccessMethodDatabase database = Global.getAnalysisCache().getDatabase(AccessMethodDatabase.class);
+
+            List<AccessMethodLocation> locations = database.getAccessMethodLocations(visitor.getMethodDescriptor());
+            if (!locations.isEmpty()) {
+                for (AccessMethodLocation location : locations) {
+                    MethodAnnotation methodAnnotation = MethodAnnotation.fromMethodDescriptor(location.getCallerMethod());
+
+                    addClass(location.getCallerMethod().getClassDescriptor());
+                    addMethod(methodAnnotation);
+                    addSourceLinesForMethod(methodAnnotation, location.getSourceLineAnnotation());
+                }
+
+                return this;
+            }
+        }
+
+        addClass(visitor);
         addMethod(visitor);
         if (!MemberUtils.isUserGenerated(m)) {
             foundInAutogeneratedMethod();
         }
+
         return this;
     }
 
@@ -1124,7 +1148,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a field annotation.
      *
      * @param className
-     *            name of the class containing the field
+     *            the dotted name of the class containing the field
      * @param fieldName
      *            the name of the field
      * @param fieldSig
@@ -1134,7 +1158,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * @return this object
      */
     @Nonnull
-    public BugInstance addField(String className, String fieldName, String fieldSig, boolean isStatic) {
+    public BugInstance addField(@DottedClassName String className, String fieldName, String fieldSig, boolean isStatic) {
         addField(new FieldAnnotation(className, fieldName, fieldSig, isStatic));
         return this;
     }
@@ -1143,7 +1167,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a field annotation.
      *
      * @param className
-     *            name of the class containing the field
+     *            the dotted name of the class containing the field
      * @param fieldName
      *            the name of the field
      * @param fieldSig
@@ -1153,7 +1177,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * @return this object
      */
     @Nonnull
-    public BugInstance addField(String className, String fieldName, String fieldSig, int accessFlags) {
+    public BugInstance addField(@DottedClassName String className, String fieldName, String fieldSig, int accessFlags) {
         addField(new FieldAnnotation(className, fieldName, fieldSig, accessFlags));
         return this;
     }
@@ -1850,7 +1874,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     public String getAbridgedMessage() {
         BugPattern bugPattern = getBugPattern();
 
-        String pattern = getLongDescription().replaceAll(" in \\{1\\}", "");
+        String pattern = getLongDescription().replace(" in {1}", "");
         String shortPattern = bugPattern.getShortDescription();
 
         try {
@@ -2038,14 +2062,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         xmlOutput.closeTag(ELEMENT_NAME);
     }
 
-    private int ageInDays(BugCollection bugCollection, long firstSeen) {
-        long age = bugCollection.getAnalysisTimestamp() - firstSeen;
-        if (age < 0) {
-            age = 0;
-        }
-        return (int) (age / 1000 / 3600 / 24);
-    }
-
     /*
      * ----------------------------------------------------------------------
      * Implementation
@@ -2076,16 +2092,40 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             ClassDescriptor classDescriptor = pma.getClassDescriptor();
             ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, classDescriptor);
             JavaClass javaClass = classContext.getJavaClass();
-            AnnotationEntry[] annotationEntries = javaClass.getAnnotationEntries();
-            // map annotation entry type to dotted class name, for example
-            // Lorg/immutables/value/Generated; -> org.immutables.value.Generated
-            List<String> javaAnnotationNames = Arrays.asList(annotationEntries).stream()
-                    .map((AnnotationEntry ae) -> ClassName.fromFieldSignatureToDottedClassName(ae.getAnnotationType()))
-                    .collect(Collectors.toList());
-            pma.setJavaAnnotationNames(javaAnnotationNames);
+            if (annotation instanceof ClassAnnotation) {
+                AnnotationEntry[] annotationEntries = javaClass.getAnnotationEntries();
+                addAnnotationNames(pma, annotationEntries);
+            } else if (annotation instanceof MethodAnnotation) {
+                MethodAnnotation ma = (MethodAnnotation) annotation;
+                for (Method method : javaClass.getMethods()) {
+                    if (method.getName().equals(ma.getMethodName()) && method.getSignature().equals(ma.getMethodSignature())) {
+                        AnnotationEntry[] annotationEntries = method.getAnnotationEntries();
+                        addAnnotationNames(pma, annotationEntries);
+                        break;
+                    }
+                }
+            } else if (annotation instanceof FieldAnnotation) {
+                FieldAnnotation fa = (FieldAnnotation) annotation;
+                for (Field field : javaClass.getFields()) {
+                    if (field.getName().equals(fa.getFieldName())) {
+                        AnnotationEntry[] annotationEntries = field.getAnnotationEntries();
+                        addAnnotationNames(pma, annotationEntries);
+                        break;
+                    }
+                }
+            }
         } catch (Exception e) {
             LOG.debug(e.getMessage(), e);
         }
+    }
+
+    private static void addAnnotationNames(PackageMemberAnnotation pma, AnnotationEntry[] annotationEntries) {
+        // map annotation entry type to dotted class name, for example
+        // Lorg/immutables/value/Generated; -> org.immutables.value.Generated
+        List<String> javaAnnotationNames = Arrays.stream(annotationEntries)
+                .map((AnnotationEntry ae) -> ClassName.fromFieldSignatureToDottedClassName(ae.getAnnotationType()))
+                .collect(Collectors.toList());
+        pma.setJavaAnnotationNames(javaAnnotationNames);
     }
 
     public BugInstance add(@Nonnull BugAnnotation annotation) {

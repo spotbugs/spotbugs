@@ -102,10 +102,13 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
                 return;
             }
 
-            if (fact.getStatus() == ResourceValueFrame.OPEN) {
+            if (fact.getStatus() == ResourceValueFrame.State.OPEN) {
                 // If status is OPEN, downgrade to OPEN_ON_EXCEPTION_PATH
                 tmpFact = modifyFrame(fact, null);
-                tmpFact.setStatus(ResourceValueFrame.OPEN_ON_EXCEPTION_PATH);
+                tmpFact.setStatus(ResourceValueFrame.State.OPEN_ON_EXCEPTION_PATH);
+            } else if (fact.getStatus() != ResourceValueFrame.State.CLOSED) {
+                tmpFact = modifyFrame(fact, null);
+                tmpFact.setStatus(ResourceValueFrame.State.NOT_OPEN_ON_EXCEPTION_PATH);
             }
 
             if (fact.isValid()) {
@@ -122,7 +125,7 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
                         && resourceTracker.isResourceClose(fallThroughSuccessor, exceptionThrower, methodGen.getConstantPool(),
                                 resource, fact)) {
                     tmpFact = modifyFrame(fact, tmpFact);
-                    tmpFact.setStatus(ResourceValueFrame.CLOSED);
+                    tmpFact.setStatus(ResourceValueFrame.State.CLOSED);
                     if (DEBUG) {
                         System.out.print("(failed attempt to close)");
                     }
@@ -134,6 +137,11 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
                 tmpFact = modifyFrame(fact, tmpFact);
                 tmpFact.clearStack();
                 tmpFact.pushValue(ResourceValue.notInstance());
+            }
+        } else {
+            if (result.getStatus() == ResourceValueFrame.State.NOT_OPEN_ON_EXCEPTION_PATH && fact.getStatus() == ResourceValueFrame.State.CLOSED) {
+                tmpFact = modifyFrame(fact, null);
+                tmpFact.setStatus(ResourceValueFrame.State.CLOSED_WITHOUT_OPENED);
             }
         }
 
@@ -188,9 +196,8 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
 
                         if (topValue.isInstance()
                                 && ((isNullCheck && edgeType == IFCMP_EDGE) || (isNonNullCheck && edgeType == FALL_THROUGH_EDGE))) {
-                            // System.out.println("**** making resource nonexistent on edge "+edge.getId());
                             tmpFact = modifyFrame(fact, tmpFact);
-                            tmpFact.setStatus(ResourceValueFrame.NONEXISTENT);
+                            tmpFact.setStatus(ResourceValueFrame.State.NONEXISTENT);
                         }
                     }
                 }
@@ -210,12 +217,11 @@ public class ResourceValueAnalysis<Resource> extends FrameDataflowAnalysis<Resou
         super.mergeInto(frame, result);
 
         // Merge status
-        result.setStatus(Math.min(result.getStatus(), frame.getStatus()));
+        result.setStatus(result.getStatus().getType() > frame.getStatus().getType() ? frame.getStatus() : result.getStatus());
     }
 
     @Override
-    protected void mergeValues(ResourceValueFrame otherFrame, ResourceValueFrame resultFrame, int slot)
-            throws DataflowAnalysisException {
+    protected void mergeValues(ResourceValueFrame otherFrame, ResourceValueFrame resultFrame, int slot) {
         ResourceValue value = ResourceValue.merge(resultFrame.getValue(slot), otherFrame.getValue(slot));
         resultFrame.setValue(slot, value);
     }

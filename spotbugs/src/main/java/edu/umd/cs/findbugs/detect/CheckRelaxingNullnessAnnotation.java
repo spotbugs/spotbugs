@@ -54,9 +54,7 @@ import edu.umd.cs.findbugs.ba.NullnessAnnotation.Parser;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
@@ -76,31 +74,8 @@ import edu.umd.cs.findbugs.util.ClassName;
  */
 public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
 
-    XClass xclass;
-
     public CheckRelaxingNullnessAnnotation(BugReporter bugReporter) {
         super(bugReporter);
-    }
-
-    @Override
-    public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
-        xclass = getClassInfo(classDescriptor);
-        if (xclass != null) {
-            super.visitClass(classDescriptor);
-        }
-    }
-
-    @CheckForNull
-    XClass getClassInfo(ClassDescriptor classDescr) {
-        if (classDescr == null) {
-            return null;
-        }
-        try {
-            return Global.getAnalysisCache().getClassAnalysis(XClass.class, classDescr);
-        } catch (CheckedAnalysisException e) {
-            bugReporter.reportMissingClass(classDescr);
-            return null;
-        }
     }
 
     @Override

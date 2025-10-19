@@ -66,7 +66,8 @@ public class LineNumberMap {
      * methods.
      */
     public void build() {
-        int numGood = 0, numBytecodes = 0;
+        int numGood = 0;
+        int numBytecodes = 0;
 
         if (DEBUG) {
             System.out.println("Method: " + methodGen.getName() + " - " + methodGen.getSignature() + "in class "

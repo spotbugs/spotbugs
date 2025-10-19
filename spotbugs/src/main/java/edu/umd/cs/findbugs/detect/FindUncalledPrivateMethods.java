@@ -55,7 +55,8 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 
     private String className;
 
-    private HashSet<MethodAnnotation> definedPrivateMethods, calledMethods;
+    private HashSet<MethodAnnotation> definedPrivateMethods;
+    private HashSet<MethodAnnotation> calledMethods;
 
     private HashSet<String> calledMethodNames;
     private Set<String> jUnitSourceMethodNames;
@@ -105,7 +106,9 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
             for (AnnotationEntry a : obj.getAnnotationEntries()) {
                 String typeName = a.getAnnotationType();
                 if ("Ljavax/annotation/PostConstruct;".equals(typeName)
-                        || "Ljavax/annotation/PreDestroy;".equals(typeName)) {
+                        || "Ljavax/annotation/PreDestroy;".equals(typeName)
+                        || "Ljakarta/annotation/PostConstruct;".equals(typeName)
+                        || "Ljakarta/annotation/PreDestroy;".equals(typeName)) {
                     return;
                 }
             }
@@ -119,6 +122,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
         case Const.INVOKEVIRTUAL:
         case Const.INVOKESPECIAL:
         case Const.INVOKESTATIC:
+        case Const.INVOKEINTERFACE:
             if (getDottedClassConstantOperand().equals(className)) {
                 String clsName = getDottedClassConstantOperand();
                 MethodAnnotation called = new MethodAnnotation(clsName, getNameConstantOperand(), getSigConstantOperand(),

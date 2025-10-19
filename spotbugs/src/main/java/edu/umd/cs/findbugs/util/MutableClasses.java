@@ -13,7 +13,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 public class MutableClasses {
 
-    private static final Set<String> KNOWN_IMMUTABLE_CLASSES = new HashSet<>(Arrays.asList(
+    private static final Set<String> KNOWN_IMMUTABLE_CLASSES = Set.of(
             "java.lang.String", "java.lang.Integer", "java.lang.Byte", "java.lang.Character",
             "java.lang.Short", "java.lang.Boolean", "java.lang.Long", "java.lang.Double",
             "java.lang.Float", "java.lang.StackTraceElement", "java.lang.Class", "java.lang.ClassLoader",
@@ -62,17 +62,17 @@ public class MutableClasses {
             "java.util.Collections$UnmodifiableSortedSet",
             "java.util.ImmutableCollections$AbstractImmutableList",
             "java.util.ImmutableCollections$AbstractImmutableMap",
-            "java.util.ImmutableCollections$AbstractImmutableSet"));
+            "java.util.ImmutableCollections$AbstractImmutableSet");
 
-    private static final Set<String> KNOWN_IMMUTABLE_PACKAGES = new HashSet<>(Arrays.asList(
-            "java.math", "java.time", "java.util.function", "java.lang.constant"));
+    private static final Set<String> KNOWN_IMMUTABLE_PACKAGES = Set.of(
+            "java.math", "java.time", "java.util.function", "java.lang.constant");
 
-    private static final Set<String> CONSTRUCTOR_LIKE_NAMES = new HashSet<>(Arrays.asList(
+    private static final Set<String> CONSTRUCTOR_LIKE_NAMES = Set.of(
             Const.CONSTRUCTOR_NAME, Const.STATIC_INITIALIZER_NAME,
             "clone", "init", "initialize", "dispose", "finalize", "this",
-            "_jspInit", "jspDestroy"));
+            "_jspInit", "jspDestroy");
 
-    private static final List<String> SETTER_LIKE_PREFIXES = Arrays.asList(
+    private static final List<String> SETTER_LIKE_PREFIXES = List.of(
             "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
             "enqueue", "dequeue", "write", "append", "replace");
 

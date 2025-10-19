@@ -185,7 +185,6 @@ public class DescriptorFactory {
         int total = 0;
         int keys = 0;
         int values = 0;
-        int bad = 0;
         for (Map.Entry<MethodDescriptor, MethodDescriptor> e : methodDescriptorMap.entrySet()) {
             total++;
             if (e.getKey() instanceof MethodInfo) {

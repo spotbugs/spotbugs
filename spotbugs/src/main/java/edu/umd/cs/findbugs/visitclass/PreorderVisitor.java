@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationDefault;
@@ -333,10 +334,7 @@ public class PreorderVisitor extends BetterVisitor {
         if (!visitingMethod) {
             throw new IllegalStateException("Not visiting a method");
         }
-        return method.isStatic()
-                && "main".equals(getMethodName())
-                && "([Ljava/lang/String;)V".equals(getMethodSig());
-
+        return MemberUtils.isMainMethod(method);
     }
 
     // Extra classes (i.e. leaves in this context)

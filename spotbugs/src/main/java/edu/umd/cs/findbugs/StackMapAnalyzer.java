@@ -110,16 +110,13 @@ public class StackMapAnalyzer {
     static List<Item> getInitialLocals(MethodDescriptor descriptor) {
         List<Item> locals = new ArrayList<>();
         Type[] argTypes = Type.getArgumentTypes(descriptor.getSignature());
-        int reg = 0;
         if (!descriptor.isStatic()) {
             Item it = Item.typeOnly("L" + descriptor.getSlashedClassName() + ";");
             locals.add(it);
-            reg += it.getSize();
         }
         for (Type argType : argTypes) {
             Item it = Item.typeOnly(argType.getSignature());
             locals.add(it);
-            reg += it.getSize();
             if (it.usesTwoSlots()) {
                 locals.add(null);
             }

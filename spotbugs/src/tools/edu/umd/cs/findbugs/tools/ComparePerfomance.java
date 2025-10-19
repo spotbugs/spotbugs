@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.tools;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -67,8 +66,7 @@ public class ComparePerfomance {
         SAXReader reader = new SAXReader();
 
         String fName = f.getName();
-        InputStream in = new FileInputStream(f);
-        try {
+        try (InputStream in = Files.newInputStream(f.toPath())) {
             if (fName.endsWith(".gz")) {
                 in = new GZIPInputStream(in);
             }
@@ -87,8 +85,6 @@ public class ComparePerfomance {
                 putStats(name, i, totalMilliseconds);
                 //            System.out.printf("%6d %10d %s%n", invocations, totalMilliseconds, simpleName);
             }
-        } finally {
-            in.close();
         }
     }
 

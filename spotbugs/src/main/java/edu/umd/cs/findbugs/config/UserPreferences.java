@@ -29,11 +29,11 @@ package edu.umd.cs.findbugs.config;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -42,8 +42,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.annotation.WillClose;
 
@@ -108,6 +110,10 @@ public class UserPreferences implements Cloneable {
      */
     public static final String KEY_EXCLUDE_BUGS = "excludebugs";
 
+    private static final String KEY_MERGE_SIMILAR_WARNINGS = "mergeSimilarWarnings";
+
+    private static final String KEY_ADJUST_PRIORITY = "adjust_priority";
+
     // Fields
 
     private LinkedList<String> recentProjectsList;
@@ -128,6 +134,10 @@ public class UserPreferences implements Cloneable {
 
     private Map<String, Boolean> customPlugins;
 
+    private boolean mergeSimilarWarnings;
+
+    private Map<String, String> adjustPriority;
+
     private UserPreferences() {
         filterSettings = ProjectFilterSettings.createDefault();
         recentProjectsList = new LinkedList<>();
@@ -138,6 +148,7 @@ public class UserPreferences implements Cloneable {
         excludeFilterFiles = new TreeMap<>();
         excludeBugsFiles = new TreeMap<>();
         customPlugins = new TreeMap<>();
+        adjustPriority = new TreeMap<>();
     }
 
     /**
@@ -159,7 +170,7 @@ public class UserPreferences implements Cloneable {
             return;
         }
         try {
-            read(new FileInputStream(prefFile));
+            read(Files.newInputStream(prefFile.toPath()));
         } catch (IOException e) {
             // Ignore - just use default preferences
         }
@@ -250,6 +261,34 @@ public class UserPreferences implements Cloneable {
         excludeFilterFiles = readProperties(props, KEY_EXCLUDE_FILTER);
         excludeBugsFiles = readProperties(props, KEY_EXCLUDE_BUGS);
         customPlugins = readProperties(props, KEY_PLUGIN);
+        mergeSimilarWarnings = Boolean.parseBoolean(props.getProperty(KEY_MERGE_SIMILAR_WARNINGS));
+        if (props.get(KEY_ADJUST_PRIORITY) != null) {
+            adjustPriority.putAll(parseAdjustPriorities(props.getProperty(KEY_ADJUST_PRIORITY)));
+        }
+    }
+
+    /**
+     * Parses the -adjustPriority parameter into a map: detector / bug pattern -> priority change
+     *
+     * @param str
+     *            the string to parse
+     * @return the parsed map
+     */
+    public static Map<String, String> parseAdjustPriorities(String str) {
+        Map<String, String> retVal = new HashMap<>();
+        StringTokenizer tokenizer = new StringTokenizer(str, ",");
+        while (tokenizer.hasMoreElements()) {
+            String token = tokenizer.nextToken();
+            int equalPos = token.indexOf('=');
+            if (equalPos > 0) {
+                String key = token.substring(0, equalPos).trim();
+                String value = token.substring(equalPos + 1).trim();
+                if (!key.isEmpty() && !value.isEmpty()) {
+                    retVal.put(key, value);
+                }
+            }
+        }
+        return retVal;
     }
 
     /**
@@ -258,7 +297,7 @@ public class UserPreferences implements Cloneable {
     public void write() {
         try {
             File prefFile = new File(SystemProperties.getProperty("user.home"), PREF_FILE_NAME);
-            write(new FileOutputStream(prefFile));
+            write(Files.newOutputStream(prefFile.toPath()));
         } catch (IOException e) {
             if (FindBugs.DEBUG) {
                 e.printStackTrace(); // Ignore
@@ -297,12 +336,16 @@ public class UserPreferences implements Cloneable {
         // of FindBugs.
         props.put(DETECTOR_THRESHOLD_KEY, String.valueOf(filterSettings.getMinPriorityAsInt()));
         props.put(RUN_AT_FULL_BUILD, String.valueOf(runAtFullBuild));
+        props.put(KEY_MERGE_SIMILAR_WARNINGS, String.valueOf(mergeSimilarWarnings));
         props.setProperty(EFFORT_KEY, effort);
         writeProperties(props, KEY_INCLUDE_FILTER, includeFilterFiles);
         writeProperties(props, KEY_EXCLUDE_FILTER, excludeFilterFiles);
         writeProperties(props, KEY_EXCLUDE_BUGS, excludeBugsFiles);
         writeProperties(props, KEY_PLUGIN, customPlugins);
-
+        props.put(KEY_ADJUST_PRIORITY, adjustPriority.entrySet()
+                .stream()
+                .map(entry -> entry.getKey() + "=" + entry.getValue())
+                .collect(Collectors.joining(",")));
         try (OutputStream prefStream = new BufferedOutputStream(out)) {
             props.store(prefStream, "SpotBugs User Preferences");
             prefStream.flush();
@@ -475,13 +518,17 @@ public class UserPreferences implements Cloneable {
                 && detectorEnablementMap.equals(other.detectorEnablementMap) && filterSettings.equals(other.filterSettings)
                 && effort.equals(other.effort) && includeFilterFiles.equals(other.includeFilterFiles)
                 && excludeFilterFiles.equals(other.excludeFilterFiles) && excludeBugsFiles.equals(other.excludeBugsFiles)
-                && customPlugins.equals(other.customPlugins);
+                && customPlugins.equals(other.customPlugins)
+                && mergeSimilarWarnings == other.mergeSimilarWarnings
+                && adjustPriority.equals(other.adjustPriority);
     }
 
     @Override
     public int hashCode() {
         return recentProjectsList.hashCode() + detectorEnablementMap.hashCode() + filterSettings.hashCode() + effort.hashCode()
-                + includeFilterFiles.hashCode() + excludeFilterFiles.hashCode() + (runAtFullBuild ? 1 : 0);
+                + includeFilterFiles.hashCode() + excludeFilterFiles.hashCode() + (runAtFullBuild ? 1 : 0)
+                + excludeBugsFiles.hashCode() + customPlugins.hashCode() + (mergeSimilarWarnings ? 1 : 0)
+                + adjustPriority.hashCode();
     }
 
     @Override
@@ -496,6 +543,7 @@ public class UserPreferences implements Cloneable {
             dup.excludeFilterFiles = new TreeMap<>(excludeFilterFiles);
             dup.excludeBugsFiles = new TreeMap<>(excludeBugsFiles);
             dup.customPlugins = new TreeMap<>(customPlugins);
+            dup.adjustPriority = new TreeMap<>(adjustPriority);
             return dup;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
@@ -694,4 +742,89 @@ public class UserPreferences implements Cloneable {
         }
         return FindBugs.MAX_EFFORT;
     }
+
+    /**
+     * @return true if similar warnings should be merged, false otherwise
+     */
+    public boolean getMergeSimilarWarnings() {
+        return mergeSimilarWarnings;
+    }
+
+    /**
+     * @param mergeSimilarWarnings
+     *            true if similar warnings should be merged, false otherwise
+     */
+    public void setMergeSimilarWarnings(boolean mergeSimilarWarnings) {
+        this.mergeSimilarWarnings = mergeSimilarWarnings;
+    }
+
+    /**
+     * Resolve relative paths stored in the user preferences. If the preferences contain relative filter paths, modifies
+     * the paths to be absolute. For that, the directory of given file will be used first, and if that does not match,
+     * the parent directory will be used to resolve relative paths. If none of the paths match existing files,
+     * preferences will stay unchanged.
+     *
+     * @param preferencesPath
+     *            the path to the user preferences file, used to resolve relative paths
+     */
+    public void resolveRelativePaths(String preferencesPath) {
+        try {
+            Path prefsDir = Path.of(preferencesPath).getParent();
+            if (prefsDir == null || !Files.isDirectory(prefsDir)) {
+                return; // no parent directory, nothing to resolve
+            }
+            setExcludeFilterFiles(resolveRelativePaths(prefsDir, getExcludeFilterFiles().entrySet()));
+            setIncludeFilterFiles(resolveRelativePaths(prefsDir, getIncludeFilterFiles().entrySet()));
+            setExcludeBugsFiles(resolveRelativePaths(prefsDir, getExcludeBugsFiles().entrySet()));
+        } catch (Exception e) {
+            FindBugs.LOG.warning("Unable to resolve path of user preferences file " + preferencesPath);
+        }
+    }
+
+    private static Map<String, Boolean> resolveRelativePaths(Path prefsDir, Set<Entry<String, Boolean>> oldMap) {
+        Map<String, Boolean> newMap = new TreeMap<>();
+        for (Entry<String, Boolean> entry : oldMap) {
+            String resolvedPath = resolveRelativePath(entry.getKey(), prefsDir);
+            newMap.put(resolvedPath, entry.getValue());
+        }
+        return newMap;
+    }
+
+    private static String resolveRelativePath(final String maybeRelativePath, Path prefsDir) {
+        Path filterPath = Path.of(maybeRelativePath);
+        if (filterPath.isAbsolute()) {
+            return maybeRelativePath;
+        }
+        // relative path, try to resolve it
+        Path absolutePath = prefsDir.resolve(filterPath).normalize();
+        if (Files.exists(absolutePath)) {
+            return absolutePath.toString();
+        }
+        Path parent = prefsDir.getParent();
+        if (parent == null) {
+            return maybeRelativePath; // no parent directory, nothing to resolve
+        }
+        absolutePath = parent.resolve(filterPath).normalize();
+        if (Files.exists(absolutePath)) {
+            return absolutePath.toString();
+        }
+        // no match, return the original path
+        return maybeRelativePath;
+    }
+
+    /**
+     * @return Returns the adjustPriority.
+     */
+    public Map<String, String> getAdjustPriority() {
+        return adjustPriority;
+    }
+
+    /**
+     * @param adjustPriority
+     *            The adjustPriority to set.
+     */
+    public void setAdjustPriority(Map<String, String> adjustPriority) {
+        this.adjustPriority = new TreeMap<>(adjustPriority);
+    }
+
 }

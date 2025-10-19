@@ -102,7 +102,8 @@ public class DetectorConfigurationTab extends Composite {
         @Override
         public int compare(DetectorFactory factory1, DetectorFactory factory2) {
             int result = 0;
-            String s1, s2;
+            String s1;
+            String s2;
             switch (getSortColumnId()) {
             case BUG_CODES:
                 s1 = tab.getBugsAbbreviation(factory1);
@@ -441,12 +442,11 @@ public class DetectorConfigurationTab extends Composite {
         // remove all valid html tags
         detailHTML = detailHTML.replaceAll("<[a-zA-Z]+>", "");
         detailHTML = detailHTML.replaceAll("</[a-zA-Z]+>", "");
-        // convert some of the entities which are used in current FB
-        // messages.xml
-        detailHTML = detailHTML.replaceAll("&nbsp;", "");
-        detailHTML = detailHTML.replaceAll("&lt;", "<");
-        detailHTML = detailHTML.replaceAll("&gt;", ">");
-        detailHTML = detailHTML.replaceAll("&amp;", "&");
+        // convert some of the entities which are used in current FB messages.xml
+        detailHTML = detailHTML.replace("&nbsp;", "");
+        detailHTML = detailHTML.replace("&lt;", "<");
+        detailHTML = detailHTML.replace("&gt;", ">");
+        detailHTML = detailHTML.replace("&amp;", "&");
         return detailHTML.trim();
     }
 

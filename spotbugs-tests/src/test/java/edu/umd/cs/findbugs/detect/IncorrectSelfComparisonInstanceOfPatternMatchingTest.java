@@ -4,7 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnJre;
@@ -30,7 +30,7 @@ class IncorrectSelfComparisonInstanceOfPatternMatchingTest {
         final BugInstanceMatcher selfComparisonMatcher = new BugInstanceMatcherBuilder()
                 .bugType("SA_LOCAL_SELF_COMPARISON").build();
 
-        BugCollection bugCollection = spotbugs.performAnalysis(Paths.get(
+        BugCollection bugCollection = spotbugs.performAnalysis(Path.of(
                 "../spotbugsTestCases/build/classes/java/java17/IncorrectSelfComparisonInstanceOfPatternMatching.class"));
         assertThat(bugCollection, containsExactly(0, selfComparisonMatcher));
     }

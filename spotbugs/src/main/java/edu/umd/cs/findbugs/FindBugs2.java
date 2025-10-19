@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -84,6 +85,7 @@ import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.TopologicalSort;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
 
 /**
@@ -291,7 +293,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
 
                 if (executionPlan.isActive(NoteSuppressedWarnings.class)) {
                     SuppressionMatcher m = AnalysisContext.currentAnalysisContext().getSuppressionMatcher();
-                    bugReporter = new FilterBugReporter(bugReporter, m, false);
+                    bugReporter = new SuppressionMatcherBugReporter(bugReporter, m);
                 }
 
                 if (appClassList.isEmpty()) {
@@ -858,8 +860,8 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
     }
 
     public List<ClassDescriptor> sortByCallGraph(Collection<ClassDescriptor> classList, OutEdges<ClassDescriptor> outEdges) {
-        List<ClassDescriptor> evaluationOrder = edu.umd.cs.findbugs.util.TopologicalSort.sortByCallGraph(classList, outEdges);
-        edu.umd.cs.findbugs.util.TopologicalSort.countBadEdges(evaluationOrder, outEdges);
+        List<ClassDescriptor> evaluationOrder = TopologicalSort.sortByCallGraph(classList, outEdges);
+        TopologicalSort.countBadEdges(evaluationOrder, outEdges);
         return evaluationOrder;
 
     }
@@ -893,7 +895,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
         // If needed, load SourceInfoMap
         if (sourceInfoFileName != null) {
             SourceInfoMap sourceInfoMap = analysisContext.getSourceInfoMap();
-            sourceInfoMap.read(new FileInputStream(sourceInfoFileName));
+            sourceInfoMap.read(Files.newInputStream(Path.of(sourceInfoFileName)));
         }
     }
 
@@ -940,7 +942,11 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
             @Override
             public void enable(DetectorFactory factory) {
                 forcedEnabled.add(factory);
-                factory.setEnabledButNonReporting(true);
+            }
+
+            @Override
+            public boolean wasForciblyEnabled(DetectorFactory factory) {
+                return forcedEnabled.contains(factory);
             }
 
         };
@@ -975,6 +981,11 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
     private void analyzeApplication() throws InterruptedException {
         int passCount = 0;
         Profiler profiler = bugReporter.getProjectStats().getProfiler();
+        PriorityAdjuster priorityAdjuster = bugReporter.getPriorityAdjuster();
+        if (priorityAdjuster != null) {
+            priorityAdjuster.setFactoryChooser(executionPlan.getFactoryChooser());
+        }
+
         profiler.start(this.getClass());
         AnalysisContext.currentXFactory().canonicalizeAll();
         try {
@@ -994,8 +1005,8 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                 try {
                     XClass info = Global.getAnalysisCache().getClassAnalysis(XClass.class, desc);
                     factory.intern(info);
-                } catch (CheckedAnalysisException | RuntimeException e) {
-                    AnalysisContext.logError("Couldn't get class info for " + desc, e);
+                } catch (CheckedAnalysisException e) {
+                    AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(desc, e);
                     badClasses.add(desc);
                 }
             }

@@ -35,12 +35,16 @@ import org.apache.bcel.Const;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
@@ -323,6 +327,17 @@ public class NullDerefAndRedundantComparisonFinder {
                         variableAnnotation = ValueNumberSourceInfo.findAnnotationFromValueNumber(method, loc, valueNumber,
                                 vnaDataflow.getFactAtLocation(loc), "VALUE_OF");
                         if (variableAnnotation != null) {
+                            break;
+                        }
+                        Instruction instruction = loc.getHandle().getInstruction();
+                        if (instruction instanceof InvokeInstruction) {
+                            InvokeInstruction invokeInstruction = (InvokeInstruction) instruction;
+                            ConstantPoolGen cpg = classContext.getConstantPoolGen();
+                            String className = invokeInstruction.getClassName(cpg);
+                            String methodName = invokeInstruction.getMethodName(cpg);
+                            String methodSig = invokeInstruction.getSignature(cpg);
+                            boolean isStatic = instruction instanceof INVOKESTATIC;
+                            variableAnnotation = MethodAnnotation.fromCalledMethod(className, methodName, methodSig, isStatic);
                             break;
                         }
                     }
