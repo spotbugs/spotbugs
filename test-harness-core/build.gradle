@@ -9,6 +9,10 @@ dependencies {
   compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
 }
 
+tasks.named('compileJava', JavaCompile).configure {
+  options.release = 17
+}
+
 java {
   withJavadocJar()
   withSourcesJar()
