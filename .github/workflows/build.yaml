@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        java: [17.0.1+12, 17, 21, 24]
+        java: [17.0.1+12, 17, 21, 25]
       max-parallel: 6
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
@@ -33,7 +33,7 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
           cache: gradle
-      - uses: gradle/actions/wrapper-validation@748248ddd2a24f49513d8f472f81c3a07d4d50e1 # v4
+      - uses: gradle/actions/wrapper-validation@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5
       - name: Cache Eclipse
         id: cache-eclipse
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4

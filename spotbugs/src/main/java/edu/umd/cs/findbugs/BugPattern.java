@@ -54,8 +54,6 @@ public class BugPattern implements Comparable<BugPattern> {
 
     final int cweid;
 
-    int priorityAdjustment;
-
     private boolean deprecated;
 
     /**
@@ -129,14 +127,6 @@ public class BugPattern implements Comparable<BugPattern> {
      */
     public String getCategory() {
         return category;
-    }
-
-    public int getPriorityAdjustment() {
-        return priorityAdjustment;
-    }
-
-    public void adjustPriority(int change) {
-        priorityAdjustment += change;
     }
 
     public String getCategoryAbbrev() {

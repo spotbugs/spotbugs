@@ -19,7 +19,16 @@
 
 package edu.umd.cs.findbugs.plan;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.DetectorFactory;
@@ -28,6 +37,7 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.graph.DepthFirstSearch;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
@@ -137,10 +147,6 @@ public class ExecutionPlan {
      * Detectors within those passes.
      */
     public void build() throws OrderingConstraintException {
-
-        for (DetectorFactory detectorFactory : factoryMap.values()) {
-            detectorFactory.setEnabledButNonReporting(false);
-        }
 
         ArrayList<DetectorOrderingConstraint> allConstraints = new ArrayList<>(
                 interPassConstraintList.size() + intraPassConstraintList.size());
@@ -521,5 +527,13 @@ public class ExecutionPlan {
 
         System.out.println(execPlan.getNumPasses() + " passes in plan");
         execPlan.print();
+    }
+
+    /**
+     * @return Returns the factoryChooser used during analysis.
+     */
+    @NonNull
+    public DetectorFactoryChooser getFactoryChooser() {
+        return factoryChooser;
     }
 }

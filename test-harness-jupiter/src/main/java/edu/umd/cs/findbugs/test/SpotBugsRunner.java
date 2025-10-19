@@ -58,7 +58,7 @@ public class SpotBugsRunner {
         if (runner == null) {
             throw new IllegalStateException("Please call this performAnalysis() method in test method");
         }
-        return runner.run(engineCustomization, paths).getBugCollection();
+        return runner.run(engineCustomization, null, paths).getBugCollection();
     }
 
     /**

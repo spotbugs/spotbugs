@@ -710,7 +710,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
             return;
         }
 
-        UserPreferences prefs = getUserPreferences(project);
         bugCollection = new SortedBugCollection();
         bugCollection.getProject().setGuiCallback(new EclipseGuiCallback(project));
 
