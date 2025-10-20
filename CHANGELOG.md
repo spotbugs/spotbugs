@@ -7,7 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2025-??-??
 ### Refactor
-- Remove deprecated 'Priority' annotation originally deprecated in 2011.  Switch to 'Confidence' for same behaviour. ([#3746](https://github.com/spotbugs/spotbugs/pull/3746))
+- Remove deprecated 'Priority' annotation originally deprecated in 2011. Switch to 'Confidence' for same behaviour. ([#3746](https://github.com/spotbugs/spotbugs/pull/3746))
 
 ## 4.9.8 - 2025-10-18
 ### Fixed
