@@ -1,42 +1,36 @@
 package edu.umd.cs.findbugs.nullness;
 
-import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.test.SpotBugsExtension;
-import edu.umd.cs.findbugs.test.SpotBugsRunner;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
+import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import java.nio.file.Paths;
-
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Check if Nullable annotation from jakarta.annotations is detected.
+ * Check if Nullable/Nonnull annotation from jakarta.annotations is detected.
  *
  * @author pkini07
  */
-@ExtendWith(SpotBugsExtension.class)
-class JakartaNullabilityTest {
+class JakartaNullabilityTest extends AbstractIntegrationTest {
 
     @Test
-    void checkedJakartaNullableReturn_isOk(SpotBugsRunner spotbugs) {
-        BugCollection bugCollection = spotbugs.performAnalysis(
-                Paths.get("../spotbugsTestCases/build/classes/java/main/CheckedJakartaNullableReturn.class"));
-        assertThat(bugCollection, containsExactly(0, bug()));
+    void checkedJakartaNullableReturn_isOk() {
+        performAnalysis("nullnessAnnotations/CheckedJakartaNullableReturn.class", "jakarta/annotation/Nullable.class");
+        assertNoBugType("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE");
     }
 
     @Test
-    void uncheckedJakartaNullableReturn_isDetected(SpotBugsRunner spotbugs) {
-        BugCollection bugCollection = spotbugs.performAnalysis(
-                Paths.get("../spotbugsTestCases/build/classes/java/main/UncheckedJakartaNullableReturn.class"));
-
-        assertThat(bugCollection, containsExactly(1, bug()));
+    void uncheckedJakartaNullableReturn_isDetected() {
+        performAnalysis("nullnessAnnotations/UncheckedJakartaNullableReturn.class", "jakarta/annotation/Nullable.class");
+        assertBugTypeCount("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", 1);
     }
 
-    private BugInstanceMatcher bug() {
-        return new BugInstanceMatcherBuilder().bugType("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE").build();
+    @Test
+    void checkedJakartaNonnullReturn_isOk() {
+        performAnalysis("nullnessAnnotations/CheckedJakartaNonnullReturn.class", "jakarta/annotation/Nonnull.class");
+        assertNoBugType("NP_NONNULL_RETURN_VIOLATION");
+    }
+
+    @Test
+    void uncheckedJakartaNonnullReturn_isDetected() {
+        performAnalysis("nullnessAnnotations/UncheckedJakartaNonnullReturn.class", "jakarta/annotation/Nonnull.class");
+        assertBugTypeCount("NP_NONNULL_RETURN_VIOLATION", 1);
     }
 }

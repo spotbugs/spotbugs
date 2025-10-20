@@ -1,3 +1,5 @@
+package nullnessAnnotations;
+
 import jakarta.annotation.Nullable;
 
 public class CheckedJakartaNullableReturn {
