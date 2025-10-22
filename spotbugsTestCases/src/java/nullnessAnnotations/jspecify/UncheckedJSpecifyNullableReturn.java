@@ -1,4 +1,4 @@
-package nullnessAnnotations;
+package nullnessAnnotations.jspecify;
 
 import org.jspecify.annotations.Nullable;
 

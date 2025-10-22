@@ -1,8 +1,9 @@
-package nullnessAnnotations;
-import org.jspecify.annotations.Nullable;
+package nullnessAnnotations.jspecify;
+import org.jspecify.annotations.NullUnmarked;
 
-public class CheckedJSpecifyNullableReturn {
-    @Nullable
+
+public class CheckedJSpecifyNullUnmarkedReturn {
+    @NullUnmarked
     String foo() {
         return null;
     }

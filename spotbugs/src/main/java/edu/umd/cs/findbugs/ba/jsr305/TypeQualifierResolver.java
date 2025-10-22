@@ -66,6 +66,7 @@ public class TypeQualifierResolver {
         DescriptorFactory.createClassDescriptor("org/netbeans/api/annotations/common/NonNull"),
         DescriptorFactory.createClassDescriptor("lombok/NonNull"),
         DescriptorFactory.createClassDescriptor("org/jspecify/annotations/NonNull"),
+        DescriptorFactory.createClassDescriptor("org/jspecify/annotations/NullMarked"),
     };
 
     private static final ClassDescriptor[] NULLABLE_CLASS_DESCRIPTORS = new ClassDescriptor[] {
@@ -81,7 +82,7 @@ public class TypeQualifierResolver {
         DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/compatqual/NullableDecl"),
         DescriptorFactory.createClassDescriptor("org/netbeans/api/annotations/common/NullAllowed"),
         DescriptorFactory.createClassDescriptor("org/jspecify/annotations/Nullable"),
-        DescriptorFactory.createClassDescriptor("org/jspecify/annotations/NullMarked"),
+        
     };
 
     /**
