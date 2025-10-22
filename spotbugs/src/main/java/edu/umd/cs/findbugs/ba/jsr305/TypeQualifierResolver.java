@@ -82,7 +82,7 @@ public class TypeQualifierResolver {
         DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/compatqual/NullableDecl"),
         DescriptorFactory.createClassDescriptor("org/netbeans/api/annotations/common/NullAllowed"),
         DescriptorFactory.createClassDescriptor("org/jspecify/annotations/Nullable"),
-        
+
     };
 
     /**
