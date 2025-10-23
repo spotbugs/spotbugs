@@ -64,7 +64,7 @@ public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation
 
     public static final NullnessAnnotation NULLABLE = new NullnessAnnotation("Nullable", 2);
 
-    public final static NullnessAnnotation UNKNOWN_NULLNESS = new NullnessAnnotation("UnknownNullness", 0) {
+    public static final NullnessAnnotation UNKNOWN_NULLNESS = new NullnessAnnotation("UnknownNullness", 0) {
         @Override
         boolean match(@DottedClassName String className) {
             // TODO: This should be supported transitively as per https://github.com/jspecify/jspecify/blob/main/src/main/java/org/jspecify/annotations/NullUnmarked.java#L29
