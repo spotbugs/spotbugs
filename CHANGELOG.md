@@ -8,9 +8,11 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2025-??-??
 ### Added
 - Added partial support for `org.jspecify.annotations.Nullable`, `org.jspecify.annotations.NonNull`, `org.jspecify.annotations.NullUnmarked` and `org.jspecify.annotations.NullMarked` to supported `NullnessAnnotation`s.  This PR just aliases these as best as possible to existing FB non-null/null-ness annotations.  It is not a complete (or necessarily even correct) implementation of https://jspecify.dev/docs/spec/. ([#3142](https://github.com/spotbugs/spotbugs/issues/3142))
+
 ### Fixed
 - Fix incorrect bug counts and sizes when unioning reports ([#3721](https://github.com/spotbugs/spotbugs/issues/3721))
 
+## 4.9.8 - 2025-10-18
 ### Fixed
 - Maven plugin reporting issue if -adjustPriority is not set ([#3774](https://github.com/spotbugs/spotbugs/issues/3774)) 
 

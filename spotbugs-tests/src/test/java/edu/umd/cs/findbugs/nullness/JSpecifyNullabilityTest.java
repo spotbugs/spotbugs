@@ -2,11 +2,7 @@ package edu.umd.cs.findbugs.nullness;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Disabled;
-
-
-
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-
 
 /**
  * Check if annotation from https://jspecify.dev/ is detected.
@@ -40,6 +36,7 @@ class JSpecifyNullabilityTest extends AbstractIntegrationTest {
     void checkedJSpecifyNonNull() {
         performAnalysis(
                 "nullnessAnnotations/jspecify/TestJSpecifyNonNull.class");
+        assertBugTypeCount("NP_NONNULL_PARAM_VIOLATION", 1);
         assertBugInMethodCount("NP_NONNULL_PARAM_VIOLATION", "TestJSpecifyNonNull", "bar", 1);
     }
 
@@ -48,6 +45,7 @@ class JSpecifyNullabilityTest extends AbstractIntegrationTest {
     void checkedJSpecifyNonNullEnclosed() {
         performAnalysis(
                 "nullnessAnnotations/jspecify/TestJSpecifyNonNullEnclosed.class");
+        assertBugTypeCount("NP_NONNULL_PARAM_VIOLATION", 1);
         assertBugInMethodCount("NP_NONNULL_PARAM_VIOLATION", "TestJSpecifyNonNullEnclosed", "bar", 1);
     }
 
@@ -57,6 +55,7 @@ class JSpecifyNullabilityTest extends AbstractIntegrationTest {
     void checkedJSpecifyNullMarked() {
         performAnalysis(
                 "nullnessAnnotations/jspecify/nullmarked/TestJSpecifyNullMarked.class");
+        assertBugTypeCount("NP_NONNULL_PARAM_VIOLATION", 1);
         assertBugInMethodCount("NP_NONNULL_PARAM_VIOLATION", "TestJSpecifyNullMarked", "bar", 1);
     }
 }
