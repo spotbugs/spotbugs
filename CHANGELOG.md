@@ -9,6 +9,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Added
 - New bug type is introduced: `NCR_NOT_PROPERLY_CHECKED_READ`. Improper validation of the return value from the read() method in InputStream and Reader classes may result in an array not being fully filled.
 
+### Fixed
+- Fix incorrect bug counts and sizes when unioning reports ([#3721](https://github.com/spotbugs/spotbugs/issues/3721))
+
 ## 4.9.8 - 2025-10-18
 ### Fixed
 - Maven plugin reporting issue if -adjustPriority is not set ([#3774](https://github.com/spotbugs/spotbugs/issues/3774)) 
