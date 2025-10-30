@@ -39,7 +39,7 @@ class NullnessAnnotationTest {
 
                 Arguments.of(javax.annotation.CheckForNull.class.getName(), NullnessAnnotation.CHECK_FOR_NULL),
                 Arguments.of(jakarta.annotation.Nonnull.class.getName(), NullnessAnnotation.NONNULL),
-                Arguments.of(jakarta.annotation.Nullable.class.getName(), NullnessAnnotation.NULLABLE),
+                Arguments.of(jakarta.annotation.Nullable.class.getName(), NullnessAnnotation.CHECK_FOR_NULL),
 
                 Arguments.of("something different", null));
     }
