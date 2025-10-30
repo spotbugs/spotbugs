@@ -1065,17 +1065,6 @@ public class SortedBugCollection implements BugCollection {
         return projectStats;
     }
 
-    @Override
-    @Deprecated
-    public BugInstance lookupFromUniqueId(String uniqueId) {
-        for (BugInstance bug : bugSet) {
-            if (bug.getInstanceHash().equals(uniqueId)) {
-                return bug;
-            }
-        }
-        return null;
-    }
-
     /** Returns whether this bug collection contains results from multiple analysis runs,
      * either of different version of the software or from different versions of FindBugs.
      */

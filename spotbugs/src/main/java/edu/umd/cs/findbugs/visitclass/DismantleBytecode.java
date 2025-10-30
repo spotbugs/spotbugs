@@ -273,23 +273,6 @@ public abstract class DismantleBytecode extends AnnotationVisitor {
         return dottedClassConstantOperand;
     }
 
-    /**
-     * If the current opcode has a reference constant operand, get its string
-     * representation
-     */
-    @Deprecated
-    @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ")
-    public String getRefConstantOperand() {
-        if (refConstantOperand == NOT_AVAILABLE) {
-            throw new IllegalStateException("getRefConstantOperand called but value not available");
-        }
-        if (refConstantOperand == null) {
-            refConstantOperand = getDottedClassConstantOperand() + "." + nameConstantOperand + " : " +
-                    ClassName.toDottedClassName(sigConstantOperand);
-        }
-        return refConstantOperand;
-    }
-
     /** If the current opcode has a reference constant operand, get its name */
     @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ")
     public String getNameConstantOperand() {

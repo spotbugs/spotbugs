@@ -44,12 +44,6 @@ public class Version {
 
     public static final String VERSION_STRING;
 
-    /**
-     * @deprecated Use {@link #VERSION_STRING} instead.
-    */
-    @Deprecated
-    public static final String RELEASE;
-
     private static String applicationName = "";
     private static String applicationVersion = "";
 
@@ -81,7 +75,7 @@ public class Version {
             version = "Development";
         }
 
-        RELEASE = VERSION_STRING = version;
+        VERSION_STRING = version;
     }
 
     public static void registerApplication(String name, String version) {
