@@ -6,6 +6,12 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
+### Added
+- Recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3780](https://github.com/spotbugs/spotbugs/pull/3780))
+### Fixed
+- Fix incorrect bug counts and sizes when unioning reports ([#3721](https://github.com/spotbugs/spotbugs/issues/3721))
+
+## 4.9.8 - 2025-10-18
 ### Fixed
 - Maven plugin reporting issue if -adjustPriority is not set ([#3774](https://github.com/spotbugs/spotbugs/issues/3774))
 - Classes containing only methods throwing `UnsupportedOperationException` with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
@@ -48,7 +54,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Cleanup
 - S1481: Unused local variables should be removed ([#3654](https://github.com/spotbugs/spotbugs/pull/3654))
-- Moved test libraries to jakarta namespace including switching off jsr305 where possible for jakarta.annotatoin ([#3695](https://github.com/spotbugs/spotbugs/pull/3695))
+- Moved test libraries to jakarta namespace including switching off jsr305 where possible for jakarta.annotation ([#3695](https://github.com/spotbugs/spotbugs/pull/3695))
 
 ## 4.9.4 - 2025-08-07
 ### Changed
