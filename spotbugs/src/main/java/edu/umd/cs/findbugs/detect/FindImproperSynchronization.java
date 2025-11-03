@@ -277,7 +277,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
                         AnalysisContext.reportMissingClass(e);
                     }
 
-                    if (lock.isProtected() || lock.isPublic() || !lock.isPrivate()) {
+                    if (!lock.isPrivate()) {
                         potentialObjectBugContainingMethods.add(lock, xMethod);
                     }
                 } else {
@@ -290,7 +290,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
                         potentialObjectBugContainingMethods.add(lock, xMethod);
                     }
 
-                    if (lock.isProtected() && !getThisClass().isFinal() || isPackagePrivate(lock)) {
+                    if ((lock.isProtected() && !getThisClass().isFinal()) || isPackagePrivate(lock)) {
                         potentialInheritedBugContainingMethods.add(lock, xMethod);
                     }
                 }
@@ -475,7 +475,15 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
     private void analyzeWrappedField(Method currentMethod, ClassContext classContext, Location location,
             InstructionHandle handle, XField assignedField, Integer stackOffsetForWrapperMethodParameter) {
         InstructionHandle prevHandle = location.getBasicBlock().getPredecessorOf(handle);
+        if (prevHandle == null) {
+            return;
+        }
+
         Instruction prevInstruction = prevHandle.getInstruction();
+        if (prevInstruction == null) {
+            return;
+        }
+
         if (isMethodCall(prevInstruction)) {
             OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), currentMethod, prevHandle.getPosition());
             if (stack.getStackDepth() > stackOffsetForWrapperMethodParameter) {
