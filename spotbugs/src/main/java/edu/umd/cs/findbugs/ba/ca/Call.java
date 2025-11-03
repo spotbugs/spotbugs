@@ -36,7 +36,7 @@ public class Call {
         this.className = className;
         this.methodName = methodName;
         this.methodSig = methodSig;
-        this.attributes = attributes;
+        this.attributes = attributes != null ? Collections.unmodifiableList(attributes) : Collections.emptyList();
     }
 
     public String getClassName() {
@@ -52,7 +52,7 @@ public class Call {
     }
 
     public List<XField> getAttributes() {
-        return Collections.unmodifiableList(attributes);
+        return attributes;
     }
 
     @Override
