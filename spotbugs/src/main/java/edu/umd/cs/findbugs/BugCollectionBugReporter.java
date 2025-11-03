@@ -148,7 +148,7 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
             super.emitLine(line);
             return;
         }
-        line = line.replaceAll("\t", "  ");
+        line = line.replace("\t", "  ");
         writer.println(line);
     }
 

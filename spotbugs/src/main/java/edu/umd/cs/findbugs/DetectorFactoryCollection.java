@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
@@ -315,20 +314,17 @@ public class DetectorFactoryCollection {
                 }
             }
         }
-        String classFilePath = FindBugs.class.getName().replaceAll("\\.", "/") + ".class";
+        String classFilePath = FindBugs.class.getName().replace('.', '/') + ".class";
         URL resource = FindBugs.class.getClassLoader().getResource(classFilePath);
         if (resource != null && "file".equals(resource.getProtocol())) {
-            try {
-                String classfile = URLDecoder.decode(resource.getPath(), Charset.defaultCharset().name());
-                Matcher m = Pattern.compile("(.*)/.*?/edu/umd.*").matcher(classfile);
-                if (m.matches()) {
-                    String home = m.group(1);
-                    if (new File(home + "/etc/findbugs.xml").exists()) {
-                        FindBugs.setHome(home);
-                        return home;
-                    }
+            String classfile = URLDecoder.decode(resource.getPath(), Charset.defaultCharset());
+            Matcher m = Pattern.compile("(.*)/.*?/edu/umd.*").matcher(classfile);
+            if (m.matches()) {
+                String home = m.group(1);
+                if (new File(home + "/etc/findbugs.xml").exists()) {
+                    FindBugs.setHome(home);
+                    return home;
                 }
-            } catch (UnsupportedEncodingException e) {
             }
         }
         return null;

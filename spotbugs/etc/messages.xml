@@ -2267,7 +2267,7 @@ visible), they could trigger listener notification on the event dispatch thread.
     <Details>
 <![CDATA[
 <p>This loop doesn't seem to have a way to terminate (other than by perhaps
-throwing an exception).</p>
+throwing an exception). Unconditional loops such as <code>while (true) {...}</code> are assumed to be intentional and are not reported as bugs.</p>
 <p>See <a href="https://cwe.mitre.org/data/definitions/835.html">CWE-835: Loop with Unreachable Exit Condition ('Infinite Loop')</a>.
 </p>
 ]]>
@@ -4353,7 +4353,7 @@ threads may be synchronizing on different objects.</p>
     <Details>
 <![CDATA[
 <p>
- A final static field that is
+ A static final field that is
 defined in an interface references a mutable
    object such as an array or hashtable.
    This mutable object could
@@ -4433,7 +4433,7 @@ could be changed by malicious code or
     <LongDescription>{1} is a mutable Hashtable</LongDescription>
     <Details>
 <![CDATA[
- <p>A final static field references a Hashtable
+ <p>A static final field references a Hashtable
    and can be accessed by malicious code or
         by accident from another package.
    This code can freely modify the contents of the Hashtable.</p>
@@ -4445,7 +4445,7 @@ could be changed by malicious code or
     <LongDescription>{1} is a mutable collection</LongDescription>
     <Details>
 <![CDATA[
- <p>A mutable collection instance is assigned to a final static field,
+ <p>A mutable collection instance is assigned to a static final field,
    thus can be changed by malicious code or by accident from another package.
    Consider wrapping this field into Collections.unmodifiableSet/List/Map/etc.
    to avoid this vulnerability.</p>
@@ -4457,7 +4457,7 @@ could be changed by malicious code or
     <LongDescription>{1} is a mutable collection which should be package protected</LongDescription>
     <Details>
 <![CDATA[
- <p>A mutable collection instance is assigned to a final static field,
+ <p>A mutable collection instance is assigned to a static final field,
    thus can be changed by malicious code or by accident from another package.
    The field could be made package protected to avoid this vulnerability.
    Alternatively you may wrap this field into Collections.unmodifiableSet/List/Map/etc.
@@ -4470,7 +4470,7 @@ could be changed by malicious code or
     <LongDescription>{1} is a mutable array</LongDescription>
     <Details>
 <![CDATA[
-<p> A final static field references an array
+<p> A static final field references an array
    and can be accessed by malicious code or
         by accident from another package.
    This code can freely modify the contents of the array.</p>
@@ -9697,8 +9697,8 @@ Using floating-point variables should not be used as loop counters, as they are 
     </Details>
   </BugPattern>
   <BugPattern type="AT_NONATOMIC_64BIT_PRIMITIVE">
-    <ShortDescription>This write of this 64-bit primitive variable may not atomic</ShortDescription>
-    <LongDescription>This write of the 64-bit primitive variable "{2.name}" may not atomic</LongDescription>
+    <ShortDescription>This write of this 64-bit primitive variable may not be atomic</ShortDescription>
+    <LongDescription>This write of the 64-bit primitive variable "{2.name}" may not be atomic</LongDescription>
     <Details>
       <![CDATA[
         <p>

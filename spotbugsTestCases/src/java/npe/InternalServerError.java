@@ -1,6 +1,6 @@
 package npe;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class InternalServerError {
 

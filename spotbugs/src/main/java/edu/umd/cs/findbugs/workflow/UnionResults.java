@@ -20,10 +20,11 @@
 package edu.umd.cs.findbugs.workflow;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -119,6 +120,9 @@ public class UnionResults {
         for (AnalysisError error : from.getErrors()) {
             into.addError(error);
         }
+
+        into.getProjectStats().getPackageStats().forEach(s -> s.recomputeFromClassStats());
+        into.getProjectStats().recomputeFromComponents();
     }
 
     public static void main(String[] argv) throws IOException {
@@ -139,6 +143,7 @@ public class UnionResults {
             System.exit(1);
             return;
         }
+
         results.setWithMessages(commandLine.withMessages);
         if (commandLine.outputFile == null) {
             results.writeXML(System.out);
@@ -174,7 +179,7 @@ public class UnionResults {
 
     private static List<String> readWrappedArguments(String fileName) throws IOException {
         List<String> wrappedArguments = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(Path.of(fileName)), StandardCharsets.UTF_8))) {
             String next;
             while ((next = reader.readLine()) != null) {
                 wrappedArguments.add(next);

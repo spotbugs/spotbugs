@@ -15,7 +15,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -309,8 +308,6 @@ public class MainFrameComponentFactory implements Serializable {
     private boolean sourceCodeExists(@Nonnull SourceLineAnnotation note) {
         try {
             mainFrame.getProject().getSourceFinder().findSourceFile(note);
-        } catch (FileNotFoundException e) {
-            return false;
         } catch (IOException e) {
             return false;
         }

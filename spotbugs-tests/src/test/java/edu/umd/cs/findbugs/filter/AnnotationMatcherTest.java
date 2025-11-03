@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 import org.apache.tools.ant.filters.StringInputStream;
@@ -138,14 +138,14 @@ class AnnotationMatcherTest {
     @Test
     void testPerformAnalysis(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
-                Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Generated.class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value.class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value$Immutable.class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/FoobarValue.class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue.class"),
-                Paths.get(
+                Path.of("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Generated.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value$Immutable.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/FoobarValue.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue.class"),
+                Path.of(
                         "../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$1.class"),
-                Paths.get(
+                Path.of(
                         "../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$Builder.class"));
 
         AnnotationMatcher bugInstanceMatcher = new AnnotationMatcher(annotationName);
@@ -159,8 +159,8 @@ class AnnotationMatcherTest {
     @Test
     void testFilteringWithAnnotationOnClassMembers(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
-                Paths.get("../spotbugsTestCases/build/classes/java/main/org/example/GeneratedCode.class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/GeneratedOnClassMembers.class"));
+                Path.of("../spotbugsTestCases/build/classes/java/main/org/example/GeneratedCode.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/GeneratedOnClassMembers.class"));
 
         BugInstanceMatcher[] bugsWithGeneratedAnnotation = {
             new BugInstanceMatcherBuilder()
