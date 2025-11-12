@@ -1891,6 +1891,14 @@ factory pattern to create these objects.</p>
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.UnsafeDetector">
+    <Details>
+      <![CDATA[
+            <p> Looks for uses of the Unsafe class.</p>
+      ]]>
+    </Details>
+  </Detector>
+
   <!--
   **********************************************************************
   BugPatterns
@@ -9822,6 +9830,18 @@ Using floating-point variables should not be used as loop counters, as they are 
       </p>]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="UNS_UNSAFE_CALL">
+    <ShortDescription>Call to Unsafe.</ShortDescription>
+    <LongDescription>Do not use {0}. As the class name indicates, its methods are not safe to use.
+    </LongDescription>
+    <Details>
+      <![CDATA[
+      <p>Do not use either sun.misc.Unsafe or jdk.internal.misc.Unsafe. As there class name indicates, these methods are not safe to use.</p>
+      ]]>
+    </Details>
+  </BugPattern>
+  
   <!--
   **********************************************************************
    BugCodes
@@ -9986,5 +10006,6 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="CWO">Lock closed without being opened in the first place</BugCode>
   <BugCode abbrev="HSM">Avoid method hiding</BugCode>
   <BugCode abbrev="US">Useless suppression</BugCode>
+  <BugCode abbrev="UNS">Unsafe call</BugCode>
 </MessageCollection>
 
