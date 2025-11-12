@@ -76,19 +76,6 @@ public class ValueNumberFactory {
     }
 
     /**
-     * Compact the value numbers produced by this factory.
-     *
-     * @param map
-     *            array mapping old numbers to new numbers
-     * @param numValuesAllocated
-     *            the number of values allocated in the new numbering
-     */
-    @Deprecated
-    public void compact(int[] map, int numValuesAllocated) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * Get the ValueNumber for given class's Class object.
      *
      * @param className

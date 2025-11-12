@@ -42,7 +42,6 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 
 import edu.umd.cs.findbugs.BugAnnotation;
-import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -60,7 +59,6 @@ import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.PostDominatorsAnalysis;
-import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -894,50 +892,6 @@ public class NullDerefAndRedundantComparisonFinder {
         }
         // Issue a warning
         collector.foundNullDeref(location, valueNumber, refValue, vnaFrame, isConsistent);
-    }
-
-    /**
-     * @deprecated Use
-     *             {@link ValueNumberSourceInfo#findXFieldFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame)}
-     *             instead
-     */
-    @Deprecated
-    public static XField findXFieldFromValueNumber(Method method, Location location, ValueNumber valueNumber,
-            ValueNumberFrame vnaFrame) {
-        return ValueNumberSourceInfo.findXFieldFromValueNumber(method, location, valueNumber, vnaFrame);
-    }
-
-    /**
-     * @deprecated Use
-     *             {@link ValueNumberSourceInfo#findFieldAnnotationFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame)}
-     *             instead
-     */
-    @Deprecated
-    public static FieldAnnotation findFieldAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber,
-            ValueNumberFrame vnaFrame) {
-        return ValueNumberSourceInfo.findFieldAnnotationFromValueNumber(method, location, valueNumber, vnaFrame);
-    }
-
-    /**
-     * @deprecated Use
-     *             {@link ValueNumberSourceInfo#findLocalAnnotationFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame)}
-     *             instead
-     */
-    @Deprecated
-    public static LocalVariableAnnotation findLocalAnnotationFromValueNumber(Method method, Location location,
-            ValueNumber valueNumber, ValueNumberFrame vnaFrame) {
-        return ValueNumberSourceInfo.findLocalAnnotationFromValueNumber(method, location, valueNumber, vnaFrame);
-    }
-
-    /**
-     * @deprecated Use
-     *             {@link ValueNumberSourceInfo#findRequiredAnnotationFromValueNumber(Method,Location,ValueNumber,ValueNumberFrame, String)}
-     *             instead
-     */
-    @Deprecated
-    public static BugAnnotation findAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber,
-            ValueNumberFrame vnaFrame) {
-        return ValueNumberSourceInfo.findRequiredAnnotationFromValueNumber(method, location, valueNumber, vnaFrame, null);
     }
 
     private static int getLineNumber(Method method, InstructionHandle handle) {

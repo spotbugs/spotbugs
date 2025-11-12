@@ -155,19 +155,6 @@ public class SystemProperties {
     }
 
     /**
-     * @param arg0
-     *            property name
-     * @param arg1
-     *            default value
-     * @return the int value (or arg1 if the property does not exist)
-     * @deprecated Use {@link #getInt(String,int)} instead
-     */
-    @Deprecated
-    public static Integer getInteger(String arg0, int arg1) {
-        return getInt(arg0, arg1);
-    }
-
-    /**
      * @param name
      *            property name
      * @param defaultValue
