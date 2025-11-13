@@ -8,3 +8,4 @@ profile:
   name: qodana.recommended
 include:
   - name: CheckDependencyLicenses
+  - name: DuplicateCondition
