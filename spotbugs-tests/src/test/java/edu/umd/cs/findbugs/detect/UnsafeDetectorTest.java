@@ -1,10 +1,12 @@
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.detect;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugCollectionBugReporter;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.test.AnalysisRunner;
@@ -35,17 +37,17 @@ class UnsafeDetectorTest {
     /** Tests the bad case for {@code sun.misc.Unsafe}. */
     @Test
     void testBadUnsafeSun() {
-        performAnalysis("BadUnsafeSun.class");
+        performAnalysis("unsafeClasses/BadUnsafeSun.class");
         assertNumOfCTBugs(1);
-        assertCTBugInLine(10);
+        assertCTBugInLine(12);
     }
 
     /** Tests the bad case for {@code sun.misc.Unsafe} with a fully qualified name. */
     @Test
     void testUnsafeSunQualified() {
-        performAnalysis("BadUnsafeSunQualified.class");
+        performAnalysis("unsafeClasses/BadUnsafeSunQualified.class");
         assertNumOfCTBugs(1);
-        assertCTBugInLine(9);
+        assertCTBugInLine(11);
     }
 
     private void performAnalysis(@SlashedClassName final String... analyzeMe) {
