@@ -3389,7 +3389,15 @@ Ce string utilisé dans un format contient le caractère newline (\n). Il est g�
     </LongDescription>
     <Details>
       <![CDATA[
-      <p>N'utilisez ni sun.misc.Unsafe, ni jdk.internal.misc.Unsafe. Comme le nom de ces classes l'indique, l'utilisation de leurs méthodes peut causer des failles de sécurité.</p>
+      <p>N'utilisez ni sun.misc.Unsafe, ni
+      jdk.internal.misc.Unsafe. Comme le nom de ces classes l'indique,
+      l'utilisation de leurs méthodes peut causer des failles de
+      sécurité. Elles ont été remplacées par des API officielles
+      telles que l'API VarHandle (JDK 9) et l'API Foreign Function &
+      Memory (JDK 22). Voir la
+      <a href="https://openjdk.org/jeps/471">JEP 471</a> pour plus de
+      détails sur les alternatives plus sûres, y compris des exemples
+      de code avant et après.</p>
       ]]>
     </Details>
   </BugPattern>
