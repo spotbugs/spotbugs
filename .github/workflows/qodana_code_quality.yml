@@ -19,10 +19,19 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
           fetch-depth: 0  # a full history is required for pull request analysis
+      - name: Free disk space
+        run: |
+          echo "Pulizia spazio su disco..."
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc || true
+          docker system prune -af || true
+          echo "Spazio libero dopo la pulizia:"
+          df -h
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2025.2
         with:
           pr-mode: false
+          use-caches: false           #  Evita caching locale (riduce spazio)
+          upload-result: true          # Carica solo su Qodana Cloud
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1873399483 }}
           QODANA_ENDPOINT: 'https://qodana.cloud'
