@@ -948,7 +948,7 @@ Un accesseur spécial est généré dans ce cas par la compilateur pour écrire 
   <Detector class="edu.umd.cs.findbugs.detect.UnsafeDetector">
     <Details>
 <![CDATA[
-<p>Ce détecteur cherches les appels aux classes Unsafe.</p>
+<p>Ce détecteur cherche les appels aux classes Unsafe.</p>
 ]]>
     </Details>
   </Detector>
