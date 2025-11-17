@@ -22,9 +22,7 @@ package edu.umd.cs.findbugs.classfile;
 import java.io.Serializable;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
 
-import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -145,95 +143,6 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 
     public boolean isArray() {
         return className.charAt(0) == '[';
-    }
-
-    /**
-     * Create a class descriptor from a resource name.
-     *
-     * @param resourceName
-     *            the resource name
-     * @return the class descriptor
-     * @deprecated Use
-     *             {@link DescriptorFactory#createClassDescriptorFromResourceName(String)}
-     *             instead
-     */
-    @Deprecated
-    public static ClassDescriptor fromResourceName(String resourceName) {
-        return DescriptorFactory.createClassDescriptorFromResourceName(resourceName);
-    }
-
-    /**
-     * Create a class descriptor from a field signature
-     *
-     * @deprecated Use
-     *             {@link DescriptorFactory#createClassDescriptorFromFieldSignature(String)}
-     *             instead
-     *
-     */
-    @Deprecated
-    public static @CheckForNull ClassDescriptor fromFieldSignature(String signature) {
-        return DescriptorFactory.createClassDescriptorFromFieldSignature(signature);
-    }
-
-    /**
-     * Determine whether or not the given resource name refers to a class.
-     *
-     * @param resourceName
-     *            the resource name
-     * @return true if the resource is a class, false otherwise
-     * @deprecated Use {@link DescriptorFactory#isClassResource(String)} instead
-     */
-    @Deprecated
-    public static boolean isClassResource(String resourceName) {
-        return DescriptorFactory.isClassResource(resourceName);
-    }
-
-    /**
-     * @deprecated Use
-     *             {@link DescriptorFactory#createClassDescriptorFromSignature(String)}
-     *             instead
-     */
-    @Deprecated
-    public static ClassDescriptor createClassDescriptorFromSignature(String signature) {
-        return DescriptorFactory.createClassDescriptorFromSignature(signature);
-    }
-
-    /**
-     * @deprecated Use {@link DescriptorFactory#createClassDescriptor(String)}
-     *             instead
-     */
-    @Deprecated
-    public static ClassDescriptor createClassDescriptor(@SlashedClassName String className) {
-        return DescriptorFactory.createClassDescriptor(className);
-    }
-
-    /**
-     * @deprecated Use {@link DescriptorFactory#createClassDescriptor(String[])}
-     *             instead
-     */
-    @Deprecated
-    public static ClassDescriptor[] createClassDescriptor(String[] classNames) {
-        return DescriptorFactory.createClassDescriptor(classNames);
-    }
-
-    /**
-     * @deprecated Use
-     *             {@link DescriptorFactory#createClassDescriptorFromDottedClassName(String)}
-     *             instead
-     */
-    @Deprecated
-    public static ClassDescriptor createClassDescriptorFromDottedClassName(String dottedClassName) {
-        return DescriptorFactory.createClassDescriptorFromDottedClassName(dottedClassName);
-    }
-
-    /**
-     * @deprecated Use
-     *             {@link DescriptorFactory#createClassDescriptor(JavaClass)}
-     *             instead
-     */
-    @Deprecated
-    public static ClassDescriptor createClassDescriptor(JavaClass c) {
-        return DescriptorFactory.createClassDescriptor(c);
     }
 
     /*
