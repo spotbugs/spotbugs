@@ -30,9 +30,12 @@ import javax.annotation.meta.When;
 /**
  * The annotated element must not be null.
  *
+ * <p>
  * Annotated Fields must only not be null after construction has completed.
  * Annotated methods must have non-null return values.
+ * @deprecated prefer <a href="https://jspecify.dev/">JSpecify</a> nullability annotations
  **/
+@Deprecated
 @Documented
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE })
 @Retention(RetentionPolicy.CLASS)

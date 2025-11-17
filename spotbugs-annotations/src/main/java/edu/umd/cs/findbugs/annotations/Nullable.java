@@ -30,13 +30,17 @@ import javax.annotation.meta.When;
 /**
  * The annotated element could be null under some circumstances.
  *
+ * <p>
  * In general, this means developers will have to read the documentation to
  * determine when a null value is acceptable and whether it is necessary to
  * check for a null value.
  *
+ * <p>
  * When this annotation is applied to a method it applies to the method return
  * value.
+ * @deprecated prefer <a href="https://jspecify.dev/">JSpecify</a> nullability annotations
  */
+@Deprecated
 @Documented
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE })
 @Retention(RetentionPolicy.CLASS)

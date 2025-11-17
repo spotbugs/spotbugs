@@ -30,7 +30,9 @@ import javax.annotation.meta.When;
 /**
  * Used to indicate that the nullness of element is unknown, or may vary in
  * unknown ways in subclasses.
+ * @deprecated prefer <a href="https://jspecify.dev/">JSpecify</a> nullability annotations
  */
+@Deprecated
 @Documented
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE })
 @Retention(RetentionPolicy.CLASS)

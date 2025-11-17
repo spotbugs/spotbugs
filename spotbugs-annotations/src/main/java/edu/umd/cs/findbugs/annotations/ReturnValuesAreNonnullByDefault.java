@@ -37,7 +37,9 @@ import javax.annotation.meta.TypeQualifierDefault;
  * annotation of the corresponding parameter in the superclass applies)
  * <li>there is a default annotation applied to a more tightly nested element.
  * </ul>
+ * @deprecated prefer <a href="https://jspecify.dev/">JSpecify</a> nullability annotations
  */
+@Deprecated
 @Documented
 @Nonnull
 @TypeQualifierDefault(ElementType.METHOD)

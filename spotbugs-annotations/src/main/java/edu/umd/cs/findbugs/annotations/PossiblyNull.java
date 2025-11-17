@@ -34,7 +34,7 @@ import javax.annotation.meta.When;
  * When this annotation is applied to a method it applies to the method return
  * value.
  *
- * @deprecated - use CheckForNull instead; the name of which more clearly
+ * @deprecated - use {@link CheckForNull} instead; the name of which more clearly
  *             indicates that not only could the value be null, but that good
  *             coding practice requires that the value be checked for null.
  */
