@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-Before opening a 'feature request'
+**Before opening a feature request**
 
 * Search existing issues and pull requests to see if the issue was already discussed.
 * Check our discussions to see if the issue was already discussed.
