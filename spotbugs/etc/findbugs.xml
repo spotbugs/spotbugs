@@ -705,6 +705,9 @@
                     reports="HSM_HIDING_METHOD"/>
           <Detector class="edu.umd.cs.findbugs.detect.BuildAccessMethodsDatabase" speed="fast" reports=""
                     hidden="true"/>
+          <Detector class="edu.umd.cs.findbugs.detect.UnsafeDetector"
+                    speed="fast" reports="UNS_UNSAFE_CALL"
+                    disabled="false" hidden="false"/>
 
           <!-- Bug Categories -->
           <BugCategory category="NOISE" hidden="true"/>
@@ -1344,5 +1347,6 @@
           <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_METHOD" category="STYLE"/>
           <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER" category="STYLE"/>
           <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_PACKAGE" category="STYLE"/>
+          <BugPattern abbrev="UNS" type="UNS_UNSAFE_CALL" category="SECURITY"/>
           <BugPattern abbrev="NCR" type="NCR_NOT_PROPERLY_CHECKED_READ" category="BAD_PRACTICE" cweid="135"/>
 </FindbugsPlugin>
