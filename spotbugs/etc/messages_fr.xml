@@ -57,6 +57,11 @@
     <!-- Details subelement needed -->
   </BugCategory>
 
+  <BugCategory category="SECURITY">
+    <Description>Sécurité</Description>
+    <Abbreviation>S</Abbreviation>
+    <Details>Une utilisation d’entrées non fiables d’une manière qui pourrait créer une vulnérabilité de sécurité exploitable à distance.</Details>
+  </BugCategory>
 
  <Detector class="edu.umd.cs.findbugs.detect.CheckImmutableAnnotation">
   <Details>
@@ -940,6 +945,14 @@ Un accesseur spécial est généré dans ce cas par la compilateur pour écrire 
 ]]>
   </Details>
  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.UnsafeDetector">
+    <Details>
+<![CDATA[
+<p>Ce détecteur cherche les appels aux classes Unsafe.</p>
+]]>
+    </Details>
+  </Detector>
+
  <BugPattern type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD">
   <ShortDescription>Certaines méthodes Swing ne doivent être invoquées qu'à partir du thread Swing</ShortDescription>
   <LongDescription>L'appel de la méthode Swing {1} doit être effectué à partir du thread Swing</LongDescription>
@@ -3370,6 +3383,24 @@ Ce string utilisé dans un format contient le caractère newline (\n). Il est g�
 ]]>
     </Details>
  </BugPattern>
+  <BugPattern type="UNS_UNSAFE_CALL">
+    <ShortDescription>Appel à Unsafe.</ShortDescription>
+    <LongDescription>N'utilisez pas {0}. Comme l'indique le nom de cette classe, l'utilisation de ses méthodes peut causer des failles de sécurité.
+    </LongDescription>
+    <Details>
+      <![CDATA[
+      <p>N'utilisez ni sun.misc.Unsafe, ni
+      jdk.internal.misc.Unsafe. Comme le nom de ces classes l'indique,
+      l'utilisation de leurs méthodes peut causer des failles de
+      sécurité. Elles ont été remplacées par des API officielles
+      telles que l'API VarHandle (JDK 9) et l'API Foreign Function &
+      Memory (JDK 22). Voir la
+      <a href="https://openjdk.org/jeps/471">JEP 471</a> pour plus de
+      détails sur les alternatives plus sûres, y compris des exemples
+      de code avant et après.</p>
+      ]]>
+    </Details>
+  </BugPattern>
  <BugCode abbrev="IL">Boucle infinie</BugCode>
  <BugCode abbrev="VO">Utilisation de volatile</BugCode>
  <BugCode abbrev="UI">Héritage non sûr</BugCode>
@@ -3480,4 +3511,5 @@ Ce string utilisé dans un format contient le caractère newline (\n). Il est g�
  <BugCode abbrev="QBA">Assignation booléenne douteuse</BugCode>
  <BugCode abbrev="VR">Problème de compatibilité entre les versions</BugCode>
  <BugCode abbrev="DP">Utiliser doPrivileged</BugCode>
+ <BugCode abbrev="UNS">Appel à Unsafe</BugCode>
 </MessageCollection>
