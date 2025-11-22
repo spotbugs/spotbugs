@@ -8,6 +8,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2025-??-??
 ### Added
 - Recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3780](https://github.com/spotbugs/spotbugs/pull/3780))
+- New bug type is introduced: `NCR_NOT_PROPERLY_CHECKED_READ`. Improper validation of the return value from the read() method in InputStream and Reader classes may result in an array not being fully filled. ([#3766](https://github.com/spotbugs/spotbugs/pull/3766))
+
 ### Fixed
 - Fix incorrect bug counts and sizes when unioning reports ([#3721](https://github.com/spotbugs/spotbugs/issues/3721))
 
