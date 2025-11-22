@@ -348,21 +348,6 @@ public class DetectorFactory {
     }
 
     /**
-     * Create a Detector instance. This method is only guaranteed to work for
-     * old-style detectors using the BCEL bytecode framework.
-     *
-     * @param bugReporter
-     *            the BugReporter to be used to report bugs
-     * @return the Detector
-     * @deprecated Use createDetector2 in new code
-     */
-    @Deprecated
-    public Detector create(BugReporter bugReporter) {
-        checkForNoAnalysis();
-        return detectorCreator.createDetector(bugReporter);
-    }
-
-    /**
      * Create a Detector2 instance.
      *
      * @param bugReporter

@@ -152,34 +152,6 @@ public class PluginLoader implements AutoCloseable {
         loadInitialPlugins();
     }
 
-    /**
-     * Constructor.
-     *
-     * @param url
-     *            the URL of the plugin Jar file
-     * @throws PluginException
-     *             if the plugin cannot be fully loaded
-     */
-    @Deprecated
-    public PluginLoader(URL url) throws PluginException {
-        this(url, toUri(url), null, false, true);
-    }
-
-
-    /**
-     * Constructor.
-     *
-     * @param url
-     *            the URL of the plugin Jar file
-     * @param parent
-     *            the parent classloader
-     * @deprecated Use {@link #PluginLoader(URL,URI,ClassLoader,boolean,boolean)} instead
-     */
-    @Deprecated
-    public PluginLoader(URL url, ClassLoader parent) throws PluginException {
-        this(url, toUri(url), parent, false, true);
-    }
-
     public boolean hasParent() {
         return parentId != null && !parentId.isEmpty();
     }
