@@ -202,19 +202,6 @@ public interface BugCollection extends Iterable<BugInstance> {
     boolean add(BugInstance bugInstance, boolean updateActiveTime);
 
     /**
-     * Look up a BugInstance by its unique id.
-     *
-     * @param uniqueId
-     *            the BugInstance's unique id.
-     * @return the BugInstance with the given unique id, or null if there is no
-     *         such BugInstance
-     *
-     *         This is deprecated; uniqueIDs are not persistent.
-     */
-    @Deprecated
-    BugInstance lookupFromUniqueId(String uniqueId);
-
-    /**
      * Add an analysis error.
      *
      * @param message

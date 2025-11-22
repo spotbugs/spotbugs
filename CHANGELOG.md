@@ -6,12 +6,80 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
+
 ### Added
 - Recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3780](https://github.com/spotbugs/spotbugs/pull/3780))
 - Added partial support for `org.jspecify.annotations.Nullable`, `org.jspecify.annotations.NonNull`, `org.jspecify.annotations.NullUnmarked` and `org.jspecify.annotations.NullMarked` to supported `NullnessAnnotation`s.  This PR just aliases these as best as possible to existing FB non-null/null-ness annotations.  It is not a complete (or necessarily even correct) implementation of https://jspecify.dev/docs/spec/. ([#3142](https://github.com/spotbugs/spotbugs/pull/3142))
+- Detect use of `sun.misc.Unsafe` and `jdk.internal.misc.Unsafe` ([#3804](https://github.com/spotbugs/spotbugs/pull/3804))
+- New bug type is introduced: `NCR_NOT_PROPERLY_CHECKED_READ`. Improper validation of the return value from the read() method in InputStream and Reader classes may result in an array not being fully filled. ([#3766](https://github.com/spotbugs/spotbugs/pull/3766))
 
 ### Fixed
 - Fix incorrect bug counts and sizes when unioning reports ([#3721](https://github.com/spotbugs/spotbugs/issues/3721))
+- Enhanced SARIF output with full description sections - adding markdown is still an open issue ([#2339](https://github.com/spotbugs/spotbugs/issues/2339))
+
+### Removed
+- Removed old deprecated methods: 
+  - `assertPresentBugPattern(String, IMarker[])` protected method from `de.tobject.findbugs.test.AbstractQuickfixTest` deprecated since 2014,
+  - `setFontSizeHelper(Component[], float)` protected method from `edu.umd.cs.findbugs.gui2.FBFrame` deprecated since 2010,
+  - `matchedPrefixes(String[], String)` method from `edu.umd.cs.findbugs.gui2.ViewFilter` deprecated since 2010,
+  - `lookupFromUniqueId(String)` method from `edu.umd.cs.findbugs.BugCollection` and `edu.umd.cs.findbugs.SortedBugCollection` deprecated since 2006,
+  - `create(BugReporter)` method from `edu.umd.cs.findbugs.DetectorFactory` deprecated since 2008,
+  - `instantiateDetectorsInPass(BugReporter)` method from `edu.umd.cs.findbugs.plan.AnalysisPass` deprecated since 2008,
+  - `getMessage(String)` method from `edu.umd.cs.findbugs.I18N` deprecated since 2019,
+  - `getElementSignature()` method from `edu.umd.cs.findbugs.OpcodeStack.Item` deprecated since 2008,
+  - `getFieldAnnotation()` method from `edu.umd.cs.findbugs.OpcodeStack.Item` deprecated since 2006,
+  - `PluginLoader(URL)` and `PluginLoader(URL, ClassLoader)` constructors from `edu.umd.cs.findbugs.PluginLoader` deprecated since 2010,
+  - `addSourceDir(String)` method from `edu.umd.cs.findbugs.Project` deprecated since 2017,
+  - `getImplicitClasspathEntryList()` method from `edu.umd.cs.findbugs.Project` deprecated since 2008,
+  - `write(String, boolean, String)` method from `edu.umd.cs.findbugs.Project` deprecated since 2007,
+  - `getInteger(String, int)` method from `edu.umd.cs.findbugs.SystemProperties` deprecated since 2010,
+  - `getId()` method from `edu.umd.cs.findbugs.ba.BasicBlock` deprecated since 2010,
+  - `getArgument(InvokeInstruction, ConstantPoolGen, int, int)` method from `edu.umd.cs.findbugs.ba.Frame` deprecated since 2010,
+  - `findDeclaredExceptions(InvokeInstruction, ConstantPoolGen)` method from `edu.umd.cs.findbugs.ba.Hierarchy` deprecated since 2008,
+  - `findConcreteMethod(JavaClass, String, String)` method from `edu.umd.cs.findbugs.ba.Hierarchy` deprecated since 2007,
+  - `findXMethod(JavaClass, String, String, JavaClassAndMethodChooser)` method from `edu.umd.cs.findbugs.ba.Hierarchy` deprecated since 2007,
+  - `findXMethod(JavaClass[], String, String)` method from `edu.umd.cs.findbugs.ba.Hierarchy` deprecated since 2007,
+  - `findXMethod(JavaClass[], String, String, JavaClassAndMethodChooser)` method from `edu.umd.cs.findbugs.ba.Hierarchy` deprecated since 2007,
+  - `findMethod(JavaClass[], String, String)` method from `edu.umd.cs.findbugs.ba.Hierarchy` deprecated since 2007,
+  - `isConcrete(XMethod)` method from `edu.umd.cs.findbugs.ba.Hierarchy` deprecated since 2007,
+  - `doesMethodUnconditionallyThrowException(XMethod, JavaClass, Method)` method from `edu.umd.cs.findbugs.ba.PruneUnconditionalExceptionThrowerEdges` deprecated since 2008,
+  - `nameAndSignatureIsCalled(XMethod)` method from `edu.umd.cs.findbugs.ba.XFactory` deprecated since 2020,
+  - `isInterned(XMethod)` method from `edu.umd.cs.findbugs.ba.XFactory` deprecated since 2007,
+  - `canonicalizeString(String)` method from `edu.umd.cs.findbugs.ba.XFactory` deprecated since 2017,
+  - `findXFieldFromValueNumber(Method, Location, ValueNumber, ValueNumberFrame)` method from `edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder` deprecated since 2008,
+  - `findFieldAnnotationFromValueNumber(Method, Location, ValueNumber, ValueNumberFrame)` method from `edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder` deprecated since 2008,
+  - `findLocalAnnotationFromValueNumber(Method, Location, ValueNumber, ValueNumberFrame)` method from `edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder` deprecated since 2008,
+  - `findAnnotationFromValueNumber(Method, Location, ValueNumber, ValueNumberFrame)` method from `edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder` deprecated since 2008,
+  - `compact(int[], int)` method from `edu.umd.cs.findbugs.ba.vna.ValueNumberFactory` deprecated since 2008,
+  - `fromResourceName(String)` method from `edu.umd.cs.findbugs.classfile.ClassDescriptor` deprecated since 2008,
+  - `fromFieldSignature(String)` method from `edu.umd.cs.findbugs.classfile.ClassDescriptor` deprecated since 2008,
+  - `isClassResource(String)` method from `edu.umd.cs.findbugs.classfile.ClassDescriptor` deprecated since 2008,
+  - `createClassDescriptorFromSignature(String)` method from `edu.umd.cs.findbugs.classfile.ClassDescriptor` deprecated since 2008,
+  - `createClassDescriptor(String)` method from `edu.umd.cs.findbugs.classfile.ClassDescriptor` deprecated since 2008,
+  - `createClassDescriptor(String[])` method from `edu.umd.cs.findbugs.classfile.ClassDescriptor` deprecated since 2008,
+  - `createClassDescriptorFromDottedClassName(String)` method from `edu.umd.cs.findbugs.classfile.ClassDescriptor` deprecated since 2008,
+  - `createClassDescriptor(JavaClass)` method from `edu.umd.cs.findbugs.classfile.ClassDescriptor` deprecated since 2008,
+  - `canonicalizeString(String)` method from `edu.umd.cs.findbugs.classfile.DescriptorFactory` deprecated since 2017,
+  - `isContainerField(XField)` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
+  - `getReadFields()` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
+  - `getWrittenFields()` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
+  - `isWrittenOutsideOfInitialization(XField)` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
+  - `isWrittenDuringInitialization(XField)` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
+  - `isWrittenInConstructor(XField)` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
+  - `strongEvidenceForIntendedSerialization(ClassDescriptor)` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
+  - `existsStrongEvidenceForIntendedSerialization(ClassDescriptor)` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
+  - `isReflexive(XField)` method from `edu.umd.cs.findbugs.detect.UnreadFields` deprecated since 2011,
+  - `RelationalOp(String)` private constructor from `edu.umd.cs.findbugs.filter.RelationalOp` deprecated since 2008,
+  - `isLibraryFileName(String)` method from `edu.umd.cs.findbugs.util.Archive` deprecated since 2022,
+  - `replace(String, String, String)` method from `edu.umd.cs.findbugs.util.Strings` deprecated since 2010,
+  - `toString(Object[])` method from `edu.umd.cs.findbugs.util.Strings` deprecated since 2010,
+  - `closeSilently(OutputStream)` method from `edu.umd.cs.findbugs.util.Util` deprecated since 2018,
+  - `closeSilently(Closeable)` method from `edu.umd.cs.findbugs.util.Util` deprecated since 2018,
+  - `closeSilently(ZipFile)` method from `edu.umd.cs.findbugs.util.Util` deprecated since 2018,
+  - `getRefConstantOperand()` method from `edu.umd.cs.findbugs.visitclass.DismantleBytecode` deprecated since 2010,
+  - `getDottedFieldSig()` method from `edu.umd.cs.findbugs.visitclass.PreorderVisitor` deprecated since 2006.
+- Removed old deprecated fields:
+  - String `RELEASE` from `edu.umd.cs.findbugs.Version` deprecated since 2018.
 
 ## 4.9.8 - 2025-10-18
 ### Fixed
