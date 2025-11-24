@@ -70,18 +70,6 @@ public class DescriptorFactory {
     }
 
     /**
-     * This method was designed to canonicalize String to improve performance,
-     * but now GC cost is cheaper than calculation cost in application thread
-     * so removing this old optimization makes SpotBugs 16% faster.
-     * @return given string instance
-     * @deprecated this hack is needless for modern JVM, at least Java8
-     */
-    @Deprecated
-    public static String canonicalizeString(@CheckForNull String s) {
-        return s;
-    }
-
-    /**
      * Get the singleton instance of the DescriptorFactory.
      *
      * @return the singleton instance of the DescriptorFactory

@@ -51,14 +51,6 @@ public abstract class RelationalOp {
         return map.values();
     }
 
-    /**
-     * @deprecated Use {@link #RelationalOp(String,String)} instead
-     */
-    @Deprecated
-    private RelationalOp(String value) {
-        this(value, "xxx");
-    }
-
     private RelationalOp(String value, String name) {
         this.value = value;
         this.name = name;

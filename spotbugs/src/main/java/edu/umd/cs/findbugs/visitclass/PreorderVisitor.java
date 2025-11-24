@@ -740,18 +740,6 @@ public class PreorderVisitor extends BetterVisitor {
         return fullyQualifiedFieldName;
     }
 
-    /** If currently visiting a field, get the field's dot-formatted signature */
-    @Deprecated
-    public String getDottedFieldSig() {
-        if (!visitingField) {
-            throw new IllegalStateException("getDottedFieldSig called while not visiting field");
-        }
-        if (dottedFieldSig == null) {
-            dottedFieldSig = ClassName.toDottedClassName(fieldSig);
-        }
-        return dottedFieldSig;
-    }
-
     @Override
     public String toString() {
         if (visitingMethod) {
