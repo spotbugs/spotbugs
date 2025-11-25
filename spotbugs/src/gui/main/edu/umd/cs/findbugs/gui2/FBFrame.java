@@ -43,17 +43,6 @@ public class FBFrame extends JFrame {
     /*
      * Helps above method, runs through all components recursively.
      */
-    /**
-     * @deprecated Use {@link #setFontSizeHelper(float,Component[])} instead
-     */
-    @Deprecated
-    protected void setFontSizeHelper(Component[] comps, float size) {
-        setFontSizeHelper(size, comps);
-    }
-
-    /*
-     * Helps above method, runs through all components recursively.
-     */
     protected void setFontSizeHelper(float size, Component... comps) {
         for (Component comp : comps) {
             comp.setFont(comp.getFont().deriveFont(size));

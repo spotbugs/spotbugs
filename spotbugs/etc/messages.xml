@@ -974,7 +974,7 @@ malicious code.  </p>
     <Details>
 <![CDATA[
 <p> This detector looks for calls to InputStream.read() or InputStream.skip() where the
-return value is ignored.  </p>
+return value is ignored or improperly checked.</p>
 ]]>
     </Details>
   </Detector>
@@ -1890,14 +1890,22 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
-    <Detector class="edu.umd.cs.findbugs.detect.FindImproperSynchronization">
-        <Details>
-            <![CDATA[
+
+  <Detector class="edu.umd.cs.findbugs.detect.UnsafeDetector">
+    <Details>
+      <![CDATA[
+            <p>Looks for uses of the Unsafe class.</p>
+      ]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindImproperSynchronization">
+    <Details>
+      <![CDATA[
             <p>Finds bad synchronizations on accessible lock objects and lock objects with accessible backing collections.
             </p>
       ]]>
-        </Details>
-    </Detector>
+    </Details>
+  </Detector>
 
   <!--
   **********************************************************************
@@ -4763,6 +4771,11 @@ be confusing to users of this class.</p>
   causing the program to fail only sporadically.</p>
   <p>See <a href="https://cwe.mitre.org/data/definitions/252.html">CWE-252: Unchecked Return Value</a>.
 </p>
+
+  <p>Additionally, it is not sufficient to simply check for the end of the file (EOF)
+  as an indicator that the entire array has been filled. The return value of
+  <code>read()</code> must be verified to ensure that the correct number of bytes
+  have been read.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -9831,6 +9844,45 @@ Using floating-point variables should not be used as loop counters, as they are 
     </Details>
   </BugPattern>
 
+  <BugPattern type="UNS_UNSAFE_CALL">
+    <ShortDescription>Call to Unsafe.</ShortDescription>
+    <LongDescription>Do not use {0}. As the class name indicates, its methods are not safe to use.
+    </LongDescription>
+    <Details>
+      <![CDATA[
+      <p>Do not use either sun.misc.Unsafe or
+      jdk.internal.misc.Unsafe. As there class name indicates, these
+      methods are not safe to use. They have been superseded by
+      official APIs like the VarHandle API (JDK 9) and the Foreign
+      Function & Memory API (JDK 22). See
+      <a href="https://openjdk.org/jeps/471">JEP 471</a>
+      for details on the safer alternatives including before and after
+      code samples.</p>
+      ]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="NCR_NOT_PROPERLY_CHECKED_READ">
+    <ShortDescription>Return value of read() is not properly checked, array may be partially filled</ShortDescription>
+    <LongDescription>The return value of method {2.nameAndSignature} is not properly checked in {1.name}, which may result in using a partially filled array.</LongDescription>
+    <Details>
+      <![CDATA[
+        <p>
+          When using the read() method to fill an array, the method may not always fill the entire array. This can occur when the input stream does not have enough bytes available to completely fill the array, leading to a partial read. This issue can result in unexpected behavior if the partially filled array is assumed to be fully populated.
+        </p>
+        <p>
+          It is crucial to verify the return value of the read() method, which indicates the number of bytes actually read, and to ensure that the array is fully filled if necessary. Failing to do so can result in incomplete data processing and potential vulnerabilities.
+        </p>
+        <p>
+          To fix this issue, check the return value of read() and handle cases where fewer bytes are read than expected. Consider looping over the read() call or using methods like readFully() to ensure that the array is filled completely.
+        </p>
+        <p>
+          See SEI CERT rule <a href="https://wiki.sei.cmu.edu/confluence/display/java/FIO10-J.+Ensure+the+array+is+filled+when+using+read%28%29+to+fill+an+array">FIO10-J. Ensure the array is filled when using read() to fill an array</a> for more information.
+        </p>
+      ]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="USO_UNSAFE_METHOD_SYNCHRONIZATION">
     <ShortDescription>Instead of synchronized methods, use private final lock objects with block synchronization</ShortDescription>
     <LongDescription>Method {1} uses intrinsic lock of class {0} for synchronization, that is exposed by {2}.</LongDescription>
@@ -10168,6 +10220,8 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="CWO">Lock closed without being opened in the first place</BugCode>
   <BugCode abbrev="HSM">Avoid method hiding</BugCode>
   <BugCode abbrev="US">Useless suppression</BugCode>
+  <BugCode abbrev="UNS">Unsafe call</BugCode>
+  <BugCode abbrev="NCR">Not checked read while filling array</BugCode>
   <BugCode abbrev="USO">Use private final lock objects for synchronization</BugCode>
   <BugCode abbrev="USBC">Synchronization on a view when backing collection is accessible</BugCode>
 </MessageCollection>
