@@ -292,4 +292,10 @@ class ConstructorThrowTest extends AbstractIntegrationTest {
         performAnalysis("constructorthrow/ConstructorThrowNegativeTest20.class");
         assertNoBugType(CT_THROW);
     }
+
+    @Test
+    void testGoodConstructorThrowCheck21() {
+        performAnalysis("constructorthrow/ConstructorThrowNegativeTest21.class");
+        assertNoBugType(CT_THROW);
+    }
 }
