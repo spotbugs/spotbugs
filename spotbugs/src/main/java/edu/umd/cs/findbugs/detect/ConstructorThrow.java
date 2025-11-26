@@ -160,7 +160,8 @@ public class ConstructorThrow extends OpcodeStackDetector {
                 }
             }
         } else if (isMethodCall()) {
-            if (Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())) {
+            String calledClass = getClassConstantOperand();
+            if (Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && calledClass.equals("java/lang/Object")) {
                 hadObjectConstructor = true;
             }
 
