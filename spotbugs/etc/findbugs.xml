@@ -708,6 +708,8 @@
           <Detector class="edu.umd.cs.findbugs.detect.UnsafeDetector"
                     speed="fast" reports="UNS_UNSAFE_CALL"
                     disabled="false" hidden="false"/>
+          <Detector class="edu.umd.cs.findbugs.detect.FindImproperSynchronization" speed="fast"
+                    reports="USO_UNSAFE_METHOD_SYNCHRONIZATION,USO_UNSAFE_STATIC_METHOD_SYNCHRONIZATION,USO_UNSAFE_OBJECT_SYNCHRONIZATION,USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION,USO_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION,USO_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION,USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION,USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION,USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION"/>
 
           <!-- Bug Categories -->
           <BugCategory category="NOISE" hidden="true"/>
@@ -1349,4 +1351,13 @@
           <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_PACKAGE" category="STYLE"/>
           <BugPattern abbrev="UNS" type="UNS_UNSAFE_CALL" category="SECURITY"/>
           <BugPattern abbrev="NCR" type="NCR_NOT_PROPERLY_CHECKED_READ" category="BAD_PRACTICE" cweid="135"/>
+          <BugPattern abbrev="USO" type="USO_UNSAFE_METHOD_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="USO" type="USO_UNSAFE_STATIC_METHOD_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="USO" type="USO_UNSAFE_OBJECT_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="USO" type="USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="USO" type="USO_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="USO" type="USO_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION" category="SECURITY" cweid="412"/>
+          <BugPattern abbrev="USBC" type="USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION" category="SECURITY" />
+          <BugPattern abbrev="USBC" type="USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION" category="SECURITY" />
+          <BugPattern abbrev="USBC" type="USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION" category="SECURITY" />
 </FindbugsPlugin>
