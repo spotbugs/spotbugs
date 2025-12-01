@@ -1,426 +1,450 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="https://github.com/spotbugs/filter/4.8.4" elementFormDefault="unqualified"
-    xmlns="http://www.w3.org/2001/XMLSchema" xmlns:fb="https://github.com/spotbugs/filter/4.8.4">
+<xsd:schema targetNamespace="https://github.com/spotbugs/filter/4.9.10" elementFormDefault="unqualified"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.w3.org/2001/XMLSchema" xmlns:fb="https://github.com/spotbugs/filter/4.9.10">
 
-    <element name="FindBugsFilter" type="fb:FindBugsFilterType"></element>
+    <xsd:element name="FindBugsFilter" type="fb:FindBugsFilterType"></xsd:element>
 
-    <element name="Match" type="fb:MatchType"></element>
+    <xsd:element name="Match" type="fb:MatchType"></xsd:element>
 
-    <element name="Bug" type="fb:BugType">
-        <annotation>
-            <documentation>This element specifies a particular bug pattern or patterns to match.
+    <xsd:element name="Bug" type="fb:BugType">
+        <xsd:annotation>
+            <xsd:documentation>This element specifies a particular bug pattern or patterns to match.
                 If more than one attribute is specified on the same Bug element, all bug patterns that match either one of specified
-                pattern names, abbreviations, or categories will be matched.</documentation>
-        </annotation>
-    </element>
+                pattern names, abbreviations, or categories will be matched.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
 
-    <element name="BugCode" type="fb:BugCodeType">
-        <annotation>
-            <documentation>This element specifies a particular bug code or multiple bug codes to match.
-            </documentation>
-        </annotation>
-    </element>
+    <xsd:element name="BugCode" type="fb:BugCodeType">
+        <xsd:annotation>
+            <xsd:documentation>This element specifies a particular bug code or multiple bug codes to match.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
 
-    <element name="BugPattern" type="fb:BugPatternType">
-        <annotation>
-            <documentation>This element specifies a particular bug pattern or multiple patterns to match.</documentation>
-        </annotation>
-    </element>
+    <xsd:element name="BugPattern" type="fb:BugPatternType">
+        <xsd:annotation>
+            <xsd:documentation>This element specifies a particular bug pattern or multiple patterns to match.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
 
-    <element name="Priority" type="fb:PriorityType">
-        <annotation>
-            <documentation>This element matches warnings with a particular priority.
-            This is deprecated, 'Confidence' should be used instead</documentation>
-        </annotation>
-    </element>
+    <xsd:element name="Priority" type="fb:PriorityType">
+        <xsd:annotation>
+            <xsd:documentation>This element matches warnings with a particular priority.
+            This is deprecated, 'Confidence' should be used instead</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
 
-    <element name="Confidence" type="fb:ConfidenceType">
-        <annotation>
-            <documentation>This element matches warnings with a particular confidence.</documentation>
-        </annotation>
-    </element>
+    <xsd:element name="Confidence" type="fb:ConfidenceType">
+        <xsd:annotation>
+            <xsd:documentation>This element matches warnings with a particular confidence.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
 
-    <element name="Rank" type="fb:RankType">
-        <annotation>
-            <documentation>This element matches warnings with a particular rank.</documentation>
-        </annotation>
-    </element>
+    <xsd:element name="Rank" type="fb:RankType">
+        <xsd:annotation>
+            <xsd:documentation>This element matches warnings with a particular rank.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
 
-    <element name="Package" type="fb:PackageType">
-        <annotation>
-            <documentation>This element matches warnings associated with classes within the package specified using name
-                attribute.</documentation>
-        </annotation>
-    </element>
+    <xsd:element name="Package" type="fb:PackageType">
+        <xsd:annotation>
+            <xsd:documentation>This element matches warnings associated with classes within the package specified using name
+                attribute.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
 
-    <element name="Class" type="fb:ClassType">
-        <annotation>
-            <documentation>This element matches warnings associated with a particular class.</documentation>
-        </annotation>
-    </element>
+    <xsd:element name="Class" type="fb:ClassType">
+        <xsd:annotation>
+            <xsd:documentation>This element matches warnings associated with a particular class.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
     
-    <element name="Annotation" type="fb:AnnotationType">
-        <annotation>
-            <documentation>This element matches warnings associated with a particular class that is annotated with a 
-                particular java class annotation.</documentation>
-        </annotation>
-    </element>
+    <xsd:element name="Annotation" type="fb:AnnotationType">
+        <xsd:annotation>
+            <xsd:documentation>This element matches warnings associated with a particular class that is annotated with a 
+                particular java class annotation.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
 
-    <element name="Type" type="fb:TypeType">
-        <annotation>
-            <documentation>This element matches warnings associated with a particular type.</documentation>
-        </annotation>
-    </element>
+    <xsd:element name="Type" type="fb:TypeType">
+        <xsd:annotation>
+            <xsd:documentation>This element matches warnings associated with a particular type.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
 
-    <element name="Source" type="fb:SourceType">
-        <annotation>
-            <documentation>This element matches warnings associated with a particular source file name.</documentation>
-        </annotation>
-    </element>
+    <xsd:element name="Source" type="fb:SourceType">
+        <xsd:annotation>
+            <xsd:documentation>This element matches warnings associated with a particular source file name.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
 
-    <element name="Method" type="fb:MethodType">
-        <annotation>
-            <documentation>This element specifies a method.</documentation>
-        </annotation>
-    </element>
+    <xsd:element name="Method" type="fb:MethodType">
+        <xsd:annotation>
+            <xsd:documentation>This element specifies a method.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
 
-    <element name="Field" type="fb:FieldType">
-        <annotation>
-            <documentation>This element specifies a field.</documentation>
-        </annotation>
-    </element>
+    <xsd:element name="Field" type="fb:FieldType">
+        <xsd:annotation>
+            <xsd:documentation>This element specifies a field.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
 
-    <element name="Local" type="fb:LocalType">
-        <annotation>
-            <documentation>This element specifies a local variable.</documentation>
-        </annotation>
-    </element>
+    <xsd:element name="Local" type="fb:LocalType">
+        <xsd:annotation>
+            <xsd:documentation>This element specifies a local variable.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
 
-    <element name="Or" type="fb:OrType">
-        <annotation>
-            <documentation>This element combines Match clauses as disjuncts.
-            I.e., you can put two Method elements in an Or clause in order to match either method.</documentation>
-        </annotation>
-    </element>
+    <xsd:element name="Or" type="fb:OrType">
+        <xsd:annotation>
+            <xsd:documentation>This element combines Match clauses as disjuncts.
+            I.e., you can put two Method elements in an Or clause in order to match either method.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
 
-    <element name="And" type="fb:AndType">
-        <annotation>
-            <documentation>This element combines Match clauses which both must evaluate to true.
-            I.e., you can put Bug and Confidence elements in an And clause in order to match specific bugs with given confidence only.</documentation>
-        </annotation>
-    </element>
+    <xsd:element name="And" type="fb:AndType">
+        <xsd:annotation>
+            <xsd:documentation>This element combines Match clauses which both must evaluate to true.
+            I.e., you can put Bug and Confidence elements in an And clause in order to match specific bugs with given confidence only.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
 
-    <element name="Not" type="fb:NotType">
-        <annotation>
-            <documentation>This element inverts the included child Match.
-            I.e., you can put a Bug element in a Not clause in order to match any bug excluding the given one.</documentation>
-        </annotation>
-    </element>
+    <xsd:element name="Not" type="fb:NotType">
+        <xsd:annotation>
+            <xsd:documentation>This element inverts the included child Match.
+            I.e., you can put a Bug element in a Not clause in order to match any bug excluding the given one.</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
 
-    <complexType name="FindBugsFilterType">
-        <sequence>
-            <element ref="fb:Match" maxOccurs="unbounded" minOccurs="0"></element>
-        </sequence>
-    </complexType>
+    <xsd:complexType name="FindBugsFilterType">
+        <xsd:sequence>
+            <xsd:element ref="fb:Match" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
 
 
-    <complexType name="BugCodeType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <attribute name="name" type="string">
-            <annotation>
-                <documentation>A comma-separated list of bug code types. You can find the bug code types for particular warnings by looking at the output produced by the -xml output option (the type attribute of BugInstance elements), or from the bug descriptions document.</documentation>
-            </annotation>
-        </attribute>
-    </complexType>
+    <xsd:complexType name="BugCodeType">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="name" type="string">
+            <xsd:annotation>
+                <xsd:documentation>A comma-separated list of bug code types. You can find the bug code types for particular warnings by looking at the output produced by the -xml output option (the type attribute of BugInstance elements), or from the bug descriptions document.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
 
-    <complexType name="BugPatternType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <attribute name="name" type="string">
-            <annotation>
-                <documentation>A comma-separated list of bug pattern types. You can find the bug pattern types for particular warnings by looking at the output produced by the -xml output option (the type attribute of BugInstance elements), or from the bug descriptions document.</documentation>
-            </annotation>
-        </attribute>
-    </complexType>
+    <xsd:complexType name="BugPatternType">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="name" type="string">
+            <xsd:annotation>
+                <xsd:documentation>A comma-separated list of bug pattern types. You can find the bug pattern types for particular warnings by looking at the output produced by the -xml output option (the type attribute of BugInstance elements), or from the bug descriptions document.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
 
-    <complexType name="BugType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <attribute name="pattern" type="string">
-            <annotation>
-                <documentation>A comma-separated list of bug pattern types. You can find the bug pattern types for particular warnings by looking at the output produced by the -xml output option (the type attribute of BugInstance elements), or from the bug descriptions document.</documentation>
-            </annotation></attribute>
-        <attribute name="code" type="string">
-            <annotation>
-                <documentation>A comma-separated list of bug abbreviations.</documentation>
-            </annotation></attribute>
-        <attribute name="category" type="string">
-            <annotation>
-                <documentation>A comma separated list of bug category names.</documentation>
-            </annotation></attribute>
-    </complexType>
+    <xsd:complexType name="BugType">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="pattern" type="string">
+            <xsd:annotation>
+                <xsd:documentation>A comma-separated list of bug pattern types. You can find the bug pattern types for particular warnings by looking at the output produced by the -xml output option (the type attribute of BugInstance elements), or from the bug descriptions document.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="code" type="string">
+            <xsd:annotation>
+                <xsd:documentation>A comma-separated list of bug abbreviations.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="category" type="string">
+            <xsd:annotation>
+                <xsd:documentation>A comma separated list of bug category names.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
 
-    <complexType name="ClassType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <attribute name="name" type="string">
-            <annotation>
-                <documentation>The exact or regex match pattern for a class name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
-            </annotation></attribute>
-        <attribute name="role" type="string">
-            <annotation>
-                <documentation>The class role</documentation>
-            </annotation></attribute>
-    </complexType>
+    <xsd:complexType name="ClassType">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="name" type="string">
+            <xsd:annotation>
+                <xsd:documentation>The exact or regex match pattern for a class name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="role" type="string">
+            <xsd:annotation>
+                <xsd:documentation>The class role</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
 
-    <complexType name="AnnotationType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <attribute name="name" type="string">
-            <annotation>
-                <documentation>The exact or regex match pattern for a java class annotation name. If the name starts with the ~ character the rest of the attribute content is interpreted as a Java regular expression.</documentation>
-            </annotation></attribute>
-    </complexType>
+    <xsd:complexType name="AnnotationType">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="name" type="string">
+            <xsd:annotation>
+                <xsd:documentation>The exact or regex match pattern for a java class annotation name. If the name starts with the ~ character the rest of the attribute content is interpreted as a Java regular expression.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
     
-    <complexType name="TypeType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <attribute name="descriptor" type="string">
-            <annotation>
-                <documentation>The exact or regex match pattern for type descriptor. If the descriptor starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
-            </annotation></attribute>
-        <attribute name="role" type="string">
-            <annotation>
-                <documentation>The type role</documentation>
-            </annotation></attribute>
-        <attribute name="typeParameters" type="string">
-            <annotation>
-                <documentation>The type parameters</documentation>
-            </annotation></attribute>
-    </complexType>
+    <xsd:complexType name="TypeType">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="descriptor" type="string">
+            <xsd:annotation>
+                <xsd:documentation>The exact or regex match pattern for type descriptor. If the descriptor starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="role" type="string">
+            <xsd:annotation>
+                <xsd:documentation>The type role</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="typeParameters" type="string">
+            <xsd:annotation>
+                <xsd:documentation>The type parameters</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
 
-    <complexType name="SourceType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <attribute name="name" type="string">
-            <annotation>
-                <documentation>The exact or regex match pattern for a source file name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
-            </annotation></attribute>
-    </complexType>
+    <xsd:complexType name="SourceType">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="name" type="string">
+            <xsd:annotation>
+                <xsd:documentation>The exact or regex match pattern for a source file name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
 
-    <complexType name="FieldType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <attribute name="name" type="string">
-            <annotation>
-                <documentation>The exact or regex match pattern for a field name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
-            </annotation></attribute>
-        <attribute name="type" type="string">
-            <annotation>
-                <documentation>Fully qualified type of the field</documentation>
-            </annotation></attribute>
-        <attribute name="role" type="string">
-            <annotation>
-                <documentation>The field's role</documentation>
-            </annotation></attribute>
-    </complexType>
+    <xsd:complexType name="FieldType">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="name" type="string">
+            <xsd:annotation>
+                <xsd:documentation>The exact or regex match pattern for a field name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="type" type="string">
+            <xsd:annotation>
+                <xsd:documentation>Fully qualified type of the field</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="role" type="string">
+            <xsd:annotation>
+                <xsd:documentation>The field's role</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
 
-    <complexType name="LocalType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <attribute name="name" type="string">
-            <annotation>
-                <documentation>The exact or regex match pattern for a local variable name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation></annotation></attribute>
-    </complexType>
+    <xsd:complexType name="LocalType">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="name" type="string">
+            <xsd:annotation>
+                <xsd:documentation>The exact or regex match pattern for a local variable name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
 
-    <complexType name="MethodType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <attribute name="name" type="string">
-            <annotation>
-                <documentation>The exact or regex match pattern for a method name.. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
-            </annotation></attribute>
-        <attribute name="params" type="string">
-            <annotation>
-                <documentation>A comma-separated list of the fully qualified  types of the method's parameters.</documentation>
-            </annotation></attribute>
-        <attribute name="returns" type="string">
-            <annotation>
-                <documentation>The method's fully qualified return type</documentation>
-            </annotation></attribute>
-        <attribute name="role" type="string">
-            <annotation>
-                <documentation>The method's role</documentation>
-            </annotation></attribute>
-    </complexType>
+    <xsd:complexType name="MethodType">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="name" type="string">
+            <xsd:annotation>
+                <xsd:documentation>The exact or regex match pattern for a method name.. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="params" type="string">
+            <xsd:annotation>
+                <xsd:documentation>A comma-separated list of the fully qualified  types of the method's parameters.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="returns" type="string">
+            <xsd:annotation>
+                <xsd:documentation>The method's fully qualified return type</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="role" type="string">
+            <xsd:annotation>
+                <xsd:documentation>The method's role</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
 
-    <complexType name="PackageType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <attribute name="name" type="string">
-            <annotation>
-                <documentation>The exact or regex match pattern for a package name. Nested packages are not included (along the lines of Java import statement). If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
-            </annotation></attribute>
-    </complexType>
+    <xsd:complexType name="PackageType">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="name" type="string">
+            <xsd:annotation>
+                <xsd:documentation>The exact or regex match pattern for a package name. Nested packages are not included (along the lines of Java import statement). If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
 
-    <complexType name="PriorityType">
-        <annotation>
-            <documentation>Deprecated. Use ConfidenceType instead</documentation>
-        </annotation>
-        <attribute name="value" type="fb:PriorityValueType">
-            <annotation>
-                <documentation>1: high-priority warnings, 2: medium-priority warnings, 3: low-priority warnings</documentation>
-            </annotation></attribute>
-    </complexType>
+    <xsd:complexType name="PriorityType">
+        <xsd:annotation>
+            <xsd:documentation>Deprecated. Use ConfidenceType instead</xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="value" type="fb:PriorityValueType">
+            <xsd:annotation>
+                <xsd:documentation>1: high-priority warnings, 2: medium-priority warnings, 3: low-priority warnings</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
 
-    <complexType name="ConfidenceType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <attribute name="value" type="fb:ConfidenceValueType">
-            <annotation>
-                <documentation>1: high-priority warnings, 2: medium-priority warnings, 3: low-priority warnings</documentation>
-            </annotation></attribute>
-    </complexType>
+    <xsd:complexType name="ConfidenceType">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="value" type="fb:ConfidenceValueType">
+            <xsd:annotation>
+                <xsd:documentation>1: high-priority warnings, 2: medium-priority warnings, 3: low-priority warnings</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
 
-    <complexType name="RankType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <attribute name="value" type="fb:RankValueType">
-            <annotation>
-                <documentation>1 to 4 are scariest, 5 to 9 scary, 10 to 14 troubling, and 15 to 20 of concern bugs.</documentation>
-            </annotation></attribute>
-    </complexType>
+    <xsd:complexType name="RankType">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="value" type="fb:RankValueType">
+            <xsd:annotation>
+                <xsd:documentation>1 to 4 are scariest, 5 to 9 scary, 10 to 14 troubling, and 15 to 20 of concern bugs.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
 
-    <simpleType name="PriorityValueType">
-        <restriction base="int">
-            <minInclusive value="1"></minInclusive>
-            <maxInclusive value="3"></maxInclusive>
-        </restriction>
-    </simpleType>
+    <xsd:simpleType name="PriorityValueType">
+        <xsd:restriction base="int">
+            <xsd:minInclusive value="1"></xsd:minInclusive>
+            <xsd:maxInclusive value="3"></xsd:maxInclusive>
+        </xsd:restriction>
+    </xsd:simpleType>
 
-    <simpleType name="ConfidenceValueType">
-        <restriction base="int">
-            <minInclusive value="1"></minInclusive>
-            <maxInclusive value="3"></maxInclusive>
-        </restriction>
-    </simpleType>
+    <xsd:simpleType name="ConfidenceValueType">
+        <xsd:restriction base="int">
+            <xsd:minInclusive value="1"></xsd:minInclusive>
+            <xsd:maxInclusive value="3"></xsd:maxInclusive>
+        </xsd:restriction>
+    </xsd:simpleType>
 
-    <simpleType name="RankValueType">
-        <restriction base="int">
-            <minInclusive value="1"></minInclusive>
-            <maxInclusive value="20"></maxInclusive>
-        </restriction>
-    </simpleType>
+    <xsd:simpleType name="RankValueType">
+        <xsd:restriction base="int">
+            <xsd:minInclusive value="1"></xsd:minInclusive>
+            <xsd:maxInclusive value="20"></xsd:maxInclusive>
+        </xsd:restriction>
+    </xsd:simpleType>
 
-    <complexType name="MatchType">
-        <sequence maxOccurs="unbounded" minOccurs="1">
-            <choice maxOccurs="unbounded" minOccurs="1">
-                <element ref="fb:Bug"/>
-                <element ref="fb:Class"/>
-                <element ref="fb:Annotation"/>
-                <element ref="fb:Source"/>
-                <element ref="fb:Field"/>
-                <element ref="fb:Local"/>
-                <element ref="fb:Method"/>
-                <element ref="fb:Or"/>
-                <element ref="fb:And"/>
-                <element ref="fb:Package"/>
-                <element ref="fb:Priority"/>
-                <element ref="fb:Confidence"/>
-                <element ref="fb:Rank"/>
-                <element ref="fb:Not"/>
-                <element ref="fb:BugCode"/>
-                <element ref="fb:BugPattern"/>
-            </choice>
-        </sequence>
-    </complexType>
+    <xsd:complexType name="MatchType">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="1">
+            <xsd:choice maxOccurs="unbounded" minOccurs="1">
+                <xsd:element ref="fb:Bug"/>
+                <xsd:element ref="fb:Class"/>
+                <xsd:element ref="fb:Annotation"/>
+                <xsd:element ref="fb:Source"/>
+                <xsd:element ref="fb:Field"/>
+                <xsd:element ref="fb:Local"/>
+                <xsd:element ref="fb:Method"/>
+                <xsd:element ref="fb:Or"/>
+                <xsd:element ref="fb:And"/>
+                <xsd:element ref="fb:Package"/>
+                <xsd:element ref="fb:Priority"/>
+                <xsd:element ref="fb:Confidence"/>
+                <xsd:element ref="fb:Rank"/>
+                <xsd:element ref="fb:Not"/>
+                <xsd:element ref="fb:BugCode"/>
+                <xsd:element ref="fb:BugPattern"/>
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:complexType>
 
-    <complexType name="NotType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <sequence maxOccurs="unbounded" minOccurs="1">
-            <choice maxOccurs="unbounded" minOccurs="1">
-                <element ref="fb:Bug"/>
-                <element ref="fb:Class"/>
-                <element ref="fb:Source"/>
-                <element ref="fb:Field"/>
-                <element ref="fb:Local"/>
-                <element ref="fb:Method"/>
-                <element ref="fb:Or"/>
-                <element ref="fb:And"/>
-                <element ref="fb:Package"/>
-                <element ref="fb:Priority"/>
-                <element ref="fb:Confidence"/>
-                <element ref="fb:Rank"/>
-                <element ref="fb:Not"/>
-                <element ref="fb:BugCode"/>
-                <element ref="fb:BugPattern"/>
-            </choice>
-        </sequence>
-    </complexType>
+    <xsd:complexType name="NotType">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence maxOccurs="unbounded" minOccurs="1">
+            <xsd:choice maxOccurs="unbounded" minOccurs="1">
+                <xsd:element ref="fb:Bug"/>
+                <xsd:element ref="fb:Class"/>
+                <xsd:element ref="fb:Source"/>
+                <xsd:element ref="fb:Field"/>
+                <xsd:element ref="fb:Local"/>
+                <xsd:element ref="fb:Method"/>
+                <xsd:element ref="fb:Or"/>
+                <xsd:element ref="fb:And"/>
+                <xsd:element ref="fb:Package"/>
+                <xsd:element ref="fb:Priority"/>
+                <xsd:element ref="fb:Confidence"/>
+                <xsd:element ref="fb:Rank"/>
+                <xsd:element ref="fb:Not"/>
+                <xsd:element ref="fb:BugCode"/>
+                <xsd:element ref="fb:BugPattern"/>
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:complexType>
 
-    <complexType name="OrType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <sequence maxOccurs="unbounded" minOccurs="2">
-            <choice maxOccurs="unbounded" minOccurs="1">
-                <element ref="fb:Bug"/>
-                <element ref="fb:Class"/>
-                <element ref="fb:Source"/>
-                <element ref="fb:Field"/>
-                <element ref="fb:Local"/>
-                <element ref="fb:Method"/>
-                <element ref="fb:Or"/>
-                <element ref="fb:And"/>
-                <element ref="fb:Package"/>
-                <element ref="fb:Priority"/>
-                <element ref="fb:Confidence"/>
-                <element ref="fb:Rank"/>
-                <element ref="fb:Not"/>
-                <element ref="fb:BugCode"/>
-                <element ref="fb:BugPattern"/>
-            </choice>
-        </sequence>
-    </complexType>
+    <xsd:complexType name="OrType">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence maxOccurs="unbounded" minOccurs="2">
+            <xsd:choice maxOccurs="unbounded" minOccurs="1">
+                <xsd:element ref="fb:Bug"/>
+                <xsd:element ref="fb:Class"/>
+                <xsd:element ref="fb:Source"/>
+                <xsd:element ref="fb:Field"/>
+                <xsd:element ref="fb:Local"/>
+                <xsd:element ref="fb:Method"/>
+                <xsd:element ref="fb:Or"/>
+                <xsd:element ref="fb:And"/>
+                <xsd:element ref="fb:Package"/>
+                <xsd:element ref="fb:Priority"/>
+                <xsd:element ref="fb:Confidence"/>
+                <xsd:element ref="fb:Rank"/>
+                <xsd:element ref="fb:Not"/>
+                <xsd:element ref="fb:BugCode"/>
+                <xsd:element ref="fb:BugPattern"/>
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:complexType>
 
-    <complexType name="AndType">
-        <annotation>
-            <documentation></documentation>
-        </annotation>
-        <sequence maxOccurs="unbounded" minOccurs="2">
-            <choice maxOccurs="unbounded" minOccurs="1">
-                <element ref="fb:Bug"/>
-                <element ref="fb:Class"/>
-                <element ref="fb:Source"/>
-                <element ref="fb:Field"/>
-                <element ref="fb:Local"/>
-                <element ref="fb:Method"/>
-                <element ref="fb:Or"/>
-                <element ref="fb:And"/>
-                <element ref="fb:Package"/>
-                <element ref="fb:Priority"/>
-                <element ref="fb:Confidence"/>
-                <element ref="fb:Rank"/>
-                <element ref="fb:Not"/>
-                <element ref="fb:BugCode"/>
-                <element ref="fb:BugPattern"/>
-            </choice>
-        </sequence>
-    </complexType>
-</schema>
+    <xsd:complexType name="AndType">
+        <xsd:annotation>
+            <xsd:documentation></xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence maxOccurs="unbounded" minOccurs="2">
+            <xsd:choice maxOccurs="unbounded" minOccurs="1">
+                <xsd:element ref="fb:Bug"/>
+                <xsd:element ref="fb:Class"/>
+                <xsd:element ref="fb:Source"/>
+                <xsd:element ref="fb:Field"/>
+                <xsd:element ref="fb:Local"/>
+                <xsd:element ref="fb:Method"/>
+                <xsd:element ref="fb:Or"/>
+                <xsd:element ref="fb:And"/>
+                <xsd:element ref="fb:Package"/>
+                <xsd:element ref="fb:Priority"/>
+                <xsd:element ref="fb:Confidence"/>
+                <xsd:element ref="fb:Rank"/>
+                <xsd:element ref="fb:Not"/>
+                <xsd:element ref="fb:BugCode"/>
+                <xsd:element ref="fb:BugPattern"/>
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>
