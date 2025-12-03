@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.util;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
 import javax.annotation.CheckForNull;
@@ -350,7 +349,7 @@ public abstract class ClassName {
         }
 
         for (String p : pp) {
-            if (!p.isEmpty() && (StringUtils.containsIgnoreCase(className, p) || fuzzyMatch(className, p))) {
+            if (!p.isEmpty() && (org.apache.commons.lang3.Strings.CI.contains(className, p) || fuzzyMatch(className, p))) {
                 return true;
             }
         }
