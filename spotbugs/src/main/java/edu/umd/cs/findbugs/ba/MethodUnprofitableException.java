@@ -68,7 +68,7 @@ public class MethodUnprofitableException extends CFGBuilderException {
      */
     public MethodUnprofitableException(MethodDescriptor methodDescriptor) {
         super("Appears unprofitable to analyze " + methodDescriptor.toString());
-        this.method = XFactory.createXMethod(methodDescriptor.getClassDescriptor().toDottedClassName(),
+        this.method = XFactory.createXMethod(methodDescriptor.getClassDescriptor().getDottedClassName(),
                 methodDescriptor.getName(), methodDescriptor.getSignature(), methodDescriptor.isStatic());
     }
 
