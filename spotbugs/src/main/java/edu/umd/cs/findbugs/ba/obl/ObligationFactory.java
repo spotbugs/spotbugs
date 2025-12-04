@@ -81,7 +81,7 @@ public class ObligationFactory {
      */
     public boolean isObligationType(ClassDescriptor classDescriptor) {
         try {
-            return getObligationByType(BCELUtil.getObjectTypeInstance(classDescriptor.toDottedClassName())) != null;
+            return getObligationByType(BCELUtil.getObjectTypeInstance(classDescriptor.getDottedClassName())) != null;
         } catch (ClassNotFoundException e) {
             Global.getAnalysisCache().getErrorLogger().reportMissingClass(e);
             return false;
@@ -130,7 +130,7 @@ public class ObligationFactory {
      */
     public @CheckForNull Obligation getObligationByType(ClassDescriptor classDescriptor) {
         try {
-            return getObligationByType(BCELUtil.getObjectTypeInstance(classDescriptor.toDottedClassName()));
+            return getObligationByType(BCELUtil.getObjectTypeInstance(classDescriptor.getDottedClassName()));
         } catch (ClassNotFoundException e) {
             Global.getAnalysisCache().getErrorLogger().reportMissingClass(e);
             return null;
