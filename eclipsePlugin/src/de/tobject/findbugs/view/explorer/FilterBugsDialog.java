@@ -304,28 +304,12 @@ public class FilterBugsDialog extends SelectionDialog {
             DetectorFactory factory = iterator.next();
             Set<BugPattern> patterns = factory.getReportedBugPatterns();
             for (BugPattern pattern : patterns) {
-                Set<DetectorFactory> set = patternToFactory.get(pattern);
-                if (set == null) {
-                    set = new TreeSet<>(new Comparator<DetectorFactory>() {
-                        @Override
-                        public int compare(DetectorFactory f1, DetectorFactory f2) {
-                            return f1.getFullName().compareTo(f2.getFullName());
-                        }
-                    });
-                    patternToFactory.put(pattern, set);
-                }
+                Set<DetectorFactory> set = patternToFactory.computeIfAbsent(pattern,
+                        k -> new TreeSet<>(Comparator.comparing(DetectorFactory::getFullName)));
                 set.add(factory);
 
-                Set<Plugin> pset = patternToPlugin.get(pattern);
-                if (pset == null) {
-                    pset = new TreeSet<>(new Comparator<Plugin>() {
-                        @Override
-                        public int compare(Plugin f1, Plugin f2) {
-                            return f1.getPluginId().compareTo(f2.getPluginId());
-                        }
-                    });
-                    patternToPlugin.put(pattern, pset);
-                }
+                Set<Plugin> pset = patternToPlugin.computeIfAbsent(pattern,
+                        k -> new TreeSet<>(Comparator.comparing(Plugin::getPluginId)));
                 pset.add(factory.getPlugin());
             }
         }

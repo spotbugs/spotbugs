@@ -147,12 +147,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
     }
 
     private @CheckForNull XField lookupField(InstructionHandle handle, FieldInstruction fins) {
-        XField field = instructionToFieldMap.get(handle);
-        if (field == null) {
-            field = Hierarchy.findXField(fins, getCPG());
-            instructionToFieldMap.put(handle, field);
-        }
-        return field;
+        return instructionToFieldMap.computeIfAbsent(handle, h -> Hierarchy.findXField(fins, getCPG()));
     }
 
     protected abstract void sawLoad(FieldSet fact, XField field);
