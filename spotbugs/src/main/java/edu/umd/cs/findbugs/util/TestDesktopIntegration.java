@@ -55,7 +55,7 @@ public class TestDesktopIntegration extends JPanel {
         "java.compiler", "java.ext.dirs", "os.name", "os.arch", "os.version", "file.separator", "path.separator",
         "line.separator", "user.name", "user.home", "user.dir" };
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         String u = SystemProperties.getProperty("findbugs.browserTestURL", "http://findbugs.sourceforge.net/");
         url = new URL(u);
 
