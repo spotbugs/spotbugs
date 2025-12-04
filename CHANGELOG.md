@@ -93,7 +93,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `compactValueNumbers(Dataflow<ValueNumberFrame, ValueNumberAnalysis>)` method from `edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis` deprecated since 2009.
 - Removed old deprecated fields:
   - String `RELEASE` from `edu.umd.cs.findbugs.Version` deprecated since 2018.
-- Removed `edu.umd.cs.findbugs.NewResults` class deprecated since 2009.
+- Removed old deprecated classes:
+  - `edu.umd.cs.findbugs.NewResults` class deprecated since 2009,
+  - `edu.umd.cs.findbugs.classfile.engine.ClassParserUsingBCEL` class deprecated since 2007.
 
 ## 4.9.8 - 2025-10-18
 ### Fixed
