@@ -788,8 +788,11 @@ public class Project implements XMLWriteable, AutoCloseable {
         if (base.length() <= srcFile.length()) {
             String root = srcFile.substring(0, base.length());
             if (root.equals(base)) {
-                // Strip off the base directory, make relative
-                return "." + SystemProperties.getProperty("file.separator") + srcFile.substring(base.length());
+                // Strip off the base directory, make relative 
+            	// the src part might already start with a relative marker, so only add if it's not there
+            	String relativePrefix = "." + File.separator;
+            	String srcPostfix = srcFile.substring(base.length());
+            	return srcPostfix.startsWith(relativePrefix) ? srcPostfix : relativePrefix + srcPostfix;
             }
         }
 
