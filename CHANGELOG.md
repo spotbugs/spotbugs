@@ -28,7 +28,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Enhanced SARIF output with full description sections - adding markdown is still an open issue ([#2339](https://github.com/spotbugs/spotbugs/issues/2339))
 - Added missing null check to `MultipleInstantiationsOfSingletons` detector ([#3823](https://github.com/spotbugs/spotbugs/issues/3823))
 - Fix tool name in usage info, ([#3847](https://github.com/spotbugs/spotbugs/pull/3847))
-- Fix the building of relative chains of ./././ in filenames in fbp files ([#3851](https://github.com/spotbugs/spotbugs/pull/3851))
+- Fix the building of relative chains of ./././ in filenames in fbp files ([#3852](https://github.com/spotbugs/spotbugs/pull/3852))
 
 ### Removed
 - Removed old deprecated methods: 
