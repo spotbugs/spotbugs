@@ -28,6 +28,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Enhanced SARIF output with full description sections - adding markdown is still an open issue ([#2339](https://github.com/spotbugs/spotbugs/issues/2339))
 - Added missing null check to `MultipleInstantiationsOfSingletons` detector ([#3823](https://github.com/spotbugs/spotbugs/issues/3823))
 - Fix `CT_CONSTRUCTOR_THROW` FP with public and private constructors ([#3822](https://github.com/spotbugs/spotbugs/issues/3822))
+- Fix tool name in usage info, ([#3847](https://github.com/spotbugs/spotbugs/pull/3847))
 
 ### Removed
 - Removed old deprecated methods: 
@@ -89,9 +90,13 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `closeSilently(Closeable)` method from `edu.umd.cs.findbugs.util.Util` deprecated since 2018,
   - `closeSilently(ZipFile)` method from `edu.umd.cs.findbugs.util.Util` deprecated since 2018,
   - `getRefConstantOperand()` method from `edu.umd.cs.findbugs.visitclass.DismantleBytecode` deprecated since 2010,
-  - `getDottedFieldSig()` method from `edu.umd.cs.findbugs.visitclass.PreorderVisitor` deprecated since 2006.
+  - `getDottedFieldSig()` method from `edu.umd.cs.findbugs.visitclass.PreorderVisitor` deprecated since 2006,
+  - `compactValueNumbers(Dataflow<ValueNumberFrame, ValueNumberAnalysis>)` method from `edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis` deprecated since 2009.
 - Removed old deprecated fields:
   - String `RELEASE` from `edu.umd.cs.findbugs.Version` deprecated since 2018.
+- Removed old deprecated classes:
+  - `edu.umd.cs.findbugs.NewResults` class deprecated since 2009,
+  - `edu.umd.cs.findbugs.classfile.engine.ClassParserUsingBCEL` class deprecated since 2007.
 
 ## 4.9.8 - 2025-10-18
 ### Fixed
