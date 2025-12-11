@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs;
 import java.net.URI;
 import java.util.Optional;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.util.HTML;
 

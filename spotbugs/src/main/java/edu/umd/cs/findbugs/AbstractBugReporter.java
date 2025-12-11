@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import org.dom4j.DocumentException;

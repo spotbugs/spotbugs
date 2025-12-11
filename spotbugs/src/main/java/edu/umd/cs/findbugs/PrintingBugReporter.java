@@ -29,7 +29,7 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;

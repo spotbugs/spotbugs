@@ -2,7 +2,7 @@ package de.tobject.findbugs.reporter;
 
 import java.util.function.LongSupplier;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.eclipse.core.runtime.Assert;
