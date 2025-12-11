@@ -418,7 +418,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     @Override
     public @DottedClassName String getClassName() {
-        return getClassDescriptor().toDottedClassName();
+        return getClassDescriptor().getDottedClassName();
     }
 
     @Override

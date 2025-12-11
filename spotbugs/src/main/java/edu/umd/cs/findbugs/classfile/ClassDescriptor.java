@@ -193,7 +193,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
      * @see edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser
      */
     public static void throwClassNotFoundException(ClassDescriptor classDescriptor) throws ClassNotFoundException {
-        throw new ClassNotFoundException("Class " + classDescriptor.toDottedClassName() + " cannot be resolved");
+        throw new ClassNotFoundException("Class " + classDescriptor.getDottedClassName() + " cannot be resolved");
     }
 
     public boolean isAnonymousClass() {

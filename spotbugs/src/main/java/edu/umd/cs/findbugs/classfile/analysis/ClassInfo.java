@@ -389,7 +389,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
     @Override
     public String getPackageName() {
-        String dottedClassName = getClassDescriptor().toDottedClassName();
+        String dottedClassName = getClassDescriptor().getDottedClassName();
         int lastDot = dottedClassName.lastIndexOf('.');
         if (lastDot < 0) {
             return "";

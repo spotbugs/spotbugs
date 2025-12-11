@@ -521,7 +521,7 @@ public class AnalysisContext implements AutoCloseable {
      *             if the class can't be found
      */
     public JavaClass lookupClass(@Nonnull ClassDescriptor classDescriptor) throws ClassNotFoundException {
-        return lookupClass(classDescriptor.toDottedClassName());
+        return lookupClass(classDescriptor.getDottedClassName());
     }
 
     /**
@@ -538,8 +538,7 @@ public class AnalysisContext implements AutoCloseable {
      * @throws ClassNotFoundException
      */
     public static JavaClass lookupSystemClass(@Nonnull String className) throws ClassNotFoundException {
-        // TODO: eventually we should move to our own thread-safe repository
-        // implementation
+        // TODO: eventually we should move to our own thread-safe repository implementation
         requireNonNull(className, "className is null");
         if (originalRepository == null) {
             throw new IllegalStateException("originalRepository is null");
