@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import javax.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.Const;

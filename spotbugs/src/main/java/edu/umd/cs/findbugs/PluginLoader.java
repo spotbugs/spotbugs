@@ -55,7 +55,7 @@ import java.util.zip.ZipFile;
 
 import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.util.SecurityManagerHandler;

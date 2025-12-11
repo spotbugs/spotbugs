@@ -2,7 +2,7 @@ package sfBugs;
 
 import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 

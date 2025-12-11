@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;

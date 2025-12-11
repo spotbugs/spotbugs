@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import jakarta.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.ClassParser;
