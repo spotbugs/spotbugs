@@ -35,9 +35,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 public @interface CheckReturnValue {
 
-    @Deprecated
-    Priority priority() default Priority.MEDIUM;
-
     Confidence confidence() default Confidence.MEDIUM;
 
     /**

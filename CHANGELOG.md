@@ -6,6 +6,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
+### Refactor
+- Remove deprecated 'Priority' annotation originally deprecated in 2011. Switch to 'Confidence' for same behaviour. ([#3746](https://github.com/spotbugs/spotbugs/pull/3746))
 
 ### Added
 - Recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3780](https://github.com/spotbugs/spotbugs/pull/3780))
@@ -29,6 +31,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Added missing null check to `MultipleInstantiationsOfSingletons` detector ([#3823](https://github.com/spotbugs/spotbugs/issues/3823))
 - Fix invalid syntax in findbugsfilter.xsd ([#3832](https://github.com/spotbugs/spotbugs/issues/3832))
 - Fix tool name in usage info, ([#3847](https://github.com/spotbugs/spotbugs/pull/3847))
+- Fix the building of relative chains of ./././ in filenames in fbp files ([#3852](https://github.com/spotbugs/spotbugs/pull/3852))
 
 ### Removed
 - Removed old deprecated methods: 
