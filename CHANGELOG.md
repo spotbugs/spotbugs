@@ -7,7 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2025-??-??
 ### Refactor
 - Move internal usage of 'javax.annotation.Nonnull' to 'jakarta.annotation.NonNull'. ([#3858](https://github.com/spotbugs/spotbugs/pull/3858))
-- Move internal usage of 'javax.annotation.Nullable' to 'jakarta.annotation.Nullable'. ([#xxxx](https://github.com/spotbugs/spotbugs/pull/xxxx))
+- Move internal usage of 'javax.annotation.Nullable' to 'jakarta.annotation.Nullable'. ([#3861](https://github.com/spotbugs/spotbugs/pull/3861))
 
 ### Added
 - Recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3780](https://github.com/spotbugs/spotbugs/pull/3780))
