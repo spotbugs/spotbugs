@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;

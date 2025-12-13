@@ -50,7 +50,7 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;

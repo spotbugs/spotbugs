@@ -1,4 +1,3 @@
-
 # Changelog
 
 This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http://keepachangelog.com/en/1.0.0/).
@@ -7,7 +6,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2025-??-??
 ### Refactor
-- Remove deprecated 'Priority' annotation originally deprecated in 2011. Switch to 'Confidence' for same behaviour. ([#3746](https://github.com/spotbugs/spotbugs/pull/3746))
+- Move internal usage of 'javax.annotation.Nonnull' to 'jakarta.annotation.NonNull'. ([#3858](https://github.com/spotbugs/spotbugs/pull/3858))
 
 ### Added
 - Recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3780](https://github.com/spotbugs/spotbugs/pull/3780))
@@ -99,6 +98,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Removed old deprecated classes:
   - `edu.umd.cs.findbugs.NewResults` class deprecated since 2009,
   - `edu.umd.cs.findbugs.classfile.engine.ClassParserUsingBCEL` class deprecated since 2007.
+- Remove deprecated 'Priority' annotation originally deprecated in 2011. Switch to 'Confidence' for same behaviour. ([#3746](https://github.com/spotbugs/spotbugs/pull/3746))
 
 ## 4.9.8 - 2025-10-18
 ### Fixed

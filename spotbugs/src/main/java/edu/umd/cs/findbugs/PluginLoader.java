@@ -54,7 +54,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.WillClose;
 

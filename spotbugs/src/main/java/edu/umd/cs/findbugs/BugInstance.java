@@ -45,7 +45,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.meta.When;
 
 import org.apache.bcel.Const;
