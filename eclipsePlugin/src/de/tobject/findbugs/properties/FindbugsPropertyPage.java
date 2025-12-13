@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import jakarta.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;

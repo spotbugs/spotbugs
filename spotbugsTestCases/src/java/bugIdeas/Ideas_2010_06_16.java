@@ -1,6 +1,6 @@
 package bugIdeas;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
