@@ -1063,7 +1063,7 @@ public class PluginLoader implements AutoCloseable {
         cannotDisable = Boolean.parseBoolean(pluginDescriptor.valueOf("/FindbugsPlugin/@cannotDisable"));
 
         String de = pluginDescriptor.valueOf("/FindbugsPlugin/@defaultenabled");
-        if (de != null && "false".equals(de.toLowerCase().trim())) {
+        if (de != null && "false".equalsIgnoreCase(de.trim())) {
             optionalPlugin = true;
         }
         if (optionalPlugin) {
