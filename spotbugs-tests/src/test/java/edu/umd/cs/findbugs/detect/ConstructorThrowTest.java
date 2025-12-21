@@ -38,8 +38,7 @@ class ConstructorThrowTest extends AbstractIntegrationTest {
     @Test
     void testConstructorThrowCheck5() {
         performAnalysis("constructorthrow/ConstructorThrowTest5.class");
-        assertBugTypeCount(CT_THROW, 2);
-        assertBugAtLine(CT_THROW, 11);
+        assertBugTypeCount(CT_THROW, 1);
         assertBugAtLine(CT_THROW, 16);
     }
 
@@ -290,6 +289,12 @@ class ConstructorThrowTest extends AbstractIntegrationTest {
     @Test
     void testGoodConstructorThrowCheck20() {
         performAnalysis("constructorthrow/ConstructorThrowNegativeTest20.class");
+        assertNoBugType(CT_THROW);
+    }
+
+    @Test
+    void testGoodConstructorThrowCheck21() {
+        performAnalysis("constructorthrow/ConstructorThrowNegativeTest21.class");
         assertNoBugType(CT_THROW);
     }
 }
