@@ -38,9 +38,6 @@ public class Issue3767 {
         }
     }
 
-    /* Commented out because this triggers a SF_SWITCH_FALLTHROUGH false positive
-       The while loop are unconditionnal so we don't find the "if" statement we're looking for
-    */
     final public String term(int state) throws IOException {
 
         switch (state) {
