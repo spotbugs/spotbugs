@@ -241,7 +241,8 @@ public class FindReturnRef extends OpcodeStackDetector {
                     || field.isPublic()
                     || AnalysisContext.currentXFactory().isEmptyArrayField(field)
                     || field.getName().contains("EMPTY")
-                    || !MutableClasses.mutableSignature(TypeFrameModelingVisitor.getType(field).getSignature())) {
+                    || !MutableClasses.mutableSignature(TypeFrameModelingVisitor.getType(field).getSignature())
+                    || MutableClasses.exposableSignature(TypeFrameModelingVisitor.getType(field).getSignature())) {
                 return;
             }
             if (fieldValues.containsKey(field) && fieldValues.get(field).stream()
