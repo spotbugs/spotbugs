@@ -437,7 +437,10 @@ public abstract class DismantleBytecode extends AnnotationVisitor {
      * @return true if instruction is an IF, false if not
      */
     public static boolean isIf(int opcode) {
-        return opcode >= Const.IF_ICMPEQ && opcode <= Const.IF_ACMPNE;
+        return (opcode >= Const.IFEQ && opcode <= Const.IFLE)
+                || (opcode >= Const.IF_ICMPEQ && opcode <= Const.IF_ACMPNE)
+                || opcode == Const.IFNULL
+                || opcode == Const.IFNONNULL;
     }
 
     @SuppressFBWarnings("EI")

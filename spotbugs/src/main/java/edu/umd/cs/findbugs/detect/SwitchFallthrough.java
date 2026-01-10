@@ -346,7 +346,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             if (nextBranchTargetAfterBranchTarget != null) {
                 // the branch target of the GOTO is followed by an IF (it's a while GOTO)
                 if (isIf(getCodeByte(nextBranchTargetAfterBranchTarget.getKey()))
-                        // And it targets outside is after the next case so there's no fallthrough
+                        // And its target is after the next case so there's no fallthrough
                         && nextBranchTargetAfterBranchTarget.getValue() > nextSwitchDetails.getNextSwitchOffset(getPC())) {
                     return true;
                 }
