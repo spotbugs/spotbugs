@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.annotation.CheckForNull;
 
@@ -87,7 +88,7 @@ public class SwitchHandler {
         int size = switchOffsetStack.size();
         while (--size >= 0) {
             SwitchDetails existingDetail = switchOffsetStack.get(size);
-            if (details.switchPC > (existingDetail.switchPC + existingDetail.getLastOffset())) {
+            if (details.switchPC > existingDetail.getLastOffsetPC()) {
                 switchOffsetStack.remove(size);
             }
         }
@@ -96,7 +97,7 @@ public class SwitchHandler {
 
     public boolean isOnSwitchOffset(DismantleBytecode dbc) {
         int pc = dbc.getPC();
-        if (pc == getDefaultOffset()) {
+        if (pc == getDefaultOffsetPC()) {
             return false;
         }
 
@@ -113,7 +114,7 @@ public class SwitchHandler {
                 return nextSwitchOffset;
             }
 
-            if (dbc.getPC() <= details.getDefaultOffset()) {
+            if (dbc.getPC() <= details.getDefaultOffsetPC()) {
                 return -1;
             }
             switchOffsetStack.remove(size - 1);
@@ -134,7 +135,7 @@ public class SwitchHandler {
                 return details;
             }
 
-            if (dbc.getPC() <= details.getDefaultOffset()) {
+            if (dbc.getPC() <= details.getDefaultOffsetPC()) {
                 return null;
             }
             switchOffsetStack.remove(size - 1);
@@ -144,14 +145,28 @@ public class SwitchHandler {
         return null;
     }
 
-    public int getDefaultOffset() {
+    /**
+     * @return The PC of the default case
+     */
+    public int getDefaultOffsetPC() {
+        return getSwitchDetailsValue(SwitchDetails::getDefaultOffsetPC);
+    }
+
+    /**
+     * @return The PC of the last switch branch
+     */
+    public int getLastOffsetPC() {
+        return getSwitchDetailsValue(SwitchDetails::getLastOffsetPC);
+    }
+
+    private int getSwitchDetailsValue(Function<SwitchDetails, Integer> f) {
         int size = switchOffsetStack.size();
         if (size == 0) {
             return -1;
         }
 
         SwitchDetails details = switchOffsetStack.get(size - 1);
-        return details.getDefaultOffset();
+        return f.apply(details);
     }
 
     public SourceLineAnnotation getCurrentSwitchStatement(BytecodeScanningDetector detector) {
@@ -305,15 +320,22 @@ public class SwitchHandler {
             return switchPC + swOffsets[nextOffset];
         }
 
-        public int getDefaultOffset() {
+        /**
+         * @return The PC of the default case
+         */
+        public int getDefaultOffsetPC() {
             if (exhaustive) {
                 return Short.MIN_VALUE;
             }
             return switchPC + defaultOffset;
         }
 
-        private int getLastOffset() {
-            return swOffsets.length > 0 ? swOffsets[swOffsets.length - 1] : 0;
+        /**
+         * @return The PC of the last switch branch
+         */
+        private int getLastOffsetPC() {
+            int lastOffset = swOffsets.length > 0 ? swOffsets[swOffsets.length - 1] : 0;
+            return switchPC + lastOffset;
         }
 
         /**
