@@ -32,8 +32,8 @@ dependencies {
   implementation 'org.checkerframework:checker-qual:3.53.0'
   implementation 'com.sun.xml.bind:jaxb-impl:4.0.6'
 
-  implementation 'org.junit.jupiter:junit-jupiter-engine:5.14.1'
-  implementation 'org.junit.jupiter:junit-jupiter-params:5.14.1'
+  implementation 'org.junit.jupiter:junit-jupiter-engine:5.14.2'
+  implementation 'org.junit.jupiter:junit-jupiter-params:5.14.2'
   implementation 'org.testng:testng:7.11.0'
 
   implementation project(':spotbugs')
