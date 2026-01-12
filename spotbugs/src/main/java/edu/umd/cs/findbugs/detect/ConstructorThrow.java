@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
-import edu.umd.cs.findbugs.util.Values;
 import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -161,8 +161,14 @@ public class ConstructorThrow extends OpcodeStackDetector {
                 }
             }
         } else if (isMethodCall()) {
-            if (Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand()) && getClassConstantOperand().equals(Values.SLASHED_JAVA_LANG_OBJECT)) {
-                hadObjectConstructor = true;
+            if (Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())) {
+                try {
+                    if (Hierarchy.isSubtype(getDottedClassName(), ClassName.toDottedClassName(getClassConstantOperand()))) {
+                        hadObjectConstructor = true;
+                    }
+                } catch (ClassNotFoundException e) {
+                    AnalysisContext.reportMissingClass(e);
+                }
             }
 
             String calledMethodFQN = getCalledMethodFQN();
