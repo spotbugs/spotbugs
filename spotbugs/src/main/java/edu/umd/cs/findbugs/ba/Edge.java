@@ -25,7 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.generic.InstructionHandle;

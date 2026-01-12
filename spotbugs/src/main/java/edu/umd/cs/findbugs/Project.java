@@ -50,7 +50,7 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -789,7 +789,10 @@ public class Project implements XMLWriteable, AutoCloseable {
             String root = srcFile.substring(0, base.length());
             if (root.equals(base)) {
                 // Strip off the base directory, make relative
-                return "." + SystemProperties.getProperty("file.separator") + srcFile.substring(base.length());
+                // the src part might already start with a relative marker, so only add if it's not there
+                String relativePrefix = "." + File.separator;
+                String srcPostfix = srcFile.substring(base.length());
+                return srcPostfix.startsWith(relativePrefix) ? srcPostfix : relativePrefix + srcPostfix;
             }
         }
 

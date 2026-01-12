@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 public class Grouping {
 

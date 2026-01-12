@@ -42,7 +42,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.dom4j.DocumentException;
 import org.slf4j.Logger;

@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs;
 import java.util.Objects;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;

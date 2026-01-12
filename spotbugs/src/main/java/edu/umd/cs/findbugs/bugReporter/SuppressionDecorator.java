@@ -26,7 +26,7 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.HashSet;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.BugInstance;
