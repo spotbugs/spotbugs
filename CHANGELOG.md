@@ -1,4 +1,3 @@
-
 # Changelog
 
 This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http://keepachangelog.com/en/1.0.0/).
@@ -6,16 +5,34 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
+### Refactor
+- Move internal usage of 'javax.annotation.Nonnull' to 'jakarta.annotation.NonNull'. ([#3858](https://github.com/spotbugs/spotbugs/pull/3858))
+- Move internal usage of 'javax.annotation.Nullable' to 'jakarta.annotation.Nullable'. ([#3861](https://github.com/spotbugs/spotbugs/pull/3861))
 
 ### Added
 - Recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3780](https://github.com/spotbugs/spotbugs/pull/3780))
 - Detect use of `sun.misc.Unsafe` and `jdk.internal.misc.Unsafe` ([#3804](https://github.com/spotbugs/spotbugs/pull/3804))
 - New bug type is introduced: `NCR_NOT_PROPERLY_CHECKED_READ`. Improper validation of the return value from the read() method in InputStream and Reader classes may result in an array not being fully filled. ([#3766](https://github.com/spotbugs/spotbugs/pull/3766))
+- New detector `FindImproperSynchronization` and introduced new bug types:
+    - `USO_UNSAFE_METHOD_SYNCHRONIZATION` is reported when using synchronized methods with the class' accessible intrinsic lock,
+    - `USO_UNSAFE_STATIC_METHOD_SYNCHRONIZATION` is reported when using static synchronized methods with the class' exposed intrinsic lock,
+    - `USO_UNSAFE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is visible from the outside,
+    - `USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is made accessible, with methods that update or return the lock, to the outside,
+    - `USO_UNSAFE_INHERITABLE_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is can be altered by subclasses,
+    - `USO_UNSAFE_EXPOSED_OBJECT_SYNCHRONIZATION` is reported when the lock used for synchronization is later exposed in the subclasses.
+    - `USBC_UNSAFE_SYNCHRONIZATION_WITH_BACKING_COLLECTION` is reported when the backing collection of a lock is visible from the outside,
+    - `USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION` is reported when the backing collection of a lock is made accessible, with methods that update or return the lock, to the outside,
+    - `USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION` is reported when the backing collection of a lock can be altered by subclasses.
+      (See [SEI CERT rule LCK00-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code) and [SEI CERT rule LCK04-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK04-J.+Do+not+synchronize+on+a+collection+view+if+the+backing+collection+is+accessible))
 
 ### Fixed
 - Fix incorrect bug counts and sizes when unioning reports ([#3721](https://github.com/spotbugs/spotbugs/issues/3721))
 - Classes containing only methods throwing `UnsupportedOperationException` with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
 - Enhanced SARIF output with full description sections - adding markdown is still an open issue ([#2339](https://github.com/spotbugs/spotbugs/issues/2339))
+- Added missing null check to `MultipleInstantiationsOfSingletons` detector ([#3823](https://github.com/spotbugs/spotbugs/issues/3823))
+- Fix tool name in usage info, ([#3847](https://github.com/spotbugs/spotbugs/pull/3847))
+- Fix the building of relative chains of ./././ in filenames in fbp files ([#3852](https://github.com/spotbugs/spotbugs/pull/3852))
+- Do not report `DM_DEFAULT_ENCODING` for classes compiled with target >= 18 ([#3866](https://github.com/spotbugs/spotbugs/pull/3866))
 
 ### Removed
 - Removed old deprecated methods: 
@@ -77,9 +94,17 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
   - `closeSilently(Closeable)` method from `edu.umd.cs.findbugs.util.Util` deprecated since 2018,
   - `closeSilently(ZipFile)` method from `edu.umd.cs.findbugs.util.Util` deprecated since 2018,
   - `getRefConstantOperand()` method from `edu.umd.cs.findbugs.visitclass.DismantleBytecode` deprecated since 2010,
-  - `getDottedFieldSig()` method from `edu.umd.cs.findbugs.visitclass.PreorderVisitor` deprecated since 2006.
+  - `getDottedFieldSig()` method from `edu.umd.cs.findbugs.visitclass.PreorderVisitor` deprecated since 2006,
+  - `compactValueNumbers(Dataflow<ValueNumberFrame, ValueNumberAnalysis>)` method from `edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis` deprecated since 2009.
 - Removed old deprecated fields:
   - String `RELEASE` from `edu.umd.cs.findbugs.Version` deprecated since 2018.
+- Removed old deprecated classes:
+  - `edu.umd.cs.findbugs.NewResults` class deprecated since 2009,
+  - `edu.umd.cs.findbugs.classfile.engine.ClassParserUsingBCEL` class deprecated since 2007.
+- Remove deprecated 'Priority' annotation originally deprecated in 2011. Switch to 'Confidence' for same behaviour. ([#3746](https://github.com/spotbugs/spotbugs/pull/3746))
+
+### Cleanup
+- Removed usages of some deprecated methods. ([#3842](https://github.com/spotbugs/spotbugs/issues/3842))
 
 ## 4.9.8 - 2025-10-18
 ### Fixed

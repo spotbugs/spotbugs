@@ -55,7 +55,7 @@ public class ShowHelp {
     }
 
     public static void showSynopsis() {
-        System.out.println("Usage: findbugs [general options] [gui options]");
+        System.out.println("Usage: spotbugs [general options] [gui options]");
     }
 
     public static void showGeneralOptions() {

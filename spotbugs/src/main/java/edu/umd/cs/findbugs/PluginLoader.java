@@ -54,8 +54,8 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.util.SecurityManagerHandler;
@@ -1063,7 +1063,7 @@ public class PluginLoader implements AutoCloseable {
         cannotDisable = Boolean.parseBoolean(pluginDescriptor.valueOf("/FindbugsPlugin/@cannotDisable"));
 
         String de = pluginDescriptor.valueOf("/FindbugsPlugin/@defaultenabled");
-        if (de != null && "false".equals(de.toLowerCase().trim())) {
+        if (de != null && "false".equalsIgnoreCase(de.trim())) {
             optionalPlugin = true;
         }
         if (optionalPlugin) {
