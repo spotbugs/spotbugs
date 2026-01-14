@@ -3,9 +3,14 @@ package edu.umd.cs.findbugs.util;
 import java.util.*;
 import java.util.stream.Stream;
 
+import edu.umd.cs.findbugs.ba.XClass;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -157,6 +162,74 @@ public class MutableClasses {
         return SETTER_LIKE_PREFIXES.stream().anyMatch(methodName::startsWith);
     }
 
+    public static boolean looksLikeASetter(XClass xClass, XMethod xmethod) {
+        return looksLikeASetter(xClass.getSourceSignature(), xmethod);
+    }
+
+    public static boolean looksLikeASetter(String classSig, String clsName, Method method) {
+        XMethod xMethod = XFactory.createXMethod(clsName, method);
+        if (xMethod.isResolved()) {
+            return MutableClasses.looksLikeASetter(classSig, xMethod);
+        } else {
+            if (method.getCode() != null && isSingleLineUnsupportedOperationThrower(method)) {
+                return false;
+            }
+            return MutableClasses.looksLikeASetter(method.getName(), classSig,
+                    new GenericSignatureParser(method.getSignature()).getReturnTypeSignature());
+        }
+    }
+
+    private static boolean isSingleLineUnsupportedOperationThrower(Method method) {
+        byte[] code = method.getCode().getCode();
+        if (code.length != 8 && code.length != 10) {
+            return false;
+        }
+
+        ConstantPool cp = method.getConstantPool();
+
+        if (Byte.toUnsignedInt(code[0]) != Const.NEW
+                || !equalsConstant(code[1], code[2], "java.lang.UnsupportedOperationException", cp)
+                || Byte.toUnsignedInt(code[3]) != Const.DUP) {
+            return false;
+        }
+
+        // Using java.lang.UnsupportedOperationException()
+        if (code.length == 8
+                && (Byte.toUnsignedInt(code[4]) != Const.INVOKESPECIAL
+                        || !equalsConstant(code[5], code[6],
+                                "java.lang.UnsupportedOperationException." + Const.CONSTRUCTOR_NAME + " ()V", cp)
+                        || Byte.toUnsignedInt(code[7]) != Const.ATHROW)) {
+            return false;
+        }
+
+        // Using java.lang.UnsupportedOperationException(java.lang.String)
+        if (code.length == 10
+                && (Byte.toUnsignedInt(code[4]) != Const.LDC
+                        || Byte.toUnsignedInt(code[6]) != Const.INVOKESPECIAL
+                        || !equalsConstant(code[7], code[8],
+                                "java.lang.UnsupportedOperationException." + Const.CONSTRUCTOR_NAME
+                                        + " (Ljava/lang/String;)V", cp)
+                        || Byte.toUnsignedInt(code[9]) != Const.ATHROW)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static boolean equalsConstant(byte high, byte low, String cnst, ConstantPool cp) {
+        return cnst.equals(cp.constantToString(cp.getConstant((high << 8) + Byte.toUnsignedInt(low))));
+    }
+
+    public static boolean looksLikeASetter(String classSig, XMethod xmethod) {
+        // If the method throws an UnsupportedOperationException then we ignore it.
+        if (xmethod.isUnsupported()) {
+            return false;
+        }
+
+        return MutableClasses.looksLikeASetter(xmethod.getName(), classSig,
+                new GenericSignatureParser(xmethod.getSignature()).getReturnTypeSignature());
+    }
+
     /**
      * Analytic information about a {@link JavaClass} relevant to determining its mutability properties.
      */
@@ -198,8 +271,10 @@ public class MutableClasses {
                 return false;
             }
 
+            String className = cls.getClassName();
+
             for (Method method : cls.getMethods()) {
-                if (!method.isStatic() && looksLikeASetter(method)) {
+                if (!method.isStatic() && looksLikeASetter(className, method)) {
                     return true;
                 }
             }
@@ -208,8 +283,8 @@ public class MutableClasses {
             return maybeSuper != null && maybeSuper.isMutable();
         }
 
-        private boolean looksLikeASetter(Method method) {
-            return MutableClasses.looksLikeASetter(method.getName(), getSig(), method.getReturnType().getSignature());
+        private boolean looksLikeASetter(String clsName, Method method) {
+            return MutableClasses.looksLikeASetter(getSig(), clsName, method);
         }
 
         private String getSig() {
