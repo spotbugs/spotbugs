@@ -46,7 +46,7 @@ public class BugPcMap {
 
     /**
      * To be called when the visitor has seen {@link Const#PUTSTATIC} or {@link Const#PUTFIELD}.
-     * If a bug instance was created a the previous PC a field annotation will be added.
+     * If a bug instance was created at the previous PC a field annotation will be added.
      *
      * @param visitor
      */
@@ -60,7 +60,7 @@ public class BugPcMap {
     }
 
     /**
-     * Report accumulated bug instances to the {@link BugReporter} and clears itself.
+     * Reports accumulated bug instances to the {@link BugReporter} and clears itself.
      */
     public void reportAccumulatedBugs() {
         bugInstancesByPc.values().forEach(reporter::reportBug);

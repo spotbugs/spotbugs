@@ -7,14 +7,14 @@ class Issue3838Test extends AbstractIntegrationTest {
 
     @Test
     void testClassSuppression() {
-        performAnalysis("ghIssues/Issue3838.class", "ghIssues/Issue3838$SuppressTimeFormatWorking.class");
+        performAnalysis("ghIssues/issue3838/SuppressTimeFormatWorking.class");
 
         assertBugTypeCount("FS_BAD_DATE_FORMAT_FLAG_COMBO", 0);
     }
 
     @Test
     void testFieldSuppression() {
-        performAnalysis("ghIssues/Issue3838.class", "ghIssues/Issue3838$SuppressTimeFormatBroken.class");
+        performAnalysis("ghIssues/issue3838/SuppressTimeFormatBroken.class");
 
         assertBugAtLine("FS_BAD_DATE_FORMAT_FLAG_COMBO", 12);
         assertBugAtLine("FS_BAD_DATE_FORMAT_FLAG_COMBO", 17);
