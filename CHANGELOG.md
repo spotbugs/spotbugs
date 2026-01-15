@@ -30,6 +30,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Classes containing only methods throwing `UnsupportedOperationException` with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
 - Enhanced SARIF output with full description sections - adding markdown is still an open issue ([#2339](https://github.com/spotbugs/spotbugs/issues/2339))
 - Added missing null check to `MultipleInstantiationsOfSingletons` detector ([#3823](https://github.com/spotbugs/spotbugs/issues/3823))
+- Fix `CT_CONSTRUCTOR_THROW` FP with public and private constructors ([#3822](https://github.com/spotbugs/spotbugs/issues/3822))
 - Fix tool name in usage info, ([#3847](https://github.com/spotbugs/spotbugs/pull/3847))
 - Fix the building of relative chains of ./././ in filenames in fbp files ([#3852](https://github.com/spotbugs/spotbugs/pull/3852))
 - Fix IllegalArgumentException initializing spotbugs when inside a fat jar on Java 25 ([#3875](https://github.com/spotbugs/spotbugs/pull/3875))
