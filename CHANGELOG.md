@@ -34,6 +34,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix the building of relative chains of ./././ in filenames in fbp files ([#3852](https://github.com/spotbugs/spotbugs/pull/3852))
 - Fix IllegalArgumentException initializing spotbugs when inside a fat jar on Java 25 ([#3875](https://github.com/spotbugs/spotbugs/pull/3875))
 - Do not report `DM_DEFAULT_ENCODING` for classes compiled with target >= 18 ([#3866](https://github.com/spotbugs/spotbugs/pull/3866))
+- Fix `FS_BAD_DATE_FORMAT_FLAG_COMBO` not suppressed by field-level annotation ([#3838](https://github.com/spotbugs/spotbugs/issues/3838))
 
 ### Removed
 - Removed old deprecated methods: 
