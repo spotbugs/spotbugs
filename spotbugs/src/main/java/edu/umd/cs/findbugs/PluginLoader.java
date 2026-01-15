@@ -50,7 +50,6 @@ import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import javax.annotation.CheckForNull;
@@ -612,18 +611,15 @@ public class PluginLoader implements AutoCloseable {
                 return null;
             }
             assert findbugsJar.getProtocol().equals("file");
-            try (ZipFile jarFile = new ZipFile(new File(findbugsJar.toURI()))) {
-                ZipEntry entry = jarFile.getEntry(slashedResourceName);
-                if (entry != null) {
-                    return resourceFromPlugin(findbugsJar, slashedResourceName);
-                }
-            } catch (ZipException e) {
-                LOG.warn("Failed to load resourceFromFindbugsJar: {} is not valid zip file.", findbugsJar, e);
+            URL resourceUrl = resourceFromPlugin(findbugsJar, slashedResourceName);
+            try {
+                resourceUrl.openConnection().getInputStream().close();
+                return resourceUrl;
             } catch (IOException e) {
                 LOG.warn("Failed to load resourceFromFindbugsJar: IOException was thrown at zip file {} loading.",
                         findbugsJar, e);
             }
-        } catch (MalformedURLException | URISyntaxException e) {
+        } catch (MalformedURLException e) {
             LOG.warn("Failed to load resourceFromFindbugsJar: Resource name is {}", slashedResourceName, e);
         }
         return null;
