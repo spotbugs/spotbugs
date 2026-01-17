@@ -80,7 +80,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
     private int priority;
 
-    private TreeMap<Integer, Integer> branchTargetsByPc = new TreeMap<>();
+    private final TreeMap<Integer, Integer> branchTargetsByPc = new TreeMap<>();
 
     public SwitchFallthrough(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
@@ -327,17 +327,17 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
      */
     public boolean isBranchTargetOutsideOfNextCase() {
         int branchTarget = getBranchTarget();
-        int branchTargetCodeByte = getCodeByte(branchTarget);
+
         // the branch target is a GOTO instruction as it is the case for a no-op (empty block) in an arrow-syntax switch
-        if (branchTargetCodeByte == Const.GOTO) {
+        if (getCodeByte(branchTarget) == Const.GOTO) {
             return true;
         }
 
         SwitchDetails nextSwitchDetails = switchHdlr.getNextSwitchDetails(this);
 
-        if (nextSwitchDetails != null &&
-        // The GOTO brings us back to an earlier PC
-                branchTarget < getPC()
+        if (nextSwitchDetails != null
+                // The GOTO brings us back to an earlier PC
+                && branchTarget < getPC()
                 // This is the last instruction of the case
                 && getNextPC() == switchHdlr.getNextSwitchOffset(this)) {
             // get the entry for <PC of the branch instruction we're getting back to, branch target of that branch instruction>

@@ -88,7 +88,7 @@ public class SwitchHandler {
         int size = switchOffsetStack.size();
         while (--size >= 0) {
             SwitchDetails existingDetail = switchOffsetStack.get(size);
-            if (details.switchPC > existingDetail.getLastOffsetPC()) {
+            if (details.switchPC > existingDetail.getLastCasePC()) {
                 switchOffsetStack.remove(size);
             }
         }
@@ -114,7 +114,7 @@ public class SwitchHandler {
                 return nextSwitchOffset;
             }
 
-            if (dbc.getPC() <= details.getDefaultOffsetPC()) {
+            if (dbc.getPC() <= details.getDefaultCasePC()) {
                 return -1;
             }
             switchOffsetStack.remove(size - 1);
@@ -135,7 +135,7 @@ public class SwitchHandler {
                 return details;
             }
 
-            if (dbc.getPC() <= details.getDefaultOffsetPC()) {
+            if (dbc.getPC() <= details.getDefaultCasePC()) {
                 return null;
             }
             switchOffsetStack.remove(size - 1);
@@ -149,14 +149,14 @@ public class SwitchHandler {
      * @return The PC of the default case
      */
     public int getDefaultOffsetPC() {
-        return getSwitchDetailsValue(SwitchDetails::getDefaultOffsetPC);
+        return getSwitchDetailsValue(SwitchDetails::getDefaultCasePC);
     }
 
     /**
      * @return The PC of the last switch branch
      */
     public int getLastOffsetPC() {
-        return getSwitchDetailsValue(SwitchDetails::getLastOffsetPC);
+        return getSwitchDetailsValue(SwitchDetails::getLastCasePC);
     }
 
     private int getSwitchDetailsValue(Function<SwitchDetails, Integer> f) {
@@ -323,7 +323,7 @@ public class SwitchHandler {
         /**
          * @return The PC of the default case
          */
-        public int getDefaultOffsetPC() {
+        public int getDefaultCasePC() {
             if (exhaustive) {
                 return Short.MIN_VALUE;
             }
@@ -333,7 +333,7 @@ public class SwitchHandler {
         /**
          * @return The PC of the last switch branch
          */
-        private int getLastOffsetPC() {
+        private int getLastCasePC() {
             int lastOffset = swOffsets.length > 0 ? swOffsets[swOffsets.length - 1] : 0;
             return switchPC + lastOffset;
         }
