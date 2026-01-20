@@ -97,7 +97,7 @@ public class SwitchHandler {
 
     public boolean isOnSwitchOffset(DismantleBytecode dbc) {
         int pc = dbc.getPC();
-        if (pc == getDefaultOffsetPC()) {
+        if (pc == getDefaultCasePC()) {
             return false;
         }
 
@@ -148,14 +148,14 @@ public class SwitchHandler {
     /**
      * @return The PC of the default case
      */
-    public int getDefaultOffsetPC() {
+    public int getDefaultCasePC() {
         return getSwitchDetailsValue(SwitchDetails::getDefaultCasePC);
     }
 
     /**
      * @return The PC of the last switch branch
      */
-    public int getLastOffsetPC() {
+    public int getLastCasePC() {
         return getSwitchDetailsValue(SwitchDetails::getLastCasePC);
     }
 

@@ -151,7 +151,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
     @Override
     public void sawOpcode(int seen) {
-        boolean isDefaultOffset = switchHdlr.getDefaultOffsetPC() == getPC();
+        boolean isDefaultOffset = switchHdlr.getDefaultCasePC() == getPC();
         boolean isCaseOffset = switchHdlr.isOnSwitchOffset(this);
 
         if (isBranch(seen)) {
@@ -279,13 +279,13 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             biggestJumpTarget = -1;
             switchHdlr.enterSwitch(this, enumType);
             if (DEBUG) {
-                System.out.printf("  entered switch, default is %d%n", switchHdlr.getDefaultOffsetPC());
+                System.out.printf("  entered switch, default is %d%n", switchHdlr.getDefaultCasePC());
             }
             break;
 
         case Const.GOTO_W:
         case Const.GOTO:
-            if (isBranchTargetOutsideOfNextCase() || switchHdlr.getLastOffsetPC() == getBranchTarget()) {
+            if (isBranchTargetOutsideOfNextCase() || switchHdlr.getLastCasePC() == getBranchTarget()) {
                 if (biggestJumpTarget < getBranchTarget()) {
                     biggestJumpTarget = getBranchTarget();
                     if (DEBUG) {
