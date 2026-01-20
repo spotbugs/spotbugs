@@ -339,7 +339,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                 // The GOTO brings us back to an earlier PC
                 && branchTarget < getPC()
                 // This is the last instruction of the case
-                && getNextPC() == switchHdlr.getNextSwitchOffset(this)) {
+                && getNextPC() == switchHdlr.getNextSwitchCasePC(this)) {
             // get the entry for <PC of the branch instruction we're getting back to, branch target of that branch instruction>
             Entry<Integer, Integer> nextBranchTargetAfterBranchTarget = branchTargetsByPc.higherEntry(branchTarget);
 
@@ -347,7 +347,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                 // the branch target of the GOTO is followed by an IF (it's a while GOTO)
                 if (isIf(getCodeByte(nextBranchTargetAfterBranchTarget.getKey()))
                         // And its target is after the next case so there's no fallthrough
-                        && nextBranchTargetAfterBranchTarget.getValue() > nextSwitchDetails.getNextSwitchOffset(getPC())) {
+                        && nextBranchTargetAfterBranchTarget.getValue() > nextSwitchDetails.getNextSwitchCasePC(getPC())) {
                     return true;
                 }
 
@@ -361,7 +361,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         if (nextSwitchDetails != null) {
             // the branch target is after the next switch offset as it is the case for a switch break
             // or the branch target is before the PC corresponding to the switch instruction
-            return branchTarget > nextSwitchDetails.getNextSwitchOffset(getPC()) || branchTarget < nextSwitchDetails.getSwitchPC();
+            return branchTarget > nextSwitchDetails.getNextSwitchCasePC(getPC()) || branchTarget < nextSwitchDetails.getSwitchPC();
         } else {
             // or there's no next switch case (as it is the case for the default case)
             return true;

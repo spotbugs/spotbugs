@@ -101,15 +101,15 @@ public class SwitchHandler {
             return false;
         }
 
-        return (pc == getNextSwitchOffset(dbc));
+        return (pc == getNextSwitchCasePC(dbc));
     }
 
-    public int getNextSwitchOffset(DismantleBytecode dbc) {
+    public int getNextSwitchCasePC(DismantleBytecode dbc) {
         int size = switchOffsetStack.size();
         while (size > 0) {
             SwitchDetails details = switchOffsetStack.get(size - 1);
 
-            int nextSwitchOffset = details.getNextSwitchOffset(dbc.getPC());
+            int nextSwitchOffset = details.getNextSwitchCasePC(dbc.getPC());
             if (nextSwitchOffset >= 0) {
                 return nextSwitchOffset;
             }
@@ -130,7 +130,7 @@ public class SwitchHandler {
         while (size > 0) {
             SwitchDetails details = switchOffsetStack.get(size - 1);
 
-            int nextSwitchOffset = details.getNextSwitchOffset(dbc.getPC());
+            int nextSwitchOffset = details.getNextSwitchCasePC(dbc.getPC());
             if (nextSwitchOffset >= 0) {
                 return details;
             }
@@ -308,7 +308,7 @@ public class SwitchHandler {
             this.exhaustive = exhaustive;
         }
 
-        public int getNextSwitchOffset(int currentPC) {
+        public int getNextSwitchCasePC(int currentPC) {
             while ((nextOffset < swOffsets.length) && (currentPC > (switchPC + swOffsets[nextOffset]))) {
                 nextOffset++;
             }
