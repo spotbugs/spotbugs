@@ -1,6 +1,6 @@
 package bugIdeas;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

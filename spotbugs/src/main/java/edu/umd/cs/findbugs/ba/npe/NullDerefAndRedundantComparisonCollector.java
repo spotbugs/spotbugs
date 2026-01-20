@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.ba.Location;

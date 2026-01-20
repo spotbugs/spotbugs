@@ -47,7 +47,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
     @Override
     public void observeClass(ClassDescriptor classDescriptor) {
         try {
-            JavaClass javaClass = AnalysisContext.currentAnalysisContext().lookupClass(classDescriptor.toDottedClassName());
+            JavaClass javaClass = AnalysisContext.currentAnalysisContext().lookupClass(classDescriptor.getDottedClassName());
             String sourceFileName = fileNameFor(javaClass.getPackageName(), javaClass.getSourceFileName());
             sourceFileNameCache.put(javaClass.getClassName(), sourceFileName);
         } catch (ClassNotFoundException e) {

@@ -1,4 +1,3 @@
-
 # Changelog
 
 This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http://keepachangelog.com/en/1.0.0/).
@@ -7,7 +6,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2025-??-??
 ### Refactor
-- Remove deprecated 'Priority' annotation originally deprecated in 2011. Switch to 'Confidence' for same behaviour. ([#3746](https://github.com/spotbugs/spotbugs/pull/3746))
+- Move internal usage of 'javax.annotation.Nonnull' to 'jakarta.annotation.NonNull'. ([#3858](https://github.com/spotbugs/spotbugs/pull/3858))
+- Move internal usage of 'javax.annotation.Nullable' to 'jakarta.annotation.Nullable'. ([#3861](https://github.com/spotbugs/spotbugs/pull/3861))
 
 ### Added
 - Recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3780](https://github.com/spotbugs/spotbugs/pull/3780))
@@ -27,11 +27,16 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 - Fix incorrect bug counts and sizes when unioning reports ([#3721](https://github.com/spotbugs/spotbugs/issues/3721))
+- Classes containing only methods throwing `UnsupportedOperationException` with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
 - Enhanced SARIF output with full description sections - adding markdown is still an open issue ([#2339](https://github.com/spotbugs/spotbugs/issues/2339))
 - Added missing null check to `MultipleInstantiationsOfSingletons` detector ([#3823](https://github.com/spotbugs/spotbugs/issues/3823))
 - Fix invalid syntax in findbugsfilter.xsd ([#3832](https://github.com/spotbugs/spotbugs/issues/3832))
+- Fix `CT_CONSTRUCTOR_THROW` FP with public and private constructors ([#3822](https://github.com/spotbugs/spotbugs/issues/3822))
 - Fix tool name in usage info, ([#3847](https://github.com/spotbugs/spotbugs/pull/3847))
 - Fix the building of relative chains of ./././ in filenames in fbp files ([#3852](https://github.com/spotbugs/spotbugs/pull/3852))
+- Fix IllegalArgumentException initializing spotbugs when inside a fat jar on Java 25 ([#3875](https://github.com/spotbugs/spotbugs/pull/3875))
+- Do not report `DM_DEFAULT_ENCODING` for classes compiled with target >= 18 ([#3866](https://github.com/spotbugs/spotbugs/pull/3866))
+- Fix `FS_BAD_DATE_FORMAT_FLAG_COMBO` not suppressed by field-level annotation ([#3838](https://github.com/spotbugs/spotbugs/issues/3838))
 
 ### Removed
 - Removed old deprecated methods: 
@@ -100,10 +105,14 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Removed old deprecated classes:
   - `edu.umd.cs.findbugs.NewResults` class deprecated since 2009,
   - `edu.umd.cs.findbugs.classfile.engine.ClassParserUsingBCEL` class deprecated since 2007.
+- Remove deprecated 'Priority' annotation originally deprecated in 2011. Switch to 'Confidence' for same behaviour. ([#3746](https://github.com/spotbugs/spotbugs/pull/3746))
+
+### Cleanup
+- Removed usages of some deprecated methods. ([#3842](https://github.com/spotbugs/spotbugs/issues/3842))
 
 ## 4.9.8 - 2025-10-18
 ### Fixed
-- Maven plugin reporting issue if -adjustPriority is not set ([#3774](https://github.com/spotbugs/spotbugs/issues/3774)) 
+- Maven plugin reporting issue if -adjustPriority is not set ([#3774](https://github.com/spotbugs/spotbugs/issues/3774))
 
 ## 4.9.7 - 2025-10-14
 ### Fixed

@@ -101,10 +101,13 @@ dependencies {
   // These annotations are provided as a separate jar (spotbugs-annotations). Ant and plugin users must add a dependency on spotbugs-annotations if they need annotation classes.
   api project(':spotbugs-annotations')
 
+  compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+
   api 'com.google.code.gson:gson:2.13.2'
 
   guiImplementation sourceSets.main.runtimeClasspath
   guiCompileOnly project(':spotbugs-annotations')
+  guiCompileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
 }
 
 clean {

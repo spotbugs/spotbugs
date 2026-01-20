@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
