@@ -429,6 +429,19 @@ public abstract class DismantleBytecode extends AnnotationVisitor {
         return opcode == Const.LOOKUPSWITCH || opcode == Const.TABLESWITCH;
     }
 
+    /**
+     * Return whether or not given opcode is an IF instruction.
+     *
+     * @param opcode
+     *            the opcode
+     * @return true if instruction is an IF, false if not
+     */
+    public static boolean isIf(int opcode) {
+        return (opcode >= Const.IFEQ && opcode <= Const.IF_ACMPNE)
+                || opcode == Const.IFNULL
+                || opcode == Const.IFNONNULL;
+    }
+
     @SuppressFBWarnings("EI")
     public int[] getSwitchOffsets() {
         if (switchOffsets == null) {
