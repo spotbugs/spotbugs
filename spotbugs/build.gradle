@@ -70,7 +70,7 @@ dependencies {
   api libs.asm.commons
   api libs.asm.tree
   api libs.asm.util
-  api 'org.apache.bcel:bcel:6.11.0'
+  api 'org.apache.bcel:bcel:6.12.0'
   api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
   api('org.dom4j:dom4j:2.2.0')
   constraints {
