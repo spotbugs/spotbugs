@@ -10,6 +10,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Move internal usage of 'javax.annotation.Nullable' to 'jakarta.annotation.Nullable'. ([#3861](https://github.com/spotbugs/spotbugs/pull/3861))
 - Renamed methods from `edu.umd.cs.findbugs.SwitchHandler` to reflect that they return a PC, not an offset ([#3869](https://github.com/spotbugs/spotbugs/pull/3869))
 - Make the progress bar more visually appealing by adding some borders  ([#3896](https://github.com/spotbugs/spotbugs/pull/3896))
+- Reuse DismantleBytecode.isIf introduced in ([#3869](https://github.com/spotbugs/spotbugs/pull/3869))
 
 ### Added
 - Recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3780](https://github.com/spotbugs/spotbugs/pull/3780))
