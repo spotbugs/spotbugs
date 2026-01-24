@@ -81,6 +81,9 @@ public class MutableClasses {
             "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
             "enqueue", "dequeue", "write", "append", "replace");
 
+    private static final Set<String> KNOWN_EXPOSABLE_CLASSES = Set.of(
+            "androidx.lifecycle.LiveData");
+
     public static boolean mutableSignature(String sig) {
         if (sig.charAt(0) == '[') {
             return true;
@@ -116,6 +119,39 @@ public class MutableClasses {
                 return false;
             }
             return ClassAnalysis.load(cls, sig).isMutable();
+        } catch (ClassNotFoundException e) {
+            AnalysisContext.reportMissingClass(e);
+            return false;
+        }
+    }
+
+    /**
+     * @return true if the class corresponding to this signature is exposable
+     */
+    public static boolean exposableSignature(String sig) {
+        if (sig.charAt(0) == '[') {
+            // arrays are not exposable
+            return false;
+        }
+
+        if (sig.charAt(0) != 'L') {
+            // primitive types are exposable
+            return true;
+        }
+
+        String dottedClassName = ClassName.fromFieldSignatureToDottedClassName(sig);
+
+        try {
+            JavaClass cls = Repository.lookupClass(dottedClassName);
+            do {
+                if (KNOWN_EXPOSABLE_CLASSES.contains(cls.getClassName())) {
+                    return true;
+                }
+
+                cls = cls.getSuperClass();
+            } while (cls != null);
+
+            return false;
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
             return false;
