@@ -41,7 +41,7 @@ allprojects {
   }
   dependencies {
     String junitVersion = '5.14.2'
-    implementation platform("org.junit:junit-bom:${junitVersion}")
+    compileOnly platform("org.junit:junit-bom:${junitVersion}")
     testImplementation platform("org.junit:junit-bom:${junitVersion}")
   }
 }
