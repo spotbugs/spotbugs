@@ -8,6 +8,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Refactor
 - Move internal usage of 'javax.annotation.Nonnull' to 'jakarta.annotation.NonNull'. ([#3858](https://github.com/spotbugs/spotbugs/pull/3858))
 - Move internal usage of 'javax.annotation.Nullable' to 'jakarta.annotation.Nullable'. ([#3861](https://github.com/spotbugs/spotbugs/pull/3861))
+- Renamed methods from `edu.umd.cs.findbugs.SwitchHandler` to reflect that they return a PC, not an offset ([#3869](https://github.com/spotbugs/spotbugs/pull/3869))
+- Make the progress bar more visually appealing by adding some borders  ([#3896](https://github.com/spotbugs/spotbugs/pull/3896))
+- Reuse DismantleBytecode.isIf introduced in ([#3869](https://github.com/spotbugs/spotbugs/pull/3869))
 
 ### Added
 - Recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3780](https://github.com/spotbugs/spotbugs/pull/3780))
@@ -26,6 +29,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
       (See [SEI CERT rule LCK00-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code) and [SEI CERT rule LCK04-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK04-J.+Do+not+synchronize+on+a+collection+view+if+the+backing+collection+is+accessible))
 
 ### Fixed
+- Stop exposing JUnit BOM as a transitive dependency to consumers ([#3908](https://github.com/spotbugs/spotbugs/issues/3908))
 - Fix incorrect bug counts and sizes when unioning reports ([#3721](https://github.com/spotbugs/spotbugs/issues/3721))
 - Classes containing only methods throwing `UnsupportedOperationException` with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
 - Enhanced SARIF output with full description sections - adding markdown is still an open issue ([#2339](https://github.com/spotbugs/spotbugs/issues/2339))
@@ -36,6 +40,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix IllegalArgumentException initializing spotbugs when inside a fat jar on Java 25 ([#3875](https://github.com/spotbugs/spotbugs/pull/3875))
 - Do not report `DM_DEFAULT_ENCODING` for classes compiled with target >= 18 ([#3866](https://github.com/spotbugs/spotbugs/pull/3866))
 - Fix `FS_BAD_DATE_FORMAT_FLAG_COMBO` not suppressed by field-level annotation ([#3838](https://github.com/spotbugs/spotbugs/issues/3838))
+- Fix `SF_SWITCH_FALLTHROUGH` false positives ([#3767](https://github.com/spotbugs/spotbugs/issues/3767))
 
 ### Removed
 - Removed old deprecated methods: 
