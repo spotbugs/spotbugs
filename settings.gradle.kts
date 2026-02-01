@@ -20,9 +20,11 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 
-    dependencySubstitution {
-        substitute(module("commons-io:commons-io"))
-            .using(module("commons-io:commons-io:2.21.0"))
+    resolutionStrategy {
+        dependencySubstitution {
+            substitute(module("commons-io:commons-io"))
+                .using(module("commons-io:commons-io:2.15.1"))
+        }
     }
 }
 
