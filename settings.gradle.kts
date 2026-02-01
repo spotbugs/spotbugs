@@ -1,3 +1,31 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id == "org.sonarqube") {
+                useModule(
+                    "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:7.2.2.6593"
+                )
+            }
+        }
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencySubstitution {
+        substitute(module("commons-io:commons-io"))
+            .using(module("commons-io:commons-io:2.21.0"))
+    }
+}
+
 plugins {
   id("com.gradle.develocity") version "4.3.1"
 }
