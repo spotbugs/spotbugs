@@ -33,6 +33,14 @@ subprojects {
 
   group = 'com.github.spotbugs'
   version = rootProject.version
+
+  configurations.all {
+    resolutionStrategy {
+      // Force commons versions compatible with Sonar 7.2.2
+     force("commons-io:commons-io:2.21.0")
+     force("org.apache.commons:commons-compress:1.28.0")
+    }
+  }
 }
 
 allprojects {
