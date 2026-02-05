@@ -60,7 +60,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
      * Mapping of well-known utility methods from external classes to the set of Exceptions they throw
      * (including indirectly thrown exceptions, since outside classes are not visited). Format matches thrownExsByMethodMap.
      */
-    private static final Map<String, Set<JavaClass>> knownMethodsToThrownExceptions = new HashMap<>();
+    private static final Map<String, Set<JavaClass>> knownMethodsToThrownExceptions;
 
     private boolean isFinalClass = false;
     private boolean isFinalFinalizer = false;
@@ -645,11 +645,10 @@ public class ConstructorThrow extends OpcodeStackDetector {
             // org.apache.commons.lang3.Validate.validState -> throws IllegalStateException
             tmpMap.put("org.apache.commons.lang3.Validate.validState : (Z)V", iseSet);
             tmpMap.put("org.apache.commons.lang3.Validate.validState : (ZLjava.lang.String;[Ljava.lang.Object;)V", iseSet);
-
-            knownMethodsToThrownExceptions.putAll(tmpMap);
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
         }
+        knownMethodsToThrownExceptions = Map.copyOf(tmpMap);
     }
 
     private void accumulateBug() {
