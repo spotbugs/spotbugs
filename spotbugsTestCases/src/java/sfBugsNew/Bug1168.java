@@ -1,6 +1,6 @@
 package sfBugsNew;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 

@@ -129,7 +129,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
 
     @Override
     public @DottedClassName String getClassName() {
-        return getClassDescriptor().toDottedClassName();
+        return getClassDescriptor().getDottedClassName();
     }
 
     @Override
