@@ -31,7 +31,7 @@ dependencies {
   compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
   implementation 'org.checkerframework:checker-qual:3.53.1'
   implementation 'com.sun.xml.bind:jaxb-impl:4.0.6'
-
+  implementation 'org.jspecify:jspecify:1.0.0'
   implementation 'org.junit.jupiter:junit-jupiter-engine:5.14.2'
   implementation 'org.junit.jupiter:junit-jupiter-params:5.14.2'
   implementation 'org.testng:testng:7.12.0'
