@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.annotation.Nonnull;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -49,7 +48,6 @@ import org.junit.jupiter.api.BeforeEach;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.FindbugsTestPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
-import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolution;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator;
 
@@ -196,17 +194,6 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
     protected void assertEqualFiles(URL expectedFile, ICompilationUnit compilationUnit) throws IOException, JavaModelException {
         String expectedSource = readFileContents(expectedFile);
         assertEquals(expectedSource, compilationUnit.getSource());
-    }
-
-    @Deprecated
-    protected void assertPresentBugPattern(@Nonnull String bugPatternType, IMarker[] markers) {
-        for (int i = 0; i < markers.length; i++) {
-            BugPattern pattern = MarkerUtil.findBugPatternForMarker(markers[i]);
-            if (pattern != null && bugPatternType.equals(pattern.getType())) {
-                return;
-            }
-        }
-        fail("Couldn't find pattern " + bugPatternType);
     }
 
     protected void assertPresentBugPatterns(List<QuickFixTestPackage> packages, IMarker[] markers) {

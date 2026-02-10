@@ -18,7 +18,7 @@
  */
 package edu.umd.cs.findbugs.ba.constant;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * Abstract dataflow value representing a value which may or may not be a

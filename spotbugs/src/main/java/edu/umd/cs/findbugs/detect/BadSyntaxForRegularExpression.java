@@ -62,7 +62,7 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
             Object topValue = top.getConstant();
             if (topValue instanceof String) {
                 String replacementString = (String) topValue;
-                if ("x".equals(replacementString.toLowerCase()) || "-".equals(replacementString) || "*".equals(replacementString)
+                if ("x".equalsIgnoreCase(replacementString) || "-".equals(replacementString) || "*".equals(replacementString)
                         || " ".equals(replacementString) || "\\*".equals(replacementString)) {
                     return;
                 }

@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -345,21 +345,6 @@ public class DetectorFactory {
      */
     public void setDetailHTML(String detailHTML) {
         this.detailHTML = detailHTML;
-    }
-
-    /**
-     * Create a Detector instance. This method is only guaranteed to work for
-     * old-style detectors using the BCEL bytecode framework.
-     *
-     * @param bugReporter
-     *            the BugReporter to be used to report bugs
-     * @return the Detector
-     * @deprecated Use createDetector2 in new code
-     */
-    @Deprecated
-    public Detector create(BugReporter bugReporter) {
-        checkForNoAnalysis();
-        return detectorCreator.createDetector(bugReporter);
     }
 
     /**

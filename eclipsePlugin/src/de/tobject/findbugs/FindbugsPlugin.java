@@ -877,7 +877,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     public static IPreferenceStore getPluginPreferences(@CheckForNull IProject project) {
         if (project == null || !isProjectSettingsEnabled(project)) {
             // read workspace (user) settings from instance area
-            return new ScopedPreferenceStore(new InstanceScope(), FindbugsPlugin.PLUGIN_ID);
+            return new ScopedPreferenceStore(InstanceScope.INSTANCE, FindbugsPlugin.PLUGIN_ID);
         }
 
         // use project settings

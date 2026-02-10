@@ -11,7 +11,7 @@
 
 package sfBugs;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import jsr305.FieldsNonNullByDefault;

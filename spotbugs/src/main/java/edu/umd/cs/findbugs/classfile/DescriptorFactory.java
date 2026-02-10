@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -67,18 +67,6 @@ public class DescriptorFactory {
         this.dottedClassDescriptorMap = new HashMap<>();
         this.methodDescriptorMap = new HashMap<>();
         this.fieldDescriptorMap = new HashMap<>();
-    }
-
-    /**
-     * This method was designed to canonicalize String to improve performance,
-     * but now GC cost is cheaper than calculation cost in application thread
-     * so removing this old optimization makes SpotBugs 16% faster.
-     * @return given string instance
-     * @deprecated this hack is needless for modern JVM, at least Java8
-     */
-    @Deprecated
-    public static String canonicalizeString(@CheckForNull String s) {
-        return s;
     }
 
     /**
