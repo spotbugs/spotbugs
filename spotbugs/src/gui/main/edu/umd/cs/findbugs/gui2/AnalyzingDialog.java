@@ -25,11 +25,13 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import jakarta.annotation.Nonnull;
+import javax.annotation.Nonnull;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
@@ -156,8 +158,15 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
         SwingUtilities.invokeLater(() -> {
             setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
             add(statusLabel);
-            add(progressBar);
+            JPanel progressPanel = new JPanel();
+            progressPanel.setLayout(new BoxLayout(progressPanel, BoxLayout.X_AXIS));
+            progressPanel.add(Box.createHorizontalStrut(20));
+            progressPanel.add(progressBar);
+            progressPanel.add(Box.createHorizontalStrut(20));
+            add(progressPanel);
+            add(Box.createVerticalStrut(10));
             add(cancelButton);
+            add(Box.createVerticalStrut(20));
             statusLabel.setAlignmentX(CENTER_ALIGNMENT);
             progressBar.setAlignmentX(CENTER_ALIGNMENT);
             cancelButton.setAlignmentX(CENTER_ALIGNMENT);
