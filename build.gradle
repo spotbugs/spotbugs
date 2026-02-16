@@ -40,7 +40,7 @@ allprojects {
     mavenCentral()
   }
   dependencies {
-    String junitVersion = '5.14.2'
+    String junitVersion = '5.14.3'
     compileOnly platform("org.junit:junit-bom:${junitVersion}")
     testImplementation platform("org.junit:junit-bom:${junitVersion}")
   }
