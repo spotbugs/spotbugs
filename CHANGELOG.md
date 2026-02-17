@@ -244,6 +244,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fixed a stack overflow in `MultipleInstantiationsOfSingletons` when a singleton initializer makes recursive calls ([#3280](https://github.com/spotbugs/spotbugs/issues/3280))
 - Fixed NPE in `FindReturnRef` on inner class fields ([#3283](https://github.com/spotbugs/spotbugs/issues/3283))
 - Fixed NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE false positive when add edu.umd.cs.findbugs.annotations.Nullable ([#3243](https://github.com/spotbugs/spotbugs/issues/3243))
+- Method names beginning with `write` are no longer considered as setters when checking the mutability of a class ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
 
 ## 4.9.0 - 2025-01-15
 ### Added
