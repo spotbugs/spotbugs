@@ -50,12 +50,11 @@ import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.util.SecurityManagerHandler;
@@ -150,34 +149,6 @@ public class PluginLoader implements AutoCloseable {
     static {
         LOG.debug("Debugging plugin loading. SpotBugs version {}", Version.VERSION_STRING);
         loadInitialPlugins();
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param url
-     *            the URL of the plugin Jar file
-     * @throws PluginException
-     *             if the plugin cannot be fully loaded
-     */
-    @Deprecated
-    public PluginLoader(URL url) throws PluginException {
-        this(url, toUri(url), null, false, true);
-    }
-
-
-    /**
-     * Constructor.
-     *
-     * @param url
-     *            the URL of the plugin Jar file
-     * @param parent
-     *            the parent classloader
-     * @deprecated Use {@link #PluginLoader(URL,URI,ClassLoader,boolean,boolean)} instead
-     */
-    @Deprecated
-    public PluginLoader(URL url, ClassLoader parent) throws PluginException {
-        this(url, toUri(url), parent, false, true);
     }
 
     public boolean hasParent() {
@@ -640,18 +611,15 @@ public class PluginLoader implements AutoCloseable {
                 return null;
             }
             assert findbugsJar.getProtocol().equals("file");
-            try (ZipFile jarFile = new ZipFile(new File(findbugsJar.toURI()))) {
-                ZipEntry entry = jarFile.getEntry(slashedResourceName);
-                if (entry != null) {
-                    return resourceFromPlugin(findbugsJar, slashedResourceName);
-                }
-            } catch (ZipException e) {
-                LOG.warn("Failed to load resourceFromFindbugsJar: {} is not valid zip file.", findbugsJar, e);
+            URL resourceUrl = resourceFromPlugin(findbugsJar, slashedResourceName);
+            try {
+                resourceUrl.openConnection().getInputStream().close();
+                return resourceUrl;
             } catch (IOException e) {
                 LOG.warn("Failed to load resourceFromFindbugsJar: IOException was thrown at zip file {} loading.",
                         findbugsJar, e);
             }
-        } catch (MalformedURLException | URISyntaxException e) {
+        } catch (MalformedURLException e) {
             LOG.warn("Failed to load resourceFromFindbugsJar: Resource name is {}", slashedResourceName, e);
         }
         return null;
@@ -1091,7 +1059,7 @@ public class PluginLoader implements AutoCloseable {
         cannotDisable = Boolean.parseBoolean(pluginDescriptor.valueOf("/FindbugsPlugin/@cannotDisable"));
 
         String de = pluginDescriptor.valueOf("/FindbugsPlugin/@defaultenabled");
-        if (de != null && "false".equals(de.toLowerCase().trim())) {
+        if (de != null && "false".equalsIgnoreCase(de.trim())) {
             optionalPlugin = true;
         }
         if (optionalPlugin) {

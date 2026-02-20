@@ -25,8 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
@@ -180,7 +180,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
     }
 
     private void initPreferencesStore(IProject currProject) {
-        workspaceStore = new ScopedPreferenceStore(new InstanceScope(), FindbugsPlugin.PLUGIN_ID);
+        workspaceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, FindbugsPlugin.PLUGIN_ID);
         if (currProject != null) {
             projectStore = new ScopedPreferenceStore(new ProjectScope(currProject), FindbugsPlugin.PLUGIN_ID);
             projectPropsInitiallyEnabled = FindbugsPlugin.isProjectSettingsEnabled(currProject);

@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.xml;
 
 import java.io.IOException;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 
 /**

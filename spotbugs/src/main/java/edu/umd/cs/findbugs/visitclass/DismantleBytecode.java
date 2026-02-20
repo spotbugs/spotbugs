@@ -273,23 +273,6 @@ public abstract class DismantleBytecode extends AnnotationVisitor {
         return dottedClassConstantOperand;
     }
 
-    /**
-     * If the current opcode has a reference constant operand, get its string
-     * representation
-     */
-    @Deprecated
-    @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ")
-    public String getRefConstantOperand() {
-        if (refConstantOperand == NOT_AVAILABLE) {
-            throw new IllegalStateException("getRefConstantOperand called but value not available");
-        }
-        if (refConstantOperand == null) {
-            refConstantOperand = getDottedClassConstantOperand() + "." + nameConstantOperand + " : " +
-                    ClassName.toDottedClassName(sigConstantOperand);
-        }
-        return refConstantOperand;
-    }
-
     /** If the current opcode has a reference constant operand, get its name */
     @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ")
     public String getNameConstantOperand() {
@@ -444,6 +427,19 @@ public abstract class DismantleBytecode extends AnnotationVisitor {
      */
     public static boolean isSwitch(int opcode) {
         return opcode == Const.LOOKUPSWITCH || opcode == Const.TABLESWITCH;
+    }
+
+    /**
+     * Return whether or not given opcode is an IF instruction.
+     *
+     * @param opcode
+     *            the opcode
+     * @return true if instruction is an IF, false if not
+     */
+    public static boolean isIf(int opcode) {
+        return (opcode >= Const.IFEQ && opcode <= Const.IF_ACMPNE)
+                || opcode == Const.IFNULL
+                || opcode == Const.IFNONNULL;
     }
 
     @SuppressFBWarnings("EI")

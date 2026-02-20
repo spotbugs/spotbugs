@@ -38,8 +38,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import javax.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.Const;
@@ -817,23 +817,6 @@ public class OpcodeStack {
             return signature.startsWith("[");
         }
 
-        @Deprecated
-        public String getElementSignature() {
-            if (!isArray()) {
-                return signature;
-            } else {
-                int pos = 0;
-                int len = signature.length();
-                while (pos < len) {
-                    if (signature.charAt(pos) != '[') {
-                        break;
-                    }
-                    pos++;
-                }
-                return signature.substring(pos);
-            }
-        }
-
         public boolean isNonNegative() {
             if (specialKind == NON_NEGATIVE) {
                 return true;
@@ -865,12 +848,6 @@ public class OpcodeStack {
          */
         public Object getConstant() {
             return constValue;
-        }
-
-        /** Use getXField instead */
-        @Deprecated
-        public FieldAnnotation getFieldAnnotation() {
-            return FieldAnnotation.fromXField(getXField());
         }
 
         public XField getXField() {

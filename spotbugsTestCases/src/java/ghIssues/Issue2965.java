@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 public class Issue2965 {
 

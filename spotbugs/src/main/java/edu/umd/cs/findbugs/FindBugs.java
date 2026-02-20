@@ -445,7 +445,7 @@ public abstract class FindBugs {
      * Show the overall FindBugs command synopsis.
      */
     public static void showSynopsis() {
-        LOG.warning("Usage: findbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
+        LOG.warning("Usage: spotbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
     }
 
     /**

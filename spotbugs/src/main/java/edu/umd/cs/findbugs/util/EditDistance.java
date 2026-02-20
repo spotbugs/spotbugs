@@ -39,7 +39,7 @@ public class EditDistance {
         if (a == b) {
             return 0;
         }
-        if (Character.toLowerCase(a) == Character.toLowerCase(b)) {
+        if (String.valueOf(a).equalsIgnoreCase(String.valueOf(b))) {
             return 1;
         }
         return 2;
