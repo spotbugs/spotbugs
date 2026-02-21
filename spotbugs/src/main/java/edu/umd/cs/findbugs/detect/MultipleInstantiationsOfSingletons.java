@@ -23,7 +23,6 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.PruneUnconditionalExceptionThrowerEdges;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
@@ -34,7 +33,6 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
@@ -55,6 +53,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     private JavaClass serializableInterface;
 
     private boolean hasSingletonPostFix;
+    private boolean hasPublicConstructor;
 
     private boolean isCloneable;
     private boolean implementsCloneableDirectly;
@@ -86,6 +85,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     @Override
     public void visit(JavaClass obj) {
         hasSingletonPostFix = false;
+        hasPublicConstructor = false;
 
         isCloneable = false;
         implementsCloneableDirectly = false;
@@ -123,13 +123,15 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     }
 
     @Override
-    public void visit(Method obj) {
+    public void visit(Method method) {
         if ("clone".equals(getMethodName()) && "()Ljava/lang/Object;".equals(getMethodSig())) {
             cloneOnlyThrowsException = PruneUnconditionalExceptionThrowerEdges.doesMethodUnconditionallyThrowException(getXMethod());
             cloneMethod = getXMethod();
+        } else if (Const.CONSTRUCTOR_NAME.equals(getMethodName()) && method.isPublic()) {
+            hasPublicConstructor = true;
         }
 
-        super.visit(obj);
+        super.visit(method);
     }
 
     @Override
@@ -184,13 +186,10 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
                 instanceGetterMethods.put(field, method);
             } else {
                 XMethod calledMethod = item.getReturnValueOf();
-                SignatureParser parser = new SignatureParser(getMethodSig());
-                String calledMethodReturnType = ClassName.fromFieldSignature(parser.getReturnTypeSignature());
 
-                if (calledMethod != null && !method.isPrivate() && method.isStatic()
+                if (calledMethod != null && !method.isPrivate()
                         && Const.CONSTRUCTOR_NAME.equals(calledMethod.getName())
                         && calledMethod.getClassName().equals(getDottedClassName())
-                        && getClassName().equals(calledMethodReturnType)
                         && !Const.CONSTRUCTOR_NAME.equals(getMethodName()) && !Const.STATIC_INITIALIZER_NAME.equals(getMethodName())
                         && !("clone".equals(getMethodName()) && "()Ljava/lang/Object;".equals(getMethodSig()))) {
                     hasNoFactoryMethod = false;
@@ -222,6 +221,7 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         // a class is considered a singleton, if
         // - the user clearly indicated, that it's intended to be a singleton
         // OR
+        // - the class does not have a public constructor
         // - it can be instantiated (not abstract, not interface)
         // - the instance field is assigned the contained class
         // - has no factory method (which returns a new instance and is not a constructor)
@@ -229,9 +229,14 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
         // - the instance field is either eagerly or lazily initialized
 
         if (!(hasSingletonPostFix
-                || (isInstanceAssignOk && hasNoFactoryMethod && instanceGetterMethod != null
+                || (isInstanceAssignOk
+                        && !hasPublicConstructor
+                        && hasNoFactoryMethod
+                        && instanceGetterMethod != null
                         && (isInstanceFieldEagerlyInitialized || isInstanceFieldLazilyInitialized)
-                        && !javaClass.isAbstract() && !javaClass.isInterface() && !javaClass.isRecord()))) {
+                        && !javaClass.isAbstract()
+                        && !javaClass.isInterface()
+                        && !javaClass.isRecord()))) {
             return;
         }
 
