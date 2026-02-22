@@ -27,7 +27,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.apache.bcel.Const;
 import org.objectweb.asm.Opcodes;
@@ -418,7 +418,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     @Override
     public @DottedClassName String getClassName() {
-        return getClassDescriptor().toDottedClassName();
+        return getClassDescriptor().getDottedClassName();
     }
 
     @Override

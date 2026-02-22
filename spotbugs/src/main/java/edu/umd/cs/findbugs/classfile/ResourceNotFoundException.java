@@ -70,6 +70,6 @@ public class ResourceNotFoundException extends CheckedAnalysisException {
     public ClassNotFoundException toClassNotFoundException() {
         ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptorFromResourceName(resourceName);
         return new ClassNotFoundException("ResourceNotFoundException while looking for class "
-                + classDescriptor.toDottedClassName() + ": " + getMessage());
+                + classDescriptor.getDottedClassName() + ": " + getMessage());
     }
 }

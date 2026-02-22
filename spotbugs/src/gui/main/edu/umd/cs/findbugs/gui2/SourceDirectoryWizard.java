@@ -252,7 +252,7 @@ public class SourceDirectoryWizard extends JDialog {
 
                     @Override
                     public void reportMissingClass(ClassDescriptor classDescriptor) {
-                        logError("Missing class: " + classDescriptor.toDottedClassName());
+                        logError("Missing class: " + classDescriptor.getDottedClassName());
                     }
 
                     @Override

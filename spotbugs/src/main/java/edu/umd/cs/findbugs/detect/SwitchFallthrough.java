@@ -25,7 +25,9 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
@@ -78,6 +80,8 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
     private int priority;
 
+    private final TreeMap<Integer, Integer> branchTargetsByPc = new TreeMap<>();
+
     public SwitchFallthrough(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
@@ -103,7 +107,10 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         deadStore = null;
         priority = NORMAL_PRIORITY;
         enumType = null;
+        branchTargetsByPc.clear();
+
         super.visit(obj);
+
         enumType = null;
         if (!found.isEmpty()) {
             if (found.size() >= 4 && priority == NORMAL_PRIORITY) {
@@ -144,8 +151,12 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
     @Override
     public void sawOpcode(int seen) {
-        boolean isDefaultOffset = switchHdlr.getDefaultOffset() == getPC();
+        boolean isDefaultOffset = switchHdlr.getDefaultCasePC() == getPC();
         boolean isCaseOffset = switchHdlr.isOnSwitchOffset(this);
+
+        if (isBranch(seen)) {
+            branchTargetsByPc.put(getPC(), getBranchTarget());
+        }
 
         if (DEBUG) {
             if (seen == Const.GOTO) {
@@ -268,13 +279,13 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             biggestJumpTarget = -1;
             switchHdlr.enterSwitch(this, enumType);
             if (DEBUG) {
-                System.out.printf("  entered switch, default is %d%n", switchHdlr.getDefaultOffset());
+                System.out.printf("  entered switch, default is %d%n", switchHdlr.getDefaultCasePC());
             }
             break;
 
         case Const.GOTO_W:
         case Const.GOTO:
-            if (isBranchTargetOutsideOfNextCase() || switchHdlr.getDefaultOffset() == getBranchTarget()) {
+            if (isBranchTargetOutsideOfNextCase() || switchHdlr.getLastCasePC() == getBranchTarget()) {
                 if (biggestJumpTarget < getBranchTarget()) {
                     biggestJumpTarget = getBranchTarget();
                     if (DEBUG) {
@@ -313,26 +324,46 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
      * A GOTO might correspond to a <code>break</code> or to a do/while/for loop.
      * For loops the branch target will be before the offset of the next case, for breaks we're exiting the switch so the target is actually even after the end of the last case.
      * The branch target might be before the switch when we're inside another structure such as a loop.
-     *
-     * @return <code>true</code> if:
-     * <ul>
-     * <li> the branch target is a GOTO instruction as it is the case for a no-op (empty block) in an arrow-syntax switch
-     * <li> the branch target is after the next switch offset as it is the case for a switch break</li>
-     * <li> or the branch target is before the PC corresponding to the switch instruction</li>
-     * <li> or there's no next switch case (as it is the case for the default case)</li>
-     * </ul>
      */
     public boolean isBranchTargetOutsideOfNextCase() {
         int branchTarget = getBranchTarget();
+
+        // the branch target is a GOTO instruction as it is the case for a no-op (empty block) in an arrow-syntax switch
         if (getCodeByte(branchTarget) == Const.GOTO) {
             return true;
         }
 
         SwitchDetails nextSwitchDetails = switchHdlr.getNextSwitchDetails(this);
 
+        if (nextSwitchDetails != null
+                // The GOTO brings us back to an earlier PC
+                && branchTarget < getPC()
+                // This is the last instruction of the case
+                && getNextPC() == switchHdlr.getNextSwitchCasePC(this)) {
+            // get the entry for <PC of the branch instruction we're getting back to, branch target of that branch instruction>
+            Entry<Integer, Integer> nextBranchTargetAfterBranchTarget = branchTargetsByPc.higherEntry(branchTarget);
+
+            if (nextBranchTargetAfterBranchTarget != null) {
+                // the branch target of the GOTO is followed by an IF (it's a while GOTO)
+                if (isIf(getCodeByte(nextBranchTargetAfterBranchTarget.getKey()))
+                        // And its target is after the next case so there's no fallthrough
+                        && nextBranchTargetAfterBranchTarget.getValue() > nextSwitchDetails.getNextSwitchCasePC(getPC())) {
+                    return true;
+                }
+
+                // there's no IF so it's an unconditional while(true) loop
+                if (!isIf(getCodeByte(nextBranchTargetAfterBranchTarget.getKey()))) {
+                    return true;
+                }
+            }
+        }
+
         if (nextSwitchDetails != null) {
-            return branchTarget > nextSwitchDetails.getNextSwitchOffset(getPC()) || branchTarget < nextSwitchDetails.getSwitchPC();
+            // the branch target is after the next switch offset as it is the case for a switch break
+            // or the branch target is before the PC corresponding to the switch instruction
+            return branchTarget > nextSwitchDetails.getNextSwitchCasePC(getPC()) || branchTarget < nextSwitchDetails.getSwitchPC();
         } else {
+            // or there's no next switch case (as it is the case for the default case)
             return true;
         }
     }

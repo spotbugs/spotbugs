@@ -70,7 +70,7 @@ dependencies {
   api libs.asm.commons
   api libs.asm.tree
   api libs.asm.util
-  api 'org.apache.bcel:bcel:6.11.0'
+  api 'org.apache.bcel:bcel:6.12.0'
   api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
   api('org.dom4j:dom4j:2.2.0')
   constraints {
@@ -88,8 +88,8 @@ dependencies {
       because('CVE-2021-42550: Logback vulnerable to remote code execution vulnerabilities and CVE-2023-6481, CVE-2023-6378: allows an attacker to mount a Denial-Of-Service attack by sending poisoned data')
     }
   }
-  api 'org.apache.commons:commons-lang3:3.19.0'
-  api 'org.apache.commons:commons-text:1.14.0'
+  api 'org.apache.commons:commons-lang3:3.20.0'
+  api 'org.apache.commons:commons-text:1.15.0'
   api 'org.slf4j:slf4j-api:2.0.17'
   implementation 'jaxen:jaxen:2.0.0' // only transitive through org.dom4j:dom4j:2.1.4, which has an *optional* dependency on jaxen:jaxen.
   implementation 'net.sf.saxon:Saxon-HE:12.9'
@@ -101,10 +101,13 @@ dependencies {
   // These annotations are provided as a separate jar (spotbugs-annotations). Ant and plugin users must add a dependency on spotbugs-annotations if they need annotation classes.
   api project(':spotbugs-annotations')
 
+  compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+
   api 'com.google.code.gson:gson:2.13.2'
 
   guiImplementation sourceSets.main.runtimeClasspath
   guiCompileOnly project(':spotbugs-annotations')
+  guiCompileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
 }
 
 clean {

@@ -9,9 +9,9 @@ import org.gradle.api.publish.maven.MavenArtifact;
 import org.gradle.api.tasks.util.PatternFilterable;
 
 plugins {
-  id 'org.sonarqube' version '7.0.0.6105'
+  id 'org.sonarqube' version '7.1.0.6387'
   id 'org.gradle.crypto.checksum' version '1.4.0'
-  id 'com.github.spotbugs' version '6.4.4'
+  id 'com.github.spotbugs' version '6.4.8'
   id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
@@ -40,8 +40,8 @@ allprojects {
     mavenCentral()
   }
   dependencies {
-    String junitVersion = '5.14.0'
-    implementation platform("org.junit:junit-bom:${junitVersion}")
+    String junitVersion = '5.14.3'
+    compileOnly platform("org.junit:junit-bom:${junitVersion}")
     testImplementation platform("org.junit:junit-bom:${junitVersion}")
   }
 }

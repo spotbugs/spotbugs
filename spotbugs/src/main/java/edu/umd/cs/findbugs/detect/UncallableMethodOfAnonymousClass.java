@@ -225,7 +225,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                             DescriptorFactory.createClassDescriptorFromDottedClassName(superclassName));
                     XMethod potentialMatch = null;
                     for (XMethod m : from.getXMethods()) {
-                        if (!m.isStatic() && !m.isPrivate() && m.getName().toLowerCase().equals(obj.getName().toLowerCase())) {
+                        if (!m.isStatic() && !m.isPrivate() && m.getName().equalsIgnoreCase(obj.getName())) {
                             if (potentialMatch == null) {
                                 potentialMatch = m;
                             } else {
