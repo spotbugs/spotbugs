@@ -32,8 +32,8 @@ dependencies {
   implementation 'org.checkerframework:checker-qual:3.53.1'
   implementation 'com.sun.xml.bind:jaxb-impl:4.0.6'
 
-  implementation 'org.junit.jupiter:junit-jupiter-engine:5.14.3'
-  implementation 'org.junit.jupiter:junit-jupiter-params:5.14.3'
+  implementation 'org.junit.jupiter:junit-jupiter-engine:6.0.3'
+  implementation 'org.junit.jupiter:junit-jupiter-params:6.0.3'
   implementation 'org.testng:testng:7.12.0'
 
   implementation project(':spotbugs')
@@ -73,10 +73,16 @@ tasks.withType(JavaCompile).configureEach { JavaCompile compileTask ->
   } else if (compileTask.name == 'classesJava17') {
     options.release = 17
   } else if (compileTask.name == 'classesJava11') {
+    // TODO No longer building with java 11, should we keep this?
     options.release = 11
   } else if (compileTask.name != 'compileJava') {
+    // TODO No longer building with java 8, should we keep this?
     options.release = 8
   }
+}
+
+tasks.named('compileJava', JavaCompile).configure {
+  options.release = 17
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340
