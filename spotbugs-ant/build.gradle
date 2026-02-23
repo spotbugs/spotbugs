@@ -9,7 +9,7 @@ dependencies {
   runtimeOnly 'org.slf4j:slf4j-simple:2.0.17'
 
   testImplementation 'org.apache.ant:ant:1.10.15'
-  testImplementation 'org.junit.jupiter:junit-jupiter-engine:6.0.0'
+  testImplementation 'org.junit.jupiter:junit-jupiter-engine:6.0.3'
   testImplementation 'org.hamcrest:hamcrest:3.0'
   testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
