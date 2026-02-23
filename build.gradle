@@ -8,8 +8,23 @@ import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenArtifact;
 import org.gradle.api.tasks.util.PatternFilterable;
 
+buildscript {
+  repositories {
+    gradlePluginPortal()
+    mavenCentral()
+  }
+  // commons-io 2.18.0+ changed AbstractStreamBuilder.getInputStream() from protected to public.
+  // Gradle 9.x creates separate InstrumentingVisitableURLClassLoader per JAR, so commons-compress
+  // and commons-io land in different classloaders. With a protected method, Java's access check
+  // fails across classloaders. Adding commons-io 2.18.0 to the build classpath ensures the parent
+  // classloader provides the version with the public method to all plugin classloaders.
+  dependencies {
+    classpath 'commons-io:commons-io:2.18.0'
+  }
+}
+
 plugins {
-  id 'org.sonarqube' version '7.1.0.6387'
+  id 'org.sonarqube' version '7.2.2.6593'
   id 'org.gradle.crypto.checksum' version '1.4.0'
   id 'com.github.spotbugs' version '6.4.8'
   id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
@@ -38,6 +53,15 @@ subprojects {
 allprojects {
   repositories {
     mavenCentral()
+  }
+  configurations.all {
+    resolutionStrategy.eachDependency {
+      // commons-io 2.18.0+ makes AbstractStreamBuilder.getInputStream() public, resolving
+      // the classloader isolation error with sonarqube 7.2.2 and Gradle 9.x
+      if (it.requested.group == 'commons-io' && it.requested.name == 'commons-io') {
+        it.useVersion('2.18.0')
+      }
+    }
   }
   dependencies {
     String junitVersion = '5.14.3'
