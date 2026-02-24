@@ -41,6 +41,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Do not report `DM_DEFAULT_ENCODING` for classes compiled with target >= 18 ([#3866](https://github.com/spotbugs/spotbugs/pull/3866))
 - Fix `FS_BAD_DATE_FORMAT_FLAG_COMBO` not suppressed by field-level annotation ([#3838](https://github.com/spotbugs/spotbugs/issues/3838))
 - Fix `SF_SWITCH_FALLTHROUGH` false positives ([#3767](https://github.com/spotbugs/spotbugs/issues/3767))
+- Narrow the definition of singletons ([#2985](https://github.com/spotbugs/spotbugs/issues/2985))
 
 ### Removed
 - Removed old deprecated methods: 
