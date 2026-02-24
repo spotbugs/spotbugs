@@ -45,7 +45,7 @@ jobs:
           java-version: '21'
           distribution: temurin
           cache: gradle
-      - uses: gradle/actions/wrapper-validation@f29f5a9d7b09a7c6b29859002d29d24e1674c884 # v5
+      - uses: gradle/actions/wrapper-validation@0723195856401067f7a2779048b490ace7a47d7c # v5
       - name: Download Eclipse
         run: |
           curl --continue-at - --create-dirs --location 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-linux-gtk-x86_64.tar.gz&mirror_id=1' --output eclipse-sdk/eclipse.tar.gz
