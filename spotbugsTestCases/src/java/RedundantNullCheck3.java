@@ -22,7 +22,7 @@ class RedundantNullCheck3 {
 
     public void test3() throws Exception {
         FileInputStream in = new FileInputStream("/dev/null");
-        // generate a warning here: new FileInputStream() is never null
+        // don't generate a warning here
         if (in == null)
             throw new IllegalStateException("in is null");
     }

@@ -1149,7 +1149,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                 valueIsNull = false;
                 priority = isChecked ? HIGH_PRIORITY : NORMAL_PRIORITY;
             }
-            if (infeasibleEdgeSimplyThrowsException && valueIsNull) {
+            if (infeasibleEdgeSimplyThrowsException && (valueIsNull || item1 == null || item1.getXField() == null)) {
                 priority++;
             }
 
