@@ -34,7 +34,9 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.apache.bcel.generic.TypedInstruction;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -47,6 +49,7 @@ import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
+import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
@@ -56,6 +59,7 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
@@ -86,6 +90,8 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 
     private final ValueNumberDataflow vnaDataflow;
 
+    private final TypeDataflow typeDataflow;
+
     private final CFG cfg;
 
     private final Set<LocationWhereValueBecomesNull> locationWhereValueBecomesNullSet;
@@ -113,6 +119,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         this.visitor = new IsNullValueFrameModelingVisitor(methodGen.getConstantPool(), assertionMethods, vnaDataflow,
                 typeDataflow, trackValueNumbers);
         this.vnaDataflow = vnaDataflow;
+        this.typeDataflow = typeDataflow;
         this.cfg = cfg;
         this.locationWhereValueBecomesNullSet = new HashSet<>();
         this.pointerEqualityCheck = getForPointerEqualityCheck(cfg, vnaDataflow);
@@ -689,9 +696,30 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
             } else if (tos.isDefinitelyNotNull()) {
                 return null;
             } else {
-                // As far as we know, both branches feasible
-                ifcmpDecision = isNotInstanceOf ? tos : IsNullValue.pathSensitiveNonNullValue();
-                fallThroughDecision = isNotInstanceOf ? IsNullValue.pathSensitiveNonNullValue() : tos;
+                // Check if the static type of the value is a subtype of the instanceof check type.
+                // If so, "not instanceof" can only happen when the value is null.
+                boolean notInstanceOfImpliesNull = false;
+                try {
+                    TypeFrame typeFrame = typeDataflow.getFactAtLocation(atInstanceOf);
+                    if (typeFrame.isValid()) {
+                        Type tosType = typeFrame.getTopValue();
+                        Type instanceofType = ((TypedInstruction) prev.getInstruction()).getType(methodGen.getConstantPool());
+                        if (tosType instanceof ReferenceType && instanceofType instanceof ReferenceType) {
+                            notInstanceOfImpliesNull = Hierarchy.isSubtype((ReferenceType) tosType, (ReferenceType) instanceofType);
+                        }
+                    }
+                } catch (ClassNotFoundException e) {
+                    AnalysisContext.reportMissingClass(e);
+                }
+                if (notInstanceOfImpliesNull) {
+                    // "not instanceof" branch: value must be null; "instanceof" branch: value is non-null
+                    ifcmpDecision = isNotInstanceOf ? IsNullValue.pathSensitiveNullValue() : IsNullValue.pathSensitiveNonNullValue();
+                    fallThroughDecision = isNotInstanceOf ? IsNullValue.pathSensitiveNonNullValue() : IsNullValue.pathSensitiveNullValue();
+                } else {
+                    // As far as we know, both branches feasible
+                    ifcmpDecision = isNotInstanceOf ? tos : IsNullValue.pathSensitiveNonNullValue();
+                    fallThroughDecision = isNotInstanceOf ? IsNullValue.pathSensitiveNonNullValue() : tos;
+                }
             }
             if (DEBUG) {
                 System.out.println("Checking..." + tos + " -> " + ifcmpDecision + " or " + fallThroughDecision);
