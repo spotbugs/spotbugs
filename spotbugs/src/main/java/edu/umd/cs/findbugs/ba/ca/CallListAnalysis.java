@@ -20,37 +20,67 @@ package edu.umd.cs.findbugs.ba.ca;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.BlockOrder;
 import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.OpcodeStackScanner;
 import edu.umd.cs.findbugs.ba.ReversePostOrder;
+import edu.umd.cs.findbugs.ba.XField;
 
 public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
-    private final DepthFirstSearch dfs;
 
-    // private ConstantPoolGen cpg;
+    private final DepthFirstSearch dfs;
     private final Map<InstructionHandle, Call> callMap;
 
-    public CallListAnalysis(CFG cfg, DepthFirstSearch dfs, ConstantPoolGen cpg) {
-        this.dfs = dfs;
-        // this.cpg = cpg;
-        this.callMap = buildCallMap(cfg, cpg);
+    public CallListAnalysis(ClassContext classContext, Method method) {
+        this(getDepthFirstSearch(classContext, method), buildCallMap(classContext, method));
     }
 
-    private static Map<InstructionHandle, Call> buildCallMap(CFG cfg, ConstantPoolGen cpg) {
+    private CallListAnalysis(DepthFirstSearch dfs, Map<InstructionHandle, Call> callMap) {
+        this.dfs = dfs;
+        this.callMap = callMap;
+    }
+
+    private static DepthFirstSearch getDepthFirstSearch(ClassContext classContext, Method method) {
+        try {
+            return classContext.getDepthFirstSearch(method);
+        } catch (CFGBuilderException e) {
+            AnalysisContext.logError("Error generating derefs for " + method, e);
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private static Map<InstructionHandle, Call> buildCallMap(ClassContext classContext, Method method) {
         Map<InstructionHandle, Call> callMap = new HashMap<>();
+        CFG cfg;
+        try {
+            cfg = classContext.getCFG(method);
+        } catch (CFGBuilderException e) {
+            AnalysisContext.logError("Error generating derefs for " + method, e);
+            throw new IllegalStateException(e);
+        }
+        ConstantPoolGen cpg = classContext.getConstantPoolGen();
 
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             InstructionHandle handle = i.next().getHandle();
@@ -58,11 +88,16 @@ public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
 
             if (ins instanceof InvokeInstruction) {
                 InvokeInstruction inv = (InvokeInstruction) ins;
-                Call call = new Call(inv.getClassName(cpg), inv.getName(cpg), inv.getSignature(cpg));
+                OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, handle.getPosition());
+                List<XField> attributes = IntStream.range(0, stack.getStackDepth())
+                        .mapToObj(stackOffset -> stack.getStackItem(stackOffset).getXField())
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+
+                Call call = new Call(inv.getClassName(cpg), inv.getName(cpg), inv.getSignature(cpg), attributes);
                 callMap.put(handle, call);
             }
         }
-
         return callMap;
     }
 
@@ -70,10 +105,6 @@ public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
     public void initEntryFact(CallList fact) {
         fact.clear();
     }
-
-    // public void initResultFact(CallList fact) {
-    // fact.setTop();
-    // }
 
     @Override
     public boolean isForwards() {
@@ -129,33 +160,4 @@ public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
     public boolean isFactValid(CallList fact) {
         return fact.isValid();
     }
-
-    // public static void main(String[] argv) throws Exception {
-    // if (argv.length != 1) {
-    // System.err.println("Usage: " + CallListAnalysis.class.getName() +
-    // " <class file>");
-    // System.exit(1);
-    // }
-    //
-    // DataflowTestDriver<CallList, CallListAnalysis> driver =
-    // new DataflowTestDriver<CallList, CallListAnalysis>() {
-    // @Override
-    // public Dataflow<CallList, CallListAnalysis> createDataflow(
-    // ClassContext classContext,
-    // Method method) throws CFGBuilderException, DataflowAnalysisException {
-    // CallListAnalysis analysis = new CallListAnalysis(
-    // classContext.getCFG(method),
-    // classContext.getDepthFirstSearch(method),
-    // classContext.getConstantPoolGen());
-    // Dataflow<CallList, CallListAnalysis> dataflow =
-    // new Dataflow<CallList, CallListAnalysis>(analysis.cfg, analysis);
-    //
-    // dataflow.execute();
-    //
-    // return dataflow;
-    // }
-    // };
-    //
-    // driver.execute(argv[0]);
-    // }
 }
