@@ -23,4 +23,28 @@ public class Issue3916 {
         }
         String str = s2.toString(); // NP warning expected
     }
+
+    /**
+     * Negated instanceof: !(s3 instanceof String).
+     * The body is only reached when s3 is NOT an instance of String.
+     * Since String is a subtype of String, this implies s3 is null.
+     * Should report NP_LOAD_OF_KNOWN_NULL_VALUE.
+     */
+    public static void foo3(String s3) {
+        if (!(s3 instanceof String)) {
+            String str = s3.toString(); // NP warning expected
+        }
+    }
+
+    /**
+     * instanceof checks a subtype of the variable's type (String is a subtype of Object).
+     * "not instanceof" does NOT imply null: s4 could be any non-String Object.
+     * Should NOT report NP_LOAD_OF_KNOWN_NULL_VALUE.
+     */
+    public static void foo4(Object s4) {
+        if (s4 instanceof String) {
+            return;
+        }
+        s4.toString(); // no NP warning expected
+    }
 }

@@ -699,11 +699,17 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
                 // Check if the static type of the value is a subtype of the instanceof check type.
                 // If so, "not instanceof" can only happen when the value is null.
                 boolean notInstanceOfImpliesNull = false;
+                // secondToLastOpcode == Const.INSTANCEOF is already verified above,
+                // and BCEL's INSTANCEOF implements TypedInstruction; guard defensively.
+                Instruction prevIns = prev.getInstruction();
+                if (!(prevIns instanceof TypedInstruction)) {
+                    return null;
+                }
                 try {
                     TypeFrame typeFrame = typeDataflow.getFactAtLocation(atInstanceOf);
                     if (typeFrame.isValid()) {
                         Type tosType = typeFrame.getTopValue();
-                        Type instanceofType = ((TypedInstruction) prev.getInstruction()).getType(methodGen.getConstantPool());
+                        Type instanceofType = ((TypedInstruction) prevIns).getType(methodGen.getConstantPool());
                         if (tosType instanceof ReferenceType && instanceofType instanceof ReferenceType) {
                             notInstanceOfImpliesNull = Hierarchy.isSubtype((ReferenceType) tosType, (ReferenceType) instanceofType);
                         }
