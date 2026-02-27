@@ -9,6 +9,8 @@ class Issue3886Test extends AbstractIntegrationTest {
     void testYodaStyleOddCheck() {
         performAnalysis("ghIssues/Issue3886.class");
 
+        assertBugTypeCount("IM_BAD_CHECK_FOR_ODD", 2);
+
         // Standard style (i % 2 == 1) should be detected
         assertBugInMethod("IM_BAD_CHECK_FOR_ODD", "ghIssues.Issue3886", "standardCheck");
 
