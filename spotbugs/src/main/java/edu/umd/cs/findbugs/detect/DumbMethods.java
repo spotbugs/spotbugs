@@ -528,13 +528,15 @@ public class DumbMethods extends OpcodeStackDetector {
                         && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())) {
                     freshRandomOnTos = true;
                     randomInitPC = getPC();
+                } else {
+                    freshRandomOnTos = false;
                 }
             }
-            if (seen == Const.GOTO || seen == Const.GOTO_W) {
+            if (isBranch(seen)) {
                 int loopstart = getBranchTarget();
                 int loopend = getPC();
                 // if the Random init is before the loop, but the usage is inside
-                if (randomInitPC < loopstart) {
+                if (loopstart < loopend && randomInitPC < loopstart) {
                     pcToBugInstanceMap.keySet().removeIf(pc -> pc >= loopstart && pc <= loopend);
                 }
             }
