@@ -151,7 +151,7 @@ public class Strings {
 
     private static Pattern unescapePattern = null;
 
-    private static volatile boolean paternIsInitialized = false;
+    private static volatile boolean patternIsInitialized = false;
 
     private static final Object unescapeInitLockObject = new Object();
 
@@ -160,12 +160,12 @@ public class Strings {
      * invoked automatically the first time a string is unescaped.
      */
     public static boolean initializeUnescapePattern() {
-        if (paternIsInitialized == true) {
+        if (patternIsInitialized == true) {
             return true;
         }
 
         synchronized (unescapeInitLockObject) {
-            if (paternIsInitialized == true) {
+            if (patternIsInitialized == true) {
                 return true;
             }
 
@@ -180,7 +180,7 @@ public class Strings {
                         + "failed to compile.  Exception:  " + pse.toString());
                 return false;
             }
-            paternIsInitialized = true;
+            patternIsInitialized = true;
         }
         return true;
     }

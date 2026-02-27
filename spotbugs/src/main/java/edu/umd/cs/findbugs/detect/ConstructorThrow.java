@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -54,6 +55,12 @@ public class ConstructorThrow extends OpcodeStackDetector {
      * The DottedClassName complete with signature of the method to the set of the Exceptions thrown directly from the method.
      */
     private final Map<String, Set<JavaClass>> thrownExsByMethodMap = new HashMap<>();
+
+    /**
+     * Mapping of well-known utility methods from external classes to the set of Exceptions they throw
+     * (including indirectly thrown exceptions, since outside classes are not visited). Format matches thrownExsByMethodMap.
+     */
+    private static final Map<String, Set<JavaClass>> knownMethodsToThrownExceptions;
 
     private boolean isFinalClass = false;
     private boolean isFinalFinalizer = false;
@@ -199,6 +206,10 @@ public class ConstructorThrow extends OpcodeStackDetector {
             return unhandledExesInMethod;
         } else {
             visitedMethods.add(method);
+        }
+
+        if (knownMethodsToThrownExceptions.containsKey(method)) {
+            unhandledExesInMethod.addAll(knownMethodsToThrownExceptions.get(method));
         }
 
         if (thrownExsByMethodMap.containsKey(method)) {
@@ -361,6 +372,283 @@ public class ConstructorThrow extends OpcodeStackDetector {
         isFirstPass = true;
         exHandlesToMethodCallsByMethodsMap.clear();
         thrownExsByMethodMap.clear();
+    }
+
+    static {
+        Map<String, Set<JavaClass>> tmpMap = new HashMap<>();
+
+        try {
+            JavaClass iae = Repository.lookupClass("java.lang.IllegalArgumentException");
+            JavaClass ioobe = Repository.lookupClass("java.lang.IndexOutOfBoundsException");
+            JavaClass ise = Repository.lookupClass("java.lang.IllegalStateException");
+            JavaClass npe = Repository.lookupClass("java.lang.NullPointerException");
+
+            Set<JavaClass> iaeSet = Set.of(iae);
+            Set<JavaClass> ioobeSet = Set.of(ioobe);
+            Set<JavaClass> iseSet = Set.of(ise);
+            Set<JavaClass> npeSet = Set.of(npe);
+            Set<JavaClass> iaeIoobeSet = Set.of(iae, ioobe);
+            Set<JavaClass> iaeNpeSet = Set.of(iae, npe);
+            Set<JavaClass> ioobeNpeSet = Set.of(ioobe, npe);
+
+            tmpMap.put("java.util.Objects.requireNonNull : (Ljava.lang.Object;)Ljava.lang.Object;", npeSet);
+            tmpMap.put("java.util.Objects.requireNonNull : (Ljava.lang.Object;Ljava.lang.String;)Ljava.lang.Object;", npeSet);
+            tmpMap.put("java.util.Objects.requireNonNull : (Ljava.lang.Object;Ljava.util.function.Supplier;)Ljava.lang.Object;", npeSet);
+            tmpMap.put("java.util.Objects.requireNonNullElse : (Ljava.lang.Object;Ljava.lang.Object;)Ljava.lang.Object;", npeSet);
+            tmpMap.put("java.util.Objects.requireNonNullElseGet : (Ljava.lang.Object;Ljava.util.function.Supplier;)Ljava.lang.Object;", npeSet);
+            tmpMap.put("java.util.Objects.toIdentityString : (Ljava.lang.Object;)Ljava.lang.String;", npeSet);
+
+            tmpMap.put("java.util.Objects.checkIndex : (II)I", ioobeSet);
+            tmpMap.put("java.util.Objects.checkFromIndexSize : (JJ)J", ioobeSet);
+            tmpMap.put("java.util.Objects.checkFromToIndex : (III)I", ioobeSet);
+            tmpMap.put("java.util.Objects.checkFromToIndex : (JJJ)J", ioobeSet);
+            tmpMap.put("java.util.Objects.checkFromIndexSize : (III)I", ioobeSet);
+            tmpMap.put("java.util.Objects.checkFromIndexSize : (JJJ)J", ioobeSet);
+
+            // com.google.common.base.Preconditions.checkArgument -> throws IllegalArgumentException
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (Z)V", iaeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.Object;)V", iaeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;[Ljava.lang.Object;)V", iaeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;C)V", iaeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;I)V", iaeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;J)V", iaeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;Ljava.lang.Object;)V", iaeSet);
+
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;CC)V", iaeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;CI)V", iaeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;CJ)V", iaeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;CLjava.lang.Object;)V", iaeSet);
+
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;IC)V", iaeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;II)V", iaeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;IJ)V", iaeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;ILjava.lang.Object;)V", iaeSet);
+
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;JC)V", iaeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;JI)V", iaeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;JJ)V", iaeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;JLjava.lang.Object;)V", iaeSet);
+
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;Ljava.lang.Object;C)V", iaeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;Ljava.lang.Object;I)V", iaeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;Ljava.lang.Object;J)V", iaeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;Ljava.lang.Object;Ljava.lang.Object;)V", iaeSet);
+            tmpMap.put(
+                    "com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;Ljava.lang.Object;Ljava.lang.Object;Ljava.lang.Object;)V",
+                    iaeSet);
+            tmpMap.put(
+                    "com.google.common.base.Preconditions.checkArgument : (ZLjava.lang.String;Ljava.lang.Object;Ljava.lang.Object;Ljava.lang.Object;Ljava.lang.Object;)V",
+                    iaeSet);
+
+            // com.google.common.base.Preconditions.checkState -> throws IllegalStateException
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (Z)V", iseSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.Object;)V", iseSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;[Ljava.lang.Object;)V", iseSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;C)V", iseSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;I)V", iseSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;J)V", iseSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;Ljava.lang.Object;)V", iseSet);
+
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;CC)V", iseSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;CI)V", iseSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;CJ)V", iseSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;CLjava.lang.Object;)V", iseSet);
+
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;IC)V", iseSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;II)V", iseSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;IJ)V", iseSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;ILjava.lang.Object;)V", iseSet);
+
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;JC)V", iseSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;JI)V", iseSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;JJ)V", iseSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;JLjava.lang.Object;)V", iseSet);
+
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;Ljava.lang.Object;C)V", iseSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;Ljava.lang.Object;I)V", iseSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;Ljava.lang.Object;J)V", iseSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;Ljava.lang.Object;Ljava.lang.Object;)V", iseSet);
+            tmpMap.put(
+                    "com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;Ljava.lang.Object;Ljava.lang.Object;Ljava.lang.Object;)V",
+                    iseSet);
+            tmpMap.put(
+                    "com.google.common.base.Preconditions.checkState : (ZLjava.lang.String;Ljava.lang.Object;Ljava.lang.Object;Ljava.lang.Object;Ljava.lang.Object;)V",
+                    iseSet);
+
+            // com.google.common.base.Preconditions.checkNotNull -> throws NullPointerException
+            tmpMap.put("com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;)Ljava.lang.Object;", npeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.Object;)Ljava.lang.Object;", npeSet);
+            tmpMap.put(
+                    "com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;[Ljava.lang.Object;)Ljava.lang.Object;",
+                    npeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;C)Ljava.lang.Object;", npeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;I)Ljava.lang.Object;", npeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;J)Ljava.lang.Object;", npeSet);
+            tmpMap.put(
+                    "com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;Ljava.lang.Object;)Ljava.lang.Object;",
+                    npeSet);
+
+            tmpMap.put("com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;CC)Ljava.lang.Object;", npeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;CI)Ljava.lang.Object;", npeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;CJ)Ljava.lang.Object;", npeSet);
+            tmpMap.put(
+                    "com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;CLjava.lang.Object;)Ljava.lang.Object;",
+                    npeSet);
+
+            tmpMap.put("com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;IC)Ljava.lang.Object;", npeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;II)Ljava.lang.Object;", npeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;IJ)Ljava.lang.Object;", npeSet);
+            tmpMap.put(
+                    "com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;ILjava.lang.Object;)Ljava.lang.Object;",
+                    npeSet);
+
+            tmpMap.put("com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;JC)Ljava.lang.Object;", npeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;JI)Ljava.lang.Object;", npeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;JJ)Ljava.lang.Object;", npeSet);
+            tmpMap.put(
+                    "com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;JLjava.lang.Object;)Ljava.lang.Object;",
+                    npeSet);
+
+            tmpMap.put(
+                    "com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;Ljava.lang.Object;C)Ljava.lang.Object;",
+                    npeSet);
+            tmpMap.put(
+                    "com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;Ljava.lang.Object;I)Ljava.lang.Object;",
+                    npeSet);
+            tmpMap.put(
+                    "com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;Ljava.lang.Object;J)Ljava.lang.Object;",
+                    npeSet);
+            tmpMap.put(
+                    "com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;Ljava.lang.Object;Ljava.lang.Object;)Ljava.lang.Object;",
+                    npeSet);
+            tmpMap.put(
+                    "com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;Ljava.lang.Object;Ljava.lang.Object;Ljava.lang.Object;)Ljava.lang.Object;",
+                    npeSet);
+            tmpMap.put(
+                    "com.google.common.base.Preconditions.checkNotNull : (Ljava.lang.Object;Ljava.lang.String;Ljava.lang.Object;Ljava.lang.Object;Ljava.lang.Object;Ljava.lang.Object;)Ljava.lang.Object;",
+                    npeSet);
+
+            // com.google.common.base.Preconditions.checkElementIndex -> throws IndexOutOfBoundsException, IllegalArgumentException
+            tmpMap.put("com.google.common.base.Preconditions.checkElementIndex : (II)I", iaeIoobeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkElementIndex : (IILjava.lang.String;)I", iaeIoobeSet);
+
+            // com.google.common.base.Preconditions.checkPositionIndex -> throws IndexOutOfBoundsException, IllegalArgumentException
+            tmpMap.put("com.google.common.base.Preconditions.checkPositionIndex : (II)I", iaeIoobeSet);
+            tmpMap.put("com.google.common.base.Preconditions.checkPositionIndex : (IILjava.lang.String;)I", iaeIoobeSet);
+
+            // com.google.common.base.Preconditions.checkPositionIndexes -> throws IndexOutOfBoundsException, IllegalArgumentException
+            tmpMap.put("com.google.common.base.Preconditions.checkPositionIndexes : (II)I", iaeIoobeSet);
+
+            // org.apache.commons.lang3.Validate.exclusiveBetween -> throws IllegalArgumentException
+            tmpMap.put("org.apache.commons.lang3.Validate.exclusiveBetween : (DDD)V", iaeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.exclusiveBetween : (DDDLjava.lang.String;)V", iaeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.exclusiveBetween : (JJJ)V", iaeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.exclusiveBetween : (JJJLjava.lang.String;)V", iaeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.exclusiveBetween : (Ljava.lang.Object;Ljava.lang.Object;Ljava.lang.Object;)V", iaeSet);
+            tmpMap.put(
+                    "org.apache.commons.lang3.Validate.exclusiveBetween : (Ljava.lang.Object;Ljava.lang.Object;Ljava.lang.Object;Ljava.lang.String;[Ljava.lang.Object;)V",
+                    iaeSet);
+
+            // org.apache.commons.lang3.Validate.finite -> throws IllegalArgumentException
+            tmpMap.put("org.apache.commons.lang3.Validate.finite : (D)V", iaeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.finite : (DLjava.lang.String;[Ljava.lang.Object;)V", iaeSet);
+
+            // org.apache.commons.lang3.Validate.inclusiveBetween -> throws IllegalArgumentException
+            tmpMap.put("org.apache.commons.lang3.Validate.inclusiveBetween : (DDD)V", iaeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.inclusiveBetween : (DDDLjava.lang.String;)V", iaeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.inclusiveBetween : (JJJ)V", iaeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.inclusiveBetween : (JJJLjava.lang.String;)V", iaeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.inclusiveBetween : (Ljava.lang.Object;Ljava.lang.Object;Ljava.lang.Object;)V", iaeSet);
+            tmpMap.put(
+                    "org.apache.commons.lang3.Validate.inclusiveBetween : (Ljava.lang.Object;Ljava.lang.Object;Ljava.lang.Object;Ljava.lang.String;[Ljava.lang.Object;)V",
+                    iaeSet);
+
+            // org.apache.commons.lang3.Validate.isAssignableFrom -> throws IllegalArgumentException
+            tmpMap.put("org.apache.commons.lang3.Validate.isAssignableFrom : (Ljava.lang.Class;Ljava.lang.Class;)V", iaeSet);
+            tmpMap.put(
+                    "org.apache.commons.lang3.Validate.isAssignableFrom : (Ljava.lang.Class;Ljava.lang.Class;Ljava.lang.String;[Ljava.lang.Object;)V",
+                    iaeSet);
+
+            // org.apache.commons.lang3.Validate.isInstanceOf -> throws IllegalArgumentException
+            tmpMap.put("org.apache.commons.lang3.Validate.isInstanceOf : (Ljava.lang.Class;Ljava.lang.Object;)V", iaeSet);
+            tmpMap.put(
+                    "org.apache.commons.lang3.Validate.isInstanceOf : (Ljava.lang.Class;Ljava.lang.Object;Ljava.lang.String;[Ljava.lang.Object;)V",
+                    iaeSet);
+
+            // org.apache.commons.lang3.Validate.isTrue -> throws IllegalArgumentException
+            tmpMap.put("org.apache.commons.lang3.Validate.isTrue : (Z)V", iaeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.isTrue : (ZLjava.lang.String;D)V", iaeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.isTrue : (ZLjava.lang.String;L)V", iaeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.isTrue : (ZLjava.lang.String;[Ljava.lang.Object;)V", iaeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.isTrue : (ZLjava.util.function.Supplier;)V", iaeSet);
+
+            // org.apache.commons.lang3.Validate.matchesPattern -> throws IllegalArgumentException
+            tmpMap.put("org.apache.commons.lang3.Validate.matchesPattern : (Ljava.lang.CharSequence;Ljava.lang.String;)V", iaeSet);
+            tmpMap.put(
+                    "org.apache.commons.lang3.Validate.matchesPattern : (Ljava.lang.CharSequence;Ljava.lang.String;Ljava.lang.String;[Ljava.lang.Object;)V",
+                    iaeSet);
+
+            // org.apache.commons.lang3.Validate.noNullElements -> throws NullPointerException, IllegalArgumentException
+            tmpMap.put("org.apache.commons.lang3.Validate.noNullElements : (Ljava.lang.Iterable;)Ljava.lang.Iterable;", iaeNpeSet);
+            tmpMap.put(
+                    "org.apache.commons.lang3.Validate.noNullElements : (Ljava.lang.Iterable;Ljava.lang.String;[Ljava.lang.Object;)Ljava.lang.Iterable;",
+                    iaeNpeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.noNullElements : ([Ljava.lang.Object;)[Ljava.lang.Object;", iaeNpeSet);
+            tmpMap.put(
+                    "org.apache.commons.lang3.Validate.noNullElements : ([Ljava.lang.Object;Ljava.lang.String;[Ljava.lang.Object;)[Ljava.lang.Object;",
+                    iaeNpeSet);
+
+            // org.apache.commons.lang3.Validate.notBlank -> throws NullPointerException, IllegalArgumentException
+            tmpMap.put("org.apache.commons.lang3.Validate.notBlank : (Ljava.lang.CharSequence;)[Ljava.lang.CharSequence;", iaeNpeSet);
+            tmpMap.put(
+                    "org.apache.commons.lang3.Validate.notBlank : (Ljava.lang.CharSequence;Ljava.lang.String;[Ljava.lang.Object;)[Ljava.lang.CharSequence;",
+                    iaeNpeSet);
+
+            // org.apache.commons.lang3.Validate.notEmpty -> throws NullPointerException, IllegalArgumentException
+            tmpMap.put("org.apache.commons.lang3.Validate.notEmpty : (Ljava.util.Collection;)Ljava.util.Collection;", iaeNpeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.notEmpty : (Ljava.util.Map;)Ljava.util.Map;", iaeNpeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.notEmpty : (Ljava.lang.CharSequence;)Ljava.lang.CharSequence;", iaeNpeSet);
+            tmpMap.put(
+                    "org.apache.commons.lang3.Validate.notEmpty : (Ljava.util.Collection;Ljava.lang.String;[Ljava.lang.Object;)Ljava.util.Collection;",
+                    iaeNpeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.notEmpty : (Ljava.util.Map;Ljava.lang.String;[Ljava.lang.Object;)Ljava.util.Map;",
+                    iaeNpeSet);
+            tmpMap.put(
+                    "org.apache.commons.lang3.Validate.notEmpty : (Ljava.lang.CharSequence;Ljava.lang.String;[Ljava.lang.Object;)Ljava.lang.CharSequence;",
+                    iaeNpeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.notEmpty : ([Ljava.lang.Object;Ljava.lang.String;[Ljava.lang.Object;)[Ljava.lang.Object;",
+                    iaeNpeSet);
+
+            // org.apache.commons.lang3.Validate.notNaN -> throws IllegalArgumentException
+            tmpMap.put("org.apache.commons.lang3.Validate.notNaN : (D)V", iaeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.notNaN : (DLjava.lang.String;[Ljava.lang.Object;)V", iaeSet);
+
+            // org.apache.commons.lang3.Validate.notNull -> throws NullPointerException
+            tmpMap.put("org.apache.commons.lang3.Validate.notNull : (Ljava.lang.Object;)Ljava.lang.Object;", npeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.notNull : (Ljava.lang.Object;Ljava.lang.String;[Ljava.lang.Object;)Ljava.lang.Object;",
+                    npeSet);
+
+            // org.apache.commons.lang3.Validate.validIndex -> throws IndexOutOfBoundsException, NullPointerException
+            tmpMap.put("org.apache.commons.lang3.Validate.validIndex : (Ljava.util.Collection;I)Ljava.util.Collection;", ioobeNpeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.validIndex : (Ljava.lang.CharSequence;I)Ljava.lang.CharSequence;", ioobeNpeSet);
+            tmpMap.put(
+                    "org.apache.commons.lang3.Validate.validIndex : (Ljava.util.Collection;ILjava.lang.String;[Ljava.lang.Object;)Ljava.util.Collection;",
+                    ioobeNpeSet);
+            tmpMap.put(
+                    "org.apache.commons.lang3.Validate.validIndex : (Ljava.lang.CharSequence;ILjava.lang.String;[Ljava.lang.Object;)Ljava.lang.CharSequence;",
+                    ioobeNpeSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.validIndex : ([Ljava.lang.Object;I)[Ljava.lang.Object;", ioobeNpeSet);
+            tmpMap.put(
+                    "org.apache.commons.lang3.Validate.validIndex : ([Ljava.lang.Object;ILjava.lang.String;[Ljava.lang.Object;)[Ljava.lang.Object;",
+                    ioobeNpeSet);
+
+            // org.apache.commons.lang3.Validate.validState -> throws IllegalStateException
+            tmpMap.put("org.apache.commons.lang3.Validate.validState : (Z)V", iseSet);
+            tmpMap.put("org.apache.commons.lang3.Validate.validState : (ZLjava.lang.String;[Ljava.lang.Object;)V", iseSet);
+        } catch (ClassNotFoundException e) {
+            AnalysisContext.reportMissingClass(e);
+        }
+        knownMethodsToThrownExceptions = Map.copyOf(tmpMap);
     }
 
     private void accumulateBug() {
