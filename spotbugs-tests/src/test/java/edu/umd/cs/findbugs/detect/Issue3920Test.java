@@ -16,6 +16,9 @@ class Issue3920Test extends AbstractIntegrationTest {
     void testNonNullOnLeftSideOfNullComparison() {
         performAnalysis("ghIssues/Issue3920.class");
 
+        assertBugTypeCount("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", 1);
+        assertBugTypeCount("RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE", 1);
+
         // m1(): System.out == null (IFNONNULL) — previously a false negative
         assertBugInMethod("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", "Issue3920", "m1");
 
