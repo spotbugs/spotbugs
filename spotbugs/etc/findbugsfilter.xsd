@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="https://github.com/spotbugs/filter/4.8.4" elementFormDefault="unqualified"
-    xsi:schemaLocation="https://github.com/spotbugs/filter/4.8.4 https://raw.githubusercontent.com/spotbugs/spotbugs/4.8.4/spotbugs/etc/findbugsfilter.xsd"
-    xmlns="http://www.w3.org/2001/XMLSchema" xmlns:fb="https://github.com/spotbugs/filter/4.8.4">
+<schema targetNamespace="https://github.com/spotbugs/filter/4.10.0" elementFormDefault="unqualified"
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    xmlns:fb="https://github.com/spotbugs/filter/4.10.0">
 
     <element name="FindBugsFilter" type="fb:FindBugsFilterType"></element>
 
@@ -154,15 +154,18 @@
         <attribute name="pattern" type="string">
             <annotation>
                 <documentation>A comma-separated list of bug pattern types. You can find the bug pattern types for particular warnings by looking at the output produced by the -xml output option (the type attribute of BugInstance elements), or from the bug descriptions document.</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
         <attribute name="code" type="string">
             <annotation>
                 <documentation>A comma-separated list of bug abbreviations.</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
         <attribute name="category" type="string">
             <annotation>
                 <documentation>A comma separated list of bug category names.</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
     </complexType>
 
     <complexType name="ClassType">
@@ -172,11 +175,13 @@
         <attribute name="name" type="string">
             <annotation>
                 <documentation>The exact or regex match pattern for a class name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
         <attribute name="role" type="string">
             <annotation>
                 <documentation>The class role</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
     </complexType>
 
     <complexType name="AnnotationType">
@@ -186,7 +191,8 @@
         <attribute name="name" type="string">
             <annotation>
                 <documentation>The exact or regex match pattern for a java class annotation name. If the name starts with the ~ character the rest of the attribute content is interpreted as a Java regular expression.</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
     </complexType>
     
     <complexType name="TypeType">
@@ -196,15 +202,18 @@
         <attribute name="descriptor" type="string">
             <annotation>
                 <documentation>The exact or regex match pattern for type descriptor. If the descriptor starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
         <attribute name="role" type="string">
             <annotation>
                 <documentation>The type role</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
         <attribute name="typeParameters" type="string">
             <annotation>
                 <documentation>The type parameters</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
     </complexType>
 
     <complexType name="SourceType">
@@ -214,7 +223,8 @@
         <attribute name="name" type="string">
             <annotation>
                 <documentation>The exact or regex match pattern for a source file name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
     </complexType>
 
     <complexType name="FieldType">
@@ -224,15 +234,18 @@
         <attribute name="name" type="string">
             <annotation>
                 <documentation>The exact or regex match pattern for a field name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
         <attribute name="type" type="string">
             <annotation>
                 <documentation>Fully qualified type of the field</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
         <attribute name="role" type="string">
             <annotation>
                 <documentation>The field's role</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
     </complexType>
 
     <complexType name="LocalType">
@@ -241,7 +254,9 @@
         </annotation>
         <attribute name="name" type="string">
             <annotation>
-                <documentation>The exact or regex match pattern for a local variable name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation></annotation></attribute>
+                <documentation>The exact or regex match pattern for a local variable name. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
+            </annotation>
+        </attribute>
     </complexType>
 
     <complexType name="MethodType">
@@ -251,19 +266,23 @@
         <attribute name="name" type="string">
             <annotation>
                 <documentation>The exact or regex match pattern for a method name.. If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
         <attribute name="params" type="string">
             <annotation>
                 <documentation>A comma-separated list of the fully qualified  types of the method's parameters.</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
         <attribute name="returns" type="string">
             <annotation>
                 <documentation>The method's fully qualified return type</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
         <attribute name="role" type="string">
             <annotation>
                 <documentation>The method's role</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
     </complexType>
 
     <complexType name="PackageType">
@@ -273,7 +292,8 @@
         <attribute name="name" type="string">
             <annotation>
                 <documentation>The exact or regex match pattern for a package name. Nested packages are not included (along the lines of Java import statement). If the name starts with the ~ character the rest of attribute content is interpreted as a Java regular expression.</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
     </complexType>
 
     <complexType name="PriorityType">
@@ -283,7 +303,8 @@
         <attribute name="value" type="fb:PriorityValueType">
             <annotation>
                 <documentation>1: high-priority warnings, 2: medium-priority warnings, 3: low-priority warnings</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
     </complexType>
 
     <complexType name="ConfidenceType">
@@ -293,7 +314,8 @@
         <attribute name="value" type="fb:ConfidenceValueType">
             <annotation>
                 <documentation>1: high-priority warnings, 2: medium-priority warnings, 3: low-priority warnings</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
     </complexType>
 
     <complexType name="RankType">
@@ -303,7 +325,8 @@
         <attribute name="value" type="fb:RankValueType">
             <annotation>
                 <documentation>1 to 4 are scariest, 5 to 9 scary, 10 to 14 troubling, and 15 to 20 of concern bugs.</documentation>
-            </annotation></attribute>
+            </annotation>
+        </attribute>
     </complexType>
 
     <simpleType name="PriorityValueType">
