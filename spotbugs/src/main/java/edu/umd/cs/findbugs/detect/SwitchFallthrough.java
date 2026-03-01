@@ -192,6 +192,21 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
         }
 
+        // When the last switch case contains only a break, the compiler merges its bytecode
+        // offset with the default offset in the switch table (both point to the same PC).
+        // In that scenario the code is only reachable via a GOTO (reachable=false), so the
+        // normal fall-through detection above misses it.  Detect it explicitly here.
+        if (!reachable
+                && isDefaultOffset
+                && switchHdlr.getLastCasePC() == getPC()
+                && getPC() >= biggestJumpTarget) {
+            SourceLineAnnotation sourceLineAnnotation = switchHdlr.getCurrentSwitchStatement(this);
+            if (DEBUG) {
+                System.out.printf("Found empty-last-case at default offset %d (BJT is %d)%n", getPC(), biggestJumpTarget);
+            }
+            foundSwitchNoDefault(sourceLineAnnotation);
+        }
+
         if (isSwitch(seen)
                 || isReturn(seen)
                 || (isBranch(seen) && isBranchTargetOutsideOfNextCase())) {
