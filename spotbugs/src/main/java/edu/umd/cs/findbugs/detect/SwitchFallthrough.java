@@ -196,10 +196,16 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         // offset with the default offset in the switch table (both point to the same PC).
         // In that scenario the code is only reachable via a GOTO (reachable=false), so the
         // normal fall-through detection above misses it.  Detect it explicitly here.
+        //
+        // This heuristic must be skipped for Java 21+ enum/type switches (invokedynamic
+        // enumSwitch / typeSwitch): those compilers add an explicit "catch-all" tableswitch
+        // entry whose offset matches the tableswitch default even when an explicit default:
+        // branch exists, making the last-case-PC equal the default-PC regardless.
         if (!reachable
                 && isDefaultOffset
                 && switchHdlr.getLastCasePC() == getPC()
-                && getPC() >= biggestJumpTarget) {
+                && getPC() >= biggestJumpTarget
+                && !switchHdlr.isCurrentSwitchEnumSwitch()) {
             SourceLineAnnotation sourceLineAnnotation = switchHdlr.getCurrentSwitchStatement(this);
             if (DEBUG) {
                 System.out.printf("Found empty-last-case at default offset %d (BJT is %d)%n", getPC(), biggestJumpTarget);
@@ -325,6 +331,11 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
         case Const.INVOKESTATIC:
             reachable = !("exit".equals(getNameConstantOperand()) && "java/lang/System".equals(getClassConstantOperand()));
+            break;
+
+        case Const.INVOKEDYNAMIC:
+            switchHdlr.sawInvokeDynamic(getPC(), getNameConstantOperand());
+            reachable = true;
             break;
 
         default:

@@ -45,10 +45,16 @@ public class SwitchHandler {
      * The set of program counters for the 'switch' instruction of each of the type switches
      */
     private final Set<Integer> typeSwitchPC;
+    /**
+     * The set of program counters for the 'switch' instruction of each of the enum switches
+     * introduced in Java 21 (using {@code invokedynamic enumSwitch}).
+     */
+    private final Set<Integer> enumSwitchPC;
 
     public SwitchHandler() {
         switchOffsetStack = new ArrayList<>();
         typeSwitchPC = new HashSet<>();
+        enumSwitchPC = new HashSet<>();
     }
 
     public int stackSize() {
@@ -181,6 +187,8 @@ public class SwitchHandler {
     /**
      * For type switches introduced in Java 21 we are using the invocation of a bootstrap 'typeswitch()' method to
      * detect that the switch operates on the class of the object.
+     * For enum switches in Java 21, the compiler uses an 'enumSwitch' bootstrap instead of
+     * the old synthetic $1 class approach.
      *
      * @param pc
      * @param methodName
@@ -188,7 +196,27 @@ public class SwitchHandler {
     public void sawInvokeDynamic(int pc, String methodName) {
         if ("typeSwitch".equals(methodName)) {
             typeSwitchPC.add(pc + 5);
+        } else if ("enumSwitch".equals(methodName)) {
+            enumSwitchPC.add(pc + 5);
         }
+    }
+
+    /**
+     * Returns {@code true} if the current (innermost) switch was compiled using Java 21's
+     * {@code invokedynamic enumSwitch} or {@code typeSwitch} bootstrap.  For these switches the
+     * last non-default case offset can coincide with the tableswitch default offset even when an
+     * explicit {@code default:} branch exists (because the compiler merges a no-op default with
+     * the switch exit point), so the empty-last-case heuristic must not be applied.
+     *
+     * @return {@code true} if the innermost active switch is a Java-21-style dynamic switch
+     */
+    public boolean isCurrentSwitchEnumSwitch() {
+        int size = switchOffsetStack.size();
+        if (size == 0) {
+            return false;
+        }
+        int switchPC = switchOffsetStack.get(size - 1).switchPC;
+        return enumSwitchPC.contains(switchPC) || typeSwitchPC.contains(switchPC);
     }
 
     /**
