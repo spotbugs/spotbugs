@@ -202,6 +202,20 @@ public class SwitchHandler {
     }
 
     /**
+     * Marks the most recently entered switch as a Java 21+ dynamic switch (invoked via
+     * {@code invokedynamic enumSwitch} or {@code typeSwitch}). Call this immediately after
+     * {@link #enterSwitch} when the switch is known to be a dynamic switch.
+     * Using the actual switch PC (rather than an offset estimate from the invokedynamic PC)
+     * ensures {@link #isCurrentSwitchEnumSwitch()} works even when intermediate instructions
+     * appear between the {@code invokedynamic} and the {@code tableswitch}.
+     */
+    public void markCurrentSwitchAsDynamic() {
+        if (!switchOffsetStack.isEmpty()) {
+            enumSwitchPC.add(switchOffsetStack.get(switchOffsetStack.size() - 1).switchPC);
+        }
+    }
+
+    /**
      * Returns {@code true} if the current (innermost) switch was compiled using Java 21's
      * {@code invokedynamic enumSwitch} or {@code typeSwitch} bootstrap.  For these switches the
      * last non-default case offset can coincide with the tableswitch default offset even when an

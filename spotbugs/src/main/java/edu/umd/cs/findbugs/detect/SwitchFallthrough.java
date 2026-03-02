@@ -67,6 +67,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
     private int lastPC;
     private int biggestJumpTarget;
+    private boolean pendingDynamicSwitch;
 
     private final BitSet potentiallyDeadStores = new BitSet();
 
@@ -101,6 +102,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         reachable = false;
         lastPC = 0;
         biggestJumpTarget = -1;
+        pendingDynamicSwitch = false;
         found.clear();
         switchHdlr = new SwitchHandler();
         clearAllDeadStores();
@@ -294,11 +296,16 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         case Const.TABLESWITCH:
         case Const.LOOKUPSWITCH:
             if (justSawHashcode) {
+                pendingDynamicSwitch = false;
                 break; // javac compiled switch statement
             }
             reachable = false;
             biggestJumpTarget = -1;
             switchHdlr.enterSwitch(this, enumType);
+            if (pendingDynamicSwitch) {
+                switchHdlr.markCurrentSwitchAsDynamic();
+            }
+            pendingDynamicSwitch = false;
             if (DEBUG) {
                 System.out.printf("  entered switch, default is %d%n", switchHdlr.getDefaultCasePC());
             }
@@ -335,6 +342,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
         case Const.INVOKEDYNAMIC:
             switchHdlr.sawInvokeDynamic(getPC(), getNameConstantOperand());
+            pendingDynamicSwitch = "enumSwitch".equals(getNameConstantOperand()) || "typeSwitch".equals(getNameConstantOperand());
             reachable = true;
             break;
 
