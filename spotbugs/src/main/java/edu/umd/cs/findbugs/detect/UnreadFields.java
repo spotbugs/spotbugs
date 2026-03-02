@@ -508,7 +508,7 @@ public class UnreadFields extends OpcodeStackDetector {
                 if (getThisClass().isPrivate() || getMethod().isPrivate()) {
                     priority++;
                 }
-                if (getClassName().indexOf('$') != -1 || BCELUtil.isSynthetic(getMethod()) || f.isSynthetic()
+                if (getClassDescriptor().isAnonymousClass() || BCELUtil.isSynthetic(getMethod()) || f.isSynthetic()
                         || f.getName().indexOf('$') >= 0) {
                     priority++;
                 }
