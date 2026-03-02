@@ -652,7 +652,7 @@ public class PluginLoader implements AutoCloseable {
             File f = new File(new File(new File(findBugsHome), "etc"), name);
             if (f.canRead()) {
                 try {
-                    return f.toURL();
+                    return f.toURI().toURL();
                 } catch (MalformedURLException e) {
                     // ignore it
                     assert true;

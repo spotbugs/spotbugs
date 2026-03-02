@@ -4,7 +4,7 @@ plugins {
 apply from: "${rootDir}/gradle/checkstyle.gradle"
 
 tasks.named('compileJava', JavaCompile).configure {
-  options.release = 11
+  options.release = 17
 }
 
 sourceSets {
@@ -26,7 +26,7 @@ dependencies {
   }
 
   implementation project(':test-harness')
-  implementation 'org.junit.jupiter:junit-jupiter-engine:5.14.3'
+  implementation 'org.junit.jupiter:junit-jupiter-engine:6.0.3'
   implementation 'org.apache.ant:ant:1.10.15'
 }
 
