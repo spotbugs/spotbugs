@@ -182,7 +182,9 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                     SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(
                             getClassContext(), this, lastPC, getPC());
                     found.add(sourceLineAnnotation);
-                } else if (getPC() >= biggestJumpTarget) {
+                } else if (getPC() >= biggestJumpTarget
+                        && !(switchHdlr.isCurrentSwitchEnumSwitch()
+                                && switchHdlr.getLastCasePC() == getPC())) {
                     SourceLineAnnotation sourceLineAnnotation = switchHdlr.getCurrentSwitchStatement(this);
                     if (DEBUG) {
                         System.out.printf("Found fallthrough to default offset at %d (BJT is %d)%n", getPC(), biggestJumpTarget);
