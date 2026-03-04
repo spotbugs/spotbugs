@@ -1,0 +1,72 @@
+/*
+ * Contributions to SpotBugs
+ * Copyright (C) 2026 PANTHEON.tech, s.r.o.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+package edu.umd.cs.findbugs.detect;
+
+import edu.umd.cs.findbugs.detect.ReflectiveAccessTracker.AccessType;
+
+/**
+ * Handles and logs reflective access to a field.
+ */
+class ReflectiveFieldAccessor {
+
+    private final AccessType accessType;
+    private final ReflectiveFieldAccessLog accessLog;
+
+    public ReflectiveFieldAccessor(final ReflectiveFieldAccessLog accessLog, final AccessType accessType) {
+        this.accessType = accessType;
+        this.accessLog = accessLog;
+    }
+
+    public ReflectiveFieldAccessLog getReflectiveAccessLog() {
+        return accessLog;
+    }
+
+    public AccessType getAccessType() {
+        return accessType;
+    }
+
+    /**
+     * Accessor which can be invoked to both set and get the value. The accessType is supplied at invocation.
+     */
+    static class ExplicitAccessor extends ReflectiveFieldAccessor {
+
+        public ExplicitAccessor(final ReflectiveFieldAccessLog reflectiveAccessLog) {
+            super(reflectiveAccessLog, AccessType.BOTH);
+        }
+
+        public void markAccess(final AccessType accessType) {
+            getReflectiveAccessLog().markAccess(accessType);
+        }
+    }
+
+    /**
+     * Accessor which can access a field only in pre-defined way. The accessType is defined at instantiation.
+     */
+    static class ImplicitAccessor extends ReflectiveFieldAccessor {
+
+        public ImplicitAccessor(final ReflectiveFieldAccessLog reflectiveAccessLog,
+                final AccessType accessType) {
+            super(reflectiveAccessLog, accessType);
+        }
+
+        public void markAccess() {
+            getReflectiveAccessLog().markAccess(getAccessType());
+        }
+    }
+}
