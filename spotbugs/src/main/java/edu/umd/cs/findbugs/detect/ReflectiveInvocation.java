@@ -1,6 +1,5 @@
 /*
- * Contributions to SpotBugs
- * Copyright (C) 2026 PANTHEON.tech, s.r.o.
+ * SpotBugs - Find bugs in Java programs
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,11 +19,13 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.detect.ReflectiveAccessTracker.AccessType;
+import java.lang.invoke.VarHandle;
+import java.util.Set;
 
 /**
  * Single invocation of an implicit reflective accessor field such as MethodHandle.
  */
-class ReflectiveInvocation {
+abstract class ReflectiveInvocation {
 
     private final XField accessorField;
 
@@ -36,11 +37,24 @@ class ReflectiveInvocation {
         return accessorField;
     }
 
+    static class MethodHandleInvocation extends ReflectiveInvocation {
+
+        private static final Set<String> ALLOWED_INVOCATIONS = Set.of("invoke", "invokeExact", "invokeWithArguments");
+
+        public MethodHandleInvocation(XField accessorField) {
+            super(accessorField);
+        }
+
+        static boolean isValidInvocation(final String invocation) {
+            return invocation != null && ALLOWED_INVOCATIONS.contains(invocation);
+        }
+    }
+
     /**
      * Single invocation of an explicit reflective accessor field such as VarHandle, or AtomicFieldUpdater.
      * This invocation has to supply the access type.
      */
-    static class SpecifiedInvocation extends ReflectiveInvocation {
+    abstract static class SpecifiedInvocation extends ReflectiveInvocation {
         private final AccessType accessType;
 
         private SpecifiedInvocation(final XField accessorField, final AccessType accessType) {
@@ -55,82 +69,51 @@ class ReflectiveInvocation {
 
     static class VarHandleInvocation extends SpecifiedInvocation {
 
-        private VarHandleInvocation(final XField accessorField, final AccessType accessType) {
+        VarHandleInvocation(final XField accessorField, final AccessType accessType) {
             super(accessorField, accessType);
         }
 
-        static VarHandleInvocation create(final XField accessorField, final String invocation) {
-            AccessType resolvedType = resolveInvocationType(invocation);
-            return resolvedType != null ? new VarHandleInvocation(accessorField, resolvedType) : null;
-        }
+        static AccessType resolveInvocationType(final String invocation) {
+            VarHandle.AccessMode mode;
 
-        private static AccessType resolveInvocationType(final String invocation) {
-            switch (invocation) {
-            // ---------- READ ONLY ----------
-            case "get":
-            case "getVolatile":
-            case "getAcquire":
-            case "getOpaque":
+            try {
+                mode = VarHandle.AccessMode.valueFromMethodName(invocation);
+            } catch (IllegalArgumentException | NullPointerException e) {
+                return null;
+            }
+
+            switch (mode) {
+            case GET:
+            case GET_VOLATILE:
+            case GET_ACQUIRE:
+            case GET_OPAQUE:
                 return AccessType.GETTER;
 
-            // ---------- WRITE ONLY ----------
-            case "set":
-            case "setVolatile":
-            case "setRelease":
-            case "setOpaque":
+            case SET:
+            case SET_VOLATILE:
+            case SET_RELEASE:
+            case SET_OPAQUE:
                 return AccessType.SETTER;
 
-            // ---------- READ + CONDITIONAL WRITE ----------
-            case "compareAndSet":
-            case "compareAndExchange":
-            case "compareAndExchangeAcquire":
-            case "compareAndExchangeRelease":
-            case "compareAndExchangeVolatile":
-            case "weakCompareAndSet":
-            case "weakCompareAndSetAcquire":
-            case "weakCompareAndSetRelease":
-            case "weakCompareAndSetVolatile":
-
-                // ---------- READ + WRITE ----------
-            case "getAndSet":
-            case "getAndSetAcquire":
-            case "getAndSetRelease":
-            case "getAndSetVolatile":
-            case "getAndAdd":
-            case "getAndAddAcquire":
-            case "getAndAddRelease":
-            case "getAndAddVolatile":
-            case "getAndBitwiseOr":
-            case "getAndBitwiseOrAcquire":
-            case "getAndBitwiseOrRelease":
-            case "getAndBitwiseOrVolatile":
-            case "getAndBitwiseAnd":
-            case "getAndBitwiseAndAcquire":
-            case "getAndBitwiseAndRelease":
-            case "getAndBitwiseAndVolatile":
-            case "getAndBitwiseXor":
-            case "getAndBitwiseXorAcquire":
-            case "getAndBitwiseXorRelease":
-            case "getAndBitwiseXorVolatile":
-                return AccessType.BOTH;
             default:
-                return null;
+                // Since all 31 methods are accounted for, anything that isn't a direct GET or SET is a
+                // Read-and-Write operation.
+                return AccessType.BOTH;
             }
         }
     }
 
     static class AtomicUpdaterInvocation extends SpecifiedInvocation {
 
-        private AtomicUpdaterInvocation(final XField accessorField, final AccessType accessType) {
+        AtomicUpdaterInvocation(final XField accessorField, final AccessType accessType) {
             super(accessorField, accessType);
         }
 
-        static AtomicUpdaterInvocation create(final XField accessorField, final String invocation) {
-            AccessType resolvedType = resolveInvocationType(invocation);
-            return resolvedType != null ? new AtomicUpdaterInvocation(accessorField, resolvedType) : null;
-        }
+        static AccessType resolveInvocationType(final String invocation) {
+            if (invocation == null) {
+                return null;
+            }
 
-        private static AccessType resolveInvocationType(final String invocation) {
             switch (invocation) {
             // ---------- READ ONLY ----------
             case "get":
@@ -156,6 +139,7 @@ class ReflectiveInvocation {
             case "getAndAccumulate":
             case "accumulateAndGet":
                 return AccessType.BOTH;
+
             default:
                 return null;
             }
