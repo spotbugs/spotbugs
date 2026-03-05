@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.detect.ReflectiveInvocation.MethodHandleInvocation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -324,9 +325,13 @@ public class UnreadFields extends OpcodeStackDetector {
 
     private int previousPreviousOpcode;
 
+    private final ReflectiveAccessTracker reflectiveAccessTracker = new ReflectiveAccessTracker();
+
+    private ReflectiveFieldAccessorBuilder currentReflectiveField = null;
+
     @Override
     public void visit(Code obj) {
-
+        currentReflectiveField = null;
         count_aload_1 = 0;
         previousOpcode = -1;
         previousPreviousOpcode = -1;
@@ -352,6 +357,7 @@ public class UnreadFields extends OpcodeStackDetector {
         if (Const.CONSTRUCTOR_NAME.equals(getMethodName()) && (obj.isPublic() || obj.isProtected())) {
             publicOrProtectedConstructor = true;
         }
+        currentReflectiveField = null;
         pendingGetField = null;
         saState = 0;
         super.visit(obj);
@@ -369,9 +375,6 @@ public class UnreadFields extends OpcodeStackDetector {
 
     UnreadFieldsData data = new UnreadFieldsData();
     int saState;
-
-    private final ReflectiveAccessTracker reflectiveAccessTracker = new ReflectiveAccessTracker();
-    private ReflectiveFieldAccessorBuilder currentReflectiveField = null;
 
     @Override
     public void sawOpcode(int seen) {
@@ -426,6 +429,8 @@ public class UnreadFields extends OpcodeStackDetector {
             saState = 0;
         }
 
+        // Check whether this static field assignment occurs immediately after the instantiation of a reflective accessor.
+        // If so, register this accessor with the Tracker so that all accesses performed through it can be monitored.
         if (seen == Const.PUTSTATIC && currentReflectiveField != null
                 && currentReflectiveField.getAssignmentExpectedAtPC() == getPC()) {
             String dottedClassName = ClassName.toDottedClassName(getClassConstantOperand());
@@ -436,6 +441,8 @@ public class UnreadFields extends OpcodeStackDetector {
             reflectiveAccessTracker.newAccessorDeclared(accessorBuilder);
             currentReflectiveField = null;
         }
+
+        // ---- Mark instantiations of new reflective accessors ----
 
         if (seen == Const.INVOKESTATIC && "java/util/concurrent/atomic/AtomicReferenceFieldUpdater".equals(getClassConstantOperand())
                 && "newUpdater".equals(getNameConstantOperand())) {
@@ -490,16 +497,18 @@ public class UnreadFields extends OpcodeStackDetector {
             }
         }
 
+        // ---- Register invocations of reflective accessors ----
+
         if (seen == Const.INVOKEVIRTUAL
                 && ("java/util/concurrent/atomic/AtomicReferenceFieldUpdater".equals(getClassConstantOperand())
                         || "java/util/concurrent/atomic/AtomicLongFieldUpdater".equals(getClassConstantOperand())
                         || "java/util/concurrent/atomic/AtomicIntegerFieldUpdater".equals(getClassConstantOperand()))) {
+            XField accessorField = stack.getStackItem(stack.getStackDepth() - 1).getXField();
             String invocation = getNameConstantOperand();
-            final XField accessorField = stack.getStackItem(stack.getStackDepth() - 1).getXField();
             if (accessorField != null) {
-                AtomicUpdaterInvocation newInvocation = AtomicUpdaterInvocation.create(accessorField, invocation);
-                if (newInvocation != null) {
-                    reflectiveAccessTracker.registerReflectiveInvocation(newInvocation);
+                AccessType accessType = AtomicUpdaterInvocation.resolveInvocationType(invocation);
+                if (accessType != null) {
+                    reflectiveAccessTracker.registerReflectiveInvocation(new AtomicUpdaterInvocation(accessorField, accessType));
                 } else if (DEBUG) {
                     System.out.printf("Unresolved invocation of: %s.%s", getClassConstantOperand(), invocation);
                 }
@@ -509,29 +518,32 @@ public class UnreadFields extends OpcodeStackDetector {
         }
 
         if (seen == Const.INVOKEVIRTUAL && "java/lang/invoke/MethodHandle".equals(getClassConstantOperand())) {
-            final int stackDepth = stack.getStackDepth();
-            final XField accessorField = stack.getStackItem(stackDepth - 1).getXField();
+            int stackDepth = stack.getStackDepth();
+            XField accessorField = stack.getStackItem(stackDepth - 1).getXField();
+            String invocation = getNameConstantOperand();
             if (accessorField != null) {
-                reflectiveAccessTracker.registerReflectiveInvocation(new ReflectiveInvocation(accessorField));
+                if (MethodHandleInvocation.isValidInvocation(invocation)) {
+                    reflectiveAccessTracker.registerReflectiveInvocation(new MethodHandleInvocation(accessorField));
+                } else if (DEBUG) {
+                    System.out.printf("Unresolved invocation of: %s.%s", getClassConstantOperand(), invocation);
+                }
             } else if (DEBUG) {
-                System.out.printf("Could not find XField for invoked %s.%s%n", getClassConstantOperand(),
-                        getNameConstantOperand());
+                System.out.printf("Could not find XField for invoked %s.%s%n", getClassConstantOperand(), invocation);
             }
         }
 
         if (seen == Const.INVOKEVIRTUAL && "java/lang/invoke/VarHandle".equals(getClassConstantOperand())) {
-            final XField accessorField = stack.getStackItem(stack.getStackDepth() - 1).getXField();
+            XField accessorField = stack.getStackItem(stack.getStackDepth() - 1).getXField();
+            String invocation = getNameConstantOperand();
             if (accessorField != null) {
-                final VarHandleInvocation newInvocation = VarHandleInvocation.create(accessorField, getNameConstantOperand());
-                if (newInvocation != null) {
-                    reflectiveAccessTracker.registerReflectiveInvocation(newInvocation);
+                AccessType accessType = VarHandleInvocation.resolveInvocationType(invocation);
+                if (accessType != null) {
+                    reflectiveAccessTracker.registerReflectiveInvocation(new VarHandleInvocation(accessorField, accessType));
                 } else if (DEBUG) {
-                    System.out.printf("Unknown VarHandle method invoked: %s.%s", getClassConstantOperand(),
-                            getNameConstantOperand());
+                    System.out.printf("Unresolved invocation of: %s.%s", getClassConstantOperand(), invocation);
                 }
             } else if (DEBUG) {
-                System.out.printf("Could not find XField for invoked %s.%s%n", getClassConstantOperand(),
-                        getNameConstantOperand());
+                System.out.printf("Could not find XField for invoked %s.%s%n", getClassConstantOperand(), invocation);
             }
         }
 

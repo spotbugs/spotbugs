@@ -381,7 +381,7 @@ public class Issue2749 {
             // nothing else
         }
 
-        private static final AtomicReferenceFieldUpdater<WithAtomicUpdaters, DummyValue> REREFENCE_UPDATER =
+        private static final AtomicReferenceFieldUpdater<WithAtomicUpdaters, DummyValue> REFERENCE_UPDATER =
             AtomicReferenceFieldUpdater.newUpdater(WithAtomicUpdaters.class, DummyValue.class, "reflectiveObjectField");
 
         private static final AtomicIntegerFieldUpdater<WithAtomicUpdaters> INT_UPDATER =
@@ -397,7 +397,7 @@ public class Issue2749 {
 
         public void setReflectiveFields(DummyValue newObject, int newInt, long newLong) {
             try {
-                REREFENCE_UPDATER.weakCompareAndSet(this, null, newObject);
+                REFERENCE_UPDATER.weakCompareAndSet(this, null, newObject);
                 LONG_UPDATER.getAndSet(this, newLong);
                 INT_UPDATER.getAndIncrement(this);
             } catch (Throwable e) {

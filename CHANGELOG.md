@@ -5,6 +5,14 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
+
+### Added
+- Fix issue with false-positive UUF_UNUSED_FIELD reports for fields accessed via reflection ([#2749](https://github.com/spotbugs/spotbugs/issues/2749))
+- New `ReflectiveAccessTracker` to track fields accessed via reflection - such as VarHandle, MethodHandle or AtomicFieldUpdaters ([#3954](https://github.com/spotbugs/spotbugs/pull/3954))
+- For each such field we keep an `ReflectiveFieldAccessLog` and mark the read/write access. This information is used to produce UWF_UNWRITTEN_FIELD, URF_UNREAD_FIELD and UUF_UNUSED_FIELD bugs
+- New Test suite `Issue2749Test` testing the various Accessors and their access-method invocations - calling getters, setters and combined functions.
+- New `spotbugsTestCases/src/java11/Issue2749.java` file for testing.
+
 ### Refactor
 - Move internal usage of 'javax.annotation.Nonnull' to 'jakarta.annotation.NonNull'. ([#3858](https://github.com/spotbugs/spotbugs/pull/3858))
 - Move internal usage of 'javax.annotation.Nullable' to 'jakarta.annotation.Nullable'. ([#3861](https://github.com/spotbugs/spotbugs/pull/3861))
