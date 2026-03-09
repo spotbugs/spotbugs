@@ -5,14 +5,6 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2025-??-??
-
-### Added
-- Fix issue with false-positive UUF_UNUSED_FIELD reports for fields accessed via reflection ([#2749](https://github.com/spotbugs/spotbugs/issues/2749))
-- New `ReflectiveAccessTracker` to track fields accessed via reflection - such as VarHandle, MethodHandle or AtomicFieldUpdaters ([#3954](https://github.com/spotbugs/spotbugs/pull/3954))
-- For each such field we keep an `ReflectiveFieldAccessLog` and mark the read/write access. This information is used to produce UWF_UNWRITTEN_FIELD, URF_UNREAD_FIELD and UUF_UNUSED_FIELD bugs
-- New Test suite `Issue2749Test` testing the various Accessors and their access-method invocations - calling getters, setters and combined functions.
-- New `spotbugsTestCases/src/java11/Issue2749.java` file for testing.
-
 ### Refactor
 - Move internal usage of 'javax.annotation.Nonnull' to 'jakarta.annotation.NonNull'. ([#3858](https://github.com/spotbugs/spotbugs/pull/3858))
 - Move internal usage of 'javax.annotation.Nullable' to 'jakarta.annotation.Nullable'. ([#3861](https://github.com/spotbugs/spotbugs/pull/3861))
@@ -36,6 +28,11 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
     - `USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION` is reported when the backing collection of a lock can be altered by subclasses.
       (See [SEI CERT rule LCK00-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code) and [SEI CERT rule LCK04-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK04-J.+Do+not+synchronize+on+a+collection+view+if+the+backing+collection+is+accessible))
 - New detector `FindIncreasedAccessibilityOfMethods` for new bug type `IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY`. This detector reports a bug if a class increases the accessibility of overridden or hidden methods. (See [SEI CERT rule MET04-J](https://wiki.sei.cmu.edu/confluence/display/java/MET04-J.+Do+not+increase+the+accessibility+of+overridden+or+hidden+methods))
+- Fix issue with false-positive UUF_UNUSED_FIELD reports for fields accessed via reflection ([#2749](https://github.com/spotbugs/spotbugs/issues/2749))
+- New `ReflectiveAccessTracker` to track fields accessed via reflection - such as VarHandle, MethodHandle or AtomicFieldUpdaters ([#3954](https://github.com/spotbugs/spotbugs/pull/3954))
+    - For each such field we keep an `ReflectiveFieldAccessLog` and mark the read/write access. This information is used to produce UWF_UNWRITTEN_FIELD, URF_UNREAD_FIELD and UUF_UNUSED_FIELD bugs
+- New Test suite `Issue2749Test` testing the various Accessors and their access-method invocations - calling getters, setters and combined functions.
+- New `spotbugsTestCases/src/java11/Issue2749.java` file for testing.
 
 ### Fixed
 - Fix `DM_STRING_TOSTRING` false negative when `toString()` is chained before a method call (e.g., `s.toString().toLowerCase()`); multiple occurrences in the same method are now all reported ([#3966](https://github.com/spotbugs/spotbugs/issues/3966))
