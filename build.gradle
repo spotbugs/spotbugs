@@ -26,7 +26,7 @@ buildscript {
 }
 
 plugins {
-  id 'org.sonarqube' version '7.2.2.6593'
+  id 'org.sonarqube' version '7.2.3.7755'
   id 'org.gradle.crypto.checksum' version '1.4.0'
   id 'com.github.spotbugs' version '6.4.8'
   id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
