@@ -211,7 +211,7 @@ public class SignatureConverter {
      * @return the formatted version of that signature
      */
     public static String convertMethodSignature(MethodDescriptor methodDescriptor) {
-        return convertMethodSignature(methodDescriptor.getClassDescriptor().toDottedClassName(), methodDescriptor.getName(),
+        return convertMethodSignature(methodDescriptor.getClassDescriptor().getDottedClassName(), methodDescriptor.getName(),
                 methodDescriptor.getSignature());
     }
 

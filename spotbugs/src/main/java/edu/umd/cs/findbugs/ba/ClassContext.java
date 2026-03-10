@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
@@ -117,10 +117,13 @@ public class ClassContext {
         this.jclass = jclass;
         this.analysisContext = analysisContext;
         this.methodAnalysisObjectMap = new HashMap<>();
+
+        ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptor(jclass);
+
         try {
-            classInfo = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class,
-                    DescriptorFactory.createClassDescriptor(jclass));
+            classInfo = (ClassInfo) Global.getAnalysisCache().getClassAnalysis(XClass.class, classDescriptor);
         } catch (CheckedAnalysisException e) {
+            analysisContext.getLookupFailureCallback().reportMissingClass(classDescriptor, e);
             throw new AssertionError("No ClassInfo for " + jclass);
         }
     }
@@ -458,7 +461,7 @@ public class ClassContext {
     }
 
     @Nonnull
-    static public Set<Integer> getLoopExitBranches(Method method, MethodGen methodGen) {
+    public static Set<Integer> getLoopExitBranches(Method method, MethodGen methodGen) {
 
         XMethod xmethod = XFactory.createXMethod(methodGen);
         if (cachedLoopExits().containsKey(xmethod)) {

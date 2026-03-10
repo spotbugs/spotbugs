@@ -37,10 +37,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
@@ -204,16 +202,11 @@ public class FilterFilesTab extends Composite {
 
     protected FilterProvider createFilterProvider(TableViewer viewer, FilterKind kind, FindbugsPropertyPage page) {
         FilterProvider filterProvider = new FilterProvider(viewer, kind, propertyPage);
-        filterProvider.addListener(new Listener() {
-            @Override
-            public void handleEvent(Event event) {
-                refreshTables();
-            }
-        });
+        filterProvider.addListener(event -> refreshTables());
         return filterProvider;
     }
 
-    public static enum FilterKind {
+    public enum FilterKind {
         INCLUDE("property.includefilter") {
             @Override
             Map<String, Boolean> selectedPaths(UserPreferences u) {

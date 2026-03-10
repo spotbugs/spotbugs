@@ -1,6 +1,6 @@
 package sfBugs;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * Generates a false redundant null check warning.

@@ -149,7 +149,11 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
         boolean isAccessMethod;
 
-        String accessOwner, accessName, accessDesc;
+        String accessOwner;
+
+        String accessName;
+
+        String accessDesc;
 
         boolean accessForField;
 

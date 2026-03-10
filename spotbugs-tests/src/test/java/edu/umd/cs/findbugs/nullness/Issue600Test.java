@@ -5,10 +5,11 @@ import edu.umd.cs.findbugs.test.SpotBugsExtension;
 import edu.umd.cs.findbugs.test.SpotBugsRunner;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
+
+import java.nio.file.Path;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import java.nio.file.Paths;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -49,8 +50,8 @@ class Issue600Test {
 
     private BugCollection analyse(String clazz, SpotBugsRunner spotbugs) {
         return spotbugs.performAnalysis(
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue600/" + clazz + ".class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue600/MyAutocloseable.class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/issue600/IMyAutocloseable.class"));
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/issue600/" + clazz + ".class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/issue600/MyAutocloseable.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/issue600/IMyAutocloseable.class"));
     }
 }

@@ -90,6 +90,15 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void noBugWhenIssue3428() {
+        performAnalysis("multithreaded/primitivewrite/Issue3428.class");
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
+    }
+
+
+    @Test
     void noBugAtomicField() {
         performAnalysis("multithreaded/primitivewrite/AtomicField.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
@@ -264,6 +273,23 @@ class SharedVariableAtomicityDetectorTest extends AbstractIntegrationTest {
     @Test
     void noBugNotRealDependentOp() {
         performAnalysis("multithreaded/compoundoperation/NotRealCompoundOp.class");
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
+    }
+
+    @Test
+    void noBugNoCompoundOp() {
+        performAnalysis("multithreaded/compoundoperation/NoCompoundOp.class");
+        assertBugTypeCount(PRIMITIVE_BUG, 0);
+        assertBugTypeCount(WRITE_64BIT_BUG, 0);
+        assertBugTypeCount(OPS_BUG, 0);
+    }
+
+    @Test
+    void noBugInnerLocalVarFields() {
+        // Inner local vars
+        performAnalysis("multithreaded/compoundoperation/InnerLocalVarFields.class");
         assertBugTypeCount(PRIMITIVE_BUG, 0);
         assertBugTypeCount(WRITE_64BIT_BUG, 0);
         assertBugTypeCount(OPS_BUG, 0);

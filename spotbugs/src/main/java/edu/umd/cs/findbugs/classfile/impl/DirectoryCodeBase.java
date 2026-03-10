@@ -19,7 +19,11 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -151,7 +155,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase {
 
     InputStream openFile(String resourceName) throws IOException {
         File path = getFullPathOfResource(resourceName);
-        return new BufferedInputStream(new FileInputStream(path));
+        return new BufferedInputStream(Files.newInputStream(path.toPath()));
     }
 
     /**

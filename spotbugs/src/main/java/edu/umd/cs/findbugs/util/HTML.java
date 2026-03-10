@@ -77,11 +77,7 @@ public class HTML {
                 indent();
             } else if ("pre".equals(name)) {
                 inPre = false;
-            } else if ("ul".equals(name)) {
-                super.decrIndent();
-                writeLineSeparator();
-                indent();
-            } else if ("li".equals(name)) {
+            } else if ("ul".equals(name) || "li".equals(name)) {
                 super.decrIndent();
                 writeLineSeparator();
                 indent();

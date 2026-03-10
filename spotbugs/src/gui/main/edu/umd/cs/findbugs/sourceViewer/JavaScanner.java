@@ -25,22 +25,22 @@ import java.util.HashSet;
 import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
 
 public class JavaScanner {
-    public final static int NORMAL_TEXT = 0;
+    public static final int NORMAL_TEXT = 0;
 
-    public final static int COMMENT = 1;
+    public static final int COMMENT = 1;
 
-    public final static int JAVADOC = 2;
+    public static final int JAVADOC = 2;
 
-    public final static int KEYWORD = 3;
+    public static final int KEYWORD = 3;
 
-    public final static int QUOTE = 4;
+    public static final int QUOTE = 4;
 
-    public final static int EOF = -1;
+    public static final int EOF = -1;
 
     @StaticConstant
-    private final static HashSet<String> KEYWORDS = new HashSet<>();
+    private static final HashSet<String> KEYWORDS = new HashSet<>();
 
-    private final static int MAX_KEYWORD_LENGTH;
+    private static final int MAX_KEYWORD_LENGTH;
 
     static {
         String[] keywordList = new String[] { "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class",

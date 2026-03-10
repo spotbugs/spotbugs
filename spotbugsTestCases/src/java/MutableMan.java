@@ -1,6 +1,6 @@
 
 public class MutableMan {
-    static public int[] y = new int[1];
+    public static int[] y = new int[1];
 
     final int[] x = new int[1];
 

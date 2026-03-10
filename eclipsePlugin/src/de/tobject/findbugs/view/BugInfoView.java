@@ -42,8 +42,6 @@ import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
-import org.eclipse.swt.browser.OpenWindowListener;
-import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -156,7 +154,7 @@ public class BugInfoView extends AbstractFindbugsView {
         createRootComposite(parent);
 
         createAnnotationList(rootComposite);
-        //        initScrolledComposite(parent);
+        // initScrolledComposite(parent);
         createBrowser(rootComposite);
 
         // Add selection listener to detect click in problems view or bug tree view
@@ -187,12 +185,9 @@ public class BugInfoView extends AbstractFindbugsView {
             browser = new Browser(parent, SWT.NONE);
             browser.setLayoutData(data);
             browser.setBackground(parent.getBackground());
-            browser.addOpenWindowListener(new OpenWindowListener() {
-                @Override
-                public void open(WindowEvent event) {
-                    event.required = true; // Cancel opening of new windows
-                }
-            });
+            browser.addOpenWindowListener(event ->
+            // Cancel opening of new windows
+            event.required = true);
             browser.addLocationListener(new LocationListener() {
                 @Override
                 public void changed(LocationEvent event) {
@@ -584,7 +579,7 @@ public class BugInfoView extends AbstractFindbugsView {
         if (bug == null) {
             return;
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(removeHtmlMarkup(getHtml()));
         sb.append("\n\n");
         for (BugAnnotation ba : bug.getAnnotationsForMessage(true)) {

@@ -21,10 +21,10 @@ package edu.umd.cs.findbugs.classfile.impl;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
@@ -77,7 +77,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
                 throw new ResourceNotFoundException(resourceName);
             }
             inputStream = resource.openResource();
-            outputStream = new BufferedOutputStream(new FileOutputStream(tempFile));
+            outputStream = new BufferedOutputStream(Files.newOutputStream(tempFile.toPath()));
             IO.copy(inputStream, outputStream);
             outputStream.flush();
 

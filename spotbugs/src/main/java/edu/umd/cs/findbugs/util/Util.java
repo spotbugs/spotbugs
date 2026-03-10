@@ -20,16 +20,14 @@
 package edu.umd.cs.findbugs.util;
 
 import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -44,9 +42,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipFile;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.WillClose;
 import javax.annotation.WillCloseWhenClosed;
 import javax.annotation.WillNotClose;
@@ -132,20 +129,20 @@ public class Util {
         return UTF8.reader(in);
     }
 
-    public static Reader getFileReader(String filename) throws FileNotFoundException {
-        return getReader(new FileInputStream(filename));
+    public static Reader getFileReader(String filename) throws IOException {
+        return getReader(Files.newInputStream(Path.of(filename)));
     }
 
-    public static Reader getFileReader(File filename) throws FileNotFoundException {
-        return getReader(new FileInputStream(filename));
+    public static Reader getFileReader(File filename) throws IOException {
+        return getReader(Files.newInputStream(filename.toPath()));
     }
 
     public static Writer getWriter(@WillCloseWhenClosed OutputStream out) {
         return UTF8.writer(out);
     }
 
-    public static Writer getFileWriter(String filename) throws FileNotFoundException {
-        return getWriter(new FileOutputStream(filename));
+    public static Writer getFileWriter(String filename) throws IOException {
+        return getWriter(Files.newOutputStream(Path.of(filename)));
     }
 
     public static void closeSilently(@WillClose InputStream in) {
@@ -166,50 +163,6 @@ public class Util {
         try {
             if (in != null) {
                 in.close();
-            }
-        } catch (IOException e) {
-            assert true;
-        }
-    }
-
-    /**
-     * @deprecated Use try-with-resources instead. And basically {@link IOException} from {@link OutputStream#close()}
-     *             is not good to ignore.
-     */
-    @Deprecated
-    public static void closeSilently(@WillClose OutputStream out) {
-        try {
-            if (out != null) {
-                out.close();
-            }
-        } catch (IOException e) {
-            assert true;
-        }
-    }
-
-    /**
-     * @deprecated Use try-with-resources instead. And basically {@link IOException} from {@link OutputStream#close()}
-     *             is not good to ignore.
-     */
-    @Deprecated
-    public static void closeSilently(@WillClose Closeable out) {
-        try {
-            if (out != null) {
-                out.close();
-            }
-        } catch (IOException e) {
-            assert true;
-        }
-    }
-
-    /**
-     * @deprecated Use try-with-resources instead.
-     */
-    @Deprecated
-    public static void closeSilently(@WillClose ZipFile zip) {
-        try {
-            if (zip != null) {
-                zip.close();
             }
         } catch (IOException e) {
             assert true;

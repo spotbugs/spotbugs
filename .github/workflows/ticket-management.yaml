@@ -1,0 +1,32 @@
+name: Ticket Management
+on:
+  schedule:
+    # Run the check every day.
+    # We use the release date of the first SpotBugs release,
+    # just to avoid periods of high load.
+    # https://github.com/spotbugs/spotbugs/releases/tag/3.1.0
+    - cron: '25 10 * * *'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: true
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale-pr-and-issue:
+    # Mark stale issues and PRs, then close them 30 days later.
+    if: github.repository_owner == 'spotbugs'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/stale@b5d41d4e1d5dceea10e7104786b73624c18a190f # v10
+        with:
+          days-before-stale: 30
+          days-before-close: -1
+          stale-pr-label: 'Stale'
+          stale-issue-label: 'need info'
+          only-issue-labels: 'need info'
+          exempt-all-pr-assignees: true

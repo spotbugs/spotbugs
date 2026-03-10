@@ -16,6 +16,24 @@ class FindReturnRefTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void testInnerField() {
+        // issue #3283
+        performAnalysis("exposemutable/InnerField.class",
+                "exposemutable/InnerField$PreferenceTreeNode.class");
+
+        assertBugTypeCount("EI_EXPOSE_BUF", 0);
+        assertBugTypeCount("EI_EXPOSE_BUF2", 0);
+        assertBugTypeCount("EI_EXPOSE_REP", 1);
+        assertBugTypeCount("EI_EXPOSE_REP2", 0);
+        assertBugTypeCount("EI_EXPOSE_STATIC_BUF2", 0);
+        assertBugTypeCount("EI_EXPOSE_STATIC_REP2", 0);
+        assertBugTypeCount("MS_EXPOSE_BUF", 0);
+        assertBugTypeCount("MS_EXPOSE_REP", 0);
+
+        assertBugInMethodAtField("EI_EXPOSE_REP", "InnerField$PreferenceTreeNode", "getfParent", "fParent");
+    }
+
+    @Test
     void testFindReturnRefTestChecks() {
         performAnalysis("exposemutable/FindReturnRefTest.class");
 

@@ -33,6 +33,12 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.Confidence;
 
+/**
+ * Matcher for {@link BugInstance} that allows to match on various criteria such as bug type, class name, method name,
+ * field name, variable name, line number, confidence and JSP file.
+ * <p>
+ * This matcher is useful for unit tests that need to verify the presence of specific bugs in the code.
+ */
 public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
 
     private static final Pattern ANON_FUNCTION_SCALA_PATTERN = Pattern.compile("\\$\\$anonfun\\$([^\\$]+)\\$");

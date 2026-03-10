@@ -30,11 +30,11 @@ import java.io.UncheckedIOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
 import edu.umd.cs.findbugs.annotations.Confidence;
+import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.test.AnalysisRunner;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
@@ -73,20 +73,22 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
  */
 public abstract class AbstractIntegrationTest {
 
+    protected UserPreferences userPreferences;
+
     /**
      * Build prefix directories to search for classes
      */
     private static final List<Path> BUILD_CLASS_SEARCH_PREFIXES = List.of(
             // Build path if running command line build
-            Paths.get("build/classes/java/main"),
-            Paths.get("build/classes/groovy/main"),
+            Path.of("build/classes/java/main"),
+            Path.of("build/classes/groovy/main"),
             // Build path if running in Eclipse
-            Paths.get("classesEclipse"));
+            Path.of("classesEclipse"));
 
     private BugCollectionBugReporter bugReporter;
 
     private static Path getFindbugsTestCases() {
-        final Path p = Paths.get(SystemProperties.getProperty("spotbugsTestCases.home", "../spotbugsTestCases"));
+        final Path p = Path.of(SystemProperties.getProperty("spotbugsTestCases.home", "../spotbugsTestCases"));
         assertTrue(Files.exists(p), "'spotbugsTestCases' directory not found");
         assertTrue(Files.isDirectory(p));
         assertTrue(Files.isReadable(p));
@@ -129,11 +131,11 @@ public abstract class AbstractIntegrationTest {
             throw new UncheckedIOException(e);
         }
 
-        final Path dependencies = getFindbugsTestCases().resolve("build/spotbugs/auxclasspath/spotbugsMain");
+        final Path dependencies = getFindbugsTestCases().resolve("build/runtime-classpath.txt");
         try {
             final List<String> lines = Files.readAllLines(dependencies);
             for (String line : lines) {
-                Path path = Paths.get(line);
+                Path path = Path.of(line);
                 if (Files.isReadable(path)) {
                     runner.addAuxClasspathEntry(path);
                 }
@@ -146,7 +148,7 @@ public abstract class AbstractIntegrationTest {
         Path[] paths = Arrays.stream(analyzeMe)
                 .map(AbstractIntegrationTest::getFindbugsTestCasesFile)
                 .toArray(Path[]::new);
-        bugReporter = runner.run(paths);
+        bugReporter = runner.run(userPreferences, paths);
     }
 
     /**
@@ -249,6 +251,24 @@ public abstract class AbstractIntegrationTest {
     }
 
     /**
+     * Asserts that there are exactly the given number of bug instances with the given bug type in the given method.
+     * The match is checked according to {@link BugInstanceMatcher}.
+     *
+     * @param bugType the expected bug type
+     * @param className the expected class name. See {@link BugInstanceMatcher#BugInstanceMatcher(String, String, String, String, String, Integer, Integer, Confidence, String, List) BugInstanceMatcher's constructor} for details.
+     * @param method the expected method's name
+     * @param count the expected number of matches
+     */
+    protected final void assertBugInMethodCount(String bugType, String className, String method, int count) {
+        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .inClass(className)
+                .inMethod(method)
+                .build();
+        assertThat(getBugCollection(), containsExactly(count, matcher));
+    }
+
+    /**
      * Asserts that there is a bug instance with the given bug type in the given class in the given method.
      * The match is checked according to {@link BugInstanceMatcher}.
      *
@@ -322,6 +342,23 @@ public abstract class AbstractIntegrationTest {
                 .atField(fieldName)
                 .build();
         assertThat(getBugCollection(), hasItem(matcher));
+    }
+
+    /**
+     * Asserts that there are exactly zero bug instances with the given bug type in the given class at the given field.
+     * The match is checked according to {@link BugInstanceMatcher}.
+     *
+     * @param bugType the expected bug type
+     * @param className the expected class name. See {@link BugInstanceMatcher#BugInstanceMatcher(String, String, String, String, String, Integer, Integer, Confidence, String, List) BugInstanceMatcher's constructor} for details.
+     * @param fieldName the expected field's name
+     */
+    protected final void assertNoBugAtField(String bugType, String className, String fieldName) {
+        final BugInstanceMatcher matcher = new BugInstanceMatcherBuilder()
+                .bugType(bugType)
+                .inClass(className)
+                .atField(fieldName)
+                .build();
+        assertThat(getBugCollection(), containsExactly(0, matcher));
     }
 
     /**

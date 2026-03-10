@@ -19,10 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
@@ -45,7 +45,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * that memory, which means that the logger configuration is lost.
  */
 public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
-    private static final List<MethodDescriptor> methods = Arrays.asList(
+    private static final List<MethodDescriptor> methods = List.of(
             new MethodDescriptor("java/util/logging/Logger", "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;", true),
             new MethodDescriptor("java/util/logging/Logger", "getLogger", "(Ljava/lang/String;Ljava/lang/String;)Ljava/util/logging/Logger;", true));
 
@@ -117,7 +117,7 @@ public class LostLoggerDueToWeakReference extends OpcodeStackDetector {
             if ("java/util/logging/Logger".equals(getClassConstantOperand())
                     && namesOfSetterMethods.contains(getNameConstantOperand())) {
                 int priority = HIGH_PRIORITY;
-                if (getMethod().isStatic() && "main".equals(getMethodName()) && "([Ljava/lang/String;)V".equals(getMethodSig())) {
+                if (MemberUtils.isMainMethod(getMethod())) {
                     priority = NORMAL_PRIORITY;
                 }
 

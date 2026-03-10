@@ -148,7 +148,8 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
      * ----------------------------------------------------------------------
      */
 
-    private BasicBlock entry, exit;
+    private BasicBlock entry;
+    private BasicBlock exit;
 
     private int flags;
 

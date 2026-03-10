@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.Field;
@@ -514,8 +515,7 @@ public class FindDeadLocalStores implements Detector {
                 if (ins instanceof IINC) {
                     // special handling of IINC
 
-                    if ("main".equals(method.getName()) && method.isStatic()
-                            && "([Ljava/lang/String;)V".equals(method.getSignature())) {
+                    if (MemberUtils.isMainMethod(method)) {
                         propertySet.addProperty(DeadLocalStoreProperty.DEAD_INCREMENT_IN_MAIN);
                     }
 

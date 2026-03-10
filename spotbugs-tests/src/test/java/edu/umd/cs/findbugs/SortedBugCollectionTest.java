@@ -5,10 +5,10 @@ import org.objectweb.asm.tree.ClassNode;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class SortedBugCollectionTest {
+class SortedBugCollectionTest {
 
     @Test
-    public void addBugInstanceTwiceShallNotIncreaseProjectStats() {
+    void addBugInstanceTwiceShallNotIncreaseProjectStats() {
         BugCollection bc = new SortedBugCollection();
         BugInstance bug = new BugInstance("TEST", Priorities.NORMAL_PRIORITY);
         ClassNode classNode = new ClassNode();

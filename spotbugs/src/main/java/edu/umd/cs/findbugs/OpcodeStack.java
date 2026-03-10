@@ -38,8 +38,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import javax.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.Const;
@@ -817,23 +817,6 @@ public class OpcodeStack {
             return signature.startsWith("[");
         }
 
-        @Deprecated
-        public String getElementSignature() {
-            if (!isArray()) {
-                return signature;
-            } else {
-                int pos = 0;
-                int len = signature.length();
-                while (pos < len) {
-                    if (signature.charAt(pos) != '[') {
-                        break;
-                    }
-                    pos++;
-                }
-                return signature.substring(pos);
-            }
-        }
-
         public boolean isNonNegative() {
             if (specialKind == NON_NEGATIVE) {
                 return true;
@@ -865,12 +848,6 @@ public class OpcodeStack {
          */
         public Object getConstant() {
             return constValue;
-        }
-
-        /** Use getXField instead */
-        @Deprecated
-        public FieldAnnotation getFieldAnnotation() {
-            return FieldAnnotation.fromXField(getXField());
         }
 
         public XField getXField() {
@@ -968,7 +945,8 @@ public class OpcodeStack {
             if (getSpecialKind() == Item.SERVLET_OUTPUT) {
                 return true;
             }
-            if ("Ljavax/servlet/ServletOutputStream;".equals(getSignature())) {
+            if ("Ljavax/servlet/ServletOutputStream;".equals(getSignature())
+                    || "Ljakarta/servlet/ServletOutputStream;".equals(getSignature())) {
                 return true;
             }
             XMethod writingToSource = getReturnValueOf();
@@ -1307,7 +1285,8 @@ public class OpcodeStack {
     public void sawOpcode(DismantleBytecode dbc, int seen) {
         int register;
         String signature;
-        Item it, it2;
+        Item it;
+        Item it2;
         Constant cons;
 
         // System.out.printf("%3d %12s%s%n", dbc.getPC(), Const.getOpcodeName(seen),
@@ -2373,7 +2352,8 @@ public class OpcodeStack {
     }
 
     private void handleDup2() {
-        Item it, it2;
+        Item it;
+        Item it2;
         it = pop();
         if (it.getSize() == 2) {
             push(it);
@@ -2627,7 +2607,8 @@ public class OpcodeStack {
                 return;
             }
         } else if (seen == Const.INVOKEINTERFACE && "getParameter".equals(method)
-                && "javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)) {
+                && ("javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)
+                        || "jakarta/servlet/http/HttpServletRequest".equals(clsName) || "jakarta/servlet/http/ServletRequest".equals(clsName))) {
             Item requestParameter = pop();
             pop();
             Item result = new Item("Ljava/lang/String;");
@@ -2643,7 +2624,8 @@ public class OpcodeStack {
             push(result);
             return;
         } else if (seen == Const.INVOKEINTERFACE && "getQueryString".equals(method)
-                && "javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)) {
+                && ("javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)
+                        || "jakarta/servlet/http/HttpServletRequest".equals(clsName) || "jakarta/servlet/http/ServletRequest".equals(clsName))) {
             pop();
             Item result = new Item("Ljava/lang/String;");
             result.setServletParameterTainted();
@@ -2652,7 +2634,8 @@ public class OpcodeStack {
             push(result);
             return;
         } else if (seen == Const.INVOKEINTERFACE && "getHeader".equals(method)
-                && "javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)) {
+                && ("javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)
+                        || "jakarta/servlet/http/HttpServletRequest".equals(clsName) || "jakarta/servlet/http/ServletRequest".equals(clsName))) {
             /* Item requestParameter = */pop();
             pop();
             Item result = new Item("Ljava/lang/String;");
@@ -2780,8 +2763,9 @@ public class OpcodeStack {
             i.setSpecialKind(Item.HASHCODE_INT);
             push(i);
         } else if (topIsTainted
-                && (method.startsWith("encode") && "javax/servlet/http/HttpServletResponse".equals(clsName) || "trim".equals(method)
-                        && "java/lang/String".equals(clsName))) {
+                && (method.startsWith("encode") && ("javax/servlet/http/HttpServletResponse".equals(clsName)
+                        || "jakarta/servlet/http/HttpServletResponse".equals(clsName))
+                        || "trim".equals(method) && "java/lang/String".equals(clsName))) {
             Item i = new Item(pop());
             i.setSpecialKind(Item.SERVLET_REQUEST_TAINTED);
             i.injection = injection;
@@ -3279,7 +3263,7 @@ public class OpcodeStack {
         if (stackOffset < 0 || stackOffset >= stack.size()) {
             AnalysisContext.logError("Can't get stack offset " + stackOffset + " from " + stack.toString() + " @ " + v.getPC()
                     + " in " + fullyQualifiedMethodName, new IllegalArgumentException(stackOffset
-                            + " is not a value stack offset"));
+                            + " is not a valid stack offset"));
             return new Item("Lfindbugs/OpcodeStackError;");
 
         }
@@ -3305,7 +3289,7 @@ public class OpcodeStack {
         if (stackOffset < 0 || stackOffset >= stack.size()) {
             AnalysisContext.logError("Can't get replace stack offset " + stackOffset + " from " + stack.toString() + " @ " + v.getPC()
                     + " in " + v.getFullyQualifiedMethodName(), new IllegalArgumentException(stackOffset
-                            + " is not a value stack offset"));
+                            + " is not a valid stack offset"));
 
         }
         int tos = stack.size() - 1;

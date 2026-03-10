@@ -20,7 +20,7 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;

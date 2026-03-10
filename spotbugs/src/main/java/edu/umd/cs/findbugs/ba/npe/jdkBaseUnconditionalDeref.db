@@ -1506,6 +1506,7 @@ java.nio.file.Files,write,(Ljava/nio/file/Path;Ljava/lang/Iterable;Ljava/nio/cha
 java.nio.file.Files,write,(Ljava/nio/file/Path;[B[Ljava/nio/file/OpenOption;)Ljava/nio/file/Path;,9|7
 java.nio.file.LinkPermission,<init>,(Ljava/lang/String;)V,1|1
 java.nio.file.LinkPermission,<init>,(Ljava/lang/String;Ljava/lang/String;)V,1|1
+java.nio.file.Path,of,(Ljava/net/URI;)Ljava/nio/file/Path;,9|1
 java.nio.file.Paths,get,(Ljava/net/URI;)Ljava/nio/file/Path;,9|1
 java.nio.file.SimpleFileVisitor,postVisitDirectory,(Ljava/lang/Object;Ljava/io/IOException;)Ljava/nio/file/FileVisitResult;,1|1
 java.nio.file.SimpleFileVisitor,preVisitDirectory,(Ljava/lang/Object;Ljava/nio/file/attribute/BasicFileAttributes;)Ljava/nio/file/FileVisitResult;,1|3

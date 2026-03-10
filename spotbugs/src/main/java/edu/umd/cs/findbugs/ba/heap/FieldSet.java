@@ -28,7 +28,8 @@ import edu.umd.cs.findbugs.ba.XField;
  * @author David Hovemeyer
  */
 public class FieldSet {
-    private boolean isTop, isBottom;
+    private boolean isTop;
+    private boolean isBottom;
 
     private final Set<XField> fieldSet;
 

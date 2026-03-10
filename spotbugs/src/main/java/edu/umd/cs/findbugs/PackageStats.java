@@ -28,7 +28,7 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import edu.umd.cs.findbugs.xml.XMLOutput;

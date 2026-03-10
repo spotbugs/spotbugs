@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -49,7 +48,7 @@ public class ZipSourceFileDataSource implements SourceFileDataSource {
     @Override
     public InputStream open() throws IOException {
         if (zipEntry == null) {
-            throw new FileNotFoundException("No zip entry for " + entryName);
+            throw new IOException("No zip entry for " + entryName);
         }
         return zipFile.getInputStream(zipEntry);
     }

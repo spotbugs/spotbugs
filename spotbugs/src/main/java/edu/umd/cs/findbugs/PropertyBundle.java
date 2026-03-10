@@ -29,7 +29,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.io.IO;
 
 /**
  * @author pugh
@@ -105,14 +104,10 @@ public class PropertyBundle {
         if (url == null) {
             return;
         }
-        InputStream in = null;
-        try {
-            in = url.openStream();
+        try (InputStream in = url.openStream()) {
             properties.load(in);
         } catch (IOException e) {
             AnalysisContext.logError("Unable to load properties from " + url, e);
-        } finally {
-            IO.close(in);
         }
     }
 

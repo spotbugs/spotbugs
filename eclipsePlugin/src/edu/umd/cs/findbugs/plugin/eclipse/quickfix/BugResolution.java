@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -64,7 +64,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  */
 public abstract class BugResolution extends WorkbenchMarkerResolution {
 
-    static private final String MISSING_BUG_INSTANCE = "This bug is no longer in the system. "
+    private static final String MISSING_BUG_INSTANCE = "This bug is no longer in the system. "
             + "The bugs somehow got out of sync with the memory representation. "
             + "Try running SpotBugs again. If that does not work, check the error log.";
 

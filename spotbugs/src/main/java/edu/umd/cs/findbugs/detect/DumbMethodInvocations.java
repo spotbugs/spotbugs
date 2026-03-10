@@ -34,6 +34,10 @@ import edu.umd.cs.findbugs.detect.BuildStringPassthruGraph.StringPassthruDatabas
 public class DumbMethodInvocations implements Detector {
     private static final MethodDescriptor STRING_SUBSTRING =
             new MethodDescriptor("java/lang/String", "substring", "(I)Ljava/lang/String;");
+    private static final MethodDescriptor STRINGBUILDER_SUBSTRING =
+            new MethodDescriptor("java/lang/StringBuilder", "substring", "(I)Ljava/lang/String;");
+    private static final MethodDescriptor STRINGBUFFER_SUBSTRING =
+            new MethodDescriptor("java/lang/StringBuffer", "substring", "(I)Ljava/lang/String;");
 
 
     private final BugReporter bugReporter;
@@ -120,7 +124,9 @@ public class DumbMethodInvocations implements Detector {
                 }
             }
 
-            if (md.equals(STRING_SUBSTRING)) {
+            if (md.equals(STRING_SUBSTRING)
+                    || md.equals(STRINGBUILDER_SUBSTRING)
+                    || md.equals(STRINGBUFFER_SUBSTRING)) {
 
                 Constant operandValue = frame.getTopValue();
                 if (!operandValue.isConstantInteger()) {
@@ -128,7 +134,12 @@ public class DumbMethodInvocations implements Detector {
                 }
                 int v = operandValue.getConstantInt();
                 if (v == 0) {
-                    bugAccumulator.accumulateBug(new BugInstance(this, "DMI_USELESS_SUBSTRING", NORMAL_PRIORITY)
+                    String bugType = "DMI_USELESS_SUBSTRING";
+                    if (md.equals(STRINGBUILDER_SUBSTRING) || md.equals(STRINGBUFFER_SUBSTRING)) {
+                        bugType = "DMI_MISLEADING_SUBSTRING";
+                    }
+
+                    bugAccumulator.accumulateBug(new BugInstance(this, bugType, NORMAL_PRIORITY)
                             .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
                 }
 

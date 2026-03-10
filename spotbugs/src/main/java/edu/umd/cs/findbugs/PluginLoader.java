@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -32,6 +31,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,12 +50,11 @@ import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.util.SecurityManagerHandler;
@@ -150,34 +149,6 @@ public class PluginLoader implements AutoCloseable {
     static {
         LOG.debug("Debugging plugin loading. SpotBugs version {}", Version.VERSION_STRING);
         loadInitialPlugins();
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param url
-     *            the URL of the plugin Jar file
-     * @throws PluginException
-     *             if the plugin cannot be fully loaded
-     */
-    @Deprecated
-    public PluginLoader(URL url) throws PluginException {
-        this(url, toUri(url), null, false, true);
-    }
-
-
-    /**
-     * Constructor.
-     *
-     * @param url
-     *            the URL of the plugin Jar file
-     * @param parent
-     *            the parent classloader
-     * @deprecated Use {@link #PluginLoader(URL,URI,ClassLoader,boolean,boolean)} instead
-     */
-    @Deprecated
-    public PluginLoader(URL url, ClassLoader parent) throws PluginException {
-        this(url, toUri(url), parent, false, true);
     }
 
     public boolean hasParent() {
@@ -345,14 +316,10 @@ public class PluginLoader implements AutoCloseable {
         File f = new File(url.getPath());
         // default: try with jar/zip/war etc files
         if (!f.isDirectory()) {
-            JarInputStream jis = null;
-            try {
-                jis = new JarInputStream(url.openStream());
+            try (JarInputStream jis = new JarInputStream(url.openStream())) {
                 mf = jis.getManifest();
             } catch (IOException ioe) {
                 throw new PluginException("Failed loading manifest for plugin jar: " + url, ioe);
-            } finally {
-                IO.close(jis);
             }
         } else {
             // If this is not a jar/zip/war etc file, can we can load from directory?
@@ -360,7 +327,7 @@ public class PluginLoader implements AutoCloseable {
             // 3rd party FB plugin projects in Eclipse without packaging them to jars at all)
             File manifest = guessManifest(f);
             if (manifest != null) {
-                try (FileInputStream is = new FileInputStream(manifest)) {
+                try (InputStream is = Files.newInputStream(manifest.toPath())) {
                     mf = new Manifest(is);
                 } catch (IOException e) {
                     throw new PluginException("Failed loading manifest for plugin jar: " + url, e);
@@ -644,18 +611,15 @@ public class PluginLoader implements AutoCloseable {
                 return null;
             }
             assert findbugsJar.getProtocol().equals("file");
-            try (ZipFile jarFile = new ZipFile(new File(findbugsJar.toURI()))) {
-                ZipEntry entry = jarFile.getEntry(slashedResourceName);
-                if (entry != null) {
-                    return resourceFromPlugin(findbugsJar, slashedResourceName);
-                }
-            } catch (ZipException e) {
-                LOG.warn("Failed to load resourceFromFindbugsJar: {} is not valid zip file.", findbugsJar, e);
+            URL resourceUrl = resourceFromPlugin(findbugsJar, slashedResourceName);
+            try {
+                resourceUrl.openConnection().getInputStream().close();
+                return resourceUrl;
             } catch (IOException e) {
                 LOG.warn("Failed to load resourceFromFindbugsJar: IOException was thrown at zip file {} loading.",
                         findbugsJar, e);
             }
-        } catch (MalformedURLException | URISyntaxException e) {
+        } catch (MalformedURLException e) {
             LOG.warn("Failed to load resourceFromFindbugsJar: Resource name is {}", slashedResourceName, e);
         }
         return null;
@@ -688,7 +652,7 @@ public class PluginLoader implements AutoCloseable {
             File f = new File(new File(new File(findBugsHome), "etc"), name);
             if (f.canRead()) {
                 try {
-                    return f.toURL();
+                    return f.toURI().toURL();
                 } catch (MalformedURLException e) {
                     // ignore it
                     assert true;
@@ -1095,7 +1059,7 @@ public class PluginLoader implements AutoCloseable {
         cannotDisable = Boolean.parseBoolean(pluginDescriptor.valueOf("/FindbugsPlugin/@cannotDisable"));
 
         String de = pluginDescriptor.valueOf("/FindbugsPlugin/@defaultenabled");
-        if (de != null && "false".equals(de.toLowerCase().trim())) {
+        if (de != null && "false".equalsIgnoreCase(de.trim())) {
             optionalPlugin = true;
         }
         if (optionalPlugin) {

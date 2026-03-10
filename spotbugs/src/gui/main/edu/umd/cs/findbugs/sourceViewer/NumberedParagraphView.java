@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.gui2.Driver;
 // Code inspired by http://www.developer.com/java/other/article.php/3318421
 
 class NumberedParagraphView extends ParagraphView {
-    public final static int NUMBERS_WIDTH = (int) Driver.getFontSize() * 3 + 9;
+    public static final int NUMBERS_WIDTH = (int) Driver.getFontSize() * 3 + 9;
 
     HighlightInformation highlight;
 

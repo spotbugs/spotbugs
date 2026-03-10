@@ -29,7 +29,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.SystemProperties;
@@ -164,7 +164,8 @@ public class SourceInfoMap {
      * A range of source lines.
      */
     public static class SourceLineRange {
-        private final Integer start, end;
+        private final Integer start;
+        private final Integer end;
 
         /**
          * Constructor for a single line.

@@ -40,7 +40,11 @@ public class FindDoubleCheck extends OpcodeStackDetector {
 
     int stage = 0;
 
-    int startPC, endPC, assignPC;
+    int startPC;
+
+    int endPC;
+
+    int assignPC;
 
     int count;
 

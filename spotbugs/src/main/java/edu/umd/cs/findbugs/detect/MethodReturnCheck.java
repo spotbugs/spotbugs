@@ -19,6 +19,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
+import java.util.Set;
 
 import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -65,6 +66,22 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
         INVOKE_OPCODE_SET.set(Const.INVOKESTATIC);
         INVOKE_OPCODE_SET.set(Const.INVOKEVIRTUAL);
     }
+
+    private static final Set<String> MOCKITO_VOID_STUBBING_METHODS = Set.of(
+            "doAnswer",
+            "doCallRealMethod",
+            "doNothing",
+            "doReturn",
+            "doThrow",
+            "verify");
+
+    private static final Set<String> BDD_MOCKITO_VOID_STUBBING_METHODS = Set.of(
+            "then",
+            "willThrow",
+            "willReturn",
+            "willDoNothing",
+            "willCallRealMethod",
+            "willAnswer");
 
     boolean previousOpcodeWasNEW;
 
@@ -207,7 +224,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
             callPC = getPC();
             callSeen = XFactory.createReferencedXMethod(this);
             state = State.SAW_INVOKE;
-            sawMockitoInvoke |= isCallMockitoVerifyInvocation(callSeen);
+            sawMockitoInvoke |= (isCallMockitoInvocation(callSeen) || isCallBDDMockitoInvocation(callSeen));
             if (DEBUG) {
                 System.out.println("  invoking " + callSeen);
             }
@@ -236,8 +253,16 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
 
     }
 
-    private boolean isCallMockitoVerifyInvocation(XMethod method) {
-        return method.isStatic() && "verify".equals(method.getName()) && "org.mockito.Mockito".equals(method.getClassName());
+    private boolean isCallMockitoInvocation(XMethod method) {
+        return method.isStatic()
+                && "org.mockito.Mockito".equals(method.getClassName())
+                && MOCKITO_VOID_STUBBING_METHODS.contains(method.getName());
+    }
+
+    private boolean isCallBDDMockitoInvocation(XMethod method) {
+        return method.isStatic()
+                && "org.mockito.BDDMockito".equals(method.getClassName())
+                && BDD_MOCKITO_VOID_STUBBING_METHODS.contains(method.getName());
     }
 
     /**

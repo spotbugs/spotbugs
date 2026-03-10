@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs.ba.vna;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ACONST_NULL;

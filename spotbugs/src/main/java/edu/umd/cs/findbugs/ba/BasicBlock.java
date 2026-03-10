@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.CodeExceptionGen;
@@ -126,17 +126,6 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 
     void setInJSRSubroutine(boolean inJSRSubroutine) {
         this.inJSRSubroutine = inJSRSubroutine;
-    }
-
-    /**
-     * Get the basic block's integer label.
-     *
-     * @deprecated call getLabel() instead
-     * @return the BasicBlock's integer label
-     */
-    @Deprecated
-    public int getId() {
-        return getLabel();
     }
 
     @Override

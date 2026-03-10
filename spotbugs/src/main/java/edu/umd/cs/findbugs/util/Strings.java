@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.util;
 
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -33,45 +32,6 @@ import org.apache.commons.text.StringEscapeUtils;
  * @author Brian Cole
  */
 public class Strings {
-
-    /**
-     * This is intended to be semantically equivalent to
-     * <code>source.replace(find, repl)</code> but also compatible with JDK 1.4.
-     *
-     * @param source
-     *            The String on which to operate
-     * @param find
-     *            The literal substring to be replaced
-     * @param repl
-     *            The literal replacement substring
-     * @return The resultant String after substitution
-     * @throws NullPointerException
-     *             if any of the arguments are null
-     * @throws IllegalArgumentException
-     *             if <code>find</code> has zero length
-     * @see java.lang.String#replace(CharSequence target, CharSequence
-     *      replacement)
-     */
-    @Deprecated
-    public static String replace(String source, String find, String repl) {
-        return source.replace(find, repl);
-    }
-
-    /**
-     * This is intended to be equivalent to <code>Arrays.toString(a)</code> but
-     * also compatible with JDK 1.4. This concatenates the results of calling
-     * String.valueOf() on each element of the array, so this won't work well
-     * for multi-dimensional arrays.
-     *
-     * @see java.lang.String#valueOf(Object)
-     * @see java.util.Arrays#toString(Object[])
-     * @see java.util.Arrays#deepToString(Object[])
-     */
-    @Deprecated
-    public static String toString(final Object[] a) {
-        return Arrays.toString(a);
-    }
-
     /**
      * Trim trailing comma from given string.
      *
@@ -191,7 +151,7 @@ public class Strings {
 
     private static Pattern unescapePattern = null;
 
-    private static volatile boolean paternIsInitialized = false;
+    private static volatile boolean patternIsInitialized = false;
 
     private static final Object unescapeInitLockObject = new Object();
 
@@ -200,12 +160,12 @@ public class Strings {
      * invoked automatically the first time a string is unescaped.
      */
     public static boolean initializeUnescapePattern() {
-        if (paternIsInitialized == true) {
+        if (patternIsInitialized == true) {
             return true;
         }
 
         synchronized (unescapeInitLockObject) {
-            if (paternIsInitialized == true) {
+            if (patternIsInitialized == true) {
                 return true;
             }
 
@@ -220,7 +180,7 @@ public class Strings {
                         + "failed to compile.  Exception:  " + pse.toString());
                 return false;
             }
-            paternIsInitialized = true;
+            patternIsInitialized = true;
         }
         return true;
     }

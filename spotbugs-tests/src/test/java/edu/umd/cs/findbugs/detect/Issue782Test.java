@@ -13,6 +13,6 @@ class Issue782Test extends AbstractIntegrationTest {
 
         assertBugTypeCount("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", 1);
 
-        assertBugAtLine("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", 27);
+        assertBugAtLine("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", 28);
     }
 }

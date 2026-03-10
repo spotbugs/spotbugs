@@ -1,6 +1,6 @@
 package bugIdeas;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import com.google.common.base.Preconditions;
 

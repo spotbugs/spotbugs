@@ -80,16 +80,6 @@ public class JUnitDetectorAdapter implements Detector2 {
     /*
      * (non-Javadoc)
      *
-     * @see edu.umd.cs.findbugs.Detector2#getDetectorClassName()
-     */
-    @Override
-    public String getDetectorClassName() {
-        return this.getClass().getName();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
      * @see
      * edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile
      * .ClassDescriptor)

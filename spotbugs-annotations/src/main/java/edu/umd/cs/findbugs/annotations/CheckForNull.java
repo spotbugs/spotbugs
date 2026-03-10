@@ -33,7 +33,7 @@ import javax.annotation.meta.When;
  *
  * When this annotation is applied to a method it applies to the method return
  * value.
- **/
+ */
 @Documented
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE })
 @Retention(RetentionPolicy.CLASS)

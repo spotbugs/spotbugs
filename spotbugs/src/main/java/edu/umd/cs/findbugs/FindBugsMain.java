@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.lang.reflect.Method;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**

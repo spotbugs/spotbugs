@@ -1,17 +1,17 @@
 public class Doublecheck {
-    static private Object o;
+    private static Object o;
 
-    static private volatile Object v;
+    private static volatile Object v;
 
-    static private String s;
+    private static String s;
 
-    static private int i;
+    private static int i;
 
-    static private long j;
+    private static long j;
 
-    static private Object lock = new Object();
+    private static Object lock = new Object();
 
-    static public Object standardDoubleCheck() {
+    public static Object standardDoubleCheck() {
         if (o == null) {
             synchronized (lock) {
                 if (o == null)
@@ -21,7 +21,7 @@ public class Doublecheck {
         return o;
     }
 
-    static public Object volatileDoubleCheck() {
+    public static Object volatileDoubleCheck() {
         if (v == null) {
             synchronized (lock) {
                 if (v == null)
@@ -31,7 +31,7 @@ public class Doublecheck {
         return o;
     }
 
-    static public String stringDoubleCheck() {
+    public static String stringDoubleCheck() {
         if (s == null) {
             synchronized (lock) {
                 if (s == null)
@@ -41,7 +41,7 @@ public class Doublecheck {
         return s;
     }
 
-    static public int intDoubleCheck() {
+    public static int intDoubleCheck() {
         if (i == 0) {
             synchronized (lock) {
                 if (i == 0)
@@ -51,7 +51,7 @@ public class Doublecheck {
         return i;
     }
 
-    static public long longDoubleCheck() {
+    public static long longDoubleCheck() {
         if (j == 0) {
             synchronized (lock) {
                 if (j == 0)

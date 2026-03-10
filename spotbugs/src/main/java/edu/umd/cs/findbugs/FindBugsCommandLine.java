@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine;

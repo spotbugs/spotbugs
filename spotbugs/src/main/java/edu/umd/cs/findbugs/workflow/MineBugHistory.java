@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs.workflow;
 
-import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -474,7 +475,7 @@ public class MineBugHistory {
 
         try {
             if (argCount < args.length) {
-                out = UTF8.printStream(new FileOutputStream(args[argCount++]), true);
+                out = UTF8.printStream(Files.newOutputStream(Path.of(args[argCount++])), true);
             }
             mineBugHistory.dump(out);
         } finally {

@@ -156,7 +156,7 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         return dialog;
     }
 
-    abstract protected void configureDialog(FileDialog dialog);
+    protected abstract void configureDialog(FileDialog dialog);
 
     protected String openFileDialog(FileDialog dialog) {
         return dialog.open();
@@ -231,7 +231,7 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         viewer.refresh(true);
     }
 
-    abstract protected IStatus validate();
+    protected abstract IStatus validate();
 
     public void remove(IPathElement holder) {
         paths.remove(holder);

@@ -6,7 +6,7 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 public class Bug1487083 {
     @NoWarning("MS_SHOULD_BE_FINAL")
     @ExpectWarning("MS_SHOULD_BE_REFACTORED_TO_BE_FINAL")
-    static public int falsePos;
+    public static int falsePos;
 
     static {
         try {

@@ -76,12 +76,8 @@ public class EclipseGuiCallback implements IGuiCallback {
 
     @Override
     public void showMessageDialog(final String message) {
-        FindbugsPlugin.getShell().getDisplay().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                MessageDialog.openInformation(FindbugsPlugin.getShell(), getDialogTitle(), message);
-            }
-        });
+        FindbugsPlugin.getShell().getDisplay()
+                .asyncExec(() -> MessageDialog.openInformation(FindbugsPlugin.getShell(), getDialogTitle(), message));
     }
 
     @Override
@@ -97,19 +93,13 @@ public class EclipseGuiCallback implements IGuiCallback {
     @Override
     public int showConfirmDialog(final String message, final String title, final String ok, final String cancel) {
         final AtomicInteger result = new AtomicInteger(-1);
-        FindbugsPlugin.getShell().getDisplay().syncExec(new Runnable() {
-            @Override
-            public void run() {
-                MessageDialog dialog = new MessageDialog(FindbugsPlugin.getShell(), getDialogTitle(title), null, message, MessageDialog.NONE,
-                        new String[] { ok, cancel }, 0) /*
-                                                         * { { // the code below
-                                                         * requires Eclipse 3.5
-                                                         * setShellStyle
-                                                         * (getShellStyle() |
-                                                         * SWT.SHEET); } }
-                                                         */;
-                result.set(dialog.open());
-            }
+        FindbugsPlugin.getShell().getDisplay().syncExec(() -> {
+            MessageDialog dialog = new MessageDialog(FindbugsPlugin.getShell(), getDialogTitle(title), null, message,
+                    MessageDialog.NONE, new String[] { ok, cancel }, 0);
+            /*
+             * { { // the code below requires Eclipse 3.5 setShellStyle (getShellStyle() | SWT.SHEET); } }
+             */
+            result.set(dialog.open());
         });
         return result.get();
     }
@@ -141,12 +131,8 @@ public class EclipseGuiCallback implements IGuiCallback {
 
     @Override
     public void displayNonmodelMessage(final String title, final String message) {
-        invokeInGUIThread(new Runnable() {
-            @Override
-            public void run() {
-                MessageDialog.openInformation(FindbugsPlugin.getShell(), getDialogTitle(title), message);
-            }
-        });
+        invokeInGUIThread(
+                () -> MessageDialog.openInformation(FindbugsPlugin.getShell(), getDialogTitle(title), message));
     }
 
     private static final class EclipseDisplayThreadExecutor extends AbstractExecutorService {
@@ -167,7 +153,7 @@ public class EclipseGuiCallback implements IGuiCallback {
 
         @Override
         public void shutdown() {
-            return;
+            // do nothing
         }
 
         @Override

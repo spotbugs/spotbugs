@@ -7,6 +7,7 @@ val pdeTool by configurations.creating {
 }
 
 eclipseMavenCentral {
+  silenceEquoIDE()
   release("4.24.0") {
     compileOnly("org.eclipse.ant.core")
     compileOnly("org.eclipse.core.resources")
@@ -41,7 +42,7 @@ val unzipPdeTool = tasks.register<Copy>("unzipPdeTool") {
 }
 
 dependencies {
-  compileOnly(files(pdeToolDir.map { it.file("pdebuild.jar") }){
+  compileOnly(files(pdeToolDir.map { dir: Directory -> dir.file("pdebuild.jar") }) {
     builtBy(unzipPdeTool)
   })
 }

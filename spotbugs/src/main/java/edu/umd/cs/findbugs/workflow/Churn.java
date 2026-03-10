@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs.workflow;
 
-import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -62,7 +63,9 @@ public class Churn {
     }
 
     static class Data {
-        int persist, fixed;
+        int persist;
+
+        int fixed;
 
         int maxRemovedAtOnce() {
             int count = 0;
@@ -232,7 +235,7 @@ public class Churn {
         PrintStream out = System.out;
         try {
             if (argCount < args.length) {
-                out = UTF8.printStream(new FileOutputStream(args[argCount++]), true);
+                out = UTF8.printStream(Files.newOutputStream(Path.of(args[argCount++])), true);
             }
             churn.dump(out);
         } finally {

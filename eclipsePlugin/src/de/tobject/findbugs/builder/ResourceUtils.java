@@ -133,7 +133,7 @@ public class ResourceUtils {
         // XXX deleted packages should be considered to remove markers
         List<WorkItem> result = new ArrayList<>();
         List<IResourceDelta> foldersDelta = new ArrayList<>();
-        IResourceDelta affectedChildren[] = delta.getAffectedChildren();
+        IResourceDelta[] affectedChildren = delta.getAffectedChildren();
         for (int i = 0; i < affectedChildren.length; i++) {
             IResourceDelta childDelta = affectedChildren[i];
             IResource child = childDelta.getResource();

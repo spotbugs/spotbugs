@@ -35,12 +35,12 @@ For instance, to specify the version of SpotBugs, you can configure like below:
 Introduce SpotBugs Plugin
 -------------------------
 
-To introduce SpotBugs Plugin, please declare dependency in ``dependencies`` like below:
+To introduce SpotBugs Plugin, declare dependency in ``dependencies`` like below:
 
 .. code-block:: groovy
 
   dependencies {
-    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0'
+    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.14.0'
   }
 
 Other usage

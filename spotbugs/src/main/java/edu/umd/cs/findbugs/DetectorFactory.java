@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -72,10 +72,6 @@ public class DetectorFactory {
     private final String requireJRE;
 
     private String detailHTML;
-
-    private int priorityAdjustment;
-
-    private boolean enabledButNonReporting;
 
     private boolean hidden;
 
@@ -172,7 +168,6 @@ public class DetectorFactory {
         this.speed = speed;
         this.reports = reports;
         this.requireJRE = requireJRE;
-        this.priorityAdjustment = 0;
         this.hidden = false;
     }
 
@@ -296,30 +291,13 @@ public class DetectorFactory {
         return defEnabled;
     }
 
-    /**
-     * Set the priority adjustment for the detector produced by this factory.
-     *
-     * @param priorityAdjustment
-     *            the priority adjustment
-     */
-    public void setPriorityAdjustment(int priorityAdjustment) {
-        this.priorityAdjustment = priorityAdjustment;
-    }
-
+    @Deprecated(forRemoval = true)
     public void setEnabledButNonReporting(boolean notReporting) {
-        this.enabledButNonReporting = notReporting;
     }
 
-    /**
-     * Get the priority adjustment for the detector produced by this factory.
-     *
-     * @return the priority adjustment
-     */
+    @Deprecated(forRemoval = true)
     public int getPriorityAdjustment() {
-        if (enabledButNonReporting) {
-            return 100;
-        }
-        return priorityAdjustment;
+        return 0;
     }
 
     /**
@@ -367,21 +345,6 @@ public class DetectorFactory {
      */
     public void setDetailHTML(String detailHTML) {
         this.detailHTML = detailHTML;
-    }
-
-    /**
-     * Create a Detector instance. This method is only guaranteed to work for
-     * old-style detectors using the BCEL bytecode framework.
-     *
-     * @param bugReporter
-     *            the BugReporter to be used to report bugs
-     * @return the Detector
-     * @deprecated Use createDetector2 in new code
-     */
-    @Deprecated
-    public Detector create(BugReporter bugReporter) {
-        checkForNoAnalysis();
-        return detectorCreator.createDetector(bugReporter);
     }
 
     /**

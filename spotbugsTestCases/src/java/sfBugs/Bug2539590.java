@@ -14,12 +14,9 @@ package sfBugs;
 
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.DesireWarning;
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug2539590 {
 
-    @ExpectWarning("SF_SWITCH_NO_DEFAULT")
     public static void noFallthroughMethodNoDefault(int which) {
         switch (which) {
         case 0:
@@ -28,7 +25,6 @@ public class Bug2539590 {
         }
     }
 
-    @DesireNoWarning("SF_SWITCH_NO_DEFAULT")
     public static void noFallthroughMethod(int which) {
         switch (which) {
         case 0:
@@ -38,7 +34,6 @@ public class Bug2539590 {
         }
     }
 
-    @NoWarning("SF_SWITCH_NO_DEFAULT")
     public static void noFallthroughMethod2(int which) {
         switch (which) {
         case 0:
@@ -57,8 +52,6 @@ public class Bug2539590 {
      * \ sfBugs.Bug2539590.fallthroughMethod(int) where one case falls \ through
      * to the next case At Bug2539590.java:[lines 33-35]
      */
-    @NoWarning("SF_SWITCH_FALLTHROUGH")
-    @ExpectWarning("SF_SWITCH_NO_DEFAULT")
     public static void fallthroughMethodNoDefault(int which) {
         switch (which) {
         case 0:
@@ -77,7 +70,6 @@ public class Bug2539590 {
         }
     }
 
-    @ExpectWarning("SF_SWITCH_FALLTHROUGH")
     public static void fallthroughMethod2(int which) {
         switch (which) {
         case 0:
@@ -90,7 +82,6 @@ public class Bug2539590 {
         }
     }
 
-    @NoWarning("SF_SWITCH_FALLTHROUGH")
     public static void fallthroughMethod3(int which) {
         switch (which) {
         case 0:
@@ -102,7 +93,6 @@ public class Bug2539590 {
         }
     }
 
-    @ExpectWarning("SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH,SF_SWITCH_NO_DEFAULT")
     public static int fallthroughMethodNoDefaultClobber(int which) {
         int result = 0;
         switch (which) {
@@ -114,7 +104,8 @@ public class Bug2539590 {
         return result;
     }
 
-    @ExpectWarning("SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH")
+    // there is an SF_SWITCH_NO_DEFAULT fp here, but if there is no goto in the switch,
+    // the bytecode is the same as if the content of the default case would be after the switch without a default case
     public static int fallthroughMethodClobber(int which) {
         int result = 0;
         switch (which) {
@@ -127,8 +118,6 @@ public class Bug2539590 {
         return result;
     }
 
-    @ExpectWarning("SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH_TO_THROW")
-    @NoWarning("SF_SWITCH_NO_DEFAULT")
     public static int fallthroughMethodToss(int which) {
         int result;
         switch (which) {

@@ -3,7 +3,7 @@ package edu.umd.cs.findbugs.nullness;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyIterable;
 
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,9 +21,9 @@ class Issue259Test {
     @Test
     void testIssue(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/Issue259.class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/Issue259$1.class"),
-                Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/Issue259$X.class"));
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/Issue259.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/Issue259$1.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/Issue259$X.class"));
         assertThat(bugCollection, emptyIterable());
     }
 }

@@ -3,7 +3,7 @@ package edu.umd.cs.findbugs.cwe;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,13 +56,12 @@ public class WeaknessCatalog {
     private static void loadFileAndInitialize() {
         InputStream inputStream = WeaknessCatalog.class.getClassLoader().getResourceAsStream(FILE_NAME);
         Gson gson = new Gson();
-        String characterEncoding = "UTF-8";
 
         if (inputStream == null) {
             throw new IllegalArgumentException("file not found! " + FILE_NAME);
         }
 
-        try (JsonReader reader = new JsonReader(new InputStreamReader(inputStream, characterEncoding))) {
+        try (JsonReader reader = new JsonReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             JsonElement rootElement = JsonParser.parseReader(reader);
             JsonPrimitive nameElement = rootElement.getAsJsonObject().get("name").getAsJsonPrimitive();
             JsonPrimitive versionElement = rootElement.getAsJsonObject().get("version").getAsJsonPrimitive();
@@ -79,8 +78,6 @@ public class WeaknessCatalog {
 
                 INSTANCE.weaknesses.put(Integer.valueOf(weakness.getCweId()), weakness);
             }
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Character encoding '{}' is not supported.", characterEncoding);
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
             logger.error("Unable to read the weakness catalog JSON.");
         }

@@ -35,7 +35,7 @@ public class ExternalizableTest2 implements Externalizable {
         }
     }
 
-    static public void main(String args[]) throws Exception {
+    public static void main(String args[]) throws Exception {
         ByteArrayOutputStream pout = new ByteArrayOutputStream();
         ObjectOutputStream oout = new ObjectOutputStream(pout);
         oout.writeObject(new ExternalizableTest2a(42));

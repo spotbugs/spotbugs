@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.asm.AbstractFBMethodVisitor;
 import edu.umd.cs.findbugs.asm.ClassNodeDetector;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * Sample detector, using ASM
@@ -81,8 +82,10 @@ public class TestASM extends ClassNodeDetector {
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         if ((access & Opcodes.ACC_STATIC) != 0 && (access & Opcodes.ACC_FINAL) != 0 && (access & Opcodes.ACC_PUBLIC) != 0
                 && !name.equals(name.toUpperCase())) {
+            @DottedClassName
+            String className = xclass.getClassDescriptor().getDottedClassName();
             bugReporter.reportBug(new BugInstance(this, "NM_FIELD_NAMING_CONVENTION", Priorities.LOW_PRIORITY).addClass(this)
-                    .addField(this.name, name, desc, access));
+                    .addField(className, name, desc, access));
         }
         return null;
     }

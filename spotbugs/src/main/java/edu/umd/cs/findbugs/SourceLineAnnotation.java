@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;

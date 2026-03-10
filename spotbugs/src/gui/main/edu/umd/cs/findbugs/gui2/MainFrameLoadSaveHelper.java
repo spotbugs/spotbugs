@@ -2,10 +2,10 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.awt.EventQueue;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -230,7 +230,7 @@ public class MainFrameLoadSaveHelper implements Serializable {
 
             Filter suppressionFilter = mainFrame.getProject().getSuppressionFilter();
             try {
-                suppressionFilter.writeEnabledMatchersAsXML(new FileOutputStream(f));
+                suppressionFilter.writeEnabledMatchersAsXML(Files.newOutputStream(f.toPath()));
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(mainFrame,
                         L10N.getLocalString("dlg.saving_error_lbl", "An error occurred in saving."));
@@ -439,7 +439,7 @@ public class MainFrameLoadSaveHelper implements Serializable {
         Future<Object> waiter = mainFrame.getBackgroundExecutor().submit(() -> {
             HTMLBugReporter reporter = new HTMLBugReporter(mainFrame.getProject(), "default.xsl");
             reporter.setIsRelaxed(true);
-            reporter.setOutputStream(UTF8.printStream(new FileOutputStream(f)));
+            reporter.setOutputStream(UTF8.printStream(Files.newOutputStream(f.toPath())));
             for (BugInstance bug : mainFrame.getBugCollection().getCollection()) {
                 try {
                     if (mainFrame.getViewFilter().show(bug)) {

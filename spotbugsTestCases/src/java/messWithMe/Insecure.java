@@ -2,6 +2,6 @@ package messWithMe;
 
 public interface Insecure {
 
-    final static int[] CreditCardNumbers = new int[5];
+    static final int[] CreditCardNumbers = new int[5];
 
 }

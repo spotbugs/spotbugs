@@ -30,7 +30,7 @@ import javax.annotation.meta.When;
 /**
  * Used to indicate that the nullness of element is unknown, or may vary in
  * unknown ways in subclasses.
- **/
+ */
 @Documented
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE })
 @Retention(RetentionPolicy.CLASS)

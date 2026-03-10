@@ -67,7 +67,9 @@ public class PrintClass {
         }
     }
 
-    static boolean code = false, constants = false;
+    static boolean code = false;
+
+    static boolean constants = false;
 
     static boolean superClasses = false;
 

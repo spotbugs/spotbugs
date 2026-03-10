@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifierDefault;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
@@ -23,7 +23,7 @@ public class Bug2311502 {
     /**
      * Should flag code as unsafe.
      */
-    static public class NonNullFalseNegative {
+    public static class NonNullFalseNegative {
 
         @CheckForNull
         private Object junkField;
@@ -42,7 +42,7 @@ public class Bug2311502 {
 
     }
 
-    static public @ReturnValuesAreNonnullByDefault
+    public static @ReturnValuesAreNonnullByDefault
     class NPNonNullReturnViolationBug {
 
         @CheckForNull

@@ -18,7 +18,7 @@ public class SynchronizedBlockDoubleFromOtherMethod {
     }
 
     public void anotherSyncPrint() {
-        synchronized (SynchronizedBlockDouble.class) {
+        synchronized (SynchronizedBlockDoubleFromOtherMethod.class) {
             printValue();
         }
     }

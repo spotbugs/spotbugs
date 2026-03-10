@@ -8,7 +8,7 @@ public class Bug1723940 {
         return child;
     }
 
-    static public void doX(Bug1723940 o) {
+    public static void doX(Bug1723940 o) {
         o.hashCode();
         while (o != null) {
             o = o.getChild();

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 public class SampleTest {
   &#064;Test
   public void test(SpotBugsRunner spotbugs) {
-    BugCollection bugs = spotbugs.performAnalysis(Paths.get("target/test-classes/pkg/GoodCase.class"));
+    BugCollection bugs = spotbugs.performAnalysis(Path.of("target/test-classes/pkg/GoodCase.class"));
     ...
   }
 }</code></pre>

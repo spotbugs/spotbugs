@@ -21,11 +21,11 @@ package edu.umd.cs.findbugs.ba;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -163,7 +163,7 @@ public class URLClassPath implements AutoCloseable, Serializable {
             if (!file.exists()) {
                 return null;
             }
-            return new BufferedInputStream(new FileInputStream(file));
+            return new BufferedInputStream(Files.newInputStream(file.toPath()));
         }
 
         /*

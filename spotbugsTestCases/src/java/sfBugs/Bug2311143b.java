@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifierDefault;
 
 @Bug2311143b.ReturnValueIsNonnullByDefault

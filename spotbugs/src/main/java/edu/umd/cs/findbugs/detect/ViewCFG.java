@@ -1,11 +1,12 @@
 package edu.umd.cs.findbugs.detect;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
@@ -51,32 +52,28 @@ public class ViewCFG implements Detector {
         Path classDir;
 
         try {
-            classDir = Files.createDirectory(Paths.get(tempDir.toString(), classDirName));
+            classDir = Files.createDirectory(Path.of(tempDir.toString(), classDirName));
         } catch (IOException e) {
             bugReporter.logError("Could not create directory for class " + cls.getClassName(), e);
             return;
         }
 
         for (Method method : cls.getMethods()) {
-            try {
-                analyzeMethod(classContext, method, classDir);
+            Path methodFile = getMethodFile(classDir, method.getName());
+
+            try (OutputStream outputStream = Files.newOutputStream(methodFile);
+                    BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
+                    PrintStream out = new PrintStream(bufferedOutputStream, false, Charset.defaultCharset())) {
+                analyzeMethod(classContext, method, out);
             } catch (CFGBuilderException e) {
                 bugReporter.logError("Error analyzing method", e);
+            } catch (IOException e) {
+                bugReporter.logError("Could not create file for method " + method.getName(), e);
             }
         }
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method, Path classDir) throws CFGBuilderException {
-        Path methodFile = getMethodFile(classDir, method.getName());
-        PrintStream out;
-
-        try {
-            out = new PrintStream(Files.createFile(methodFile).toFile(), Charset.defaultCharset().name());
-        } catch (IOException e) {
-            bugReporter.logError("Could not create file for method " + method.getName(), e);
-            return;
-        }
-
+    private void analyzeMethod(ClassContext classContext, Method method, PrintStream out) throws CFGBuilderException {
         CFG cfg = classContext.getCFG(method);
         out.println("digraph " + method.getName() + " {");
         for (Iterator<BasicBlock> bi = cfg.blockIterator(); bi.hasNext();) {
@@ -164,10 +161,6 @@ public class ViewCFG implements Detector {
             }
         }
         out.println("}");
-        out.close();
-        if (out.checkError()) {
-            bugReporter.logError("Error writing to file " + methodFile.toString());
-        }
     }
 
     private Path getMethodFile(Path classDir, String methodName) {
@@ -177,7 +170,7 @@ public class ViewCFG implements Detector {
 
         String methodFileName = methodFileNameBase;
         do {
-            methodFile = Paths.get(classDir.toString(), methodFileName + ".dot");
+            methodFile = Path.of(classDir.toString(), methodFileName + ".dot");
             methodFileName = methodFileNameBase + ++index;
         } while (Files.exists(methodFile));
         return methodFile;
