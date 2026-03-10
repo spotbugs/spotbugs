@@ -287,8 +287,20 @@ public class PluginLoader implements AutoCloseable {
      */
     @Override
     public void close() throws IOException {
+        IOException first = null;
         for (URLClassLoader urlClassLoader : createdClassLoaders) {
-            urlClassLoader.close();
+            try {
+                urlClassLoader.close();
+            } catch (IOException e) {
+                if (first == null) {
+                    first = e;
+                } else {
+                    first.addSuppressed(e);
+                }
+            }
+        }
+        if (first != null) {
+            throw first;
         }
     }
 
