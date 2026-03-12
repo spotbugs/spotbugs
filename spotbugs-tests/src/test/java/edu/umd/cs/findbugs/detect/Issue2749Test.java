@@ -25,14 +25,13 @@ import org.junit.jupiter.api.condition.JRE;
 class Issue2749Test extends AbstractIntegrationTest {
     @Test
     @DisabledOnJre(JRE.JAVA_8)
-    void testIssue() {
+    void testAccessViaGettersAndSetters() {
         performAnalysis(
-                "../java11/ghIssues/Issue2749$WithMethodHandlesPrimitive.class",
-                "../java11/ghIssues/Issue2749$WithMethodHandlesObject.class",
-                "../java11/ghIssues/Issue2749$WithMethodHandlesObject$Value.class",
-                "../java11/ghIssues/Issue2749$WithVarHandle$Value.class",
-                "../java11/ghIssues/Issue2749$WithVarHandle.class",
-                "../java11/ghIssues/Issue2749.class");
+                "../java11/ghIssues/issue2749/WithMethodHandlesPrimitive.class",
+                "../java11/ghIssues/issue2749/WithMethodHandlesObject.class",
+                "../java11/ghIssues/issue2749/WithMethodHandlesObject$Value.class",
+                "../java11/ghIssues/issue2749/WithVarHandle$Value.class",
+                "../java11/ghIssues/issue2749/WithVarHandle.class");
         assertNoBugType("UUF_UNUSED_FIELD");
     }
 
@@ -40,10 +39,10 @@ class Issue2749Test extends AbstractIntegrationTest {
     @DisabledOnJre(JRE.JAVA_8)
     void testSetterNotInvoked() {
         performAnalysis(
-                "../java11/ghIssues/Issue2749$WithMethodHandlesObjectSetterNotInvoked.class",
-                "../java11/ghIssues/Issue2749$WithMethodHandlesObjectSetterNotInvoked$DummyValue.class",
-                "../java11/ghIssues/Issue2749.class");
+                "../java11/ghIssues/issue2749/WithMethodHandlesObjectSetterNotInvoked.class",
+                "../java11/ghIssues/issue2749/WithMethodHandlesObjectSetterNotInvoked$Value.class");
         assertNoBugType("UUF_UNUSED_FIELD");
+
         assertBugTypeCount("UWF_UNWRITTEN_FIELD", 1);
     }
 
@@ -51,9 +50,8 @@ class Issue2749Test extends AbstractIntegrationTest {
     @DisabledOnJre(JRE.JAVA_8)
     void testGetterNotInvoked() {
         performAnalysis(
-                "../java11/ghIssues/Issue2749$WithMethodHandlesObjectGetterNotInvoked.class",
-                "../java11/ghIssues/Issue2749$WithMethodHandlesObjectGetterNotInvoked$DummyValue.class",
-                "../java11/ghIssues/Issue2749.class");
+                "../java11/ghIssues/issue2749/WithMethodHandlesObjectGetterNotInvoked.class",
+                "../java11/ghIssues/issue2749/WithMethodHandlesObjectGetterNotInvoked$Value.class");
         assertNoBugType("UUF_UNUSED_FIELD");
         assertBugTypeCount("URF_UNREAD_FIELD", 1);
     }
@@ -62,9 +60,8 @@ class Issue2749Test extends AbstractIntegrationTest {
     @DisabledOnJre(JRE.JAVA_8)
     void testMethodHandlesNeverInvoked() {
         performAnalysis(
-                "../java11/ghIssues/Issue2749$WithMethodHandlesNeverInvoked.class",
-                "../java11/ghIssues/Issue2749$WithMethodHandlesNeverInvoked$DummyValue.class",
-                "../java11/ghIssues/Issue2749.class");
+                "../java11/ghIssues/issue2749/WithMethodHandlesNeverInvoked.class",
+                "../java11/ghIssues/issue2749/WithMethodHandlesNeverInvoked$Value.class");
         assertBugTypeCount("UUF_UNUSED_FIELD", 1);
     }
 
@@ -72,9 +69,8 @@ class Issue2749Test extends AbstractIntegrationTest {
     @DisabledOnJre(JRE.JAVA_8)
     void testVarHandleNeverInvoked() {
         performAnalysis(
-                "../java11/ghIssues/Issue2749$WithVarHandleNeverInvoked.class",
-                "../java11/ghIssues/Issue2749$WithVarHandleNeverInvoked$Value.class",
-                "../java11/ghIssues/Issue2749.class");
+                "../java11/ghIssues/issue2749/WithVarHandleNeverInvoked.class",
+                "../java11/ghIssues/issue2749/WithVarHandleNeverInvoked$Value.class");
         assertBugTypeCount("UUF_UNUSED_FIELD", 1);
     }
 
@@ -82,9 +78,8 @@ class Issue2749Test extends AbstractIntegrationTest {
     @DisabledOnJre(JRE.JAVA_8)
     void testVarHandleNoWriting() {
         performAnalysis(
-                "../java11/ghIssues/Issue2749$WithVarHandleNoWriting.class",
-                "../java11/ghIssues/Issue2749$WithVarHandleNoWriting$Value.class",
-                "../java11/ghIssues/Issue2749.class");
+                "../java11/ghIssues/issue2749/WithVarHandleNoWriting.class",
+                "../java11/ghIssues/issue2749/WithVarHandleNoWriting$Value.class");
         assertNoBugType("UUF_UNUSED_FIELD");
         assertBugTypeCount("UWF_UNWRITTEN_FIELD", 1);
     }
@@ -93,9 +88,8 @@ class Issue2749Test extends AbstractIntegrationTest {
     @DisabledOnJre(JRE.JAVA_8)
     void testVarHandleNoReading() {
         performAnalysis(
-                "../java11/ghIssues/Issue2749$WithVarHandleNoReading.class",
-                "../java11/ghIssues/Issue2749$WithVarHandleNoReading$Value.class",
-                "../java11/ghIssues/Issue2749.class");
+                "../java11/ghIssues/issue2749/WithVarHandleNoReading.class",
+                "../java11/ghIssues/issue2749/WithVarHandleNoReading$Value.class");
         assertNoBugType("UUF_UNUSED_FIELD");
         assertBugTypeCount("URF_UNREAD_FIELD", 1);
     }
@@ -104,9 +98,8 @@ class Issue2749Test extends AbstractIntegrationTest {
     @DisabledOnJre(JRE.JAVA_8)
     void testVarHandleReadingAndWritingInSingleInvocation() {
         performAnalysis(
-                "../java11/ghIssues/Issue2749$WithVarHandleReadingAndWritingInOneInvocation.class",
-                "../java11/ghIssues/Issue2749$WithVarHandleReadingAndWritingInOneInvocation$Value.class",
-                "../java11/ghIssues/Issue2749.class");
+                "../java11/ghIssues/issue2749/WithVarHandleReadingAndWritingInOneInvocation.class",
+                "../java11/ghIssues/issue2749/WithVarHandleReadingAndWritingInOneInvocation$Value.class");
         assertNoBugType("UUF_UNUSED_FIELD");
         assertNoBugType("UWF_UNWRITTEN_FIELD");
         assertNoBugType("URF_UNREAD_FIELD");
@@ -116,9 +109,8 @@ class Issue2749Test extends AbstractIntegrationTest {
     @DisabledOnJre(JRE.JAVA_8)
     void testAtomicUpdaterNoWriting() {
         performAnalysis(
-                "../java11/ghIssues/Issue2749$WithAtomicUpdaterSetterNotInvoked.class",
-                "../java11/ghIssues/Issue2749$WithAtomicUpdaterSetterNotInvoked$DummyValue.class",
-                "../java11/ghIssues/Issue2749.class");
+                "../java11/ghIssues/issue2749/WithAtomicUpdaterSetterNotInvoked.class",
+                "../java11/ghIssues/issue2749/WithAtomicUpdaterSetterNotInvoked$Value.class");
         assertNoBugType("UUF_UNUSED_FIELD");
         assertBugTypeCount("UWF_UNWRITTEN_FIELD", 1);
     }
@@ -127,9 +119,8 @@ class Issue2749Test extends AbstractIntegrationTest {
     @DisabledOnJre(JRE.JAVA_8)
     void testAtomicUpdaterNoReading() {
         performAnalysis(
-                "../java11/ghIssues/Issue2749$WithAtomicUpdaterGetterNotInvoked.class",
-                "../java11/ghIssues/Issue2749$WithAtomicUpdaterGetterNotInvoked$DummyValue.class",
-                "../java11/ghIssues/Issue2749.class");
+                "../java11/ghIssues/issue2749/WithAtomicUpdaterGetterNotInvoked.class",
+                "../java11/ghIssues/issue2749/WithAtomicUpdaterGetterNotInvoked$Value.class");
         assertNoBugType("UUF_UNUSED_FIELD");
         assertBugTypeCount("URF_UNREAD_FIELD", 1);
     }
@@ -138,9 +129,8 @@ class Issue2749Test extends AbstractIntegrationTest {
     @DisabledOnJre(JRE.JAVA_8)
     void testAtomicUpdaterReadingAndWritingInSingleInvocation() {
         performAnalysis(
-                "../java11/ghIssues/Issue2749$WithAtomicUpdaterReadingAndWritingInOneInvocation.class",
-                "../java11/ghIssues/Issue2749$WithAtomicUpdaterReadingAndWritingInOneInvocation$DummyValue.class",
-                "../java11/ghIssues/Issue2749.class");
+                "../java11/ghIssues/issue2749/WithAtomicUpdaterReadingAndWritingInOneInvocation.class",
+                "../java11/ghIssues/issue2749/WithAtomicUpdaterReadingAndWritingInOneInvocation$Value.class");
         assertNoBugType("UUF_UNUSED_FIELD");
         assertNoBugType("URF_UNREAD_FIELD");
         assertNoBugType("UWF_UNWRITTEN_FIELD");
@@ -150,9 +140,8 @@ class Issue2749Test extends AbstractIntegrationTest {
     @DisabledOnJre(JRE.JAVA_8)
     void testAtomicUpdaters() {
         performAnalysis(
-                "../java11/ghIssues/Issue2749$WithAtomicUpdaters.class",
-                "../java11/ghIssues/Issue2749$WithAtomicUpdaters$DummyValue.class",
-                "../java11/ghIssues/Issue2749.class");
+                "../java11/ghIssues/issue2749/WithAtomicUpdaters.class",
+                "../java11/ghIssues/issue2749/WithAtomicUpdaters$Value.class");
         assertNoBugType("UUF_UNUSED_FIELD");
         assertNoBugType("URF_UNREAD_FIELD");
         assertNoBugType("UWF_UNWRITTEN_FIELD");
