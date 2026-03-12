@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.detect.ReflectiveInvocation.MethodHandleInvocation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -91,6 +90,7 @@ import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorBuilder.AtomicUpdaterAc
 import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorBuilder.MethodHandleAccessorBuilder;
 import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorBuilder.VarHandleAccessorBuilder;
 import edu.umd.cs.findbugs.detect.ReflectiveInvocation.AtomicUpdaterInvocation;
+import edu.umd.cs.findbugs.detect.ReflectiveInvocation.MethodHandleInvocation;
 import edu.umd.cs.findbugs.detect.ReflectiveInvocation.VarHandleInvocation;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.Bag;
