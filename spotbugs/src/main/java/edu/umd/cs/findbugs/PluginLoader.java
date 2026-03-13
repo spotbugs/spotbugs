@@ -282,8 +282,12 @@ public class PluginLoader implements AutoCloseable {
     }
 
     /**
-     * Closes the class loaders created in this {@link PluginLoader}
-     * @throws IOException if a class loader fails to close, in that case the other classloaders won't be closed
+     * Closes the class loaders created in this {@link PluginLoader}.
+     *
+     * @throws IOException if one or more class loaders fail to close; the method
+     *                      attempts to close all class loaders, then throws the first
+     *                      {@link IOException} encountered with any additional failures
+     *                      added as suppressed exceptions.
      */
     @Override
     public void close() throws IOException {
