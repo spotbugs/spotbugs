@@ -1,7 +1,7 @@
 Use SpotBugs Plugin on SonarQube
 ================================
 
-`The SpotBugs SonarQube Plugin <https://github.com/spotbugs/sonar-findbugs>`_ uses major SpotBugs plugins such as `fb-contrib <https://fb-contrib.sourceforge.net/>`_ and `Find Security Bugs <http://h3xstream.github.io/find-sec-bugs/>`_. However, if you want to use another SpotBugs plugin, you need to build your own SonarQube plugin. For detailed requirements on SonarQube plugins, see `the SonarQube official guidelines`_.
+`The SpotBugs SonarQube Plugin <https://github.com/spotbugs/sonar-findbugs>`_ uses major SpotBugs plugins such as `fb-contrib <https://fb-contrib.sourceforge.net/>`_ and `Find Security Bugs <https://h3xstream.github.io/find-sec-bugs/>`_. However, if you want to use another SpotBugs plugin, you need to build your own SonarQube plugin. For detailed requirements on SonarQube plugins, see `the SonarQube official guidelines`_.
 
 Create Maven Project
 --------------------
