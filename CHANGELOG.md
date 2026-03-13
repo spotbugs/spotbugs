@@ -44,6 +44,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `SF_SWITCH_FALLTHROUGH` false positives ([#3767](https://github.com/spotbugs/spotbugs/issues/3767))
 - Recognize well-known exception-throwing utility methods when looking for exceptions thrown from constructors ([#3821](https://github.com/spotbugs/spotbugs/issues/3821))
 - Fix `IM_BAD_CHECK_FOR_ODD` false negative when using Yoda-style comparison (`1 == i % 2`) ([#3886](https://github.com/spotbugs/spotbugs/issues/3886))
+- Fix `DMI_RANDOM_USED_ONLY_ONCE` FP when Random is used inside loop but created before ([#3937](https://github.com/spotbugs/spotbugs/pull/3937))
 
 ### Removed
 - Removed old deprecated methods: 
