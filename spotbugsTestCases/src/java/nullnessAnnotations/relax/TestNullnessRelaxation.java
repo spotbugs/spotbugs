@@ -70,7 +70,7 @@ public class TestNullnessRelaxation {
 
         @Override
 		@Nullable
-        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
+        @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public Integer set3(@Nullable Integer o);
     }
 
@@ -104,7 +104,7 @@ public class TestNullnessRelaxation {
 
         @Override
 		@Nullable
-        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
+        @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public Integer set3(@Nullable Integer o){
             return null;
         }
@@ -145,7 +145,7 @@ public class TestNullnessRelaxation {
 
         @Override
 		@Nullable
-        @ExpectWarning("NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_METHOD_RETURN_RELAXING_ANNOTATION")
+        @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
         public Integer set3(@Nullable Integer o){
             return null;
         }
