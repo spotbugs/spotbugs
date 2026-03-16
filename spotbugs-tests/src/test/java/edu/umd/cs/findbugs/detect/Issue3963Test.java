@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 class Issue3963Test extends AbstractIntegrationTest {
 
     @Test
-    void testIlInfiniteLoopFalsePositiveForIntDoubleComparison() {
+    void testIlInfiniteLoopFalsePositiveForWideningNumericComparisons() {
         performAnalysis("ghIssues/Issue3963.class");
 
         // False positives (now fixed): loop exits immediately because condition is statically false
