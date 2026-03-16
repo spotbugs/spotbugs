@@ -27,10 +27,10 @@ dependencies {
   implementation 'com.google.truth:truth:1.4.5'
   implementation 'joda-time:joda-time:2.14.1'
   api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
-  implementation 'org.springframework:spring-core:7.0.5'
+  implementation 'org.springframework:spring-core:7.0.6'
   compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
   implementation 'org.checkerframework:checker-qual:3.54.0'
-  implementation 'com.sun.xml.bind:jaxb-impl:4.0.6'
+  implementation 'com.sun.xml.bind:jaxb-impl:4.0.7'
 
   implementation 'org.junit.jupiter:junit-jupiter-engine:6.0.3'
   implementation 'org.junit.jupiter:junit-jupiter-params:6.0.3'
