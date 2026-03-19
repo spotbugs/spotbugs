@@ -55,11 +55,9 @@ tasks.register('exportClasspath') {
     dependenciesFile.delete()
     dependenciesFile.getParentFile().mkdirs();
 
-    dependenciesFile.withWriter('UTF-8') { writer ->
-      configurations.getByName('runtimeClasspath').resolvedConfiguration.resolvedArtifacts.each { ResolvedArtifact artifact ->
-        writer.write(artifact.file.toString())
-        writer.write('\n')
-      }
+    configurations.getByName('runtimeClasspath').resolvedConfiguration.resolvedArtifacts.each { ResolvedArtifact artifact ->
+      dependenciesFile << artifact.file
+      dependenciesFile << '\n'
     }
   }
   doLast {
