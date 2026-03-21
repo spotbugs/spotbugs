@@ -30,6 +30,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 - Fix `IL_INFINITE_LOOP` false positive when loop condition uses int-to-double/float/long comparison that is statically false (e.g., `while (foo.length() > 2.0)` with a short string) ([#3963](https://github.com/spotbugs/spotbugs/issues/3963))
+- Fix `DM_STRING_TOSTRING` false negative when `toString()` is chained before a method call (e.g., `s.toString().toLowerCase()`); multiple occurrences in the same method are now all reported ([#3966](https://github.com/spotbugs/spotbugs/issues/3966))
 - Stop exposing JUnit BOM as a transitive dependency to consumers ([#3908](https://github.com/spotbugs/spotbugs/issues/3908))
 - Fix incorrect bug counts and sizes when unioning reports ([#3721](https://github.com/spotbugs/spotbugs/issues/3721))
 - Classes containing only methods throwing `UnsupportedOperationException` with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))

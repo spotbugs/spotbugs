@@ -72,7 +72,7 @@ public class MineBugHistory {
     static class Version {
         long sequence;
 
-        int tuple[] = new int[TUPLE_SIZE];
+        int[] tuple = new int[TUPLE_SIZE];
 
         Version(long sequence) {
             this.sequence = sequence;
@@ -378,7 +378,7 @@ public class MineBugHistory {
             out.print("\"");
             out.println(">");
 
-            String attributeName[] = new String[TUPLE_SIZE];
+            String[] attributeName = new String[TUPLE_SIZE];
             attributeName[0] = "added";
             attributeName[1] = "newCode";
             attributeName[2] = "fixed";
