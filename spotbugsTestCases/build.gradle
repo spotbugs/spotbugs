@@ -25,22 +25,22 @@ dependencies {
   implementation libs.guice.assistedinject
   implementation libs.guice.servlet
   implementation 'com.google.truth:truth:1.4.5'
-  implementation 'joda-time:joda-time:2.14.0'
+  implementation 'joda-time:joda-time:2.14.1'
   api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
-  implementation 'org.springframework:spring-core:7.0.3'
+  implementation 'org.springframework:spring-core:7.0.6'
   compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
-  implementation 'org.checkerframework:checker-qual:3.53.0'
-  implementation 'com.sun.xml.bind:jaxb-impl:4.0.6'
+  implementation 'org.checkerframework:checker-qual:3.54.0'
+  implementation 'com.sun.xml.bind:jaxb-impl:4.0.7'
 
-  implementation 'org.junit.jupiter:junit-jupiter-engine:5.14.2'
-  implementation 'org.junit.jupiter:junit-jupiter-params:5.14.2'
+  implementation 'org.junit.jupiter:junit-jupiter-engine:6.0.3'
+  implementation 'org.junit.jupiter:junit-jupiter-params:6.0.3'
   implementation 'org.testng:testng:7.12.0'
 
   implementation project(':spotbugs')
   api project(':spotbugs-annotations')
   implementation 'org.apache.groovy:groovy-all:5.0.4'
   implementation 'org.apache.commons:commons-lang3:3.20.0'
-  implementation 'org.mockito:mockito-core:5.21.0'
+  implementation 'org.mockito:mockito-core:5.23.0'
 }
 
 // spotbugs takes a long time to analyse the module but we don't need that
@@ -73,10 +73,16 @@ tasks.withType(JavaCompile).configureEach { JavaCompile compileTask ->
   } else if (compileTask.name == 'classesJava17') {
     options.release = 17
   } else if (compileTask.name == 'classesJava11') {
+    // TODO No longer building with java 11, should we keep this?
     options.release = 11
   } else if (compileTask.name != 'compileJava') {
+    // TODO No longer building with java 8, should we keep this?
     options.release = 8
   }
+}
+
+tasks.named('compileJava', JavaCompile).configure {
+  options.release = 17
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340

@@ -627,11 +627,8 @@ public class NullDerefAndRedundantComparisonFinder {
         // OK, we have a null value that is unconditionally
         // derferenced. Make a note of the locations where it
         // will be dereferenced.
-        NullValueUnconditionalDeref thisNullValueDeref = nullValueGuaranteedDerefMap.get(valueNumber);
-        if (thisNullValueDeref == null) {
-            thisNullValueDeref = new NullValueUnconditionalDeref();
-            nullValueGuaranteedDerefMap.put(valueNumber, thisNullValueDeref);
-        }
+        NullValueUnconditionalDeref thisNullValueDeref = nullValueGuaranteedDerefMap.computeIfAbsent(valueNumber,
+                k -> new NullValueUnconditionalDeref());
         thisNullValueDeref.add(isNullValue, unconditionalDerefLocationSet);
 
         if (thisLocation != null) {

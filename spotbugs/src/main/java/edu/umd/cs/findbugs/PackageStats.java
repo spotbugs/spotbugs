@@ -223,13 +223,8 @@ public class PackageStats extends BugCounts implements XMLWriteable {
 
 
     private ClassStats getClassStats(String name, String sourceFile) {
-        ClassStats result = packageMembers.get(name);
-        if (result == null) {
-            result = new ClassStats(name, sourceFile);
-            packageMembers.put(name, result);
-            numClasses = packageMembers.size();
-        }
-
+        ClassStats result = packageMembers.computeIfAbsent(name, k -> new ClassStats(k, sourceFile));
+        numClasses = packageMembers.size();
         return result;
     }
 

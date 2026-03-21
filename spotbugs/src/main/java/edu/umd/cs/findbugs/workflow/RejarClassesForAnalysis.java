@@ -291,7 +291,7 @@ public class RejarClassesForAnalysis {
 
     int numFilesToAnalyze = 0;
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         FindBugs.setNoAnalysis();
         RejarClassesForAnalysisCommandLine commandLine = new RejarClassesForAnalysisCommandLine();
         int argCount = commandLine.parse(args, 0, Integer.MAX_VALUE, "Usage: " + RejarClassesForAnalysis.class.getName()
@@ -304,7 +304,7 @@ public class RejarClassesForAnalysis {
 
     ZipOutputStream auxiliaryOut;
 
-    final byte buffer[] = new byte[8192];
+    final byte[] buffer = new byte[8192];
 
     private boolean exclude(String dottedName) {
         if (!Character.isJavaIdentifierStart(dottedName.charAt(0))) {
