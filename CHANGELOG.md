@@ -46,6 +46,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Recognize well-known exception-throwing utility methods when looking for exceptions thrown from constructors ([#3821](https://github.com/spotbugs/spotbugs/issues/3821))
 - Fix `IM_BAD_CHECK_FOR_ODD` false negative when using Yoda-style comparison (`1 == i % 2`) ([#3886](https://github.com/spotbugs/spotbugs/issues/3886))
 - Fix `PluginLoader.close()` to continue closing all `URLClassLoader`s when one close operation fails, suppressing subsequent `IOException`s. ([#3958](https://github.com/spotbugs/spotbugs/pull/3958))
+- Fix broken `bugDescriptions.html#TYPE` links by restoring legacy bug type anchors in generated docs ([#2113](https://github.com/spotbugs/spotbugs/issues/2113))
 
 ### Removed
 - Removed old deprecated methods: 
