@@ -260,7 +260,7 @@ public abstract class CommandLine {
      * @return number of arguments parsed
      */
     @SuppressFBWarnings("DM_EXIT")
-    public int parse(String argv[], int minArgs, int maxArgs, String usage) {
+    public int parse(String[] argv, int minArgs, int maxArgs, String usage) {
         try {
             int count = parse(argv);
             int remaining = argv.length - count;
