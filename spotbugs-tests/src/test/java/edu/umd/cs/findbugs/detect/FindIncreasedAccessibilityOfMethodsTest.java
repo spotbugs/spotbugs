@@ -62,7 +62,7 @@ class FindIncreasedAccessibilityOfMethodsTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void findNoIAOMBugInClass_IncreasedAccessibilityOfMethods_GenericImplementation() {
+    void findIAOMBugInClass_IncreasedAccessibilityOfMethods_GenericImplementation() {
         performAnalysis(
                 "increasedAccessibilityOfMethods/GenericSuperClass.class",
                 "increasedAccessibilityOfMethods/GenericSubClass.class");
@@ -75,7 +75,7 @@ class FindIncreasedAccessibilityOfMethodsTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void findNoIAOMBugInClass_IncreasedAccessibilityOfMethods_SubClassWithRepeatedOverride() {
+    void findIAOMBugInClass_IncreasedAccessibilityOfMethods_SubClassWithRepeatedOverride() {
         performAnalysis(
                 "increasedAccessibilityOfMethods/SuperClassOfSuperClass.class",
                 "increasedAccessibilityOfMethods/SuperClassWithOverride.class",
