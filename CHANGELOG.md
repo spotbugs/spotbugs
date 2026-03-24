@@ -29,6 +29,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
       (See [SEI CERT rule LCK00-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code) and [SEI CERT rule LCK04-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK04-J.+Do+not+synchronize+on+a+collection+view+if+the+backing+collection+is+accessible))
 
 ### Fixed
+- Fix `DM_STRING_TOSTRING` false negative when `toString()` is chained before a method call (e.g., `s.toString().toLowerCase()`); multiple occurrences in the same method are now all reported ([#3966](https://github.com/spotbugs/spotbugs/issues/3966))
 - Stop exposing JUnit BOM as a transitive dependency to consumers ([#3908](https://github.com/spotbugs/spotbugs/issues/3908))
 - Fix incorrect bug counts and sizes when unioning reports ([#3721](https://github.com/spotbugs/spotbugs/issues/3721))
 - Classes containing only methods throwing `UnsupportedOperationException` with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
@@ -44,6 +45,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `SF_SWITCH_FALLTHROUGH` false positives ([#3767](https://github.com/spotbugs/spotbugs/issues/3767))
 - Recognize well-known exception-throwing utility methods when looking for exceptions thrown from constructors ([#3821](https://github.com/spotbugs/spotbugs/issues/3821))
 - Fix `IM_BAD_CHECK_FOR_ODD` false negative when using Yoda-style comparison (`1 == i % 2`) ([#3886](https://github.com/spotbugs/spotbugs/issues/3886))
+- Fix `PluginLoader.close()` to continue closing all `URLClassLoader`s when one close operation fails, suppressing subsequent `IOException`s. ([#3958](https://github.com/spotbugs/spotbugs/pull/3958))
 
 ### Removed
 - Removed old deprecated methods: 

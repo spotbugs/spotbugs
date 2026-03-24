@@ -26,7 +26,7 @@ import java.util.Set;
 
 public class RecursiveSearchForJavaFiles {
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         for (File f : search(new File(args[0]))) {
             System.out.println(f.getPath());
         }
