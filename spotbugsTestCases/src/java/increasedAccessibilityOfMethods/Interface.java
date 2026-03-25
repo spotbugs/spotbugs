@@ -1,5 +1,7 @@
 package increasedAccessibilityOfMethods;
 
 public interface Interface {
-    String packagePrivateInterfaceMethod();
+    String interfaceMethodPublicByDefault();
+
+    public void publicInterfaceMethod();
 }
