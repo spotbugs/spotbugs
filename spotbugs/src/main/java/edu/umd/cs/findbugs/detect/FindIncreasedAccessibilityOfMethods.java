@@ -25,7 +25,6 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import org.apache.bcel.Const;
-import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -33,8 +32,19 @@ public class FindIncreasedAccessibilityOfMethods implements Detector {
     private static final String PACKAGE_PRIVATE = "package private";
     private static final String PROTECTED = "protected";
     private static final String PUBLIC = "public";
+    private static final JavaClass CLONEABLE;
 
     private final BugReporter bugReporter;
+
+    static {
+        JavaClass tmp = null;
+        try {
+            tmp = AnalysisContext.lookupSystemClass("java.lang.Cloneable");
+        } catch (ClassNotFoundException cnfe) {
+            AnalysisContext.reportMissingClass(cnfe);
+        }
+        CLONEABLE = tmp;
+    }
 
     public FindIncreasedAccessibilityOfMethods(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -43,16 +53,14 @@ public class FindIncreasedAccessibilityOfMethods implements Detector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
-        if (!cls.isFinal()) {
-            for (Method m : cls.getMethods()) {
-                visitMethod(cls, m);
-            }
+        for (Method m : cls.getMethods()) {
+            visitMethod(cls, m);
         }
     }
 
     private void visitMethod(JavaClass cls, Method m) {
         String mName = m.getName();
-        if (m.isFinal() || m.isPrivate() || !MemberUtils.isUserGenerated(m) || isCloneMethodFromCloneable(cls, m)
+        if (m.isPrivate() || !MemberUtils.isUserGenerated(m) || isCloneMethodFromCloneable(cls, m)
                 || Const.CONSTRUCTOR_NAME.equals(mName) || Const.STATIC_INITIALIZER_NAME.equals(mName)) {
             return;
         }
@@ -102,7 +110,7 @@ public class FindIncreasedAccessibilityOfMethods implements Detector {
 
     private boolean isCloneMethodFromCloneable(JavaClass javaClass, Method method) {
         try {
-            return javaClass.implementationOf(Repository.lookupClass(Cloneable.class)) && "clone".equals(method.getName());
+            return javaClass.implementationOf(CLONEABLE) && "clone".equals(method.getName()) && "()Ljava/lang/Object;".equals(method.getSignature());
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
             return false;
