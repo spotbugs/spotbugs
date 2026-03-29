@@ -139,11 +139,13 @@ public class InfiniteLoop extends OpcodeStackDetector {
     static class ForwardConditionalBranch extends Jump {
         final OpcodeStack.Item item0;
         final OpcodeStack.Item item1;
+        final int opcode;
 
-        ForwardConditionalBranch(OpcodeStack.Item item0, OpcodeStack.Item item1, int from, int to) {
+        ForwardConditionalBranch(OpcodeStack.Item item0, OpcodeStack.Item item1, int from, int to, int opcode) {
             super(from, to);
             this.item0 = item0;
             this.item1 = item1;
+            this.opcode = opcode;
         }
 
         @Override
@@ -228,6 +230,9 @@ public class InfiniteLoop extends OpcodeStackDetector {
             }
 
             if (isConstant(fcb.item0, bb) && isConstant(fcb.item1, bb)) {
+                if (isExitAlwaysTaken(fcb)) {
+                    continue backwardBranchLoop;
+                }
                 SourceLineAnnotation loopBottom = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, bb.from);
                 int loopBottomLine = loopBottom.getStartLine();
                 SourceLineAnnotation loopTop = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, bb.to);
@@ -339,11 +344,11 @@ public class InfiniteLoop extends OpcodeStackDetector {
             OpcodeStack.Item item0 = stack.getStackItem(0);
             if (getDefaultSwitchOffset() > 0) {
                 forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), getPC()
-                        + getDefaultSwitchOffset()));
+                        + getDefaultSwitchOffset(), seen));
             }
             for (int offset : getSwitchOffsets()) {
                 if (offset > 0) {
-                    forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), getPC() + offset));
+                    forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), getPC() + offset, seen));
                 }
             }
             break;
@@ -360,7 +365,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
             OpcodeStack.Item item0 = stack.getStackItem(0);
             int target = getBranchTarget();
             if (getBranchOffset() > 0) {
-                forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), target));
+                forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), target, seen));
                 break;
             }
             if (getFurthestJump(target) > getPC()) {
@@ -396,7 +401,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
             OpcodeStack.Item item1 = stack.getStackItem(1);
             int target = getBranchTarget();
             if (getBranchOffset() > 0) {
-                forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item1, getPC(), target));
+                forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item1, getPC(), target, seen));
                 break;
             }
             if (getFurthestJump(target) > getPC()) {
@@ -478,6 +483,66 @@ public class InfiniteLoop extends OpcodeStackDetector {
         }
         return Integer.MAX_VALUE;
 
+    }
+
+    /**
+     * Returns true if the forward conditional branch (loop exit) would always be taken
+     * based on the constant values of its operands, meaning the loop body is never entered.
+     * This prevents false positive IL_INFINITE_LOOP reports when the exit condition is
+     * statically known to be always true (e.g., from a float/double comparison via dcmpl/dcmpg).
+     */
+    private static boolean isExitAlwaysTaken(ForwardConditionalBranch fcb) {
+        Object c0 = fcb.item0.getConstant();
+        if (!(c0 instanceof Integer)) {
+            return false;
+        }
+        int v0 = (Integer) c0;
+        switch (fcb.opcode) {
+        // Unary comparisons against 0 (item0 == item1, e.g. from dcmpl/dcmpg/lcmp result)
+        case Const.IFEQ:
+            return v0 == 0;
+        case Const.IFNE:
+            return v0 != 0;
+        case Const.IFLT:
+            return v0 < 0;
+        case Const.IFLE:
+            return v0 <= 0;
+        case Const.IFGT:
+            return v0 > 0;
+        case Const.IFGE:
+            return v0 >= 0;
+        // Binary integer comparisons (item1 op item0, i.e. value1 op value2 in JVM spec)
+        case Const.IF_ICMPEQ:
+        case Const.IF_ICMPNE:
+        case Const.IF_ICMPLT:
+        case Const.IF_ICMPLE:
+        case Const.IF_ICMPGT:
+        case Const.IF_ICMPGE: {
+            Object c1 = fcb.item1.getConstant();
+            if (!(c1 instanceof Integer)) {
+                return false;
+            }
+            int v1 = (Integer) c1;
+            switch (fcb.opcode) {
+            case Const.IF_ICMPEQ:
+                return v1 == v0;
+            case Const.IF_ICMPNE:
+                return v1 != v0;
+            case Const.IF_ICMPLT:
+                return v1 < v0;
+            case Const.IF_ICMPLE:
+                return v1 <= v0;
+            case Const.IF_ICMPGT:
+                return v1 > v0;
+            case Const.IF_ICMPGE:
+                return v1 >= v0;
+            default:
+                return false;
+            }
+        }
+        default:
+            return false;
+        }
     }
 
     void reportPossibleBug(BugInstance bug) {
