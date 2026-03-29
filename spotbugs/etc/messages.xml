@@ -7907,7 +7907,7 @@ downcast it to a subtype will always fail by throwing a ClassCastException.
     <Details>
 <![CDATA[
 <p>
-This code is casting the result of calling <code>toArray()</code> on a collection
+This code is casting the result of calling <code>toArray()</code> on a collection or stream
 to a type more specific than <code>Object[]</code>, as in:</p>
 <pre><code>String[] getAsArray(Collection&lt;String&gt; c) {
     return (String[]) c.toArray();
