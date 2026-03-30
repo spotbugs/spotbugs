@@ -89,9 +89,9 @@ import edu.umd.cs.findbugs.detect.ReflectiveAccessTracker.AccessType;
 import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorBuilder.AtomicUpdaterAccessorBuilder;
 import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorBuilder.MethodHandleAccessorBuilder;
 import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorBuilder.VarHandleAccessorBuilder;
-import edu.umd.cs.findbugs.detect.ReflectiveInvocation.AtomicUpdaterInvocation;
-import edu.umd.cs.findbugs.detect.ReflectiveInvocation.MethodHandleInvocation;
-import edu.umd.cs.findbugs.detect.ReflectiveInvocation.VarHandleInvocation;
+import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorInvocation.AtomicUpdaterInvocation;
+import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorInvocation.MethodHandleInvocation;
+import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorInvocation.VarHandleInvocation;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.Bag;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -508,7 +508,8 @@ public class UnreadFields extends OpcodeStackDetector {
             if (accessorField != null) {
                 AccessType accessType = AtomicUpdaterInvocation.resolveInvocationType(invocation);
                 if (accessType != null) {
-                    reflectiveAccessTracker.registerReflectiveInvocation(new AtomicUpdaterInvocation(accessorField, accessType));
+                    reflectiveAccessTracker.registerReflectiveInvocation(
+                            new AtomicUpdaterInvocation(accessorField, accessType, SourceLineAnnotation.fromVisitedInstruction(this)));
                 } else if (DEBUG) {
                     System.out.printf("Unresolved invocation of: %s.%s", getClassConstantOperand(), invocation);
                 }
@@ -523,7 +524,8 @@ public class UnreadFields extends OpcodeStackDetector {
             String invocation = getNameConstantOperand();
             if (accessorField != null) {
                 if (MethodHandleInvocation.isValidInvocation(invocation)) {
-                    reflectiveAccessTracker.registerReflectiveInvocation(new MethodHandleInvocation(accessorField));
+                    reflectiveAccessTracker.registerReflectiveInvocation(
+                            new MethodHandleInvocation(accessorField, SourceLineAnnotation.fromVisitedInstruction(this)));
                 } else if (DEBUG) {
                     System.out.printf("Unresolved invocation of: %s.%s", getClassConstantOperand(), invocation);
                 }
@@ -538,7 +540,8 @@ public class UnreadFields extends OpcodeStackDetector {
             if (accessorField != null) {
                 AccessType accessType = VarHandleInvocation.resolveInvocationType(invocation);
                 if (accessType != null) {
-                    reflectiveAccessTracker.registerReflectiveInvocation(new VarHandleInvocation(accessorField, accessType));
+                    reflectiveAccessTracker.registerReflectiveInvocation(
+                            new VarHandleInvocation(accessorField, accessType, SourceLineAnnotation.fromVisitedInstruction(this)));
                 } else if (DEBUG) {
                     System.out.printf("Unresolved invocation of: %s.%s", getClassConstantOperand(), invocation);
                 }
@@ -932,6 +935,7 @@ public class UnreadFields extends OpcodeStackDetector {
         data.writtenNonNullFields.addAll(writtenFields);
         data.writtenFields.addAll(writtenFields);
         data.readFields.addAll(readFields);
+        data.fieldAccess.putAll(reflectiveAccessTracker.getFieldAccess(xFactory));
 
         if (DEBUG) {
             System.out.println("read fields:");
