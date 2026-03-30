@@ -17,32 +17,40 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.detect.ReflectiveAccessTracker.AccessType;
 import java.lang.invoke.VarHandle;
 import java.util.Set;
 
 /**
- * Single invocation of an implicit reflective accessor field such as MethodHandle.
+ * Single invocation of an implicit reflective field accessor such as MethodHandle. The invocation doesn't carry the
+ * access type, since the accessor was already created for a specific type of access - such as Getter or Setter.
  */
-abstract class ReflectiveInvocation {
+abstract class ReflectiveFieldAccessorInvocation {
 
     private final XField accessorField;
+    private final SourceLineAnnotation sourceLine;
 
-    public ReflectiveInvocation(final XField accessorField) {
+    public ReflectiveFieldAccessorInvocation(final XField accessorField, final SourceLineAnnotation sourceLine) {
         this.accessorField = accessorField;
+        this.sourceLine = sourceLine;
     }
 
     public XField getAccessorField() {
         return accessorField;
     }
 
-    static class MethodHandleInvocation extends ReflectiveInvocation {
+    public SourceLineAnnotation getSourceLine() {
+        return sourceLine;
+    }
+
+    static class MethodHandleInvocation extends ReflectiveFieldAccessorInvocation {
 
         private static final Set<String> ALLOWED_INVOCATIONS = Set.of("invoke", "invokeExact", "invokeWithArguments");
 
-        public MethodHandleInvocation(XField accessorField) {
-            super(accessorField);
+        public MethodHandleInvocation(XField accessorField, SourceLineAnnotation sourceLine) {
+            super(accessorField, sourceLine);
         }
 
         static boolean isValidInvocation(final String invocation) {
@@ -51,14 +59,14 @@ abstract class ReflectiveInvocation {
     }
 
     /**
-     * Single invocation of an explicit reflective accessor field such as VarHandle, or AtomicFieldUpdater.
-     * This invocation has to supply the access type.
+     * Single invocation of a generic reflective field accessor such as VarHandle or AtomicFieldUpdater. Since these
+     * accessors can provide both types of access (getter and setters), the Invocation has to be aware of the access type.
      */
-    abstract static class SpecifiedInvocation extends ReflectiveInvocation {
+    abstract static class TypeAwareRFAInvocation extends ReflectiveFieldAccessorInvocation {
         private final AccessType accessType;
 
-        private SpecifiedInvocation(final XField accessorField, final AccessType accessType) {
-            super(accessorField);
+        private TypeAwareRFAInvocation(final XField accessorField, final AccessType accessType, final SourceLineAnnotation sourceLine) {
+            super(accessorField, sourceLine);
             this.accessType = accessType;
         }
 
@@ -67,10 +75,10 @@ abstract class ReflectiveInvocation {
         }
     }
 
-    static class VarHandleInvocation extends SpecifiedInvocation {
+    static class VarHandleInvocation extends TypeAwareRFAInvocation {
 
-        VarHandleInvocation(final XField accessorField, final AccessType accessType) {
-            super(accessorField, accessType);
+        VarHandleInvocation(final XField accessorField, final AccessType accessType, final SourceLineAnnotation sourceLine) {
+            super(accessorField, accessType, sourceLine);
         }
 
         static AccessType resolveInvocationType(final String invocation) {
@@ -103,10 +111,10 @@ abstract class ReflectiveInvocation {
         }
     }
 
-    static class AtomicUpdaterInvocation extends SpecifiedInvocation {
+    static class AtomicUpdaterInvocation extends TypeAwareRFAInvocation {
 
-        AtomicUpdaterInvocation(final XField accessorField, final AccessType accessType) {
-            super(accessorField, accessType);
+        AtomicUpdaterInvocation(final XField accessorField, final AccessType accessType, final SourceLineAnnotation sourceLine) {
+            super(accessorField, accessType, sourceLine);
         }
 
         static AccessType resolveInvocationType(final String invocation) {

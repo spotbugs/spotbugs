@@ -19,10 +19,11 @@ package edu.umd.cs.findbugs.detect;
 
 import static edu.umd.cs.findbugs.detect.ReflectiveFieldAccessor.*;
 
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
-import edu.umd.cs.findbugs.detect.ReflectiveInvocation.SpecifiedInvocation;
+import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorInvocation.TypeAwareRFAInvocation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ class ReflectiveAccessTracker {
     private final Map<XField, ReflectiveFieldAccessLog> reflectiveFieldAccessMap = new HashMap<>();
     private final Map<XField, ExplicitAccessor> explicitAccessorMap = new HashMap<>();
     private final Map<XField, ImplicitAccessor> implicitAccessorMap = new HashMap<>();
-    private final List<ReflectiveInvocation> reflectiveInvocations = new ArrayList<>();
+    private final List<ReflectiveFieldAccessorInvocation> reflectiveInvocations = new ArrayList<>();
 
     void newAccessorDeclared(final ReflectiveFieldAccessorBuilder accessorBuilder) {
         XField actualField = accessorBuilder.getActualField();
@@ -61,22 +62,24 @@ class ReflectiveAccessTracker {
         }
     }
 
-    void registerReflectiveInvocation(final ReflectiveInvocation invocation) {
+    void registerReflectiveInvocation(final ReflectiveFieldAccessorInvocation invocation) {
         reflectiveInvocations.add(invocation);
     }
 
     public void resolve() {
-        for (ReflectiveInvocation invocation : reflectiveInvocations) {
+        for (ReflectiveFieldAccessorInvocation invocation : reflectiveInvocations) {
             XField accessorField = invocation.getAccessorField();
-            if (invocation instanceof SpecifiedInvocation) {
+            if (invocation instanceof TypeAwareRFAInvocation) {
                 ExplicitAccessor foundAccessor = explicitAccessorMap.get(accessorField);
                 if (foundAccessor != null) {
-                    foundAccessor.markAccess(((SpecifiedInvocation) invocation).getAccessType());
+                    foundAccessor.markAccess(((TypeAwareRFAInvocation) invocation).getAccessType());
+                    foundAccessor.getReflectiveAccessLog().setSourceLineIfAbsent(invocation.getSourceLine());
                 }
             } else {
                 ImplicitAccessor foundAccessor = implicitAccessorMap.get(accessorField);
                 if (foundAccessor != null) {
                     foundAccessor.markAccess();
+                    foundAccessor.getReflectiveAccessLog().setSourceLineIfAbsent(invocation.getSourceLine());
                 }
             }
         }
@@ -108,6 +111,21 @@ class ReflectiveAccessTracker {
             }
         }
         return allReadFields;
+    }
+
+    public Map<XField, SourceLineAnnotation> getFieldAccess(final XFactory xFactory) {
+        Map<XField, SourceLineAnnotation> fieldAccessLines = new HashMap<>();
+        Collection<XField> allKnownFields = xFactory.allFields();
+        for (ReflectiveFieldAccessLog access : reflectiveFieldAccessMap.values()) {
+            SourceLineAnnotation line = access.getSourceLine();
+            if (line != null) {
+                XField found = findMatchingAmongAll(access.getActualField(), allKnownFields);
+                if (found != null) {
+                    fieldAccessLines.put(found, line);
+                }
+            }
+        }
+        return fieldAccessLines;
     }
 
     private XField findMatchingAmongAll(final XField matchField, final Collection<XField> allKnownFields) {
