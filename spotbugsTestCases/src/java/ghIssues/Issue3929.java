@@ -33,8 +33,22 @@ public class Issue3929 {
         }
     }
 
+    // Variant: pre-decrement before catch, also should NOT report SA
+    public void decrementBeforeCatch() {
+        try {
+            int x = 1;
+            switch (x) {
+                case 1:
+                    --x;
+                    break;
+                default:
+                    break;
+            }
+        } catch (RuntimeException e) {
+        }
+    }
+
     // True positive: real self-assignment should still be reported
-    @SuppressWarnings("SA_LOCAL_SELF_ASSIGNMENT")
     public void realSelfAssignment() {
         int a = 1;
         a = a; // real SA_LOCAL_SELF_ASSIGNMENT
