@@ -9,6 +9,9 @@ class Issue3963Test extends AbstractIntegrationTest {
     void testIlInfiniteLoopFalsePositiveForWideningNumericComparisons() {
         performAnalysis("ghIssues/Issue3963.class");
 
+        // Exactly 3 IL_INFINITE_LOOP bugs expected (one per true positive method)
+        assertBugTypeCount("IL_INFINITE_LOOP", 3);
+
         // False positives (now fixed): loop exits immediately because condition is statically false
         assertNoBugInMethod("IL_INFINITE_LOOP", "ghIssues.Issue3963", "testDoubleComparisonFP");
         assertNoBugInMethod("IL_INFINITE_LOOP", "ghIssues.Issue3963", "testFloatComparisonFP");

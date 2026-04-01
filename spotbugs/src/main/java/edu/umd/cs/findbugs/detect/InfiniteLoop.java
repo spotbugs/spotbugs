@@ -498,7 +498,10 @@ public class InfiniteLoop extends OpcodeStackDetector {
         }
         int v0 = (Integer) c0;
         switch (fcb.opcode) {
-        // Unary comparisons against 0 (item0 == item1, e.g. from dcmpl/dcmpg/lcmp result)
+        // Unary IF* instructions (IFEQ, IFNE, IFLT, ...) pop one int operand and compare
+        // it against an implicit zero. These opcodes are used after dcmpl/dcmpg/fcmpl/fcmpg/lcmp
+        // instructions, which produce -1, 0, or 1 as the comparison result. So v0 holds that
+        // result and we check whether the branch (comparing v0 against 0) is always taken.
         case Const.IFEQ:
             return v0 == 0;
         case Const.IFNE:
