@@ -33,7 +33,7 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
           cache: gradle
-      - uses: gradle/actions/wrapper-validation@39e147cb9de83bb9910b8ef8bd7fff0ee20fcd6f # v6
+      - uses: gradle/actions/wrapper-validation@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6
       - name: Cache Eclipse
         id: cache-eclipse
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
