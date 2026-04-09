@@ -25,45 +25,32 @@ import org.junit.jupiter.api.condition.JRE;
 class Issue2749Test extends AbstractIntegrationTest {
     @Test
     @DisabledOnJre(JRE.JAVA_8)
-    void testAccessViaGettersAndSetters() {
-        performAnalysis(
-                "../java11/ghIssues/issue2749/WithMethodHandlesPrimitive.class",
-                "../java11/ghIssues/issue2749/WithMethodHandlesObject.class",
-                "../java11/ghIssues/issue2749/WithMethodHandlesObject$Value.class",
-                "../java11/ghIssues/issue2749/WithVarHandle$Value.class",
-                "../java11/ghIssues/issue2749/WithVarHandle.class");
-
-        assertNoBugType("UUF_UNUSED_FIELD");
-        assertNoBugType("UWF_UNWRITTEN_FIELD");
-        assertNoBugType("URF_UNREAD_FIELD");
-    }
-
-    @Test
-    @DisabledOnJre(JRE.JAVA_8)
-    void testSetterNotInvoked() {
+    void testMethodHandleSetterNotInvoked() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithMethodHandlesObjectSetterNotInvoked.class",
                 "../java11/ghIssues/issue2749/WithMethodHandlesObjectSetterNotInvoked$Value.class");
 
-        assertNoBugType("UUF_UNUSED_FIELD");
         assertNoBugType("URF_UNREAD_FIELD");
 
+        assertBugTypeCount("UUF_UNUSED_FIELD", 1);
+        assertBugAtFieldAtLine("UUF_UNUSED_FIELD", "WithMethodHandlesObjectSetterNotInvoked", "reflectiveField", 21);
         assertBugTypeCount("UWF_UNWRITTEN_FIELD", 1);
-        assertBugAtFieldAtLine("UWF_UNWRITTEN_FIELD", "WithMethodHandlesObjectSetterNotInvoked", "reflectiveField", 31);
+        assertBugAtFieldAtLine("UWF_UNWRITTEN_FIELD", "WithMethodHandlesObjectSetterNotInvoked", "reflectiveField", 21);
     }
 
     @Test
     @DisabledOnJre(JRE.JAVA_8)
-    void testGetterNotInvoked() {
+    void testMethodHandleGetterNotInvoked() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithMethodHandlesObjectGetterNotInvoked.class",
                 "../java11/ghIssues/issue2749/WithMethodHandlesObjectGetterNotInvoked$Value.class");
 
-        assertNoBugType("UUF_UNUSED_FIELD");
         assertNoBugType("UWF_UNWRITTEN_FIELD");
 
+        assertBugTypeCount("UUF_UNUSED_FIELD", 1);
+        assertBugAtFieldAtLine("UUF_UNUSED_FIELD", "WithMethodHandlesObjectGetterNotInvoked", "reflectiveField", 20);
         assertBugTypeCount("URF_UNREAD_FIELD", 1);
-        assertBugAtFieldAtLine("URF_UNREAD_FIELD", "WithMethodHandlesObjectGetterNotInvoked", "reflectiveField", 31);
+        assertBugAtFieldAtLine("URF_UNREAD_FIELD", "WithMethodHandlesObjectGetterNotInvoked", "reflectiveField", 20);
     }
 
     @Test
@@ -75,7 +62,10 @@ class Issue2749Test extends AbstractIntegrationTest {
 
         assertNoBugType("URF_UNREAD_FIELD");
         assertNoBugType("UWF_UNWRITTEN_FIELD");
-        assertBugTypeCount("UUF_UNUSED_FIELD", 1);
+
+        assertBugTypeCount("UUF_UNUSED_FIELD", 2);
+        assertBugAtFieldAtLine("UUF_UNUSED_FIELD", "WithMethodHandlesNeverInvoked", "reflectiveField", 20);
+        assertBugAtFieldAtLine("UUF_UNUSED_FIELD", "WithMethodHandlesNeverInvoked", "reflectiveField", 21);
     }
 
     @Test
@@ -87,7 +77,9 @@ class Issue2749Test extends AbstractIntegrationTest {
 
         assertNoBugType("URF_UNREAD_FIELD");
         assertNoBugType("UWF_UNWRITTEN_FIELD");
+
         assertBugTypeCount("UUF_UNUSED_FIELD", 1);
+        assertBugAtFieldAtLine("UUF_UNUSED_FIELD", "WithVarHandleNeverInvoked", "value", 18);
     }
 
     @Test
@@ -101,7 +93,7 @@ class Issue2749Test extends AbstractIntegrationTest {
         assertNoBugType("URF_UNREAD_FIELD");
 
         assertBugTypeCount("UWF_UNWRITTEN_FIELD", 1);
-        assertBugAtFieldAtLine("UWF_UNWRITTEN_FIELD", "WithVarHandleNoWriting", "value", 27);
+        assertBugAtFieldAtLine("UWF_UNWRITTEN_FIELD", "WithVarHandleNoWriting", "value", 18);
     }
 
     @Test
@@ -115,7 +107,7 @@ class Issue2749Test extends AbstractIntegrationTest {
         assertNoBugType("UWF_UNWRITTEN_FIELD");
 
         assertBugTypeCount("URF_UNREAD_FIELD", 1);
-        assertBugAtFieldAtLine("URF_UNREAD_FIELD", "WithVarHandleNoReading", "value", 28);
+        assertBugAtFieldAtLine("URF_UNREAD_FIELD", "WithVarHandleNoReading", "value", 18);
     }
 
     @Test
@@ -141,7 +133,7 @@ class Issue2749Test extends AbstractIntegrationTest {
         assertNoBugType("URF_UNREAD_FIELD");
 
         assertBugTypeCount("UWF_UNWRITTEN_FIELD", 1);
-        assertBugAtFieldAtLine("UWF_UNWRITTEN_FIELD", "WithAtomicUpdaterSetterNotInvoked", "reflectiveField", 21);
+        assertBugAtFieldAtLine("UWF_UNWRITTEN_FIELD", "WithAtomicUpdaterSetterNotInvoked", "reflectiveField", 14);
     }
 
     @Test
@@ -155,7 +147,7 @@ class Issue2749Test extends AbstractIntegrationTest {
         assertNoBugType("UWF_UNWRITTEN_FIELD");
 
         assertBugTypeCount("URF_UNREAD_FIELD", 1);
-        assertBugAtFieldAtLine("URF_UNREAD_FIELD", "WithAtomicUpdaterGetterNotInvoked", "reflectiveField", 21);
+        assertBugAtFieldAtLine("URF_UNREAD_FIELD", "WithAtomicUpdaterGetterNotInvoked", "reflectiveField", 14);
     }
 
     @Test
@@ -172,7 +164,21 @@ class Issue2749Test extends AbstractIntegrationTest {
 
     @Test
     @DisabledOnJre(JRE.JAVA_8)
-    void testAtomicUpdaters() {
+    void testAtomicUpdaterNeverInvoked() {
+        performAnalysis(
+                "../java11/ghIssues/issue2749/WithAtomicUpdaterNeverInvoked.class",
+                "../java11/ghIssues/issue2749/WithAtomicUpdaterNeverInvoked$Value.class");
+
+        assertNoBugType("URF_UNREAD_FIELD");
+        assertNoBugType("UWF_UNWRITTEN_FIELD");
+
+        assertBugTypeCount("UUF_UNUSED_FIELD", 1);
+        assertBugAtFieldAtLine("UUF_UNUSED_FIELD", "WithAtomicUpdaterNeverInvoked", "reflectiveField", 14);
+    }
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_8)
+    void testAtomicUpdatersInvoked() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithAtomicUpdaters.class",
                 "../java11/ghIssues/issue2749/WithAtomicUpdaters$Value.class");
@@ -180,5 +186,20 @@ class Issue2749Test extends AbstractIntegrationTest {
         assertNoBugType("UUF_UNUSED_FIELD");
         assertNoBugType("URF_UNREAD_FIELD");
         assertNoBugType("UWF_UNWRITTEN_FIELD");
+    }
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_8)
+    void testAccessViaGettersAndSetters() {
+        performAnalysis(
+                "../java11/ghIssues/issue2749/WithMethodHandlesPrimitive.class",
+                "../java11/ghIssues/issue2749/WithMethodHandlesObject.class",
+                "../java11/ghIssues/issue2749/WithMethodHandlesObject$Value.class",
+                "../java11/ghIssues/issue2749/WithVarHandle$Value.class",
+                "../java11/ghIssues/issue2749/WithVarHandle.class");
+
+        assertNoBugType("UUF_UNUSED_FIELD");
+        assertNoBugType("UWF_UNWRITTEN_FIELD");
+        assertNoBugType("URF_UNREAD_FIELD");
     }
 }

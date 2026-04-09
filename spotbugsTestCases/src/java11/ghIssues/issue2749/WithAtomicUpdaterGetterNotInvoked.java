@@ -10,9 +10,8 @@ public class WithAtomicUpdaterGetterNotInvoked {
         // nothing else
     }
 
-    private static final AtomicReferenceFieldUpdater<WithAtomicUpdaterGetterNotInvoked,
-        Value> UPDATER = AtomicReferenceFieldUpdater.newUpdater(
-        WithAtomicUpdaterGetterNotInvoked.class, Value.class, "reflectiveField");
+    private static final AtomicReferenceFieldUpdater<WithAtomicUpdaterGetterNotInvoked, Value> UPDATER =
+        AtomicReferenceFieldUpdater.newUpdater(WithAtomicUpdaterGetterNotInvoked.class, Value.class, "reflectiveField");
 
     private volatile Value reflectiveField;
 
