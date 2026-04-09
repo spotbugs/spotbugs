@@ -17,18 +17,26 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import static edu.umd.cs.findbugs.detect.ReflectiveFieldAccessor.*;
-
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessor.ExplicitAccessor;
+import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessor.ImplicitAccessor;
 import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorInvocation.TypeAwareRFAInvocation;
+import edu.umd.cs.findbugs.util.MultiMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Tracks the fields accessed through reflection such as VarHandles, MethodHandles and AtomicFieldUpdaters.
@@ -46,6 +54,11 @@ class ReflectiveAccessTracker {
     private final Map<XField, ImplicitAccessor> implicitAccessorMap = new HashMap<>();
     private final List<ReflectiveFieldAccessorInvocation> reflectiveInvocations = new ArrayList<>();
 
+    // convenience map to simplify lookup of unused accessors
+    private final MultiMap<ReflectiveFieldAccessLog, ReflectiveFieldAccessor> mapFieldToAccessors = new MultiMap<>(HashSet.class);
+
+    private XFactory xFactory;
+
     void newAccessorDeclared(final ReflectiveFieldAccessorBuilder accessorBuilder) {
         XField actualField = accessorBuilder.getActualField();
         XField accessorField = accessorBuilder.getAccessorField();
@@ -54,6 +67,7 @@ class ReflectiveAccessTracker {
                 .computeIfAbsent(actualField, k -> new ReflectiveFieldAccessLog(actualField));
 
         ReflectiveFieldAccessor reflectiveFieldAccessor = accessorBuilder.buildWithAccessLog(reflectiveAccessLog);
+        mapFieldToAccessors.add(reflectiveAccessLog, reflectiveFieldAccessor);
 
         if (reflectiveFieldAccessor instanceof ImplicitAccessor) {
             implicitAccessorMap.putIfAbsent(accessorField, (ImplicitAccessor) reflectiveFieldAccessor);
@@ -66,66 +80,109 @@ class ReflectiveAccessTracker {
         reflectiveInvocations.add(invocation);
     }
 
-    public void resolve() {
+    void resolve() {
+        xFactory = AnalysisContext.currentXFactory();
         for (ReflectiveFieldAccessorInvocation invocation : reflectiveInvocations) {
             XField accessorField = invocation.getAccessorField();
             if (invocation instanceof TypeAwareRFAInvocation) {
                 ExplicitAccessor foundAccessor = explicitAccessorMap.get(accessorField);
                 if (foundAccessor != null) {
                     foundAccessor.markAccess(((TypeAwareRFAInvocation) invocation).getAccessType());
-                    foundAccessor.getReflectiveAccessLog().setSourceLineIfAbsent(invocation.getSourceLine());
                 }
             } else {
                 ImplicitAccessor foundAccessor = implicitAccessorMap.get(accessorField);
                 if (foundAccessor != null) {
                     foundAccessor.markAccess();
-                    foundAccessor.getReflectiveAccessLog().setSourceLineIfAbsent(invocation.getSourceLine());
                 }
             }
         }
     }
 
-    public Collection<? extends XField> getWrittenFields(final XFactory xFactory) {
-        List<XField> allWrittenFields = new ArrayList<>();
-        Collection<XField> allKnownFields = xFactory.allFields();
-        for (ReflectiveFieldAccessLog access : reflectiveFieldAccessMap.values()) {
-            if (access.wasSetterInvoked()) {
-                XField found = findMatchingAmongAll(access.getActualField(), allKnownFields);
-                if (found != null) {
-                    allWrittenFields.add(found);
-                }
-            }
-        }
-        return allWrittenFields;
+    Map<XField, SourceLineAnnotation> getFieldsNeverWritten() {
+        return selectFieldsWithLines(log -> log.wasGetterInvoked() && !log.wasSetterInvoked());
     }
 
-    public Collection<? extends XField> getReadFields(final XFactory xFactory) {
-        List<XField> allReadFields = new ArrayList<>();
-        Collection<XField> allKnownFields = xFactory.allFields();
-        for (ReflectiveFieldAccessLog access : reflectiveFieldAccessMap.values()) {
-            if (access.wasGetterInvoked()) {
-                XField found = findMatchingAmongAll(access.getActualField(), allKnownFields);
-                if (found != null) {
-                    allReadFields.add(found);
-                }
-            }
-        }
-        return allReadFields;
+    Map<XField, SourceLineAnnotation> getFieldsNeverRead() {
+        return selectFieldsWithLines(log -> log.wasSetterInvoked() && !log.wasGetterInvoked());
     }
 
-    public Map<XField, SourceLineAnnotation> getFieldAccess(final XFactory xFactory) {
-        Map<XField, SourceLineAnnotation> fieldAccessLines = new HashMap<>();
+    List<? extends XField> getAllAccessedFields() {
+        return selectFields(log -> log.wasGetterInvoked() || log.wasSetterInvoked());
+    }
+
+    private List<XField> selectFields(final Predicate<ReflectiveFieldAccessLog> accessFilter) {
         Collection<XField> allKnownFields = xFactory.allFields();
-        for (ReflectiveFieldAccessLog access : reflectiveFieldAccessMap.values()) {
-            SourceLineAnnotation line = access.getSourceLine();
-            if (line != null) {
-                XField found = findMatchingAmongAll(access.getActualField(), allKnownFields);
-                if (found != null) {
-                    fieldAccessLines.put(found, line);
-                }
+        return reflectiveFieldAccessMap.values().stream()
+                .filter(accessFilter)
+                .map(access -> findMatchingAmongAll(access.getActualField(), allKnownFields))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    private Map<XField, SourceLineAnnotation> selectFieldsWithLines(final Predicate<ReflectiveFieldAccessLog> accessFilter) {
+        Collection<XField> allKnownFields = xFactory.allFields();
+        Map<XField, SourceLineAnnotation> fieldToLineMap = new LinkedHashMap<>();
+        reflectiveFieldAccessMap.values().stream()
+                .filter(accessFilter)
+                .forEach(log -> {
+                    XField knownField = findMatchingAmongAll(log.getActualField(), allKnownFields);
+                    if (knownField != null) {
+                        fieldToLineMap.put(knownField, getMostRelevantAccessorLine(log));
+                    }
+                });
+        return fieldToLineMap;
+    }
+
+    MultiMap<XField, ReflectiveFieldAccessor> getUnusedAccessorsByActualField() {
+        Collection<XField> allKnownFields = xFactory.allFields();
+        MultiMap<XField, ReflectiveFieldAccessor> fieldToAccessorsMap = new MultiMap<>(ArrayList.class);
+        getUnusedAccessors().forEach(accessor -> {
+            XField knownField = findMatchingAmongAll(accessor.getReflectiveAccessLog().getActualField(), allKnownFields);
+            if (knownField != null) {
+                fieldToAccessorsMap.add(knownField, accessor);
             }
+        });
+        return fieldToAccessorsMap;
+    }
+
+    private List<ReflectiveFieldAccessor> getUnusedAccessors() {
+        return mapFieldToAccessors.asMap().values().stream()
+                .flatMap(Collection::stream)
+                .filter(a -> !a.wasUsed())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns the declaration source line of the most relevant accessor for a bug report.
+     * When the field is read but never written, points to the setter-accessor's declaration line.
+     * When the field is written but never read, points to the getter-accessor's declaration line.
+     * Otherwise falls back to the declaration line of the first registered accessor.
+     */
+    private SourceLineAnnotation getMostRelevantAccessorLine(final ReflectiveFieldAccessLog log) {
+        Collection<ReflectiveFieldAccessor> accessors = mapFieldToAccessors.get(log);
+        Optional<SourceLineAnnotation> foundAnnotation = Optional.empty();
+        if (log.wasGetterInvoked() && !log.wasSetterInvoked()) {
+            foundAnnotation = findAccessorLineFor(AccessType.SETTER, accessors);
+        } else if (log.wasSetterInvoked() && !log.wasGetterInvoked()) {
+            foundAnnotation = findAccessorLineFor(AccessType.GETTER, accessors);
         }
-        return fieldAccessLines;
+        return foundAnnotation.orElse(firstAccessorLine(accessors));
+    }
+
+    private SourceLineAnnotation firstAccessorLine(final Collection<ReflectiveFieldAccessor> accessors) {
+        return accessors.stream()
+                .map(ReflectiveFieldAccessor::getDeclarationSourceLine)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Optional<SourceLineAnnotation> findAccessorLineFor(final AccessType accessType,
+            final Collection<ReflectiveFieldAccessor> accessors) {
+        return accessors.stream()
+                .filter(accessor -> accessor.getAccessType() == accessType || accessor.getAccessType() == AccessType.BOTH)
+                .map(ReflectiveFieldAccessor::getDeclarationSourceLine)
+                .findFirst();
     }
 
     private XField findMatchingAmongAll(final XField matchField, final Collection<XField> allKnownFields) {

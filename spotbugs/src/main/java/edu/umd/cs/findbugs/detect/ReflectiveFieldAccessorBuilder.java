@@ -17,6 +17,7 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.detect.ReflectiveAccessTracker.AccessType;
 import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessor.ExplicitAccessor;
@@ -29,13 +30,15 @@ abstract class ReflectiveFieldAccessorBuilder {
     private final XField actualField;
     private final int assignmentExpectedAtPC;
     private final AccessType accessType;
+    private final SourceLineAnnotation declarationSourceLine;
     private XField accessorField;
 
     ReflectiveFieldAccessorBuilder(final XField actualField, int assignmentExpectedAtPC,
-            final AccessType accessType) {
+            final AccessType accessType, final SourceLineAnnotation declarationSourceLine) {
         this.actualField = actualField;
         this.assignmentExpectedAtPC = assignmentExpectedAtPC;
         this.accessType = accessType;
+        this.declarationSourceLine = declarationSourceLine;
     }
 
     /**
@@ -67,6 +70,10 @@ abstract class ReflectiveFieldAccessorBuilder {
         return accessType;
     }
 
+    public SourceLineAnnotation getDeclarationSourceLine() {
+        return declarationSourceLine;
+    }
+
     /**
      * Builds ImplicitAccessor, since a MethodHandle is already created as a Getter or a Setter. The type of access
      * is therefore set at instantiation.
@@ -74,13 +81,28 @@ abstract class ReflectiveFieldAccessorBuilder {
     static class MethodHandleAccessorBuilder extends ReflectiveFieldAccessorBuilder {
 
         public MethodHandleAccessorBuilder(final XField actualField, final int assignmentExpectedAtPC,
-                final AccessType accessType) {
-            super(actualField, assignmentExpectedAtPC, accessType);
+                final AccessType accessType, final SourceLineAnnotation declarationSourceLine) {
+            super(actualField, assignmentExpectedAtPC, accessType, declarationSourceLine);
         }
 
         @Override
         ImplicitAccessor buildWithAccessLog(final ReflectiveFieldAccessLog accessLog) {
-            return new ImplicitAccessor(accessLog, getAccessType());
+            return new ImplicitAccessor(accessLog, getAccessType(), getDeclarationSourceLine());
+        }
+    }
+
+    /**
+     * Base class for builders that produce an ExplicitAccessor (access type determined at invocation).
+     */
+    abstract static class ExplicitAccessorBuilder extends ReflectiveFieldAccessorBuilder {
+        ExplicitAccessorBuilder(final XField actualField, final int assignmentExpectedAtPC,
+                final SourceLineAnnotation declarationSourceLine) {
+            super(actualField, assignmentExpectedAtPC, AccessType.BOTH, declarationSourceLine);
+        }
+
+        @Override
+        ReflectiveFieldAccessor buildWithAccessLog(final ReflectiveFieldAccessLog accessLog) {
+            return new ExplicitAccessor(accessLog, getDeclarationSourceLine());
         }
     }
 
@@ -88,14 +110,10 @@ abstract class ReflectiveFieldAccessorBuilder {
      * Builds ExplicitAccessor, since a VarHandle provides both Getter and Setter methods. The access type is therefore
      * only known at invocation.
      */
-    static class VarHandleAccessorBuilder extends ReflectiveFieldAccessorBuilder {
-        public VarHandleAccessorBuilder(final XField actualField, final int assignmentExpectedAtPC) {
-            super(actualField, assignmentExpectedAtPC, AccessType.BOTH);
-        }
-
-        @Override
-        ReflectiveFieldAccessor buildWithAccessLog(final ReflectiveFieldAccessLog accessLog) {
-            return new ExplicitAccessor(accessLog);
+    static class VarHandleAccessorBuilder extends ExplicitAccessorBuilder {
+        public VarHandleAccessorBuilder(final XField actualField, final int assignmentExpectedAtPC,
+                final SourceLineAnnotation declarationSourceLine) {
+            super(actualField, assignmentExpectedAtPC, declarationSourceLine);
         }
     }
 
@@ -103,14 +121,10 @@ abstract class ReflectiveFieldAccessorBuilder {
      * Builds ExplicitAccessor, since an AtomicFieldUpdater provides both Getter and Setter methods. The access type
      * is therefore only known at invocation.
      */
-    static class AtomicUpdaterAccessorBuilder extends ReflectiveFieldAccessorBuilder {
-        public AtomicUpdaterAccessorBuilder(final XField actualField, final int assignmentExpectedAtPC) {
-            super(actualField, assignmentExpectedAtPC, AccessType.BOTH);
-        }
-
-        @Override
-        ReflectiveFieldAccessor buildWithAccessLog(final ReflectiveFieldAccessLog accessLog) {
-            return new ExplicitAccessor(accessLog);
+    static class AtomicUpdaterAccessorBuilder extends ExplicitAccessorBuilder {
+        public AtomicUpdaterAccessorBuilder(final XField actualField, final int assignmentExpectedAtPC,
+                final SourceLineAnnotation declarationSourceLine) {
+            super(actualField, assignmentExpectedAtPC, declarationSourceLine);
         }
     }
 }

@@ -93,6 +93,7 @@ import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorInvocation.AtomicUpdate
 import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorInvocation.MethodHandleInvocation;
 import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorInvocation.VarHandleInvocation;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.util.Bag;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
@@ -451,7 +452,8 @@ public class UnreadFields extends OpcodeStackDetector {
             String fieldClass = (String) stack.getStackItem(2).getConstant();
             if (fieldName != null && fieldSignature != null && fieldClass != null) {
                 XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, ClassName.toSignature(fieldSignature), false);
-                currentReflectiveField = new AtomicUpdaterAccessorBuilder(f, getNextPC());
+                currentReflectiveField = new AtomicUpdaterAccessorBuilder(f, getNextPC(),
+                        SourceLineAnnotation.fromVisitedInstruction(this));
             }
         }
         if (seen == Const.INVOKESTATIC && "java/util/concurrent/atomic/AtomicIntegerFieldUpdater".equals(getClassConstantOperand())
@@ -460,7 +462,8 @@ public class UnreadFields extends OpcodeStackDetector {
             String fieldClass = (String) stack.getStackItem(1).getConstant();
             if (fieldName != null && fieldClass != null) {
                 XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, "I", false);
-                currentReflectiveField = new AtomicUpdaterAccessorBuilder(f, getNextPC());
+                currentReflectiveField = new AtomicUpdaterAccessorBuilder(f, getNextPC(),
+                        SourceLineAnnotation.fromVisitedInstruction(this));
             }
 
         }
@@ -470,7 +473,8 @@ public class UnreadFields extends OpcodeStackDetector {
             String fieldClass = (String) stack.getStackItem(1).getConstant();
             if (fieldName != null && fieldClass != null) {
                 XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, "J", false);
-                currentReflectiveField = new AtomicUpdaterAccessorBuilder(f, getNextPC());
+                currentReflectiveField = new AtomicUpdaterAccessorBuilder(f, getNextPC(),
+                        SourceLineAnnotation.fromVisitedInstruction(this));
             }
         }
 
@@ -483,7 +487,8 @@ public class UnreadFields extends OpcodeStackDetector {
                 if (fieldName != null && fieldSignature != null && fieldClass != null) {
                     XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, fieldSignature, false);
                     currentReflectiveField = new MethodHandleAccessorBuilder(f, getNextPC(),
-                            methodName.equals("findGetter") ? AccessType.GETTER : AccessType.SETTER);
+                            methodName.equals("findGetter") ? AccessType.GETTER : AccessType.SETTER,
+                            SourceLineAnnotation.fromVisitedInstruction(this));
                 }
             }
             if ("findVarHandle".equals(methodName)) {
@@ -492,7 +497,8 @@ public class UnreadFields extends OpcodeStackDetector {
                 String fieldClass = (String) stack.getStackItem(2).getConstant();
                 if (fieldName != null && fieldSignature != null && fieldClass != null) {
                     XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, fieldSignature, false);
-                    currentReflectiveField = new VarHandleAccessorBuilder(f, getNextPC());
+                    currentReflectiveField = new VarHandleAccessorBuilder(f, getNextPC(),
+                            SourceLineAnnotation.fromVisitedInstruction(this));
                 }
             }
         }
@@ -928,15 +934,6 @@ public class UnreadFields extends OpcodeStackDetector {
             fieldNamesSet.add(f.getName());
         }
 
-        XFactory xFactory = AnalysisContext.currentXFactory();
-        reflectiveAccessTracker.resolve();
-        Collection<? extends XField> writtenFields = reflectiveAccessTracker.getWrittenFields(xFactory);
-        Collection<? extends XField> readFields = reflectiveAccessTracker.getReadFields(xFactory);
-        data.writtenNonNullFields.addAll(writtenFields);
-        data.writtenFields.addAll(writtenFields);
-        data.readFields.addAll(readFields);
-        data.fieldAccess.putAll(reflectiveAccessTracker.getFieldAccess(xFactory));
-
         if (DEBUG) {
             System.out.println("read fields:");
             for (XField f : data.readFields) {
@@ -971,6 +968,7 @@ public class UnreadFields extends OpcodeStackDetector {
         }
         Set<XField> declaredFields = new HashSet<>();
         AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
+        XFactory xFactory = AnalysisContext.currentXFactory();
         for (XField f : AnalysisContext.currentXFactory().allFields()) {
             ClassDescriptor classDescriptor = f.getClassDescriptor();
             if (currentAnalysisContext.isApplicationClass(classDescriptor)
@@ -978,6 +976,9 @@ public class UnreadFields extends OpcodeStackDetector {
                 declaredFields.add(f);
             }
         }
+
+        reportReflectivelyAccessedFields(declaredFields);
+
         // Don't report anything about ejb3Fields
         HashSet<XField> unknownAnotationAndUnwritten = new HashSet<>(data.unknownAnnotation.keySet());
         unknownAnotationAndUnwritten.removeAll(data.writtenFields);
@@ -1352,6 +1353,99 @@ public class UnreadFields extends OpcodeStackDetector {
             instance.add(data.fieldAccess.get(f));
         }
         return instance;
+    }
+
+    private void reportReflectivelyAccessedFields(final Set<XField> declaredFields) {
+        reflectiveAccessTracker.resolve();
+        reportUnusedReflectiveAccessors(declaredFields);
+        reportUnwrittenReflectiveFields();
+        reportUnreadReflectiveFields();
+        declaredFields.removeAll(reflectiveAccessTracker.getAllAccessedFields());
+    }
+
+    private void reportUnusedReflectiveAccessors(final Set<XField> declaredFields) {
+        MultiMap<XField, ReflectiveFieldAccessor> unusedAccessors =
+                reflectiveAccessTracker.getUnusedAccessorsByActualField();
+        XFactory xFactory = AnalysisContext.currentXFactory();
+        for (XField actualField : unusedAccessors.keySet()) {
+            declaredFields.remove(actualField);
+            for (ReflectiveFieldAccessor unusedAccessor : unusedAccessors.get(actualField)) {
+                int priority = NORMAL_PRIORITY;
+                if (xFactory.isReflectiveClass(actualField.getClassDescriptor())) {
+                    priority++;
+                }
+                String bugType = (actualField.isPublic() || actualField.isProtected())
+                        ? "UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD"
+                        : "UUF_UNUSED_FIELD";
+                BugInstance bug = new BugInstance(this, bugType, priority)
+                        .addClass(actualField.getClassName()).addField(actualField);
+                SourceLineAnnotation line = unusedAccessor.getDeclarationSourceLine();
+                if (line != null) {
+                    bug.add(line);
+                }
+                bugReporter.reportBug(bug.lowerPriorityIfDeprecated());
+            }
+        }
+    }
+
+    private void reportUnwrittenReflectiveFields() {
+        XFactory xFactory = AnalysisContext.currentXFactory();
+        for (Map.Entry<XField, SourceLineAnnotation> entry : reflectiveAccessTracker.getFieldsNeverWritten().entrySet()) {
+            XField f = entry.getKey();
+            if (!f.isResolved()) {
+                continue;
+            }
+            int priority = NORMAL_PRIORITY;
+            if (xFactory.isReflectiveClass(f.getClassDescriptor())) {
+                priority++;
+            }
+            String fieldSignature = f.getSignature();
+            if (!(fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '[')) {
+                priority++;
+            }
+            String pattern = (f.isProtected() || f.isPublic())
+                    ? "UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"
+                    : "UWF_UNWRITTEN_FIELD";
+            BugInstance bug = new BugInstance(this, pattern, priority)
+                    .addClass(f.getClassName()).addField(f);
+            SourceLineAnnotation line = entry.getValue();
+            if (line != null) {
+                bug.add(line);
+            }
+            bugReporter.reportBug(bug);
+        }
+    }
+
+    private void reportUnreadReflectiveFields() {
+        XFactory xFactory = AnalysisContext.currentXFactory();
+        for (Map.Entry<XField, SourceLineAnnotation> entry : reflectiveAccessTracker.getFieldsNeverRead().entrySet()) {
+            XField f = entry.getKey();
+            if (!f.isResolved()
+                    || containsSpecialAnnotation(f.getAnnotations())
+                    || f.getName().toLowerCase().indexOf("guardian") >= 0) {
+                continue;
+            }
+            int priority = NORMAL_PRIORITY;
+            if (xFactory.isReflectiveClass(f.getClassDescriptor())) {
+                priority++;
+            }
+            if (f.isStatic()) {
+                priority++;
+            }
+            if (f.isFinal()) {
+                priority++;
+            }
+            String pattern = (f.isPublic() || f.isProtected())
+                    ? "URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"
+                    : "URF_UNREAD_FIELD";
+            BugInstance bug = new BugInstance(this, pattern, priority)
+                    .addClass(f.getClassName()).addField(f);
+            SourceLineAnnotation line = entry.getValue();
+            if (line != null) {
+                bug.add(line);
+            }
+            bugReporter.reportBug(bug);
+        }
     }
 
     /**

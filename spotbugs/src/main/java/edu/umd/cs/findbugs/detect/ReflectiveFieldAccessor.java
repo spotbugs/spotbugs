@@ -17,6 +17,7 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.detect.ReflectiveAccessTracker.AccessType;
 
 /**
@@ -26,10 +27,14 @@ class ReflectiveFieldAccessor {
 
     private final AccessType accessType;
     private final ReflectiveFieldAccessLog accessLog;
+    private final SourceLineAnnotation declarationSourceLine;
+    private boolean wasUsed = false;
 
-    public ReflectiveFieldAccessor(final ReflectiveFieldAccessLog accessLog, final AccessType accessType) {
+    public ReflectiveFieldAccessor(final ReflectiveFieldAccessLog accessLog, final AccessType accessType,
+            final SourceLineAnnotation declarationSourceLine) {
         this.accessType = accessType;
         this.accessLog = accessLog;
+        this.declarationSourceLine = declarationSourceLine;
     }
 
     public ReflectiveFieldAccessLog getReflectiveAccessLog() {
@@ -40,16 +45,30 @@ class ReflectiveFieldAccessor {
         return accessType;
     }
 
+    public SourceLineAnnotation getDeclarationSourceLine() {
+        return declarationSourceLine;
+    }
+
+    public boolean wasUsed() {
+        return wasUsed;
+    }
+
+    protected void markUsed() {
+        wasUsed = true;
+    }
+
     /**
      * Accessor which can be invoked to both set and get the value. The accessType is supplied at invocation.
      */
     static class ExplicitAccessor extends ReflectiveFieldAccessor {
 
-        public ExplicitAccessor(final ReflectiveFieldAccessLog reflectiveAccessLog) {
-            super(reflectiveAccessLog, AccessType.BOTH);
+        public ExplicitAccessor(final ReflectiveFieldAccessLog reflectiveAccessLog,
+                final SourceLineAnnotation declarationSourceLine) {
+            super(reflectiveAccessLog, AccessType.BOTH, declarationSourceLine);
         }
 
         public void markAccess(final AccessType accessType) {
+            markUsed();
             getReflectiveAccessLog().markAccess(accessType);
         }
     }
@@ -60,11 +79,12 @@ class ReflectiveFieldAccessor {
     static class ImplicitAccessor extends ReflectiveFieldAccessor {
 
         public ImplicitAccessor(final ReflectiveFieldAccessLog reflectiveAccessLog,
-                final AccessType accessType) {
-            super(reflectiveAccessLog, accessType);
+                final AccessType accessType, final SourceLineAnnotation declarationSourceLine) {
+            super(reflectiveAccessLog, accessType, declarationSourceLine);
         }
 
         public void markAccess() {
+            markUsed();
             getReflectiveAccessLog().markAccess(getAccessType());
         }
     }

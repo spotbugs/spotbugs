@@ -17,7 +17,6 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.detect.ReflectiveAccessTracker.AccessType;
 
@@ -29,7 +28,6 @@ class ReflectiveFieldAccessLog {
     private final XField actualField;
     private boolean setterInvoked = false;
     private boolean getterInvoked = false;
-    private SourceLineAnnotation sourceLine;
 
     public ReflectiveFieldAccessLog(final XField actualField) {
         this.actualField = actualField;
@@ -47,16 +45,6 @@ class ReflectiveFieldAccessLog {
         return getterInvoked;
     }
 
-    public void setSourceLineIfAbsent(final SourceLineAnnotation annotation) {
-        if (this.sourceLine == null) {
-            this.sourceLine = annotation;
-        }
-    }
-
-    public SourceLineAnnotation getSourceLine() {
-        return sourceLine;
-    }
-
     public void markAccess(final AccessType accessType) {
         switch (accessType) {
         case GETTER:
@@ -67,6 +55,7 @@ class ReflectiveFieldAccessLog {
             break;
         case BOTH:
             getterInvoked = setterInvoked = true;
+            break;
         }
     }
 }
