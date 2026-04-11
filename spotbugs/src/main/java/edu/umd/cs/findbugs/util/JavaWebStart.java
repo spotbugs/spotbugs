@@ -49,10 +49,10 @@ public class JavaWebStart {
         Object showObject = null;
         try {
             Class<?> serviceManagerClass = Class.forName("javax.jnlp.ServiceManager");
-            Method lookupMethod = serviceManagerClass.getMethod("lookup", new Class[] { String.class });
-            showObject = lookupMethod.invoke(null, new Object[] { "javax.jnlp.BasicService" });
-            showMethod = showObject.getClass().getMethod("showDocument", new Class[] { URL.class });
-            getCodeBase = showObject.getClass().getMethod("getCodeBase", new Class[] {});
+            Method lookupMethod = serviceManagerClass.getMethod("lookup", String.class);
+            showObject = lookupMethod.invoke(null, "javax.jnlp.BasicService");
+            showMethod = showObject.getClass().getMethod("showDocument", URL.class);
+            getCodeBase = showObject.getClass().getMethod("getCodeBase");
 
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             assert true;
