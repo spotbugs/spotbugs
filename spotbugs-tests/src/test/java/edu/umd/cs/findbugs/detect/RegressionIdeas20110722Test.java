@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 class RegressionIdeas20110722Test extends AbstractIntegrationTest {
 
     // Problems in null checks, see https://github.com/spotbugs/spotbugs/issues/2890
-    // Disabled because Guava 33+ uses JSpecify annotations on Preconditions methods; once
-    // SpotBugs understands JSpecify, the expected bug counts change.
+    // Disabled because Guava 33+ uses JSpecify annotations; with JSpecify support added,
+    // the expected bug counts have changed.
     @Disabled("Guava migrated to JSpecify annotations; expected bug counts change with JSpecify support. "
             + "See https://github.com/spotbugs/spotbugs/issues/2890")
     @Test

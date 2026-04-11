@@ -67,7 +67,7 @@ public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation
     public static final NullnessAnnotation UNKNOWN_NULLNESS = new NullnessAnnotation("UnknownNullness", 0) {
         @Override
         boolean match(@DottedClassName String className) {
-            // NullUnmarked means nullness is unspecified in this scope
+            // NullUnmarked means nullness is unspecified in this scope (scope-level semantics not yet implemented)
             return "org.jspecify.annotations.NullUnmarked".equals(className)
                     || super.match(className);
         }
