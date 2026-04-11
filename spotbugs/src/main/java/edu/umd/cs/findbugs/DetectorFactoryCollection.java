@@ -322,7 +322,7 @@ public class DetectorFactoryCollection {
             Matcher m = EDU_UMD_CLASSFILE_PATTERN.matcher(classfile);
             if (m.matches()) {
                 String home = m.group(1);
-                if (new File(new File(home, "etc"), "findbugs.xml").exists()) {
+                if (Files.exists(home.toPath().resolve("etc/findbugs.xml"))) {
                     FindBugs.setHome(home);
                     return home;
                 }
