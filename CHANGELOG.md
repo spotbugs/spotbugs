@@ -13,6 +13,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Reuse DismantleBytecode.isIf introduced in ([#3869](https://github.com/spotbugs/spotbugs/pull/3869))
 
 ### Added
+- Added partial support for `org.jspecify.annotations.Nullable`, `org.jspecify.annotations.NonNull`, and `org.jspecify.annotations.NullUnmarked` annotations. These are aliased to the closest existing SpotBugs nullness annotations. This is not a complete implementation of the JSpecify spec; scope-level semantics of `@NullMarked` and `@NullUnmarked` are not yet supported. ([#3142](https://github.com/spotbugs/spotbugs/pull/3142))
 - Recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3780](https://github.com/spotbugs/spotbugs/pull/3780))
 - Detect use of `sun.misc.Unsafe` and `jdk.internal.misc.Unsafe` ([#3804](https://github.com/spotbugs/spotbugs/pull/3804))
 - New bug type is introduced: `NCR_NOT_PROPERLY_CHECKED_READ`. Improper validation of the return value from the read() method in InputStream and Reader classes may result in an array not being fully filled. ([#3766](https://github.com/spotbugs/spotbugs/pull/3766))
