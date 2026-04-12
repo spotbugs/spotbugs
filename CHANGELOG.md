@@ -48,6 +48,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `IM_BAD_CHECK_FOR_ODD` false negative when using Yoda-style comparison (`1 == i % 2`) ([#3886](https://github.com/spotbugs/spotbugs/issues/3886))
 - Fix `PluginLoader.close()` to continue closing all `URLClassLoader`s when one close operation fails, suppressing subsequent `IOException`s. ([#3958](https://github.com/spotbugs/spotbugs/pull/3958))
 - Fix broken `bugDescriptions.html#TYPE` links by restoring legacy bug type anchors in generated docs ([#2113](https://github.com/spotbugs/spotbugs/issues/2113))
+- Fix `@Generated` behaviour for `TQ_` checks. ([#3999](https://github.com/spotbugs/spotbugs/issues/3999))
 
 ### Removed
 - Removed old deprecated methods: 
