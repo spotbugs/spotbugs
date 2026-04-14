@@ -633,7 +633,8 @@ public class PluginLoader implements AutoCloseable {
                 resourceUrl.openConnection().getInputStream().close();
                 return resourceUrl;
             } catch (FileNotFoundException e) {
-                // This is not an issue, if logged at IOException it's distracting
+                // Missing JAR entry is expected here when the resource is not packaged in findbugs.jar;
+                // ignore it and fall through so this method returns null.
             } catch (IOException e) {
                 LOG.warn("Failed to load resourceFromFindbugsJar: IOException was thrown at zip file {} loading.",
                         findbugsJar, e);
