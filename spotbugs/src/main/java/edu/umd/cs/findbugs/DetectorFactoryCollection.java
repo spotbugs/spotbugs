@@ -55,12 +55,13 @@ import edu.umd.cs.findbugs.util.ClassPathUtil;
 public class DetectorFactoryCollection {
 
     private static final Logger LOGGER = Logger.getLogger(DetectorFactoryCollection.class.getName());
-    private static final boolean DEBUG_JAWS = SystemProperties.getBoolean("findbugs.jaws.debug");
-    //    private static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
 
     private static final Pattern SPOTBUGS_JAR_PATTERN = Pattern.compile("spotbugs\\.jar$");
 
     private static final Pattern EDU_UMD_CLASSFILE_PATTERN = Pattern.compile("(.*)/.*?/edu/umd.*");
+
+    private static final boolean DEBUG_JAWS = SystemProperties.getBoolean("findbugs.jaws.debug");
+    //    private static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
 
     private static DetectorFactoryCollection theInstance;
     private static final Object lock = new Object();
