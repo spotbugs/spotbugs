@@ -23,6 +23,8 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,6 +57,10 @@ public class DetectorFactoryCollection {
     private static final Logger LOGGER = Logger.getLogger(DetectorFactoryCollection.class.getName());
     private static final boolean DEBUG_JAWS = SystemProperties.getBoolean("findbugs.jaws.debug");
     //    private static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
+
+    private static final Pattern SPOTBUGS_JAR_PATTERN = Pattern.compile("spotbugs\\.jar$");
+
+    private static final Pattern EDU_UMD_CLASSFILE_PATTERN = Pattern.compile("(.*)/.*?/edu/umd.*");
 
     private static DetectorFactoryCollection theInstance;
     private static final Object lock = new Object();
@@ -299,29 +305,26 @@ public class DetectorFactoryCollection {
      * @return inferred ${spotbugs.home}, or null if we can't figure it out
      */
     private static String inferSpotBugsHome() {
-        Pattern[] findbugsJarNames = { Pattern.compile("spotbugs\\.jar$"), };
-
-        for (Pattern jarNamePattern : findbugsJarNames) {
-            String findbugsJarCodeBase = ClassPathUtil.findCodeBaseInClassPath(jarNamePattern,
-                    SystemProperties.getProperty("java.class.path"));
-            if (findbugsJarCodeBase != null) {
-                File findbugsJar = new File(findbugsJarCodeBase);
-                File libDir = findbugsJar.getParentFile();
-                if (libDir != null && "lib".equals(libDir.getName())) {
-                    String fbHome = libDir.getParent();
-                    FindBugs.setHome(fbHome);
-                    return fbHome;
-                }
+        String findbugsJarCodeBase = ClassPathUtil.findCodeBaseInClassPath(SPOTBUGS_JAR_PATTERN,
+                SystemProperties.getProperty("java.class.path"));
+        if (findbugsJarCodeBase != null) {
+            File findbugsJar = new File(findbugsJarCodeBase);
+            File libDir = findbugsJar.getParentFile();
+            if (libDir != null && "lib".equals(libDir.getName())) {
+                String fbHome = libDir.getParent();
+                FindBugs.setHome(fbHome);
+                return fbHome;
             }
         }
+
         String classFilePath = FindBugs.class.getName().replace('.', '/') + ".class";
         URL resource = FindBugs.class.getClassLoader().getResource(classFilePath);
         if (resource != null && "file".equals(resource.getProtocol())) {
             String classfile = URLDecoder.decode(resource.getPath(), Charset.defaultCharset());
-            Matcher m = Pattern.compile("(.*)/.*?/edu/umd.*").matcher(classfile);
+            Matcher m = EDU_UMD_CLASSFILE_PATTERN.matcher(classfile);
             if (m.matches()) {
                 String home = m.group(1);
-                if (new File(home + "/etc/findbugs.xml").exists()) {
+                if (Files.exists(Path.of(home, "etc", "findbugs.xml"))) {
                     FindBugs.setHome(home);
                     return home;
                 }
