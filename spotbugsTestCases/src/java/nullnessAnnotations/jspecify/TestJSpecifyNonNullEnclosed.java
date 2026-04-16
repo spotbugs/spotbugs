@@ -1,8 +1,8 @@
 package nullnessAnnotations.jspecify;
 
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 
-@NonNull
+@NullMarked
 public class TestJSpecifyNonNullEnclosed {
 
     void f(Object o) {

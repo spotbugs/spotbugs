@@ -44,12 +44,12 @@ class JSpecifyNullabilityTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Disabled("SpotBugs does not yet support class-level @NonNull as an enclosing scope default. "
+    @Disabled("SpotBugs does not yet support class-level @NullMarked as an enclosing scope default. "
             + "Full support requires implementing enclosed scope semantics per https://jspecify.dev/docs/spec/#null-marked-scope")
     void checkedJSpecifyNonNullEnclosed() {
         performAnalysis(
                 "nullnessAnnotations/jspecify/TestJSpecifyNonNullEnclosed.class",
-                "org/jspecify/annotations/NonNull.class");
+                "org/jspecify/annotations/NullMarked.class");
         assertBugTypeCount("NP_NONNULL_PARAM_VIOLATION", 1);
         assertBugInMethodCount("NP_NONNULL_PARAM_VIOLATION", "TestJSpecifyNonNullEnclosed", "bar", 1);
     }

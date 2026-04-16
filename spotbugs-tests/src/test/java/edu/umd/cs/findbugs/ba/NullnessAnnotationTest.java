@@ -44,7 +44,7 @@ class NullnessAnnotationTest {
                 Arguments.of("org.jspecify.annotations.Nullable", NullnessAnnotation.CHECK_FOR_NULL),
                 Arguments.of("org.jspecify.annotations.NonNull", NullnessAnnotation.NONNULL),
                 Arguments.of("org.jspecify.annotations.NullUnmarked", NullnessAnnotation.UNKNOWN_NULLNESS),
-                Arguments.of("org.jspecify.annotations.NullMarked", null),
+                Arguments.of("org.jspecify.annotations.NullMarked", NullnessAnnotation.NONNULL),
 
                 Arguments.of("something different", null));
     }
