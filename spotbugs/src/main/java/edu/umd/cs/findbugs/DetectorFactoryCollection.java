@@ -64,7 +64,7 @@ public class DetectorFactoryCollection {
     // used local variables for Pattern compilation.  As a result, the Patterns must be before DEBUG_JAXWS.
     private static final Pattern SPOTBUGS_JAR_PATTERN = Pattern.compile("spotbugs\\.jar$");
     private static final Pattern EDU_UMD_CLASSFILE_PATTERN = Pattern.compile("(.*)/.*?/edu/umd.*");
-    
+
     private static final boolean DEBUG_JAWS = SystemProperties.getBoolean("findbugs.jaws.debug");
     //    private static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
 
