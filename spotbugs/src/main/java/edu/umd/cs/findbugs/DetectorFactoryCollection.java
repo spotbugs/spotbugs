@@ -55,12 +55,18 @@ import edu.umd.cs.findbugs.util.ClassPathUtil;
 public class DetectorFactoryCollection {
 
     private static final Logger LOGGER = Logger.getLogger(DetectorFactoryCollection.class.getName());
+
+    // There's a pre-existing circular initialization chain between these three classes:
+    // DetectorFactoryCollection → SystemProperties (via DEBUG_JAWS = SystemProperties.getBoolean(...))
+    // SystemProperties → PluginLoader (via getCoreResource("systemProperties.properties"))
+    // PluginLoader → DetectorFactoryCollection (via installStandardPlugins() → getFindBugsHome() → inferSpotBugsHome())
+    // This circular dependency existed before adding static PATTERNS and worked fine because inferSpotBugsHome() only
+    // used local variables for Pattern compilation.  As a result, the Patterns must be before DEBUG_JAXWS.
+    private static final Pattern SPOTBUGS_JAR_PATTERN = Pattern.compile("spotbugs\\.jar$");
+    private static final Pattern EDU_UMD_CLASSFILE_PATTERN = Pattern.compile("(.*)/.*?/edu/umd.*");
+    
     private static final boolean DEBUG_JAWS = SystemProperties.getBoolean("findbugs.jaws.debug");
     //    private static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
-
-    private static final Pattern SPOTBUGS_JAR_PATTERN = Pattern.compile("spotbugs\\.jar$");
-
-    private static final Pattern EDU_UMD_CLASSFILE_PATTERN = Pattern.compile("(.*)/.*?/edu/umd.*");
 
     private static DetectorFactoryCollection theInstance;
     private static final Object lock = new Object();
