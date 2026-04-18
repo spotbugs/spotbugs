@@ -60,17 +60,6 @@ public class DetectorFactoryCollection {
 
     private static final Pattern EDU_UMD_CLASSFILE_PATTERN = Pattern.compile("(.*)/.*?/edu/umd.*");
 
-    // Use a lazy-holder inner class so the property is evaluated only once (when first needed)
-    // but not during DetectorFactoryCollection's own static initialization. Evaluating
-    // SystemProperties.getBoolean() eagerly as a static field initializer in DFC would
-    // trigger the SystemProperties → PluginLoader → DetectorFactoryCollection circular
-    // class-initialization chain.
-    private static final class JawsDebug {
-        static final boolean VALUE = SystemProperties.getBoolean("findbugs.jaws.debug");
-    }
-
-    //    private static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
-
     private static DetectorFactoryCollection theInstance;
     private static final Object lock = new Object();
 
@@ -98,6 +87,15 @@ public class DetectorFactoryCollection {
         this(true, true, enabled, enabled);
     }
 
+    // Use a lazy-holder inner class so the property is evaluated only once (when first needed)
+    // but not during DetectorFactoryCollection's own static initialization. Evaluating
+    // SystemProperties.getBoolean() eagerly as a static field initializer in DFC would
+    // trigger the SystemProperties → PluginLoader → DetectorFactoryCollection circular
+    // class-initialization chain.
+    private static final class JawsDebug {
+        static final boolean VALUE = SystemProperties.getBoolean("findbugs.jaws.debug");
+    }
+  
     private DetectorFactoryCollection(boolean loadCore, boolean forceLoad,
             @Nonnull Collection<Plugin> pluginsToLoad,
             @Nonnull Collection<Plugin> enabledPlugins) {
