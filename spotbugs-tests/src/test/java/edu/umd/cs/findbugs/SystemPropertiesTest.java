@@ -188,10 +188,11 @@ class SystemPropertiesTest {
 
     @Test
     void systemPropertiesInitializesWithoutError() {
-        // Accessing ASSERTIONS_ENABLED forces the class to be initialized (it already is,
+        // Accessing RUNNING_IN_ECLIPSE forces the class to be initialized (it already is,
         // but this makes the coverage path explicit). The key requirement is that
         // loadPropertiesFromConfigFile() no longer routes through
         // DetectorFactoryCollection.getCoreResource(), so there is no circular <clinit>.
+        // Tests run outside Eclipse, so RUNNING_IN_ECLIPSE is always false here.
         assertFalse(SystemProperties.RUNNING_IN_ECLIPSE);
     }
 }
