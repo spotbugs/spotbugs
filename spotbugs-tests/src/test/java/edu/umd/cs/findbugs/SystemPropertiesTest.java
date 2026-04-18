@@ -46,6 +46,9 @@ class SystemPropertiesTest {
     @AfterEach
     void removeTestProperty() {
         SystemProperties.removeProperty(TEST_KEY);
+        // getAllProperties() mutates the live System.getProperties() object, so we must
+        // also clear from system properties to avoid cross-test contamination.
+        System.clearProperty(TEST_KEY);
     }
 
     // --- getBoolean ---
