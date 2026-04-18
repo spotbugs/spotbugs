@@ -39,6 +39,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.PUTFIELD;
+import org.apache.bcel.generic.PUTSTATIC;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -140,7 +141,7 @@ public class AtomicOperationsCombinedDetector implements Detector {
             InstructionHandle handle = location.getHandle();
             Instruction instruction = handle.getInstruction();
 
-            if (instruction instanceof PUTFIELD) {
+            if (instruction instanceof PUTFIELD || instruction instanceof PUTSTATIC) {
                 OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, handle.getPosition());
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item stackItem = stack.getStackItem(0);
@@ -178,7 +179,7 @@ public class AtomicOperationsCombinedDetector implements Detector {
             int pc = handle.getPosition();
             boolean insideSynchronizedBlock = !lockDataflow.getFactAtLocation(location).isEmpty();
 
-            if (instruction instanceof PUTFIELD && !insideSynchronizedBlock && !MethodAnalysis.isDuplicatedLocation(methodDescriptor, pc)) {
+            if ((instruction instanceof PUTFIELD || instruction instanceof PUTSTATIC) && !insideSynchronizedBlock && !MethodAnalysis.isDuplicatedLocation(methodDescriptor, pc)) {
                 XField xField = XFactory.createXField((FieldInstruction) instruction, cpg);
                 if (fieldsForAtomicityCheck.contains(xField)) {
                     bugPrototype.invokedField = xField;
