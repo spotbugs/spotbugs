@@ -21,11 +21,9 @@ package edu.umd.cs.findbugs.detect;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,7 +34,6 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.PUTSTATIC;
@@ -55,7 +52,6 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ca.Call;
-import edu.umd.cs.findbugs.ba.ca.CallList;
 import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -66,33 +62,36 @@ import edu.umd.cs.findbugs.util.MethodAnalysis;
 
 public class AtomicOperationsCombinedDetector implements Detector {
 
+    private static final String COMBINED_NOT_ATOMIC = "AT_COMBINED_ATOMIC_OPERATIONS_ARE_NOT_ATOMIC";
+    private static final String NEEDS_SYNCHRONIZATION = "AT_ATOMIC_OPERATION_NEEDS_SYNCHRONIZATION";
+
     private static class BugPrototype {
         final ClassContext classContext;
         final Method method;
         final Location location;
-        XField invokedField;
-        XMethod invokedMethod;
-        LocalVariableAnnotation localVariableAnnotation;
+        XField field;
+        XMethod calledMethod;
+        LocalVariableAnnotation localVariable;
 
-        private BugPrototype(ClassContext classContext, Method method, Location location) {
+        BugPrototype(ClassContext classContext, Method method, Location location) {
             this.classContext = classContext;
             this.method = method;
             this.location = location;
         }
 
-        private BugInstance toBugInstance(Detector detector, String type) {
-            BugInstance bugInstance = new BugInstance(detector, type, LOW_PRIORITY)
+        BugInstance toBugInstance(Detector detector, String type) {
+            BugInstance bug = new BugInstance(detector, type, LOW_PRIORITY)
                     .addClassAndMethod(classContext.getJavaClass(), method)
                     .addSourceLine(classContext, method, location);
-            if (invokedField != null) {
-                bugInstance.addField(invokedField);
-            } else if (localVariableAnnotation != null) {
-                bugInstance.add(localVariableAnnotation);
+            if (field != null) {
+                bug.addField(field);
+            } else if (localVariable != null) {
+                bug.add(localVariable);
             }
-            if (invokedMethod != null) {
-                bugInstance.addCalledMethod(invokedMethod);
+            if (calledMethod != null) {
+                bug.addCalledMethod(calledMethod);
             }
-            return bugInstance;
+            return bug;
         }
     }
 
@@ -136,6 +135,11 @@ public class AtomicOperationsCombinedDetector implements Detector {
                 this.topItemPC = -1;
             }
         }
+
+        boolean isTopLocalAtomicVariable() {
+            return topSignature.startsWith("Ljava/util/concurrent/atomic/")
+                    && (topReturnValueOf == null || !topReturnValueOf.getName().contains(Const.CONSTRUCTOR_NAME));
+        }
     }
 
     /**
@@ -175,7 +179,6 @@ public class AtomicOperationsCombinedDetector implements Detector {
             if ((seen == Const.PUTFIELD || seen == Const.PUTSTATIC) && stack.getStackDepth() > 0) {
                 putFieldReturnValues.put(pc, stack.getStackItem(0).getReturnValueOf());
             }
-
             if (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE
                     || seen == Const.INVOKESPECIAL || seen == Const.INVOKESTATIC) {
                 invokeSnapshots.put(pc, new InvokeStackSnapshot(stack));
@@ -189,10 +192,8 @@ public class AtomicOperationsCombinedDetector implements Detector {
 
     private final Set<XField> fieldsForAtomicityCheck = new HashSet<>();
     private final Set<XField> combinedAtomicFields = new HashSet<>();
-
     private final Map<Method, Map<XField, List<BugPrototype>>> fieldAccessBugPrototypes = new HashMap<>();
     private final Map<Method, List<BugPrototype>> localVariableInvocations = new HashMap<>();
-
     private final Set<XMethod> unsynchronizedPrivateMethods = new HashSet<>();
 
     public AtomicOperationsCombinedDetector(BugReporter bugReporter) {
@@ -210,15 +211,26 @@ public class AtomicOperationsCombinedDetector implements Detector {
                 analyzeFieldsForAtomicityViolations(classContext, method);
             }
             removePresynchronizedPrivateMethodCalls();
-            accumulateFieldsForAtomicityAnalysis();
-            accumulateLocalVariables();
+            reportFieldBugs();
+            reportLocalVariableBugs();
         } catch (CheckedAnalysisException e) {
             bugReporter.logError(String.format("Detector %s caught exception while analyzing class %s",
                     getClass().getName(), classContext.getJavaClass().getClassName()), e);
         } finally {
-            clearProperties();
+            fieldsForAtomicityCheck.clear();
+            combinedAtomicFields.clear();
+            fieldAccessBugPrototypes.clear();
+            localVariableInvocations.clear();
+            unsynchronizedPrivateMethods.clear();
         }
     }
+
+    @Override
+    public void report() {
+        bugAccumulator.reportAccumulatedBugs();
+    }
+
+    // --- Phase 1: Collect fields assigned synchronized collections or atomic types ---
 
     private void collectFieldsForAtomicityCheck(ClassContext classContext, Method method) {
         JavaClass javaClass = classContext.getJavaClass();
@@ -234,25 +246,26 @@ public class AtomicOperationsCombinedDetector implements Detector {
         }
 
         for (Location location : cfg.orderedLocations()) {
-            InstructionHandle handle = location.getHandle();
-            Instruction instruction = handle.getInstruction();
-
+            Instruction instruction = location.getHandle().getInstruction();
             if (instruction instanceof PUTFIELD || instruction instanceof PUTSTATIC) {
-                XMethod returnValueOf = scanner.putFieldReturnValues.get(handle.getPosition());
-                if (isAtomicField(returnValueOf)) {
+                XMethod returnValueOf = scanner.putFieldReturnValues.get(location.getHandle().getPosition());
+                if (isAtomicFieldInitializer(returnValueOf)) {
                     fieldsForAtomicityCheck.add(XFactory.createXField((FieldInstruction) instruction, cpg));
                 }
             }
         }
     }
 
-    private static boolean isAtomicField(XMethod xMethod) {
+    private static boolean isAtomicFieldInitializer(XMethod xMethod) {
         if (xMethod == null) {
             return false;
         }
         return CollectionAnalysis.isSynchronizedCollection(xMethod)
-                || (xMethod.getClassName().startsWith("java.util.concurrent.atomic") && xMethod.getSignature().endsWith(")V"));
+                || (xMethod.getClassName().startsWith("java.util.concurrent.atomic")
+                        && xMethod.getSignature().endsWith(")V"));
     }
+
+    // --- Phase 2: Find unsynchronized accesses to tracked fields ---
 
     private void analyzeFieldsForAtomicityViolations(ClassContext classContext, Method method) throws CheckedAnalysisException {
         if (Const.CONSTRUCTOR_NAME.equals(method.getName()) || Const.STATIC_INITIALIZER_NAME.equals(method.getName())
@@ -265,148 +278,146 @@ public class AtomicOperationsCombinedDetector implements Detector {
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
         MethodDescriptor methodDescriptor = BCELUtil.getMethodDescriptor(javaClass, method);
         LockDataflow lockDataflow = classContext.getLockDataflow(method);
-
         MethodStackScanner scanner = new MethodStackScanner(javaClass, method);
         scanner.execute();
 
         for (Location location : cfg.orderedLocations()) {
-            BugPrototype bugPrototype = new BugPrototype(classContext, method, location);
-            InstructionHandle handle = location.getHandle();
-            Instruction instruction = handle.getInstruction();
-            int pc = handle.getPosition();
-            boolean insideSynchronizedBlock = !lockDataflow.getFactAtLocation(location).isEmpty();
+            Instruction instruction = location.getHandle().getInstruction();
+            int pc = location.getHandle().getPosition();
 
-            if ((instruction instanceof PUTFIELD || instruction instanceof PUTSTATIC) && !insideSynchronizedBlock
-                    && !MethodAnalysis.isDuplicatedLocation(methodDescriptor, pc)) {
-                XField xField = XFactory.createXField((FieldInstruction) instruction, cpg);
-                if (fieldsForAtomicityCheck.contains(xField)) {
-                    bugPrototype.invokedField = xField;
-                    fieldAccessBugPrototypes.computeIfAbsent(method, value -> new HashMap<>())
-                            .computeIfAbsent(xField, value -> new LinkedList<>())
-                            .add(bugPrototype);
-                }
-            } else if (instruction instanceof InvokeInstruction && !(instruction instanceof INVOKEDYNAMIC)
-                    && !insideSynchronizedBlock && !MethodAnalysis.isDuplicatedLocation(methodDescriptor, pc)) {
-                InvokeStackSnapshot snapshot = scanner.invokeSnapshots.get(pc);
-                if (snapshot == null) {
-                    continue;
-                }
-                int consumed = instruction.consumeStack(cpg);
-                Optional<XField> fieldRequiringAtomicityCheck = findFieldRequiringAtomicityCheck(snapshot, consumed);
-                XMethod xMethod = XFactory.createXMethod((InvokeInstruction) instruction, cpg);
-                if (fieldRequiringAtomicityCheck.isPresent()) {
-                    bugPrototype.invokedField = fieldRequiringAtomicityCheck.get();
-                    bugPrototype.invokedMethod = xMethod;
-                    fieldAccessBugPrototypes.computeIfAbsent(method, value -> new HashMap<>())
-                            .computeIfAbsent(fieldRequiringAtomicityCheck.get(), value -> new LinkedList<>())
-                            .add(bugPrototype);
+            if (!lockDataflow.getFactAtLocation(location).isEmpty()
+                    || (pc >= 0 && MethodAnalysis.isDuplicatedLocation(methodDescriptor, pc))) {
+                continue;
+            }
 
-                    if (javaClass.getClassName().equals(xMethod.getClassName())) {
-                        unsynchronizedPrivateMethods.add(xMethod);
-                    }
-                } else if (snapshot.stackDepth > 0) {
-                    if (isLocalVariableRequiringAtomicityCheck(snapshot)) {
-                        LocalVariableAnnotation annotation = snapshot.topRegisterNumber >= 0
-                                ? LocalVariableAnnotation.getLocalVariableAnnotation(method,
-                                        snapshot.topRegisterNumber, pc, snapshot.topItemPC)
-                                : null;
-                        if (annotation != null) {
-                            bugPrototype.localVariableAnnotation = annotation;
-                            bugPrototype.invokedMethod = xMethod;
-                            localVariableInvocations.computeIfAbsent(method, value -> new LinkedList<>())
-                                    .add(bugPrototype);
-                        }
-                    } else if (snapshot.allAtomicReferences) {
-                        CallListDataflow callListDataflow = classContext.getCallListDataflow(method);
-                        combinedAtomicFields.addAll(findFieldsInvolvedInAtomicOperations(location, callListDataflow));
-                    }
-                }
+            if (instruction instanceof PUTFIELD || instruction instanceof PUTSTATIC) {
+                analyzeFieldReassignment(classContext, method, location, cpg);
+            } else if (instruction instanceof InvokeInstruction && !(instruction instanceof INVOKEDYNAMIC)) {
+                analyzeInvocation(classContext, method, location, scanner, cpg, javaClass);
             }
         }
     }
 
-    private Optional<XField> findFieldRequiringAtomicityCheck(InvokeStackSnapshot snapshot, int consumed) {
+    private void analyzeFieldReassignment(ClassContext classContext, Method method, Location location, ConstantPoolGen cpg) {
+        XField xField = XFactory.createXField((FieldInstruction) location.getHandle().getInstruction(), cpg);
+        if (!fieldsForAtomicityCheck.contains(xField)) {
+            return;
+        }
+        BugPrototype proto = new BugPrototype(classContext, method, location);
+        proto.field = xField;
+        addFieldAccessPrototype(method, xField, proto);
+    }
+
+    private void analyzeInvocation(ClassContext classContext, Method method, Location location,
+            MethodStackScanner scanner, ConstantPoolGen cpg, JavaClass javaClass) throws CheckedAnalysisException {
+        int pc = location.getHandle().getPosition();
+        InvokeStackSnapshot snapshot = scanner.invokeSnapshots.get(pc);
+        if (snapshot == null) {
+            return;
+        }
+
+        int consumed = location.getHandle().getInstruction().consumeStack(cpg);
+        XField trackedField = findTrackedFieldInConsumedItems(snapshot, consumed);
+        XMethod xMethod = XFactory.createXMethod((InvokeInstruction) location.getHandle().getInstruction(), cpg);
+        BugPrototype proto = new BugPrototype(classContext, method, location);
+
+        if (trackedField != null) {
+            proto.field = trackedField;
+            proto.calledMethod = xMethod;
+            addFieldAccessPrototype(method, trackedField, proto);
+            if (javaClass.getClassName().equals(xMethod.getClassName())) {
+                unsynchronizedPrivateMethods.add(xMethod);
+            }
+            return;
+        }
+
+        if (snapshot.stackDepth <= 0) {
+            return;
+        }
+
+        if (snapshot.isTopLocalAtomicVariable()) {
+            LocalVariableAnnotation annotation = snapshot.topRegisterNumber >= 0
+                    ? LocalVariableAnnotation.getLocalVariableAnnotation(method,
+                            snapshot.topRegisterNumber, pc, snapshot.topItemPC)
+                    : null;
+            if (annotation != null) {
+                proto.localVariable = annotation;
+                proto.calledMethod = xMethod;
+                localVariableInvocations.computeIfAbsent(method, k -> new LinkedList<>()).add(proto);
+            }
+        } else if (snapshot.allAtomicReferences) {
+            CallListDataflow callListDataflow = classContext.getCallListDataflow(method);
+            collectCombinedAtomicFields(location, callListDataflow);
+        }
+    }
+
+    private XField findTrackedFieldInConsumedItems(InvokeStackSnapshot snapshot, int consumed) {
         return snapshot.xFields.stream().limit(consumed)
                 .filter(fieldsForAtomicityCheck::contains)
-                .findFirst();
+                .findFirst().orElse(null);
     }
 
-    private static boolean isLocalVariableRequiringAtomicityCheck(InvokeStackSnapshot snapshot) {
-        return isAtomicSignature(snapshot.topSignature)
-                && (snapshot.topReturnValueOf == null
-                        || !snapshot.topReturnValueOf.getName().contains(Const.CONSTRUCTOR_NAME));
+    private void addFieldAccessPrototype(Method method, XField field, BugPrototype proto) {
+        fieldAccessBugPrototypes.computeIfAbsent(method, k -> new HashMap<>())
+                .computeIfAbsent(field, k -> new LinkedList<>())
+                .add(proto);
     }
 
-    private static boolean isAtomicSignature(String signature) {
-        return signature.startsWith("Ljava/util/concurrent/atomic/");
-    }
-
-    private Set<XField> findFieldsInvolvedInAtomicOperations(Location location, CallListDataflow callListDataflow)
+    private void collectCombinedAtomicFields(Location location, CallListDataflow callListDataflow)
             throws DataflowAnalysisException {
-        Set<XField> involvedFields = new HashSet<>();
-        CallList factAtLocation = callListDataflow.getFactAtLocation(location);
-        Iterator<Call> callIterator = factAtLocation.callIterator();
-        while (callIterator.hasNext()) {
-            Call call = callIterator.next();
-            call.getAttributes().stream()
+        java.util.Iterator<Call> it = callListDataflow.getFactAtLocation(location).callIterator();
+        while (it.hasNext()) {
+            it.next().getAttributes().stream()
                     .filter(fieldsForAtomicityCheck::contains)
-                    .forEach(involvedFields::add);
+                    .forEach(combinedAtomicFields::add);
         }
-        return involvedFields;
     }
+
+    // --- Phase 3: Filter false positives from pre-synchronized private methods ---
 
     private void removePresynchronizedPrivateMethodCalls() {
         localVariableInvocations.entrySet().removeIf(entry -> entry.getKey().isPrivate()
-                && unsynchronizedPrivateMethods.stream().noneMatch(privMethod -> equalMethods(entry.getKey(), privMethod)));
+                && unsynchronizedPrivateMethods.stream()
+                        .noneMatch(m -> m.getName().equals(entry.getKey().getName())
+                                && m.getSignature().equals(entry.getKey().getSignature())));
     }
 
-    private static boolean equalMethods(Method method, XMethod unSyncMethod) {
-        return method.getName().equals(unSyncMethod.getName()) && method.getSignature().equals(unSyncMethod.getSignature());
-    }
+    // --- Phase 4: Report accumulated bugs ---
 
-    @Override
-    public void report() {
-        bugAccumulator.reportAccumulatedBugs();
-    }
-
-    private void accumulateFieldsForAtomicityAnalysis() {
-        Set<XField> fieldsToProcess = fieldAccessBugPrototypes.values().stream()
+    private void reportFieldBugs() {
+        Set<XField> fieldsWithMultiMethodAccess = fieldAccessBugPrototypes.values().stream()
                 .flatMap(map -> map.entrySet().stream())
                 .filter(entry -> entry.getValue().size() > 1)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
 
-        fieldAccessBugPrototypes.entrySet().stream()
-                .flatMap(entry -> entry.getValue().entrySet().stream())
-                .forEach(entry -> processFieldData(entry.getKey(), entry.getValue(), fieldsToProcess));
+        fieldAccessBugPrototypes.values().stream()
+                .flatMap(map -> map.entrySet().stream())
+                .forEach(entry -> reportFieldBug(entry.getKey(), entry.getValue(), fieldsWithMultiMethodAccess));
     }
 
-    private void accumulateLocalVariables() {
-        localVariableInvocations.values().forEach(this::processFieldData);
+    private void reportFieldBug(XField field, List<BugPrototype> prototypes, Set<XField> fieldsWithMultiMethodAccess) {
+        if (prototypes.isEmpty()) {
+            return;
+        }
+        BugPrototype last = prototypes.get(prototypes.size() - 1);
+        if (prototypes.size() > 1 || combinedAtomicFields.contains(field)) {
+            accumulateBug(last, COMBINED_NOT_ATOMIC);
+        } else if (fieldsWithMultiMethodAccess.contains(field)) {
+            accumulateBug(last, NEEDS_SYNCHRONIZATION);
+        }
     }
 
-    private void processFieldData(List<BugPrototype> fieldCallData) {
-        processFieldData(null, fieldCallData, new HashSet<>());
-    }
-
-    private void processFieldData(XField field, List<BugPrototype> fieldCallData, Set<XField> fieldsWithMultipleCalls) {
-        if (!fieldCallData.isEmpty()) {
-            BugPrototype bugPrototype = fieldCallData.get(fieldCallData.size() - 1);
-            if (fieldCallData.size() > 1 || combinedAtomicFields.contains(field)) {
-                BugInstance bugInstance = bugPrototype.toBugInstance(this, "AT_COMBINED_ATOMIC_OPERATIONS_ARE_NOT_ATOMIC");
-                bugAccumulator.accumulateBug(bugInstance, bugInstance.getPrimarySourceLineAnnotation());
-            } else if (fieldsWithMultipleCalls.contains(field)) {
-                BugInstance bugInstance = bugPrototype.toBugInstance(this, "AT_ATOMIC_OPERATION_NEEDS_SYNCHRONIZATION");
-                bugAccumulator.accumulateBug(bugInstance, bugInstance.getPrimarySourceLineAnnotation());
+    private void reportLocalVariableBugs() {
+        for (List<BugPrototype> prototypes : localVariableInvocations.values()) {
+            if (prototypes.size() > 1) {
+                accumulateBug(prototypes.get(prototypes.size() - 1), COMBINED_NOT_ATOMIC);
             }
         }
     }
 
-    private void clearProperties() {
-        fieldsForAtomicityCheck.clear();
-        combinedAtomicFields.clear();
-        fieldAccessBugPrototypes.clear();
-        localVariableInvocations.clear();
-        unsynchronizedPrivateMethods.clear();
+    private void accumulateBug(BugPrototype proto, String bugType) {
+        BugInstance bug = proto.toBugInstance(this, bugType);
+        bugAccumulator.accumulateBug(bug, bug.getPrimarySourceLineAnnotation());
     }
 }
