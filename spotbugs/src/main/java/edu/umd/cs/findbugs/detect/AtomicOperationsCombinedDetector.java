@@ -385,7 +385,7 @@ public class AtomicOperationsCombinedDetector implements Detector {
     // --- Phase 4: Report accumulated bugs ---
 
     private void reportFieldBugs() {
-        Set<XField> fieldsWithMultiMethodAccess = fieldAccessBugPrototypes.values().stream()
+        Set<XField> fieldsWithCombinedAccess = fieldAccessBugPrototypes.values().stream()
                 .flatMap(map -> map.entrySet().stream())
                 .filter(entry -> entry.getValue().size() > 1)
                 .map(Map.Entry::getKey)
@@ -393,17 +393,17 @@ public class AtomicOperationsCombinedDetector implements Detector {
 
         fieldAccessBugPrototypes.values().stream()
                 .flatMap(map -> map.entrySet().stream())
-                .forEach(entry -> reportFieldBug(entry.getKey(), entry.getValue(), fieldsWithMultiMethodAccess));
+                .forEach(entry -> reportFieldBug(entry.getKey(), entry.getValue(), fieldsWithCombinedAccess));
     }
 
-    private void reportFieldBug(XField field, List<BugPrototype> prototypes, Set<XField> fieldsWithMultiMethodAccess) {
+    private void reportFieldBug(XField field, List<BugPrototype> prototypes, Set<XField> fieldsWithCombinedAccess) {
         if (prototypes.isEmpty()) {
             return;
         }
         BugPrototype last = prototypes.get(prototypes.size() - 1);
         if (prototypes.size() > 1 || combinedAtomicFields.contains(field)) {
             accumulateBug(last, COMBINED_NOT_ATOMIC);
-        } else if (fieldsWithMultiMethodAccess.contains(field)) {
+        } else if (fieldsWithCombinedAccess.contains(field)) {
             accumulateBug(last, NEEDS_SYNCHRONIZATION);
         }
     }
