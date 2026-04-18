@@ -95,7 +95,7 @@ public class DetectorFactoryCollection {
     private static final class JawsDebug {
         static final boolean VALUE = SystemProperties.getBoolean("findbugs.jaws.debug");
     }
-  
+
     private DetectorFactoryCollection(boolean loadCore, boolean forceLoad,
             @Nonnull Collection<Plugin> pluginsToLoad,
             @Nonnull Collection<Plugin> enabledPlugins) {
