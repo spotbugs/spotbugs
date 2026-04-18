@@ -179,7 +179,8 @@ public class AtomicOperationsCombinedDetector implements Detector {
             int pc = handle.getPosition();
             boolean insideSynchronizedBlock = !lockDataflow.getFactAtLocation(location).isEmpty();
 
-            if ((instruction instanceof PUTFIELD || instruction instanceof PUTSTATIC) && !insideSynchronizedBlock && !MethodAnalysis.isDuplicatedLocation(methodDescriptor, pc)) {
+            if ((instruction instanceof PUTFIELD || instruction instanceof PUTSTATIC) && !insideSynchronizedBlock && !MethodAnalysis
+                    .isDuplicatedLocation(methodDescriptor, pc)) {
                 XField xField = XFactory.createXField((FieldInstruction) instruction, cpg);
                 if (fieldsForAtomicityCheck.contains(xField)) {
                     bugPrototype.invokedField = xField;
