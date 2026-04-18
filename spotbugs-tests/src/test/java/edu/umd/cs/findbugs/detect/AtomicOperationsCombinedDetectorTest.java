@@ -224,6 +224,12 @@ class AtomicOperationsCombinedDetectorTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void testSafeNestedSynchronizedBlock() {
+        performAnalysis("atomicMethods/SafeNestedSynchronizedBlock.class");
+        assertZeroBugs();
+    }
+
+    @Test
     void testSafeAtomicCallsWithLambda() {
         performAnalysis("atomicMethods/SafeAtomicCallsWithLambda.class");
         assertZeroBugs();
