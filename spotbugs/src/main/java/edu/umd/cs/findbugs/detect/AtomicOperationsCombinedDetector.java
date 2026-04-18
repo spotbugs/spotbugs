@@ -18,6 +18,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -27,7 +28,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
@@ -47,12 +47,10 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.LockDataflow;
 import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.OpcodeStackScanner;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -60,6 +58,7 @@ import edu.umd.cs.findbugs.ba.ca.Call;
 import edu.umd.cs.findbugs.ba.ca.CallList;
 import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.CollectionAnalysis;
@@ -94,6 +93,94 @@ public class AtomicOperationsCombinedDetector implements Detector {
                 bugInstance.addCalledMethod(invokedMethod);
             }
             return bugInstance;
+        }
+    }
+
+    /**
+     * Captured operand stack data at an InvokeInstruction site.
+     */
+    private static class InvokeStackSnapshot {
+        final int stackDepth;
+        final List<XField> xFields;
+        final String topSignature;
+        final XMethod topReturnValueOf;
+        final int topRegisterNumber;
+        final int topItemPC;
+        final boolean allAtomicReferences;
+
+        InvokeStackSnapshot(OpcodeStack stack) {
+            this.stackDepth = stack.getStackDepth();
+            this.xFields = new ArrayList<>(stackDepth);
+            boolean allAtomic = stackDepth > 1;
+            for (int i = 0; i < stackDepth; i++) {
+                OpcodeStack.Item item = stack.getStackItem(i);
+                xFields.add(item.getXField());
+                if (allAtomic) {
+                    XMethod rv = item.getReturnValueOf();
+                    if (rv == null || !rv.getClassName().startsWith("java.util.concurrent.atomic")) {
+                        allAtomic = false;
+                    }
+                }
+            }
+            this.allAtomicReferences = allAtomic;
+            if (stackDepth > 0) {
+                OpcodeStack.Item top = stack.getStackItem(0);
+                this.topSignature = top.getSignature();
+                this.topReturnValueOf = top.getReturnValueOf();
+                this.topRegisterNumber = top.getRegisterNumber();
+                this.topItemPC = top.getPC();
+            } else {
+                this.topSignature = "";
+                this.topReturnValueOf = null;
+                this.topRegisterNumber = -1;
+                this.topItemPC = -1;
+            }
+        }
+    }
+
+    /**
+     * Scans an entire method's bytecode once and collects operand stack state
+     * at all PUTFIELD/PUTSTATIC and InvokeInstruction sites.
+     */
+    private static class MethodStackScanner extends OpcodeStackDetector {
+        final Map<Integer, XMethod> putFieldReturnValues = new HashMap<>();
+        final Map<Integer, InvokeStackSnapshot> invokeSnapshots = new HashMap<>();
+
+        private final JavaClass theClass;
+        private final Method theMethod;
+
+        MethodStackScanner(JavaClass theClass, Method method) {
+            this.theClass = theClass;
+            this.theMethod = method;
+        }
+
+        void execute() {
+            theClass.accept(this);
+        }
+
+        @Override
+        public void visitJavaClass(JavaClass obj) {
+            setupVisitorForClass(obj);
+            getConstantPool().accept(this);
+            doVisitMethod(theMethod);
+        }
+
+        @Override
+        public void sawOpcode(int seen) {
+        }
+
+        @Override
+        public void afterOpcode(int seen) {
+            int pc = getPC();
+            if ((seen == Const.PUTFIELD || seen == Const.PUTSTATIC) && stack.getStackDepth() > 0) {
+                putFieldReturnValues.put(pc, stack.getStackItem(0).getReturnValueOf());
+            }
+
+            if (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE
+                    || seen == Const.INVOKESPECIAL || seen == Const.INVOKESTATIC) {
+                invokeSnapshots.put(pc, new InvokeStackSnapshot(stack));
+            }
+            super.afterOpcode(seen);
         }
     }
 
@@ -133,21 +220,27 @@ public class AtomicOperationsCombinedDetector implements Detector {
         }
     }
 
-    private void collectFieldsForAtomicityCheck(ClassContext classContext, Method method) throws CFGBuilderException {
-        CFG cfg = classContext.getCFG(method);
+    private void collectFieldsForAtomicityCheck(ClassContext classContext, Method method) {
+        JavaClass javaClass = classContext.getJavaClass();
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
+        MethodStackScanner scanner = new MethodStackScanner(javaClass, method);
+        scanner.execute();
+
+        CFG cfg;
+        try {
+            cfg = classContext.getCFG(method);
+        } catch (CheckedAnalysisException e) {
+            return;
+        }
 
         for (Location location : cfg.orderedLocations()) {
             InstructionHandle handle = location.getHandle();
             Instruction instruction = handle.getInstruction();
 
             if (instruction instanceof PUTFIELD || instruction instanceof PUTSTATIC) {
-                OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, handle.getPosition());
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item stackItem = stack.getStackItem(0);
-                    if (isAtomicField(stackItem.getReturnValueOf())) {
-                        fieldsForAtomicityCheck.add(XFactory.createXField((FieldInstruction) instruction, cpg));
-                    }
+                XMethod returnValueOf = scanner.putFieldReturnValues.get(handle.getPosition());
+                if (isAtomicField(returnValueOf)) {
+                    fieldsForAtomicityCheck.add(XFactory.createXField((FieldInstruction) instruction, cpg));
                 }
             }
         }
@@ -162,15 +255,19 @@ public class AtomicOperationsCombinedDetector implements Detector {
     }
 
     private void analyzeFieldsForAtomicityViolations(ClassContext classContext, Method method) throws CheckedAnalysisException {
-        if (Const.CONSTRUCTOR_NAME.equals(method.getName()) || Const.STATIC_INITIALIZER_NAME.equals(method.getName()) || method.isSynchronized()) {
+        if (Const.CONSTRUCTOR_NAME.equals(method.getName()) || Const.STATIC_INITIALIZER_NAME.equals(method.getName())
+                || method.isSynchronized()) {
             return;
         }
 
+        JavaClass javaClass = classContext.getJavaClass();
         CFG cfg = classContext.getCFG(method);
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
-        JavaClass javaClass = classContext.getJavaClass();
         MethodDescriptor methodDescriptor = BCELUtil.getMethodDescriptor(javaClass, method);
         LockDataflow lockDataflow = classContext.getLockDataflow(method);
+
+        MethodStackScanner scanner = new MethodStackScanner(javaClass, method);
+        scanner.execute();
 
         for (Location location : cfg.orderedLocations()) {
             BugPrototype bugPrototype = new BugPrototype(classContext, method, location);
@@ -179,8 +276,8 @@ public class AtomicOperationsCombinedDetector implements Detector {
             int pc = handle.getPosition();
             boolean insideSynchronizedBlock = !lockDataflow.getFactAtLocation(location).isEmpty();
 
-            if ((instruction instanceof PUTFIELD || instruction instanceof PUTSTATIC) && !insideSynchronizedBlock && !MethodAnalysis
-                    .isDuplicatedLocation(methodDescriptor, pc)) {
+            if ((instruction instanceof PUTFIELD || instruction instanceof PUTSTATIC) && !insideSynchronizedBlock
+                    && !MethodAnalysis.isDuplicatedLocation(methodDescriptor, pc)) {
                 XField xField = XFactory.createXField((FieldInstruction) instruction, cpg);
                 if (fieldsForAtomicityCheck.contains(xField)) {
                     bugPrototype.invokedField = xField;
@@ -190,9 +287,12 @@ public class AtomicOperationsCombinedDetector implements Detector {
                 }
             } else if (instruction instanceof InvokeInstruction && !(instruction instanceof INVOKEDYNAMIC)
                     && !insideSynchronizedBlock && !MethodAnalysis.isDuplicatedLocation(methodDescriptor, pc)) {
-                OpcodeStack stack = OpcodeStackScanner.getStackAt(javaClass, method, pc);
-                int consumed = ((InvokeInstruction) instruction).consumeStack(cpg);
-                Optional<XField> fieldRequiringAtomicityCheck = findFieldRequiringAtomicityCheck(stack, consumed);
+                InvokeStackSnapshot snapshot = scanner.invokeSnapshots.get(pc);
+                if (snapshot == null) {
+                    continue;
+                }
+                int consumed = instruction.consumeStack(cpg);
+                Optional<XField> fieldRequiringAtomicityCheck = findFieldRequiringAtomicityCheck(snapshot, consumed);
                 XMethod xMethod = XFactory.createXMethod((InvokeInstruction) instruction, cpg);
                 if (fieldRequiringAtomicityCheck.isPresent()) {
                     bugPrototype.invokedField = fieldRequiringAtomicityCheck.get();
@@ -204,17 +304,19 @@ public class AtomicOperationsCombinedDetector implements Detector {
                     if (javaClass.getClassName().equals(xMethod.getClassName())) {
                         unsynchronizedPrivateMethods.add(xMethod);
                     }
-                } else if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item stackItem = stack.getStackItem(0);
-                    if (isLocalVariableRequiringAtomicityCheck(stackItem)) {
-                        LocalVariableAnnotation annotation = LocalVariableAnnotation.getLocalVariableAnnotation(method, stackItem, pc);
+                } else if (snapshot.stackDepth > 0) {
+                    if (isLocalVariableRequiringAtomicityCheck(snapshot)) {
+                        LocalVariableAnnotation annotation = snapshot.topRegisterNumber >= 0
+                                ? LocalVariableAnnotation.getLocalVariableAnnotation(method,
+                                        snapshot.topRegisterNumber, pc, snapshot.topItemPC)
+                                : null;
                         if (annotation != null) {
                             bugPrototype.localVariableAnnotation = annotation;
                             bugPrototype.invokedMethod = xMethod;
                             localVariableInvocations.computeIfAbsent(method, value -> new LinkedList<>())
                                     .add(bugPrototype);
                         }
-                    } else if (isAtomicOperationsCombined(stack)) {
+                    } else if (snapshot.allAtomicReferences) {
                         CallListDataflow callListDataflow = classContext.getCallListDataflow(method);
                         combinedAtomicFields.addAll(findFieldsInvolvedInAtomicOperations(location, callListDataflow));
                     }
@@ -223,34 +325,24 @@ public class AtomicOperationsCombinedDetector implements Detector {
         }
     }
 
-    private Optional<XField> findFieldRequiringAtomicityCheck(OpcodeStack stack, int consumed) {
-        return IntStream.range(0, Math.min(consumed, stack.getStackDepth()))
-                .mapToObj(stack::getStackItem)
-                .map(OpcodeStack.Item::getXField)
+    private Optional<XField> findFieldRequiringAtomicityCheck(InvokeStackSnapshot snapshot, int consumed) {
+        return snapshot.xFields.stream().limit(consumed)
                 .filter(fieldsForAtomicityCheck::contains)
                 .findFirst();
     }
 
-    private static boolean isLocalVariableRequiringAtomicityCheck(OpcodeStack.Item stackItem) {
-        return isAtomicSignature(stackItem.getSignature())
-                && (stackItem.getReturnValueOf() == null || !stackItem.getReturnValueOf().getName().contains(Const.CONSTRUCTOR_NAME));
+    private static boolean isLocalVariableRequiringAtomicityCheck(InvokeStackSnapshot snapshot) {
+        return isAtomicSignature(snapshot.topSignature)
+                && (snapshot.topReturnValueOf == null
+                        || !snapshot.topReturnValueOf.getName().contains(Const.CONSTRUCTOR_NAME));
     }
 
     private static boolean isAtomicSignature(String signature) {
         return signature.startsWith("Ljava/util/concurrent/atomic/");
     }
 
-    private boolean isAtomicOperationsCombined(OpcodeStack stack) {
-        return stack.getStackDepth() > 1
-                && IntStream.range(0, stack.getStackDepth()).mapToObj(stack::getStackItem)
-                        .allMatch(AtomicOperationsCombinedDetector::isAtomicReference);
-    }
-
-    private static boolean isAtomicReference(OpcodeStack.Item stackItem) {
-        return stackItem.getReturnValueOf() != null && stackItem.getReturnValueOf().getClassName().startsWith("java.util.concurrent.atomic");
-    }
-
-    private Set<XField> findFieldsInvolvedInAtomicOperations(Location location, CallListDataflow callListDataflow) throws DataflowAnalysisException {
+    private Set<XField> findFieldsInvolvedInAtomicOperations(Location location, CallListDataflow callListDataflow)
+            throws DataflowAnalysisException {
         Set<XField> involvedFields = new HashSet<>();
         CallList factAtLocation = callListDataflow.getFactAtLocation(location);
         Iterator<Call> callIterator = factAtLocation.callIterator();
