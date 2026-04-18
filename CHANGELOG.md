@@ -28,6 +28,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
     - `USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION` is reported when the backing collection of a lock can be altered by subclasses.
       (See [SEI CERT rule LCK00-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code) and [SEI CERT rule LCK04-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK04-J.+Do+not+synchronize+on+a+collection+view+if+the+backing+collection+is+accessible))
 - New detector `FindIncreasedAccessibilityOfMethods` for new bug type `IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY`. This detector reports a bug if a class increases the accessibility of overridden or hidden methods. (See [SEI CERT rule MET04-J](https://wiki.sei.cmu.edu/confluence/display/java/MET04-J.+Do+not+increase+the+accessibility+of+overridden+or+hidden+methods))
+- New detector `AtomicOperationsCombinedDetector` and introduced new bug types:
+  - `AT_COMBINED_ATOMIC_OPERATIONS_ARE_NOT_ATOMIC` is reported in case of combined atomic operations are not synchronized.
+  - `AT_ATOMIC_OPERATION_NEEDS_SYNCHRONIZATION` is reported when an atomic operation is not synchronized, but should be because of thread safety.
 
 ### Fixed
 - Fix `DM_STRING_TOSTRING` false negative when `toString()` is chained before a method call (e.g., `s.toString().toLowerCase()`); multiple occurrences in the same method are now all reported ([#3966](https://github.com/spotbugs/spotbugs/issues/3966))
@@ -170,12 +173,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - `AnnotationMatcher` can now ignore bugs if annotation is also applied on methods or fields. Previously only annotations on classes were considered.
 - Add relevant CWE ids to bugs and refer the CWEs in the bug messages ([#3354](https://github.com/spotbugs/spotbugs/pull/3354)).
 - Replace `LOCAL_VARIABLE_UNKNOWN` with exact method name for `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` ([#3485](https://github.com/spotbugs/spotbugs/pull/3485))
-
-### Added
-
-- New detector `AtomicOperationsCombinedDetector` and introduced new bug types:
-  - `AT_COMBINED_ATOMIC_OPERATIONS_ARE_NOT_ATOMIC` is reported in case of combined atomic operations are not synchronized.
-  - `AT_ATOMIC_OPERATION_NEEDS_SYNCHRONIZATION` is reported when an atomic operation is not synchronized, but should be because of thread safety.
 
 ### Fixed
 - Widen main method recognition according to [JEP 445](https://openjdk.org/jeps/445). ([#3371](https://github.com/spotbugs/spotbugs/pull/3371))

@@ -62,11 +62,11 @@ public class Call {
         }
         Call other = (Call) obj;
         return this.className.equals(other.className) && this.methodName.equals(other.methodName)
-                && this.methodSig.equals(other.methodSig);
+                && this.methodSig.equals(other.methodSig) && this.attributes.equals(other.attributes);
     }
 
     @Override
     public int hashCode() {
-        return className.hashCode() + methodName.hashCode() + methodSig.hashCode();
+        return className.hashCode() + methodName.hashCode() + methodSig.hashCode() + attributes.hashCode();
     }
 }
