@@ -29,7 +29,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
       (See [SEI CERT rule LCK00-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code) and [SEI CERT rule LCK04-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK04-J.+Do+not+synchronize+on+a+collection+view+if+the+backing+collection+is+accessible))
 - New detector `FindIncreasedAccessibilityOfMethods` for new bug type `IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY`. This detector reports a bug if a class increases the accessibility of overridden or hidden methods. (See [SEI CERT rule MET04-J](https://wiki.sei.cmu.edu/confluence/display/java/MET04-J.+Do+not+increase+the+accessibility+of+overridden+or+hidden+methods))
 - New detector `AtomicOperationsCombinedDetector` and introduced new bug types:
-  - `AT_COMBINED_ATOMIC_OPERATIONS_ARE_NOT_ATOMIC` is reported in case of combined atomic operations are not synchronized.
+  - `AT_COMBINED_ATOMIC_OPERATIONS_ARE_NOT_ATOMIC` is reported when combined atomic operations are not synchronized.
   - `AT_ATOMIC_OPERATION_NEEDS_SYNCHRONIZATION` is reported when an atomic operation is not synchronized, but should be because of thread safety.
 
 ### Fixed

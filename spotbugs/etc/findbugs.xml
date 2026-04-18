@@ -758,8 +758,8 @@
 
           <BugPattern abbrev="AT" type="AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION" category="MT_CORRECTNESS" cweid="362"/>
           <BugPattern abbrev="AT" type="AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD" category="MT_CORRECTNESS" cweid="362"/>
-          <BugPattern abbrev="AT" type="AT_COMBINED_ATOMIC_OPERATIONS_ARE_NOT_ATOMIC" category="MT_CORRECTNESS"/>
-          <BugPattern abbrev="AT" type="AT_ATOMIC_OPERATION_NEEDS_SYNCHRONIZATION" category="MT_CORRECTNESS"/>
+          <BugPattern abbrev="AT" type="AT_COMBINED_ATOMIC_OPERATIONS_ARE_NOT_ATOMIC" category="MT_CORRECTNESS" cweid="362"/>
+          <BugPattern abbrev="AT" type="AT_ATOMIC_OPERATION_NEEDS_SYNCHRONIZATION" category="MT_CORRECTNESS" cweid="362"/>
           <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SEND_ERROR" category="SECURITY" cweid="81"/>
           <BugPattern abbrev="SKIPPED" type="SKIPPED_CLASS_TOO_BIG" category="EXPERIMENTAL"/>
           <BugPattern abbrev="XSS" type="XSS_REQUEST_PARAMETER_TO_SERVLET_WRITER"

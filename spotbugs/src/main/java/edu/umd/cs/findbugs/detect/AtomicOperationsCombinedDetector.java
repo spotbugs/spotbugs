@@ -38,8 +38,6 @@ import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.MONITORENTER;
-import org.apache.bcel.generic.MONITOREXIT;
 import org.apache.bcel.generic.PUTFIELD;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -51,6 +49,7 @@ import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.LockDataflow;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.OpcodeStackScanner;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -168,22 +167,18 @@ public class AtomicOperationsCombinedDetector implements Detector {
 
         CFG cfg = classContext.getCFG(method);
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
-        CallListDataflow callListDataflow = classContext.getCallListDataflow(method);
         JavaClass javaClass = classContext.getJavaClass();
         MethodDescriptor methodDescriptor = BCELUtil.getMethodDescriptor(javaClass, method);
-        boolean synchronizedBlock = false;
+        LockDataflow lockDataflow = classContext.getLockDataflow(method);
 
         for (Location location : cfg.orderedLocations()) {
             BugPrototype bugPrototype = new BugPrototype(classContext, method, location);
             InstructionHandle handle = location.getHandle();
             Instruction instruction = handle.getInstruction();
             int pc = handle.getPosition();
+            boolean insideSynchronizedBlock = !lockDataflow.getFactAtLocation(location).isEmpty();
 
-            if (instruction instanceof MONITORENTER) {
-                synchronizedBlock = true;
-            } else if (instruction instanceof MONITOREXIT) {
-                synchronizedBlock = false;
-            } else if (instruction instanceof PUTFIELD && !synchronizedBlock && !MethodAnalysis.isDuplicatedLocation(methodDescriptor, pc)) {
+            if (instruction instanceof PUTFIELD && !insideSynchronizedBlock && !MethodAnalysis.isDuplicatedLocation(methodDescriptor, pc)) {
                 XField xField = XFactory.createXField((FieldInstruction) instruction, cpg);
                 if (fieldsForAtomicityCheck.contains(xField)) {
                     bugPrototype.invokedField = xField;
@@ -192,9 +187,10 @@ public class AtomicOperationsCombinedDetector implements Detector {
                             .add(bugPrototype);
                 }
             } else if (instruction instanceof InvokeInstruction && !(instruction instanceof INVOKEDYNAMIC)
-                    && !synchronizedBlock && !MethodAnalysis.isDuplicatedLocation(methodDescriptor, pc)) {
+                    && !insideSynchronizedBlock && !MethodAnalysis.isDuplicatedLocation(methodDescriptor, pc)) {
                 OpcodeStack stack = OpcodeStackScanner.getStackAt(javaClass, method, pc);
-                Optional<XField> fieldRequiringAtomicityCheck = findFieldRequiringAtomicityCheck(stack);
+                int consumed = ((InvokeInstruction) instruction).consumeStack(cpg);
+                Optional<XField> fieldRequiringAtomicityCheck = findFieldRequiringAtomicityCheck(stack, consumed);
                 XMethod xMethod = XFactory.createXMethod((InvokeInstruction) instruction, cpg);
                 if (fieldRequiringAtomicityCheck.isPresent()) {
                     bugPrototype.invokedField = fieldRequiringAtomicityCheck.get();
@@ -217,6 +213,7 @@ public class AtomicOperationsCombinedDetector implements Detector {
                                     .add(bugPrototype);
                         }
                     } else if (isAtomicOperationsCombined(stack)) {
+                        CallListDataflow callListDataflow = classContext.getCallListDataflow(method);
                         combinedAtomicFields.addAll(findFieldsInvolvedInAtomicOperations(location, callListDataflow));
                     }
                 }
@@ -224,11 +221,8 @@ public class AtomicOperationsCombinedDetector implements Detector {
         }
     }
 
-    private Optional<XField> findFieldRequiringAtomicityCheck(OpcodeStack stack) {
-        if (stack.getStackDepth() > 0 && stack.getStackItem(0).getReturnValueOf() != null) {
-            return Optional.empty();
-        }
-        return IntStream.range(0, stack.getStackDepth())
+    private Optional<XField> findFieldRequiringAtomicityCheck(OpcodeStack stack, int consumed) {
+        return IntStream.range(0, Math.min(consumed, stack.getStackDepth()))
                 .mapToObj(stack::getStackItem)
                 .map(OpcodeStack.Item::getXField)
                 .filter(fieldsForAtomicityCheck::contains)

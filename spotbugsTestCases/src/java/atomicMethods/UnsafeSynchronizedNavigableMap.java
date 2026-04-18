@@ -1,11 +1,11 @@
 package atomicMethods;
 
 import java.util.Collections;
-import java.util.Map;
+import java.util.NavigableMap;
 
 public final class UnsafeSynchronizedNavigableMap {
 
-    private final Map<String, Integer> nums = Collections.synchronizedSortedMap(Collections.emptyNavigableMap());
+    private final NavigableMap<String, Integer> nums = Collections.synchronizedNavigableMap(Collections.emptyNavigableMap());
 
     public void addAndPrintNumbers(Integer number) {
         nums.put("key", number);
