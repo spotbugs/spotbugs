@@ -60,7 +60,8 @@ public class DetectorFactoryCollection {
 
     private static final Pattern EDU_UMD_CLASSFILE_PATTERN = Pattern.compile("(.*)/.*?/edu/umd.*");
 
-    private static final boolean DEBUG_JAWS = SystemProperties.getBoolean("findbugs.jaws.debug");
+    // Evaluated lazily to avoid triggering the SystemProperties → PluginLoader → DetectorFactoryCollection
+    // circular class-initialization chain that exists when DEBUG_JAWS is a static field initializer.
     //    private static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
 
     private static DetectorFactoryCollection theInstance;
@@ -360,7 +361,7 @@ public class DetectorFactoryCollection {
     }
 
     public static void jawsDebugMessage(String message) {
-        if (DEBUG_JAWS) {
+        if (SystemProperties.getBoolean("findbugs.jaws.debug")) {
             JOptionPane.showMessageDialog(null, message);
         } else if (FindBugs.DEBUG) {
             System.err.println(message);

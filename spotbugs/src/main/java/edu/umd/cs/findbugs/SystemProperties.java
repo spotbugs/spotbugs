@@ -77,8 +77,15 @@ public class SystemProperties {
     }
 
     private static void loadPropertiesFromConfigFile() {
-
-        URL systemProperties = DetectorFactoryCollection.getCoreResource("systemProperties.properties");
+        // Load directly from the classpath to avoid a circular class-initialization chain:
+        //   SystemProperties.<clinit> → DetectorFactoryCollection.getCoreResource()
+        //   → PluginLoader.<clinit> → SystemProperties (already being initialized)
+        // DetectorFactoryCollection.getCoreResource() is the appropriate entry point once
+        // all three classes are fully initialized, but cannot be used here safely.
+        // The "systemProperties.properties" resource lives inside the SpotBugs jar and is
+        // always accessible via the class loader; the etc/ and plugin/ directory lookups
+        // that getCoreResource() adds are not needed for this bootstrap configuration file.
+        URL systemProperties = SystemProperties.class.getResource("/systemProperties.properties");
         loadPropertiesFromURL(systemProperties);
         String u = System.getProperty("findbugs.loadPropertiesFrom");
         if (u != null) {
