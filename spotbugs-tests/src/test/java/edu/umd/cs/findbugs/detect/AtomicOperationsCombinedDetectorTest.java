@@ -31,6 +31,14 @@ class AtomicOperationsCombinedDetectorTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void testUnsafeStaticSynchronizedList() {
+        performAnalysis("atomicMethods/UnsafeStaticSynchronizedList.class");
+        assertBugTypeCount(OPERATIONS_ARE_NOT_ATOMIC, 1);
+        assertBugTypeCount(NEEDS_SYNCHRONIZATION, 0);
+        assertBugAtFieldAtLine(OPERATIONS_ARE_NOT_ATOMIC, "UnsafeStaticSynchronizedList", "nums", 13);
+    }
+
+    @Test
     void testUnsafeSynchronizedListWithMultipleSync() {
         performAnalysis("atomicMethods/UnsafeSynchronizedListWithMultipleSync.class");
         assertBugTypeCount(OPERATIONS_ARE_NOT_ATOMIC, 1);
