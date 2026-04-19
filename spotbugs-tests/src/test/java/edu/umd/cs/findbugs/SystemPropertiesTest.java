@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -161,8 +162,7 @@ class SystemPropertiesTest {
 
     @Test
     void loadPropertiesFromNullUrlIsNoOp() {
-        // Must not throw; exercises the null-guard in loadPropertiesFromURL
-        SystemProperties.loadPropertiesFromURL(null);
+        assertDoesNotThrow(() -> SystemProperties.loadPropertiesFromURL(null));
     }
 
     @Test
