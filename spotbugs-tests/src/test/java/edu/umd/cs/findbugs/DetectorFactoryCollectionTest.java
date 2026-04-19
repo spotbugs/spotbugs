@@ -33,9 +33,16 @@ class DetectorFactoryCollectionTest {
 
     private static final String JAWS_DEBUG_PROP = "findbugs.jaws.debug";
 
+    private final String previousJawsDebugProperty = System.getProperty(JAWS_DEBUG_PROP);
+
     @AfterEach
     void clearJawsDebugProperty() {
         SystemProperties.removeProperty(JAWS_DEBUG_PROP);
+        if (previousJawsDebugProperty == null) {
+            System.clearProperty(JAWS_DEBUG_PROP);
+        } else {
+            System.setProperty(JAWS_DEBUG_PROP, previousJawsDebugProperty);
+        }
     }
 
     /**
