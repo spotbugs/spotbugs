@@ -191,11 +191,11 @@ class SystemPropertiesTest {
 
     @Test
     void systemPropertiesInitializesWithoutError() {
-        // Accessing RUNNING_IN_ECLIPSE forces the class to be initialized (it already is,
-        // but this makes the coverage path explicit). The key requirement is that
-        // loadPropertiesFromConfigFile() no longer routes through
-        // DetectorFactoryCollection.getCoreResource(), so there is no circular <clinit>.
-        // Tests run outside Eclipse, so RUNNING_IN_ECLIPSE is always false here.
-        assertFalse(SystemProperties.RUNNING_IN_ECLIPSE);
+        // Accessing SystemProperties static members must not trigger a circular <clinit>
+        // (loadPropertiesFromConfigFile no longer routes through
+        // DetectorFactoryCollection.getCoreResource()). Use assertDoesNotThrow to verify
+        // initialization succeeds without depending on an environment-specific value such
+        // as RUNNING_IN_ECLIPSE, which can legitimately vary by test runner.
+        assertDoesNotThrow(SystemProperties::getLocalProperties);
     }
 }
