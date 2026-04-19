@@ -49,6 +49,7 @@ class DetectorFactoryCollectionTest {
      */
     @Test
     void jawsDebugMessageDoesNotThrowWhenDebugIsDisabled() {
+        SystemProperties.setProperty(JAWS_DEBUG_PROP, "false");
         assertDoesNotThrow(() -> DetectorFactoryCollection.jawsDebugMessage("test message"));
     }
 
