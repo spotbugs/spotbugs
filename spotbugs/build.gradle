@@ -103,7 +103,7 @@ dependencies {
 
   compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
 
-  api 'com.google.code.gson:gson:2.13.2'
+  api 'com.google.code.gson:gson:2.14.0'
 
   guiImplementation sourceSets.main.runtimeClasspath
   guiCompileOnly project(':spotbugs-annotations')
