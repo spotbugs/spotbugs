@@ -56,17 +56,9 @@ public class DetectorFactoryCollection {
 
     private static final Logger LOGGER = Logger.getLogger(DetectorFactoryCollection.class.getName());
 
-    // There's a pre-existing circular initialization chain between these three classes:
-    // DetectorFactoryCollection → SystemProperties (via DEBUG_JAWS = SystemProperties.getBoolean(...))
-    // SystemProperties → PluginLoader (via getCoreResource("systemProperties.properties"))
-    // PluginLoader → DetectorFactoryCollection (via installStandardPlugins() → getFindBugsHome() → inferSpotBugsHome())
-    // This circular dependency existed before adding static PATTERNS and worked fine because inferSpotBugsHome() only
-    // used local variables for Pattern compilation.  As a result, the Patterns must be before DEBUG_JAXWS.
     private static final Pattern SPOTBUGS_JAR_PATTERN = Pattern.compile("spotbugs\\.jar$");
-    private static final Pattern EDU_UMD_CLASSFILE_PATTERN = Pattern.compile("(.*)/.*?/edu/umd.*");
 
-    private static final boolean DEBUG_JAWS = SystemProperties.getBoolean("findbugs.jaws.debug");
-    //    private static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
+    private static final Pattern EDU_UMD_CLASSFILE_PATTERN = Pattern.compile("(.*)/.*?/edu/umd.*");
 
     private static DetectorFactoryCollection theInstance;
     private static final Object lock = new Object();
@@ -93,6 +85,15 @@ public class DetectorFactoryCollection {
 
     protected DetectorFactoryCollection(Collection<Plugin> enabled) {
         this(true, true, enabled, enabled);
+    }
+
+    // Use a lazy-holder inner class so the property is evaluated only once (when first needed)
+    // but not during DetectorFactoryCollection's own static initialization. Evaluating
+    // SystemProperties.getBoolean() eagerly as a static field initializer in DFC would
+    // trigger the SystemProperties → PluginLoader → DetectorFactoryCollection circular
+    // class-initialization chain.
+    private static final class JawsDebug {
+        static final boolean VALUE = SystemProperties.getBoolean("findbugs.jaws.debug");
     }
 
     private DetectorFactoryCollection(boolean loadCore, boolean forceLoad,
@@ -365,7 +366,7 @@ public class DetectorFactoryCollection {
     }
 
     public static void jawsDebugMessage(String message) {
-        if (DEBUG_JAWS) {
+        if (JawsDebug.VALUE) {
             JOptionPane.showMessageDialog(null, message);
         } else if (FindBugs.DEBUG) {
             System.err.println(message);
