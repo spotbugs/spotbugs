@@ -1742,6 +1742,21 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.IllegalServletOutputOperationAfterCommit">
+    <Details>
+      <![CDATA[
+            <p>Detector for finding instaces of illegal operations on a HTTP response after its committed
+    </p>
+    <p>
+		    Methods of HttpServletResponse that modify the responses status code or header
+		    should not be called after the response is committed, since these are already sent at this point.
+		    New data should not be added to the response, since it may be ignored (if sendError or
+		    sendRedirect caused the commit), or could mask an Exception thrown by the first commit
+		    by triggering another Exception.
+    </p>
+      ]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.ReflectionIncreaseAccessibility">
     <Details>
       <![CDATA[
@@ -9092,6 +9107,29 @@ object explicitly.</p>
       </Details>
   </BugPattern>
 
+  <BugPattern type="ISOOAC_ILLEGAL_SERVLET_OUTPUT_OPERATION_AFTER_COMMIT">
+    <ShortDescription>Method resets or reflushes servlet after commit</ShortDescription>
+    <LongDescription>The call of {2} in method {1} {3} at line {4}</LongDescription>
+    <Details>
+      <![CDATA[
+	    <p>
+	  A HTTP response is considered to be committed after the HTTP status code and header
+	has been sent. No method that modifies the status code or the header, or that resets the
+	response or its buffer may be called after this. It is also considered bad practice to
+	repeatedly reflush the output after the response body has been sent, or to call
+	HttpServletRespone.sendError or HttpServletResponse.sendRedirect after the builder
+	object of the response body has been initialized by ServletResponse.getWriter or
+	ServletResponse.getOutputStream.
+	</p>
+	<p>
+	  See SEI CERT rule <a href="https://cmu-sei.github.io/secure-coding-standards/sei-cert-oracle-coding-standard-for-java/rules/input-output-fio/fio15-j">
+	  FIO15-J. Do not reset a servlet's output stream after committing it</a>.
+	</p>
+            </p>
+            ]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="EOS_BAD_END_OF_STREAM_CHECK">
     <ShortDescription>Data read is converted before comparison to -1</ShortDescription>
     <LongDescription>The return value of {2} in method {1} is converted to {3} before comparison to {4}.</LongDescription>
@@ -10225,6 +10263,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="DL">Unintended contention or possible deadlock due to locking on shared objects</BugCode>
   <BugCode abbrev="JUA">Problems in JUnit Assertions</BugCode>
   <BugCode abbrev="EOS">Bad End of Stream check</BugCode>
+  <BugCode abbrev="ISOOAC">Illegal operation on HTTP servlet response after it has been committed</BugCode>
   <BugCode abbrev="REFLC">Reflection increasing accessibility of classes</BugCode>
   <BugCode abbrev="REFLF">Reflection increasing accessibility of fields</BugCode>
   <BugCode abbrev="MC">Dangerous call to overridable method</BugCode>
