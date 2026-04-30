@@ -58,7 +58,7 @@ class AnnotationMatcherTest {
 
     @BeforeEach
     void setUp() {
-        annotationName = "org.immutables.value.Generated";
+        annotationName = "org.immutables.value.GeneratedX";
     }
 
     @AfterEach
@@ -138,7 +138,7 @@ class AnnotationMatcherTest {
     @Test
     void testPerformAnalysis(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
-                Path.of("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Generated.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/org/immutables/value/GeneratedX.class"),
                 Path.of("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value.class"),
                 Path.of("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value$Immutable.class"),
                 Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/FoobarValue.class"),
