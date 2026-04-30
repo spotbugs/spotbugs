@@ -29,7 +29,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
       (See [SEI CERT rule LCK00-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code) and [SEI CERT rule LCK04-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK04-J.+Do+not+synchronize+on+a+collection+view+if+the+backing+collection+is+accessible))
 - New detector `FindIncreasedAccessibilityOfMethods` for new bug type `IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY`. This detector reports a bug if a class increases the accessibility of overridden or hidden methods. (See [SEI CERT rule MET04-J](https://wiki.sei.cmu.edu/confluence/display/java/MET04-J.+Do+not+increase+the+accessibility+of+overridden+or+hidden+methods))
 - New detector `MixArithmeticAndBitwiseOperationsDetector` for new bug type `MABO_MIXING_ARITHMETIC_AND_BITWISE_OPERATIONS`. This detector reports a bug if a method uses arithmetic and bitwise operations on the same data. (See [SEI CERT rule NUM01-J](https://cmu-sei.github.io/secure-coding-standards/sei-cert-oracle-coding-standard-for-java/rules/numeric-types-and-operations-num/num01-j/))
-- Change number of expected bugs in `AnnotationMatcherTest` from 4 to 6
+- Change number of expected bugs in `AnnotationMatcherTest.testPerformAnalysis` from 4 to 6
 - Change test case `Ideas_2012_01_04`: add `ExpectWarning` annotation to `getLongFixed` method 
 
 ### Fixed
