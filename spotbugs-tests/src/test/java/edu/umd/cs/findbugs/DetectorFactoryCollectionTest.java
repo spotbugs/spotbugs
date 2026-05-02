@@ -26,8 +26,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests for {@link DetectorFactoryCollection} covering the lazy {@code JawsDebug}
- * holder and the {@link DetectorFactoryCollection#jawsDebugMessage(String)} path.
+ * Tests for {@link DetectorFactoryCollection}.
  */
 class DetectorFactoryCollectionTest {
 
@@ -46,13 +45,8 @@ class DetectorFactoryCollectionTest {
     }
 
     /**
-     * Calling {@code jawsDebugMessage} when {@code findbugs.jaws.debug} is not set
-     * (i.e. the default false path) must not throw. This exercises the lazy
-     * {@code JawsDebug} holder: the JVM initializes {@code JawsDebug} on the
-     * first call to this method rather than during {@code DetectorFactoryCollection}'s
-     * own static initialization, breaking the circular
-     * {@code DetectorFactoryCollection → SystemProperties → PluginLoader → DetectorFactoryCollection}
-     * class-initialization chain.
+     * Calling {@code jawsDebugMessage} when {@code findbugs.jaws.debug} is {@code false}
+     * must not throw.
      */
     @Test
     void jawsDebugMessageDoesNotThrowWhenDebugIsDisabled() {
@@ -62,9 +56,7 @@ class DetectorFactoryCollectionTest {
 
     /**
      * Verify that instantiating {@link DetectorFactoryCollection} with a single
-     * {@link Plugin} completes without triggering a circular initialization error.
-     * This exercises {@code DetectorFactoryCollection.<clinit>} in the presence of
-     * a fully-initialized {@link SystemProperties}.
+     * {@link Plugin} completes without error.
      */
     @Test
     void instanceCreationForSinglePluginDoesNotThrow() {
