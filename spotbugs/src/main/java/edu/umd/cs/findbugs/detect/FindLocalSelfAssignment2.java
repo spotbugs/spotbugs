@@ -60,6 +60,13 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
 
     @Override
     public void sawOpcode(int seen) {
+        if (seen == Const.IINC) {
+            // IINC is an in-place read-modify-write; it never pushes a value onto the stack
+            // and cannot be part of a self-assignment (load then store) pattern.
+            previousLoadOf = -1;
+            gotoCount = 0;
+            return;
+        }
         if (seen == Const.GOTO) {
             previousGotoTarget = getBranchTarget();
             gotoCount++;
