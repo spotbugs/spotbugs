@@ -287,6 +287,15 @@ class FindReturnRefTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void testPackagePrivateImplOfPublicInterface() {
+        performAnalysis("exposemutable/PackagePrivateImplProvider.class",
+                "exposemutable/PackagePrivateHiddenProvider.class");
+
+        assertBugTypeCount("EI_EXPOSE_REP", 1);
+        assertBugInMethodAtField("EI_EXPOSE_REP", "PackagePrivateHiddenProvider", "getData", "data");
+    }
+
+    @Test
     @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11 })
     @Disabled
     void testUnmodifiableRecord() {
