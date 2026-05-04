@@ -1742,6 +1742,18 @@ factory pattern to create these objects.</p>
       ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.MixArithmeticAndBitwiseOperationsDetector">
+    <Details>
+      <![CDATA[
+            <p>Detector to find mixing of arithmetic and bitwise operations on the same data.
+    </p>
+    <p>
+		    This could obscure the purpose of the data stored in the variable
+		    and often indicates confusion regarding that purpose.
+    </p>
+      ]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.ReflectionIncreaseAccessibility">
     <Details>
       <![CDATA[
@@ -9092,6 +9104,29 @@ object explicitly.</p>
       </Details>
   </BugPattern>
 
+  <BugPattern type="MABO_MIXING_ARITHMETIC_AND_BITWISE_OPERATIONS">
+    <ShortDescription>Method uses arithmetic and bitwise operations on the same data</ShortDescription>
+    <LongDescription>Method {1} uses {2} operation on {3} data on line {4}</LongDescription>
+    <Details>
+      <![CDATA[
+            <p>
+            Integer variables are frequently intended to represent either a numeric value or a bit collection.
+            Numeric values must be exclusively operated on using arithmetic operations,
+            whereas bit collections must be exclusively operated on using bitwise operations.
+            </p>
+            <p>
+            Performing bitwise and arithmetic operations on the same data can obscure the purpose of
+            the data stored in the variable and often indicates confusion regarding that purpose.
+            Although such operations are valid and will compile, they can reduce code readability.
+            </p>
+            <p>
+            See SEI CERT rule <a href="https://cmu-sei.github.io/secure-coding-standards/sei-cert-oracle-coding-standard-for-java/rules/numeric-types-and-operations-num/num01-j/">
+            NUM01-J. Do not mix arithmetic and bitwise operations on the same data</a>.
+            </p>
+            ]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="EOS_BAD_END_OF_STREAM_CHECK">
     <ShortDescription>Data read is converted before comparison to -1</ShortDescription>
     <LongDescription>The return value of {2} in method {1} is converted to {3} before comparison to {4}.</LongDescription>
@@ -10225,6 +10260,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="DL">Unintended contention or possible deadlock due to locking on shared objects</BugCode>
   <BugCode abbrev="JUA">Problems in JUnit Assertions</BugCode>
   <BugCode abbrev="EOS">Bad End of Stream check</BugCode>
+  <BugCode abbrev="MABO">Mixing of arithmetic and bitwose operations on the same data</BugCode>
   <BugCode abbrev="REFLC">Reflection increasing accessibility of classes</BugCode>
   <BugCode abbrev="REFLF">Reflection increasing accessibility of fields</BugCode>
   <BugCode abbrev="MC">Dangerous call to overridable method</BugCode>
