@@ -19,17 +19,17 @@ sourceSets {
 dependencies {
   implementation 'jakarta.servlet:jakarta.servlet-api:6.1.0'
   implementation 'jakarta.ejb:jakarta.ejb-api:4.0.1'
-  implementation 'com.google.code.gson:gson:2.13.2'
-  implementation 'com.google.guava:guava:33.5.0-jre'
+  implementation 'com.google.code.gson:gson:2.14.0'
+  implementation 'com.google.guava:guava:33.6.0-jre'
   implementation libs.guice
   implementation libs.guice.assistedinject
   implementation libs.guice.servlet
   implementation 'com.google.truth:truth:1.4.5'
-  implementation 'joda-time:joda-time:2.14.1'
+  implementation 'joda-time:joda-time:2.14.2'
   api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
-  implementation 'org.springframework:spring-core:7.0.6'
+  implementation 'org.springframework:spring-core:7.0.7'
   compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
-  implementation 'org.checkerframework:checker-qual:3.55.1'
+  implementation 'org.checkerframework:checker-qual:4.1.0'
   implementation 'com.sun.xml.bind:jaxb-impl:4.0.7'
 
   implementation 'org.junit.jupiter:junit-jupiter-engine:6.0.3'
