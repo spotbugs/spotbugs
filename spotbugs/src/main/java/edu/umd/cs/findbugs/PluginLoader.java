@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -631,6 +632,9 @@ public class PluginLoader implements AutoCloseable {
             try {
                 resourceUrl.openConnection().getInputStream().close();
                 return resourceUrl;
+            } catch (FileNotFoundException e) {
+                // Missing JAR entry is expected here when the resource is not packaged in findbugs.jar;
+                // ignore it and fall through so this method returns null.
             } catch (IOException e) {
                 LOG.warn("Failed to load resourceFromFindbugsJar: IOException was thrown at zip file {} loading.",
                         findbugsJar, e);
