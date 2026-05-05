@@ -41,6 +41,11 @@ class NullnessAnnotationTest {
                 Arguments.of(jakarta.annotation.Nonnull.class.getName(), NullnessAnnotation.NONNULL),
                 Arguments.of(jakarta.annotation.Nullable.class.getName(), NullnessAnnotation.CHECK_FOR_NULL),
 
+                Arguments.of("org.jspecify.annotations.Nullable", NullnessAnnotation.CHECK_FOR_NULL),
+                Arguments.of("org.jspecify.annotations.NonNull", NullnessAnnotation.NONNULL),
+                Arguments.of("org.jspecify.annotations.NullUnmarked", NullnessAnnotation.UNKNOWN_NULLNESS),
+                Arguments.of("org.jspecify.annotations.NullMarked", NullnessAnnotation.NONNULL),
+
                 Arguments.of("something different", null));
     }
 
