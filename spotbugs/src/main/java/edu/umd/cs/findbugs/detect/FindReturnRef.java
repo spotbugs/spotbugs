@@ -154,11 +154,7 @@ public class FindReturnRef extends OpcodeStackDetector {
 
     @Override
     public void visit(Method obj) {
-        if (!obj.isPublic()) {
-            check = false;
-            return;
-        }
-        check = getThisClass().isPublic() || overridesMethodFromPublicSupertype(obj);
+        check = obj.isPublic() && (getThisClass().isPublic() || overridesMethodFromPublicSupertype(obj));
         if (!check) {
             return;
         }
