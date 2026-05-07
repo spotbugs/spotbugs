@@ -171,8 +171,8 @@ public final class MemberUtils {
      * @return True if the given member is user generated, false otherwise.
      */
     public static boolean isUserGenerated(final ClassMember m) {
-        return (!m.isSynthetic() || (m instanceof XMethod && couldBeLambda((XMethod) m))) && (!(m instanceof XMethod) || !isGenerated(
-                (XMethod) m));
+        return (!m.isSynthetic() || (m instanceof XMethod && couldBeLambda((XMethod) m))) && ((!(m instanceof AnnotatedObject) || (!isGenerated(
+              (AnnotatedObject) m)) && !(((AnnotatedObject) m).getContainingScope() != null && isGenerated(((AnnotatedObject) m).getContainingScope()))));
     }
 
     /**

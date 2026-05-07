@@ -7,7 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import org.immutables.value.Generated;
+import org.immutables.value.GeneratedX;
 
 /**
  * Immutable implementation of {@link FoobarValue}.
@@ -15,7 +15,7 @@ import org.immutables.value.Generated;
  * Use the builder to create immutable instances:
  * {@code ImmutableFoobarValue.builder()}.
  */
-@Generated(from = "FoobarValue", generator = "Immutables")
+@GeneratedX(from = "FoobarValue", generator = "Immutables")
 @SuppressWarnings({"all"})
 //@javax.annotation.processing.Generated("org.immutables.processor.ProxyProcessor") // can be ignored
 public final class ImmutableFoobarValue extends FoobarValue {
@@ -227,7 +227,7 @@ public final class ImmutableFoobarValue extends FoobarValue {
    * <p><em>{@code Builder} is not thread-safe and generally should not be stored in a field or collection,
    * but instead used immediately to create instances.</em>
    */
-  @Generated(from = "FoobarValue", generator = "Immutables")
+  @GeneratedX(from = "FoobarValue", generator = "Immutables")
   public static final class Builder {
     private static final long INIT_BIT_FOO = 0x1L;
     private static final long INIT_BIT_BAR = 0x2L;
