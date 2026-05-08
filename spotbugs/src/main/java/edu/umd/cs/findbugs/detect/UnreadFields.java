@@ -31,6 +31,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
@@ -882,14 +884,30 @@ public class UnreadFields extends OpcodeStackDetector {
         previousOpcode = seen;
     }
 
-    private String resolveFieldSignature(final Item fieldStackItem) {
+    private @CheckForNull String resolveFieldSignature(final Item fieldStackItem) {
         XField xField = fieldStackItem.getXField();
         if (xField != null) {
             // Primitive field is already resolved. Get signature from it.
             return ClassName.getPrimitiveType(xField.getFieldDescriptor().getSlashedClassName());
         }
+        Object constant = fieldStackItem.getConstant();
+        if (!(constant instanceof String)) {
+            return null;
+        }
+        String classNameOrSignature = (String) constant;
+        if (classNameOrSignature.isEmpty()) {
+            return null;
+        }
+        // Class constants for primitive and array types are already encoded as JVM descriptors.
+        if (classNameOrSignature.startsWith("[") || isPrimitiveFieldSignature(classNameOrSignature)) {
+            return classNameOrSignature;
+        }
         // Object field
-        return ClassName.toSignature((String) fieldStackItem.getConstant());
+        return ClassName.toSignature(classNameOrSignature);
+    }
+
+    private boolean isPrimitiveFieldSignature(String signature) {
+        return signature.length() == 1 && "BCDFIJSZV".indexOf(signature.charAt(0)) >= 0;
     }
 
     /**
