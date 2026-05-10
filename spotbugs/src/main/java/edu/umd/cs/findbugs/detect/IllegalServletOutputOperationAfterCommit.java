@@ -22,6 +22,8 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BugAccumulator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -29,23 +31,31 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Comparator;
 
 public class IllegalServletOutputOperationAfterCommit extends BytecodeScanningDetector {
+
+    private static final Logger LOG = LoggerFactory.getLogger(IllegalServletOutputOperationAfterCommit.class);
 
     private final ClassDescriptor javaxResponse = DescriptorFactory.createClassDescriptor("javax/servlet/ServletResponse");
     private final ClassDescriptor jakartaResponse = DescriptorFactory.createClassDescriptor("jakarta/servlet/ServletResponse");
     private final ClassDescriptor javaOutputStream = DescriptorFactory.createClassDescriptor("java/io/OutputStream");
     private final ClassDescriptor javaWriter = DescriptorFactory.createClassDescriptor("java/io/Writer");
-    ClassDescriptor servletOutJavax = DescriptorFactory.createClassDescriptor("javax/servlet/ServletOutputStream");
-    ClassDescriptor servletOutJakarta = DescriptorFactory.createClassDescriptor("jakarta/servlet/ServletOutputStream");
+    private final ClassDescriptor servletOutJavax = DescriptorFactory.createClassDescriptor("javax/servlet/ServletOutputStream");
+    private final ClassDescriptor servletOutJakarta = DescriptorFactory.createClassDescriptor("jakarta/servlet/ServletOutputStream");
 
     private final Map<String, Boolean> responseTypeCache = new HashMap<>();
     private final Map<String, Boolean> servletStreamTypeCache = new HashMap<>();
@@ -57,14 +67,13 @@ public class IllegalServletOutputOperationAfterCommit extends BytecodeScanningDe
 
     private Subtypes2 subtypes2 = null;
 
-    private final int STATE_UNCOMMITTED_UNACCESSED = 1;
-    private final int STATE_UNCOMMITTED_ACCESSED = 2;
-    private final int STATE_COMMITTED_UNACCESSED = 3;
-    private final int STATE_COMMITTED_ACCESSED = 4;
+    private enum State {
+        UNCOMMITTED_UNACCESSED, UNCOMMITTED_ACCESSED, COMMITTED_UNACCESSED, COMMITTED_ACCESSED
+    }
 
-    private int currentState = STATE_UNCOMMITTED_UNACCESSED;
+    private State currentState = State.UNCOMMITTED_UNACCESSED;
 
-    private final Map<Integer, Integer> stateSnapshots = new HashMap<>();
+    private final Map<Integer, State> stateSnapshots = new HashMap<>();
     private boolean isDeadEnd = false;
 
     public IllegalServletOutputOperationAfterCommit(BugReporter bugReporter) {
@@ -84,18 +93,21 @@ public class IllegalServletOutputOperationAfterCommit extends BytecodeScanningDe
 
     private void setInitialState(Method obj) {
 
-        currentState = STATE_UNCOMMITTED_UNACCESSED;
+        stateSnapshots.clear();
+        isDeadEnd = false;
+
+        inlineFinallyRanges.clear();
+
+        currentState = State.UNCOMMITTED_UNACCESSED;
 
         boolean hasServletStream = false;
         boolean hasGenericOut = false;
         boolean hasResponse = false;
 
         for (Type argType : obj.getArgumentTypes()) {
-            if (argType instanceof BasicType) {
-                continue;
-            }
-            String className = argType.toString().replace('.', '/');
-            if (className.contains("[]")) {
+
+            String className = ClassName.toSlashedClassName(argType.getClassName());
+            if (argType instanceof BasicType || className.contains("[]")) {
                 continue;
             }
 
@@ -109,7 +121,7 @@ public class IllegalServletOutputOperationAfterCommit extends BytecodeScanningDe
         }
 
         if (hasServletStream || (hasGenericOut && hasResponse)) {
-            currentState = STATE_UNCOMMITTED_ACCESSED;
+            currentState = State.UNCOMMITTED_ACCESSED;
         }
     }
 
@@ -118,12 +130,7 @@ public class IllegalServletOutputOperationAfterCommit extends BytecodeScanningDe
 
         setInitialState(obj);
 
-        stateSnapshots.clear();
-        isDeadEnd = false;
-
-        inlineFinallyRanges.clear();
-
-        org.apache.bcel.classfile.Code code = obj.getCode();
+        Code code = obj.getCode();
         if (code != null) {
             CodeException[] exceptions = code.getExceptionTable();
             if (exceptions != null) {
@@ -184,15 +191,17 @@ public class IllegalServletOutputOperationAfterCommit extends BytecodeScanningDe
         if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESPECIAL) {
             String className = getClassConstantOperand();
             String methodName = getNameConstantOperand();
+            String methodSignature = getSigConstantOperand();
 
             boolean isResponse = isResponseSafe(className);
-            boolean isStreamOrWriter = isOutSafe(className);
+            boolean isStreamOrWriter = isServletStreamSafe(className) || isGenericOutSafe(className);
 
             if (!isResponse && !isStreamOrWriter) {
                 return;
             }
 
-            boolean isFlushOrClose = "flush".equals(methodName) || "close".equals(methodName);
+            boolean isFlushOrClose = ("flush".equals(methodName) || "close".equals(methodName))
+                    && "()V".equals(methodSignature);
 
             if (isFlushOrClose && !isStreamOrWriter) {
                 return;
@@ -202,7 +211,7 @@ public class IllegalServletOutputOperationAfterCommit extends BytecodeScanningDe
                 return;
             }
 
-            checkAndReport(methodName);
+            checkAndReport(methodName, methodSignature);
 
         }
 
@@ -213,22 +222,23 @@ public class IllegalServletOutputOperationAfterCommit extends BytecodeScanningDe
             }
         }
 
-        isDeadEnd = isReturn(seen);
+        isDeadEnd = isReturn(seen) || seen == Const.ATHROW;
     }
 
-    private void checkAndReport(String methodName) {
-        if (!isValidStateChange(methodName)) {
+    private void checkAndReport(String methodName, String methodSignature) {
+        if (!doStateChangeIfValid(methodName, methodSignature)) {
 
             int priority = NORMAL_PRIORITY;
             String msg = "";
 
             switch (currentState) {
-            case STATE_UNCOMMITTED_ACCESSED:
+            case UNCOMMITTED_ACCESSED:
                 msg = "sends error or redirects after initializing the output builder object";
                 break;
-            case STATE_COMMITTED_UNACCESSED:
-            case STATE_COMMITTED_ACCESSED:
-                if (methodName.equals("flush") || methodName.equals("flushBuffer")) {
+            case COMMITTED_UNACCESSED:
+            case COMMITTED_ACCESSED:
+                if ((methodName.equals("flush") || methodName.equals("flushBuffer"))
+                        && "()V".equals(methodSignature)) {
                     priority = LOW_PRIORITY;
                     msg = "flushes an already flushed buffer";
                 } else {
@@ -245,38 +255,41 @@ public class IllegalServletOutputOperationAfterCommit extends BytecodeScanningDe
         }
     }
 
-    private boolean isValidStateChange(String methodName) {
+    private boolean doStateChangeIfValid(String methodName, String methodSignature) {
 
         switch (currentState) {
 
-        case STATE_UNCOMMITTED_UNACCESSED:
+        case UNCOMMITTED_UNACCESSED:
             if (isStreamOrWriterGetter(methodName)) {
-                currentState = STATE_UNCOMMITTED_ACCESSED;
-            } else if ("flushBuffer".equals(methodName) || isErrorOrRedirect(methodName)) {
-                currentState = STATE_COMMITTED_UNACCESSED;
+                currentState = State.UNCOMMITTED_ACCESSED;
+            } else if (("flushBuffer".equals(methodName) && "()V".equals(methodSignature))
+                    || isErrorOrRedirect(methodName)) {
+                currentState = State.COMMITTED_UNACCESSED;
             }
             return true;
 
-        case STATE_UNCOMMITTED_ACCESSED:
+        case UNCOMMITTED_ACCESSED:
             if (isErrorOrRedirect(methodName)) {
                 return false;
-            } else if ("flushBuffer".equals(methodName) || "flush".equals(methodName) || "close".equals(methodName)) {
-                currentState = STATE_COMMITTED_ACCESSED;
+            } else if (("flushBuffer".equals(methodName) || "flush".equals(methodName) || "close".equals(methodName))
+                    && "()V".equals(methodSignature)) {
+                currentState = State.COMMITTED_ACCESSED;
             }
             return true;
 
-        case STATE_COMMITTED_UNACCESSED:
-            if (isRelaxedIllegalPostCommitResponseMethod(methodName) || "flushBuffer".equals(methodName)) {
+        case COMMITTED_UNACCESSED:
+            if (isRelaxedIllegalPostCommitResponseMethod(methodName, methodSignature)
+                    || ("flushBuffer".equals(methodName) && "()V".equals(methodSignature))) {
                 return false;
             } else if (isStreamOrWriterGetter(methodName)) {
-                currentState = STATE_UNCOMMITTED_ACCESSED;
+                currentState = State.UNCOMMITTED_ACCESSED;
             }
             return true;
 
-        case STATE_COMMITTED_ACCESSED:
-            if (isStrictIllegalPostCommitResponseMethod(methodName)) {
-                return false;
-            } else if ("flushBuffer".equals(methodName) || "flush".equals(methodName)) {
+        case COMMITTED_ACCESSED:
+            if ((isStrictIllegalPostCommitResponseMethod(methodName, methodSignature))
+                    || (("flushBuffer".equals(methodName) || "flush".equals(methodName))
+                            && "()V".equals(methodSignature))) {
                 return false;
             }
             return true;
@@ -321,10 +334,6 @@ public class IllegalServletOutputOperationAfterCommit extends BytecodeScanningDe
                 k -> isSubtypeSafe(k, javaOutputStream, javaWriter));
     }
 
-    private boolean isOutSafe(String className) {
-        return isServletStreamSafe(className) || isGenericOutSafe(className);
-    }
-
     private boolean isSubtypeSafe(String targetClassName, ClassDescriptor... allowedTypes) {
         ClassDescriptor targetClass = DescriptorFactory.createClassDescriptor(targetClassName);
         try {
@@ -334,42 +343,79 @@ public class IllegalServletOutputOperationAfterCommit extends BytecodeScanningDe
                 }
             }
         } catch (ClassNotFoundException e) {
+            LOG.error("IllegalServletOutputOperationAfterCommit: Failed to find class in Subtypes2. Target class: {}",
+                    targetClassName, e);
             return false;
         }
         return false;
     }
 
-    private boolean isStrictIllegalPostCommitResponseMethod(String methodName) {
+    private boolean isStrictIllegalPostCommitResponseMethod(String methodName, String methodSignature) {
         return isStreamOrWriterGetter(methodName) ||
-                isRelaxedIllegalPostCommitResponseMethod(methodName) ||
+                isRelaxedIllegalPostCommitResponseMethod(methodName, methodSignature) ||
                 isErrorOrRedirect(methodName);
     }
 
-    private boolean isRelaxedIllegalPostCommitResponseMethod(String methodName) {
-        return "setContentType".equals(methodName) ||
-                "setCharacterEncoding".equals(methodName) ||
-                "setBufferSize".equals(methodName) ||
-                "reset".equals(methodName) ||
-                "resetBuffer".equals(methodName) ||
-                "addHeader".equals(methodName) ||
-                "addIntHeader".equals(methodName) ||
-                "addDateHeader".equals(methodName) ||
-                "addCookie".equals(methodName) ||
-                "setHeader".equals(methodName) ||
-                "setIntHeader".equals(methodName) ||
-                "setStatus".equals(methodName) ||
-                "setDateHeader".equals(methodName) ||
-                "setContentLength".equals(methodName) ||
-                "setContentLengthLong".equals(methodName) ||
-                "setLocale".equals(methodName);
+    private static boolean isRelaxedIllegalPostCommitResponseMethod(
+            String methodName,
+            String methodSignature) {
+
+        return ("setContentType".equals(methodName)
+                && "(Ljava/lang/String;)V".equals(methodSignature))
+
+                || ("setCharacterEncoding".equals(methodName)
+                        && "(Ljava/lang/String;)V".equals(methodSignature))
+
+                || ("setBufferSize".equals(methodName)
+                        && "(I)V".equals(methodSignature))
+
+                || ("reset".equals(methodName)
+                        && "()V".equals(methodSignature))
+
+                || ("resetBuffer".equals(methodName)
+                        && "()V".equals(methodSignature))
+
+                || ("setContentLength".equals(methodName)
+                        && "(I)V".equals(methodSignature))
+
+                || ("setContentLengthLong".equals(methodName)
+                        && "(J)V".equals(methodSignature))
+
+                || ("setLocale".equals(methodName)
+                        && "(Ljava/util/Locale;)V".equals(methodSignature))
+
+                || ("addHeader".equals(methodName)
+                        && "(Ljava/lang/String;Ljava/lang/String;)V".equals(methodSignature))
+
+                || ("addIntHeader".equals(methodName)
+                        && "(Ljava/lang/String;I)V".equals(methodSignature))
+
+                || ("addDateHeader".equals(methodName)
+                        && "(Ljava/lang/String;J)V".equals(methodSignature))
+
+                || ("addCookie".equals(methodName)
+                        && ("(Ljakarta/servlet/http/Cookie;)V".equals(methodSignature)
+                                || "(Ljavax/servlet/http/Cookie;)V".equals(methodSignature)))
+
+                || ("setHeader".equals(methodName)
+                        && "(Ljava/lang/String;Ljava/lang/String;)V".equals(methodSignature))
+
+                || ("setIntHeader".equals(methodName)
+                        && "(Ljava/lang/String;I)V".equals(methodSignature))
+
+                || ("setDateHeader".equals(methodName)
+                        && "(Ljava/lang/String;J)V".equals(methodSignature))
+
+                || ("setStatus".equals(methodName)
+                        && "(I)V".equals(methodSignature));
     }
 
-    private boolean isStreamOrWriterGetter(String methodName) {
+    private static boolean isStreamOrWriterGetter(String methodName) {
         return "getOutputStream".equals(methodName) ||
                 "getWriter".equals(methodName);
     }
 
-    private boolean isErrorOrRedirect(String methodName) {
+    private static boolean isErrorOrRedirect(String methodName) {
         return "sendError".equals(methodName) ||
                 "sendRedirect".equals(methodName);
     }

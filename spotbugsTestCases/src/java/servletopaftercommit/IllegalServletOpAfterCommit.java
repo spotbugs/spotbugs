@@ -1,8 +1,6 @@
 package servletopaftercommit;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 import java.io.IOException;
@@ -17,8 +15,8 @@ public class IllegalServletOpAfterCommit {
     /**
      * 1. The official CERT FIO15-J Compliant example.
      */
-    public void testCompliant(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+    public void testCompliant(HttpServletResponse response)
+            throws IOException {
 
         try {
             // Do work that doesn't require the output stream
@@ -42,7 +40,7 @@ public class IllegalServletOpAfterCommit {
     /**
      * 2. Branches (Relaxed list test).
      */
-    public void testCompliantMultipleSendErrorInBranches(HttpServletRequest request, HttpServletResponse response, boolean cond) throws IOException {
+    public void testCompliantMultipleSendErrorInBranches(HttpServletResponse response, boolean cond) throws IOException {
         if (cond) {
             response.sendError(400, "Bad Request"); // COMMITTED_UNACCESSED
         } else {
@@ -53,7 +51,7 @@ public class IllegalServletOpAfterCommit {
     /**
      * 3. Normal stream usage without errors.
      */
-    public void testCompliantNormalWriterUsage(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void testCompliantNormalWriterUsage(HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
         PrintWriter writer = response.getWriter(); // UNCOMMITTED_ACCESSED
         writer.write("Hello World");
@@ -64,7 +62,7 @@ public class IllegalServletOpAfterCommit {
     /**
      * 4. Try-with-resources test.
      */
-    public void testCompliantTryWithResources(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void testCompliantTryWithResources(HttpServletResponse response) throws IOException {
         try (ServletOutputStream out = response.getOutputStream()) { // UNCOMMITTED_ACCESSED
             out.print("<html>");
             out.flush(); // COMMITTED_ACCESSED
@@ -74,7 +72,7 @@ public class IllegalServletOpAfterCommit {
     /**
      * 5. Resetting before retrieving the stream is legal.
      */
-    public void testCompliantResetBeforeStream(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void testCompliantResetBeforeStream(HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
         response.reset();
         ServletOutputStream out = response.getOutputStream(); // UNCOMMITTED_ACCESSED
@@ -109,8 +107,8 @@ public class IllegalServletOpAfterCommit {
     /**
      * 1. The official CERT FIO15-J Non-Compliant first example (Illegal sendError in exception handling).
      */
-    public void testNoncompliant1(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+    public void testNoncompliant1(HttpServletResponse response)
+            throws IOException {
 
         ServletOutputStream out = response.getOutputStream();
         try {
@@ -131,8 +129,8 @@ public class IllegalServletOpAfterCommit {
     /**
      * 2. The official CERT FIO15-J Non-Compliant second example (Double flush in exception handling).
      */
-    public void testNoncompliant2(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+    public void testNoncompliant2(HttpServletResponse response)
+            throws IOException {
 
         ServletOutputStream out = response.getOutputStream();
         try {
@@ -155,7 +153,7 @@ public class IllegalServletOpAfterCommit {
     /**
      * 3. Modifying header after sendError (Commit). (Relaxed list test)
      */
-    public void testViolatingSetContentTypeAfterSendError(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void testViolatingSetContentTypeAfterSendError(HttpServletResponse response) throws IOException {
         response.sendError(500, "Server Error"); // COMMITTED_UNACCESSED
         response.setContentType("text/html"); // BUG: Illegal Servlet Output Operation After Commit
     }
@@ -163,7 +161,7 @@ public class IllegalServletOpAfterCommit {
     /**
      * 4. Calling sendRedirect after stream flush. (Strict list test)
      */
-    public void testViolatingRedirectAfterFlush(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void testViolatingRedirectAfterFlush(HttpServletResponse response) throws IOException {
         ServletOutputStream out = response.getOutputStream(); // UNCOMMITTED_ACCESSED
         out.flush(); // COMMITTED_ACCESSED
         response.sendRedirect("/login"); // BUG: Illegal Servlet Output Operation After Commit
@@ -172,7 +170,7 @@ public class IllegalServletOpAfterCommit {
     /**
      * 5. Calling sendError after retrieving the stream.
      */
-    public void testViolatingSendErrorAfterGetOutputStream(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void testViolatingSendErrorAfterGetOutputStream(HttpServletResponse response) throws IOException {
         ServletOutputStream out = response.getOutputStream(); // UNCOMMITTED_ACCESSED
         response.sendError(500); // BUG: sends error or redirects after initializing the output builder object
     }
@@ -180,7 +178,7 @@ public class IllegalServletOpAfterCommit {
     /**
      * 6. Nested Try-Finally block test.
      */
-    public void testViolatingNestedFinallyDoubleFlush(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void testViolatingNestedFinallyDoubleFlush(HttpServletResponse response) throws IOException {
         ServletOutputStream out = response.getOutputStream(); // UNCOMMITTED_ACCESSED
         try {
             try {
@@ -196,7 +194,7 @@ public class IllegalServletOpAfterCommit {
     /**
      * 7. Using flushBuffer() (has the same effect as stream.flush()).
      */
-    public void testViolatingFlushBufferThenHeader(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void testViolatingFlushBufferThenHeader(HttpServletResponse response) throws IOException {
         response.flushBuffer(); // COMMITTED_UNACCESSED
         response.setHeader("Custom-Header", "Value"); // BUG: Illegal Servlet Output Operation After Commit
     }
@@ -204,7 +202,7 @@ public class IllegalServletOpAfterCommit {
     /**
      * 8. Modifying setContentLength after stream.close().
      */
-    public void testViolatingSetContentLengthAfterClose(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void testViolatingSetContentLengthAfterClose(HttpServletResponse response) throws IOException {
         ServletOutputStream out = response.getOutputStream(); // UNCOMMITTED_ACCESSED
         out.write("Data".getBytes());
         out.close(); // COMMITTED_ACCESSED
@@ -215,7 +213,7 @@ public class IllegalServletOpAfterCommit {
     /**
      * 9. Detecting double flush bug through a Wrapper object.
      */
-    public void testViolatingWrapperDoubleFlush(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void testViolatingWrapperDoubleFlush(HttpServletResponse response) throws IOException {
         HttpServletResponseWrapper wrapper = new HttpServletResponseWrapper(response);
         PrintWriter writer = wrapper.getWriter(); // UNCOMMITTED_ACCESSED
         writer.flush(); // COMMITTED_ACCESSED
