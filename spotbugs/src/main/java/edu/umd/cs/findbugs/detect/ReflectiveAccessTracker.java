@@ -106,7 +106,7 @@ class ReflectiveAccessTracker {
         return selectFieldsWithLines(log -> log.wasSetterInvoked() && !log.wasGetterInvoked());
     }
 
-    List<? extends XField> getAllAccessedFields() {
+    List<XField> getAllAccessedFields() {
         return selectFields(log -> log.wasGetterInvoked() || log.wasSetterInvoked());
     }
 
