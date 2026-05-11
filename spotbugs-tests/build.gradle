@@ -21,7 +21,7 @@ dependencies {
   implementation 'org.junit.jupiter:junit-jupiter-engine:6.0.3'
   implementation 'org.junit.jupiter:junit-jupiter-params:6.0.3'
   implementation 'org.hamcrest:hamcrest:3.0'
-  implementation 'org.mockito:mockito-junit-jupiter:5.23.0'
+  implementation libs.mockito.junit.jupiter
   implementation 'org.apache.ant:ant:1.10.17'
   implementation libs.log4j.core
   implementation libs.log4j.slf4j2.impl
