@@ -317,6 +317,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
             for (Field f : obj.getFields()) {
                 if (f.isTransient()) {
                     seenTransientField = true;
+                    break;
                 }
             }
         }

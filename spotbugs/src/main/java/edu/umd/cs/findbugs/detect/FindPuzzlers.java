@@ -534,13 +534,14 @@ public class FindPuzzlers extends OpcodeStackDetector {
                     for (CodeException e : getCode().getExceptionTable()) {
                         if (e.getHandlerPC() <= getPC() && e.getHandlerPC() + 30 >= getPC()) {
                             debuggingContext = true;
+                            break;
                         }
                     }
 
                     for (int i = 1; !debuggingContext && i < stack.getStackDepth(); i++) {
                         OpcodeStack.Item e = stack.getStackItem(i);
 
-                        if (e.getSignature().indexOf("Logger") >= 0 || e.getSignature().indexOf("Exception") >= 0) {
+                        if (e.getSignature().contains("Logger") || e.getSignature().contains("Exception")) {
                             debuggingContext = true;
                         }
 

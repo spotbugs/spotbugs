@@ -310,13 +310,7 @@ public class Profiler implements IProfiler, XMLWriteable {
                 AnalysisContext.logError("Error comparing " + c1 + " and " + c2, e);
                 int i1 = System.identityHashCode(c1);
                 int i2 = System.identityHashCode(c2);
-                if (i1 < i2) {
-                    return -1;
-                }
-                if (i1 > i2) {
-                    return 1;
-                }
-                return 0;
+                return Integer.compare(i1, i2);
             }
         }
     }

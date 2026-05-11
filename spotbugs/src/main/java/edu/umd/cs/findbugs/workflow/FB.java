@@ -38,9 +38,7 @@ public class FB {
         } else {
             cmd = args[0];
             a = new String[args.length - 1];
-            for (int i = 1; i < args.length; i++) {
-                a[i - 1] = args[i];
-            }
+            System.arraycopy(args, 1, a, 0, args.length - 1);
         }
 
         DetectorFactoryCollection.instance();

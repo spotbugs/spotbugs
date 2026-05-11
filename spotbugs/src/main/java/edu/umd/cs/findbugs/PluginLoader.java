@@ -1102,11 +1102,11 @@ public class PluginLoader implements AutoCloseable {
         Plugin constructedPlugin = new Plugin(pluginId, version, parsedDate, this, !optionalPlugin, cannotDisable);
         // Set provider and website, if specified
         String provider = pluginDescriptor.valueOf(XPATH_PLUGIN_PROVIDER).trim();
-        if (!"".equals(provider)) {
+        if (!provider.isEmpty()) {
             constructedPlugin.setProvider(provider);
         }
         String website = pluginDescriptor.valueOf(XPATH_PLUGIN_WEBSITE).trim();
-        if (!"".equals(website)) {
+        if (!website.isEmpty()) {
             try {
                 constructedPlugin.setWebsite(website);
             } catch (URISyntaxException e1) {
@@ -1115,7 +1115,7 @@ public class PluginLoader implements AutoCloseable {
         }
 
         String updateUrl = pluginDescriptor.valueOf("/FindbugsPlugin/@update-url").trim();
-        if (!"".equals(updateUrl)) {
+        if (!updateUrl.isEmpty()) {
             try {
                 constructedPlugin.setUpdateUrl(updateUrl);
             } catch (URISyntaxException e1) {

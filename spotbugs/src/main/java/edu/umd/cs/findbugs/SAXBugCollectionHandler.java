@@ -330,7 +330,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     assert bugcollection != null;
                     if ("ClassStats".equals(qName)) {
                         String className = getRequiredAttribute(attributes, "class", qName);
-                        Boolean isInterface = Boolean.valueOf(getRequiredAttribute(attributes, "interface", qName));
+                        boolean isInterface = Boolean.parseBoolean(getRequiredAttribute(attributes, "interface", qName));
                         int size = Integer.parseInt(getRequiredAttribute(attributes, "size", qName));
                         String sourceFile = getOptionalAttribute(attributes, "sourceFile");
                         bugcollection.getProjectStats().addClass(className, sourceFile, isInterface, size, false);
