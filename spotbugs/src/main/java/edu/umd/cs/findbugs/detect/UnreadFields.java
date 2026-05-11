@@ -330,11 +330,13 @@ public class UnreadFields extends OpcodeStackDetector {
 
     private final ReflectiveAccessTracker reflectiveAccessTracker = new ReflectiveAccessTracker();
 
-    private ReflectiveFieldAccessorBuilder currentReflectiveField = null;
+    // A builder used to construct reflective Accessors. It's created at Accessor instantiation and then finished when
+    // the instance gets assigned to a field.
+    private ReflectiveFieldAccessorBuilder inFlightRFABuilder = null;
 
     @Override
     public void visit(Code obj) {
-        currentReflectiveField = null;
+        inFlightRFABuilder = null;
         count_aload_1 = 0;
         previousOpcode = -1;
         previousPreviousOpcode = -1;
@@ -360,7 +362,7 @@ public class UnreadFields extends OpcodeStackDetector {
         if (Const.CONSTRUCTOR_NAME.equals(getMethodName()) && (obj.isPublic() || obj.isProtected())) {
             publicOrProtectedConstructor = true;
         }
-        currentReflectiveField = null;
+        inFlightRFABuilder = null;
         pendingGetField = null;
         saState = 0;
         super.visit(obj);
@@ -434,15 +436,15 @@ public class UnreadFields extends OpcodeStackDetector {
 
         // Check whether this static field assignment occurs immediately after the instantiation of a reflective accessor.
         // If so, register this accessor with the Tracker so that all accesses performed through it can be monitored.
-        if (seen == Const.PUTSTATIC && currentReflectiveField != null
-                && currentReflectiveField.getAssignmentExpectedAtPC() == getPC()) {
+        if (seen == Const.PUTSTATIC && inFlightRFABuilder != null
+                && inFlightRFABuilder.getAssignmentExpectedAtPC() == getPC()) {
             String dottedClassName = ClassName.toDottedClassName(getClassConstantOperand());
             String fieldSignature = stack.getStackItem(0).getSignature();
             String fieldName = getNameConstantOperand();
             XField accessorField = XFactory.createXField(dottedClassName, fieldName, fieldSignature, true);
-            ReflectiveFieldAccessorBuilder accessorBuilder = currentReflectiveField.withAccessor(accessorField);
+            ReflectiveFieldAccessorBuilder accessorBuilder = inFlightRFABuilder.withAccessor(accessorField);
             reflectiveAccessTracker.newAccessorDeclared(accessorBuilder);
-            currentReflectiveField = null;
+            inFlightRFABuilder = null;
         }
 
         // ---- Mark instantiations of new reflective accessors ----
@@ -454,7 +456,7 @@ public class UnreadFields extends OpcodeStackDetector {
             String fieldClass = (String) stack.getStackItem(2).getConstant();
             if (fieldName != null && fieldSignature != null && fieldClass != null) {
                 XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, ClassName.toSignature(fieldSignature), false);
-                currentReflectiveField = new AtomicUpdaterAccessorBuilder(f, getNextPC(),
+                inFlightRFABuilder = new AtomicUpdaterAccessorBuilder(f, getNextPC(),
                         SourceLineAnnotation.fromVisitedInstruction(this));
             }
         }
@@ -464,7 +466,7 @@ public class UnreadFields extends OpcodeStackDetector {
             String fieldClass = (String) stack.getStackItem(1).getConstant();
             if (fieldName != null && fieldClass != null) {
                 XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, "I", false);
-                currentReflectiveField = new AtomicUpdaterAccessorBuilder(f, getNextPC(),
+                inFlightRFABuilder = new AtomicUpdaterAccessorBuilder(f, getNextPC(),
                         SourceLineAnnotation.fromVisitedInstruction(this));
             }
 
@@ -475,31 +477,32 @@ public class UnreadFields extends OpcodeStackDetector {
             String fieldClass = (String) stack.getStackItem(1).getConstant();
             if (fieldName != null && fieldClass != null) {
                 XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, "J", false);
-                currentReflectiveField = new AtomicUpdaterAccessorBuilder(f, getNextPC(),
+                inFlightRFABuilder = new AtomicUpdaterAccessorBuilder(f, getNextPC(),
                         SourceLineAnnotation.fromVisitedInstruction(this));
             }
         }
 
         if (seen == Const.INVOKEVIRTUAL && "java/lang/invoke/MethodHandles$Lookup".equals(getClassConstantOperand())) {
             String methodName = getNameConstantOperand();
-            if ("findGetter".equals(methodName) || "findSetter".equals(methodName)) {
+            if (("findGetter".equals(methodName) || "findSetter".equals(methodName))
+                    && getSigConstantOperand().endsWith("Ljava/lang/invoke/MethodHandle;")) {
                 String fieldSignature = resolveFieldSignature(stack.getStackItem(0));
                 String fieldName = (String) stack.getStackItem(1).getConstant();
                 String fieldClass = (String) stack.getStackItem(2).getConstant();
                 if (fieldName != null && fieldSignature != null && fieldClass != null) {
                     XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, fieldSignature, false);
-                    currentReflectiveField = new MethodHandleAccessorBuilder(f, getNextPC(),
+                    inFlightRFABuilder = new MethodHandleAccessorBuilder(f, getNextPC(),
                             methodName.equals("findGetter") ? AccessType.GETTER : AccessType.SETTER,
                             SourceLineAnnotation.fromVisitedInstruction(this));
                 }
             }
-            if ("findVarHandle".equals(methodName)) {
+            if ("findVarHandle".equals(methodName) && getSigConstantOperand().endsWith("Ljava/lang/invoke/VarHandle;")) {
                 String fieldSignature = resolveFieldSignature(stack.getStackItem(0));
                 String fieldName = (String) stack.getStackItem(1).getConstant();
                 String fieldClass = (String) stack.getStackItem(2).getConstant();
                 if (fieldName != null && fieldSignature != null && fieldClass != null) {
                     XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, fieldSignature, false);
-                    currentReflectiveField = new VarHandleAccessorBuilder(f, getNextPC(),
+                    inFlightRFABuilder = new VarHandleAccessorBuilder(f, getNextPC(),
                             SourceLineAnnotation.fromVisitedInstruction(this));
                 }
             }
