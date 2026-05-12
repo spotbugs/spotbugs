@@ -308,9 +308,7 @@ public class Profiler implements IProfiler, XMLWriteable {
                 return c1.getSimpleName().compareTo(c2.getSimpleName());
             } catch (RuntimeException e) {
                 AnalysisContext.logError("Error comparing " + c1 + " and " + c2, e);
-                int i1 = System.identityHashCode(c1);
-                int i2 = System.identityHashCode(c2);
-                return Integer.compare(i1, i2);
+                return Integer.compare(System.identityHashCode(c1), System.identityHashCode(c2));
             }
         }
     }
