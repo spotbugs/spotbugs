@@ -30,9 +30,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
-import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ICheckStateProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -70,14 +68,11 @@ abstract class PathsProvider extends SelectionAdapter implements IStructuredCont
         if (viewer instanceof CheckboxTableViewer) {
             CheckboxTableViewer tv = (CheckboxTableViewer) viewer;
             tv.setCheckStateProvider(this);
-            tv.addCheckStateListener(new ICheckStateListener() {
-                @Override
-                public void checkStateChanged(CheckStateChangedEvent event) {
-                    boolean checked = event.getChecked();
-                    IPathElement element = (IPathElement) event.getElement();
-                    element.setEnabled(checked);
-                    handleContendChanged();
-                }
+            tv.addCheckStateListener(event -> {
+                boolean checked = event.getChecked();
+                IPathElement element = (IPathElement) event.getElement();
+                element.setEnabled(checked);
+                handleContendChanged();
             });
         }
         this.control = viewer.getTable();

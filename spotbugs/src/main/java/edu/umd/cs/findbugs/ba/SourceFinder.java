@@ -177,7 +177,7 @@ public class SourceFinder implements AutoCloseable {
                         GZIPOutputStream gOut = new GZIPOutputStream(out);
                         IO.copy(in, gOut);
                         gOut.close();
-                        byte data[] = out.toByteArray();
+                        byte[] data = out.toByteArray();
                         contents.put(name, data);
                         lastModified.put(name, e.getTime());
                     }

@@ -47,7 +47,7 @@ public class SignatureParser {
         return totalArgumentSize;
     }
 
-    private @CheckForNull int parameterOffset[];
+    private @CheckForNull int[] parameterOffset;
 
     @Nonnull
     int[] getParameterOffset() {

@@ -27,13 +27,16 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
     - `USBC_UNSAFE_SYNCHRONIZATION_WITH_ACCESSIBLE_BACKING_COLLECTION` is reported when the backing collection of a lock is made accessible, with methods that update or return the lock, to the outside,
     - `USBC_UNSAFE_SYNCHRONIZATION_WITH_INHERITABLE_BACKING_COLLECTION` is reported when the backing collection of a lock can be altered by subclasses.
       (See [SEI CERT rule LCK00-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code) and [SEI CERT rule LCK04-J](https://wiki.sei.cmu.edu/confluence/display/java/LCK04-J.+Do+not+synchronize+on+a+collection+view+if+the+backing+collection+is+accessible))
+- New detector `FindIncreasedAccessibilityOfMethods` for new bug type `IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY`. This detector reports a bug if a class increases the accessibility of overridden or hidden methods. (See [SEI CERT rule MET04-J](https://wiki.sei.cmu.edu/confluence/display/java/MET04-J.+Do+not+increase+the+accessibility+of+overridden+or+hidden+methods))
 
 ### Fixed
+- Fix `DM_STRING_TOSTRING` false negative when `toString()` is chained before a method call (e.g., `s.toString().toLowerCase()`); multiple occurrences in the same method are now all reported ([#3966](https://github.com/spotbugs/spotbugs/issues/3966))
 - Stop exposing JUnit BOM as a transitive dependency to consumers ([#3908](https://github.com/spotbugs/spotbugs/issues/3908))
 - Fix incorrect bug counts and sizes when unioning reports ([#3721](https://github.com/spotbugs/spotbugs/issues/3721))
 - Classes containing only methods throwing `UnsupportedOperationException` with setter-like names are no longer considered as mutable ([#1601](https://github.com/spotbugs/spotbugs/issues/1601))
 - Enhanced SARIF output with full description sections - adding markdown is still an open issue ([#2339](https://github.com/spotbugs/spotbugs/issues/2339))
 - Added missing null check to `MultipleInstantiationsOfSingletons` detector ([#3823](https://github.com/spotbugs/spotbugs/issues/3823))
+- Fix invalid syntax in findbugsfilter.xsd ([#3832](https://github.com/spotbugs/spotbugs/issues/3832))
 - Fix `CT_CONSTRUCTOR_THROW` FP with public and private constructors ([#3822](https://github.com/spotbugs/spotbugs/issues/3822))
 - Fix tool name in usage info, ([#3847](https://github.com/spotbugs/spotbugs/pull/3847))
 - Fix the building of relative chains of ./././ in filenames in fbp files ([#3852](https://github.com/spotbugs/spotbugs/pull/3852))
@@ -42,6 +45,12 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `FS_BAD_DATE_FORMAT_FLAG_COMBO` not suppressed by field-level annotation ([#3838](https://github.com/spotbugs/spotbugs/issues/3838))
 - Fix `SF_SWITCH_FALLTHROUGH` false positives ([#3767](https://github.com/spotbugs/spotbugs/issues/3767))
 - Fix `NP_LOAD_OF_KNOWN_NULL_VALUE` false negative when null check uses `instanceof` ([#3916](https://github.com/spotbugs/spotbugs/issues/3916))
+- Recognize well-known exception-throwing utility methods when looking for exceptions thrown from constructors ([#3821](https://github.com/spotbugs/spotbugs/issues/3821))
+- Fix `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` false negative when non-null value is on the left side of null comparison ([#3920](https://github.com/spotbugs/spotbugs/issues/3920))
+- Fix `IM_BAD_CHECK_FOR_ODD` false negative when using Yoda-style comparison (`1 == i % 2`) ([#3886](https://github.com/spotbugs/spotbugs/issues/3886))
+- Fix `PluginLoader.close()` to continue closing all `URLClassLoader`s when one close operation fails, suppressing subsequent `IOException`s. ([#3958](https://github.com/spotbugs/spotbugs/pull/3958))
+- Fix broken `bugDescriptions.html#TYPE` links by restoring legacy bug type anchors in generated docs ([#2113](https://github.com/spotbugs/spotbugs/issues/2113))
+- Fix `EI_EXPOSE_REP` false negative in package-private classes that expose mutable state through methods overriding a public super-type ([#4027](https://github.com/spotbugs/spotbugs/pull/4027))
 
 ### Removed
 - Removed old deprecated methods: 

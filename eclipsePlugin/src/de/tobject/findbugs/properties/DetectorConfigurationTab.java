@@ -32,9 +32,7 @@ import java.util.TreeSet;
 import jakarta.annotation.Nonnull;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
-import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -551,13 +549,7 @@ public class DetectorConfigurationTab extends Composite {
 
         int tableStyle = SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.SINGLE | SWT.FULL_SELECTION | SWT.CHECK;
         availableFactoriesTableViewer = CheckboxTableViewer.newCheckList(parent, tableStyle);
-        availableFactoriesTableViewer.addCheckStateListener(new ICheckStateListener() {
-
-            @Override
-            public void checkStateChanged(CheckStateChangedEvent event) {
-                syncUserPreferencesWithTable();
-            }
-        });
+        availableFactoriesTableViewer.addCheckStateListener(event -> syncUserPreferencesWithTable());
 
         int currentColumnIdx = 0;
         Table factoriesTable = availableFactoriesTableViewer.getTable();

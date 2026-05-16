@@ -15,7 +15,7 @@ IDE Integration
 SpotBugs Plugins
 ----------------
 
-`fb-contrib <http://fb-contrib.sourceforge.net/>`_
+`fb-contrib <https://fb-contrib.sourceforge.net/>`_
   A FindBugs/SpotBugs plugin for doing static code analysis on java byte code.
 
 `Find Security Bugs <https://find-sec-bugs.github.io/>`_
@@ -27,8 +27,8 @@ SpotBugs Plugins
 Similar/Related Tools
 ---------------------
 
-`sonar-findbugs <https://github.com/SonarQubeCommunity/sonar-findbugs>`_
-  A `SonarQube <https://www.sonarqube.org/>`_ plugin which provides rules based on SpotBugs and its major plugins.
+`sonar-findbugs <https://github.com/spotbugs/sonar-findbugs>`_
+  A `SonarQube <https://www.sonarsource.com/products/sonarqube/>`_ plugin which provides rules based on SpotBugs and its major plugins.
 
 `Checkstyle <https://checkstyle.sourceforge.io/>`_
   A style checker for Java.
@@ -37,9 +37,9 @@ Similar/Related Tools
   An extensible cross-language static code analyzer.
 
 `huntbugs <https://github.com/amaembo/huntbugs>`_
-  New Java bytecode static analyzer tool based on `Procyon Compiler Tools <https://github.com/mstrobel/procyon>`_ aimed to supersede the FindBugs.
+  Archived - New Java bytecode static analyzer tool based on `Procyon Compiler Tools <https://github.com/mstrobel/procyon>`_ aimed to supersede the FindBugs.
 
-`Google Error Prone <http://errorprone.info/>`_
+`Google Error Prone <https://errorprone.info/>`_
   A static analysis tool for Java that catches common programming mistakes at compile-time.
 
 `Checker Framework <https://checkerframework.org/>`_

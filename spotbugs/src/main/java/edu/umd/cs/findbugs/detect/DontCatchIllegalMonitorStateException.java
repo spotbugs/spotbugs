@@ -52,7 +52,7 @@ public class DontCatchIllegalMonitorStateException extends PreorderVisitor imple
     @Override
     public void visit(ExceptionTable obj) {
         if (DEBUG) {
-            String names[] = obj.getExceptionNames();
+            String[] names = obj.getExceptionNames();
             for (String name : names) {
                 if ("java.lang.Exception".equals(name) || "java.lang.Throwable".equals(name)) {
                     System.out.println(name + " thrown by " + getFullyQualifiedMethodName());
