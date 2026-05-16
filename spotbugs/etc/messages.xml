@@ -9156,7 +9156,7 @@ object explicitly.</p>
       leak the this reference of the partially constructed object. Only static, final or private methods should be
       invoked from a constructor.</p>
       <p>
-      See SEI CERT rule <a href="https://cmu-sei.github.io/secure-coding-standards/sei-cert-oracle-coding-standard-for-java/rules/methods-met/met05-j">MET05-J. Ensure that constructors do not call overridable methods</a>.
+      See SEI CERT rule <a href="https://cmu-sei.github.io/secure-coding-standards/sei-cert-oracle-coding-standard-for-java/rules/methods-met/met05-j/">MET05-J. Ensure that constructors do not call overridable methods</a>.
       </p>]]>
     </Details>
   </BugPattern>
