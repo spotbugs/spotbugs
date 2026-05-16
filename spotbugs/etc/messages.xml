@@ -3323,16 +3323,17 @@ Don't do it.
     <ShortDescription>Class doesn't override equals in superclass</ShortDescription>
     <LongDescription>{0} doesn't override {2.givenClass}</LongDescription>
     <Details>
-<![CDATA[
-  <p> This class extends a class that defines an equals method and adds fields, but doesn't
-define an equals method itself. Thus, equality on instances of this class will
-ignore the identity of the subclass and the added fields. Be sure this is what is intended,
-and that you don't need to override the equals method. Even if you don't need to override
-the equals method, consider overriding it anyway to document the fact
-that the equals method for the subclass just return the result of
-invoking super.equals(o).
-  </p>
-]]>
+<p> This class extends a class that defines an equals method and adds fields, but doesn't
+    define an equals method itself. Thus, equality on instances of this class will
+    ignore the identity of the subclass and the added fields. Be sure this is what is intended,
+    and that you don't need to override the equals method.
+    </p>
+    <p> Warning: Simply overriding equals in the subclass may break the symmetry contract
+    of equals. For example, if the superclass uses <code>instanceof</code> in its equals method,
+    then <code>parent.equals(child)</code> may return <code>true</code> but
+    <code>child.equals(parent)</code> may return <code>false</code>.
+    Consider whether overriding equals is truly necessary before doing so.
+    </p>
     </Details>
   </BugPattern>
   <BugPattern type="EQ_SELF_NO_OBJECT">
