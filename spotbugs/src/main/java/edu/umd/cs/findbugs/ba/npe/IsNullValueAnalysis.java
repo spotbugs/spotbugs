@@ -716,6 +716,8 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
                     }
                 } catch (ClassNotFoundException e) {
                     AnalysisContext.reportMissingClass(e);
+                } catch (DataflowAnalysisException e) {
+                    // Failed to obtain type dataflow information; fall back to conservative defaults.
                 }
                 if (notInstanceOfImpliesNull) {
                     // "not instanceof" branch: value must be null; "instanceof" branch: value is non-null
