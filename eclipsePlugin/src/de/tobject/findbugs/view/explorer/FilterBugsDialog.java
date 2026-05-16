@@ -304,28 +304,12 @@ public class FilterBugsDialog extends SelectionDialog {
             DetectorFactory factory = iterator.next();
             Set<BugPattern> patterns = factory.getReportedBugPatterns();
             for (BugPattern pattern : patterns) {
-                Set<DetectorFactory> set = patternToFactory.get(pattern);
-                if (set == null) {
-                    set = new TreeSet<>(new Comparator<DetectorFactory>() {
-                        @Override
-                        public int compare(DetectorFactory f1, DetectorFactory f2) {
-                            return f1.getFullName().compareTo(f2.getFullName());
-                        }
-                    });
-                    patternToFactory.put(pattern, set);
-                }
+                Set<DetectorFactory> set = patternToFactory.computeIfAbsent(pattern,
+                        k -> new TreeSet<>(Comparator.comparing(DetectorFactory::getFullName)));
                 set.add(factory);
 
-                Set<Plugin> pset = patternToPlugin.get(pattern);
-                if (pset == null) {
-                    pset = new TreeSet<>(new Comparator<Plugin>() {
-                        @Override
-                        public int compare(Plugin f1, Plugin f2) {
-                            return f1.getPluginId().compareTo(f2.getPluginId());
-                        }
-                    });
-                    patternToPlugin.put(pattern, pset);
-                }
+                Set<Plugin> pset = patternToPlugin.computeIfAbsent(pattern,
+                        k -> new TreeSet<>(Comparator.comparing(Plugin::getPluginId)));
                 pset.add(factory.getPlugin());
             }
         }
@@ -600,19 +584,16 @@ public class FilterBugsDialog extends SelectionDialog {
     }
 
     private void sortCheckedElements() {
-        Arrays.sort(checkedElements, new Comparator<Object>() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                String text1 = labelProvider.getText(o1);
-                String text2 = labelProvider.getText(o2);
-                if (text1 == null) {
-                    return -1;
-                }
-                if (text2 == null) {
-                    return 1;
-                }
-                return text1.compareTo(text2);
+        Arrays.sort(checkedElements, (o1, o2) -> {
+            String text1 = labelProvider.getText(o1);
+            String text2 = labelProvider.getText(o2);
+            if (text1 == null) {
+                return -1;
             }
+            if (text2 == null) {
+                return 1;
+            }
+            return text1.compareTo(text2);
         });
     }
 
@@ -661,12 +642,7 @@ public class FilterBugsDialog extends SelectionDialog {
             sb.append(bugPattern.getType()).append("<br>");
         }
         // add reported by...
-        Set<DetectorFactory> allFactories = new TreeSet<>(new Comparator<DetectorFactory>() {
-            @Override
-            public int compare(DetectorFactory f1, DetectorFactory f2) {
-                return f1.getFullName().compareTo(f2.getFullName());
-            }
-        });
+        Set<DetectorFactory> allFactories = new TreeSet<>(Comparator.comparing(DetectorFactory::getFullName));
         for (BugPattern bugPattern : patterns) {
             Set<DetectorFactory> set = patternToFactory.get(bugPattern);
             if (set != null) {

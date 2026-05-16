@@ -27,7 +27,7 @@ dependencies {
 
   implementation project(':test-harness')
   implementation 'org.junit.jupiter:junit-jupiter-engine:6.0.3'
-  implementation 'org.apache.ant:ant:1.10.15'
+  implementation 'org.apache.ant:ant:1.10.17'
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340

@@ -125,12 +125,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
         }
 
         public ExceptionSet getEdgeExceptionSet(Edge edge) {
-            ExceptionSet edgeExceptionSet = edgeExceptionMap.get(edge);
-            if (edgeExceptionSet == null) {
-                edgeExceptionSet = exceptionSetFactory.createExceptionSet();
-                edgeExceptionMap.put(edge, edgeExceptionSet);
-            }
-            return edgeExceptionSet;
+            return edgeExceptionMap.computeIfAbsent(edge, k -> exceptionSetFactory.createExceptionSet());
         }
     }
 

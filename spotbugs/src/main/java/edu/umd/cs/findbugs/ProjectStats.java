@@ -530,12 +530,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
     }
 
     private PackageStats getPackageStats(String packageName) {
-        PackageStats stat = packageStatsMap.get(packageName);
-        if (stat == null) {
-            stat = new PackageStats(packageName);
-            packageStatsMap.put(packageName, stat);
-        }
-        return stat;
+        return packageStatsMap.computeIfAbsent(packageName, PackageStats::new);
     }
 
     public void putPackageStats(String packageName, int numClasses, int size) {

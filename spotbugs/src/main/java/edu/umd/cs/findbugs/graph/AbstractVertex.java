@@ -64,13 +64,7 @@ public class AbstractVertex<EdgeType extends AbstractEdge<EdgeType, ActualVertex
 
     @Override
     public int compareTo(ActualVertexType other) {
-        if (this.getLabel() < other.getLabel()) {
-            return -1;
-        } else if (this.getLabel() > other.getLabel()) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return Integer.compare(this.getLabel(), other.getLabel());
     }
 
     void addOutgoingEdge(EdgeType edge) {

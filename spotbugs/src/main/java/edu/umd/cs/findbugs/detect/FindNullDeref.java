@@ -1689,6 +1689,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
                 int lineNumber = table.getSourceLine(loc.getHandle().getPosition());
                 if (lineNumber > 0 && !linesMentionedMultipleTimes.get(lineNumber)) {
                     uniqueDereferenceLocations = true;
+                    break;
                 }
             }
         }

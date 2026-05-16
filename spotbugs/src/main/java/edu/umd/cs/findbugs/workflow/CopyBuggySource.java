@@ -90,7 +90,7 @@ public class CopyBuggySource {
     File src;
     SrcKind kind;
     ZipOutputStream zOut;
-    byte buf[] = new byte[4096];
+    byte[] buf = new byte[4096];
     Project project;
     SourceFinder sourceFinder;
     HashSet<String> copied = new HashSet<>();

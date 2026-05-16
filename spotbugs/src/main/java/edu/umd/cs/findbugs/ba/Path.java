@@ -266,7 +266,7 @@ public class Path {
             if (block < SYMBOLS.length()) {
                 buf.append(SYMBOLS.charAt(block));
             } else {
-                buf.append("'" + block + "'");
+                buf.append("'").append(block).append("'");
             }
         }
         return buf.toString();

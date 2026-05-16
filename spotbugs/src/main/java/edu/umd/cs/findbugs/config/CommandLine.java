@@ -227,7 +227,7 @@ public abstract class CommandLine {
                 continue;
             }
 
-            if (ignoreBlankLines && "".equals(line)) {
+            if (ignoreBlankLines && line.isEmpty()) {
                 continue;
             }
             if (line.length() >= 2 && line.charAt(0) == '"' && line.charAt(line.length() - 1) == '"') {
@@ -260,7 +260,7 @@ public abstract class CommandLine {
      * @return number of arguments parsed
      */
     @SuppressFBWarnings("DM_EXIT")
-    public int parse(String argv[], int minArgs, int maxArgs, String usage) {
+    public int parse(String[] argv, int minArgs, int maxArgs, String usage) {
         try {
             int count = parse(argv);
             int remaining = argv.length - count;
