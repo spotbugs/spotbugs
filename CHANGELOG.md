@@ -50,6 +50,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `PluginLoader.close()` to continue closing all `URLClassLoader`s when one close operation fails, suppressing subsequent `IOException`s. ([#3958](https://github.com/spotbugs/spotbugs/pull/3958))
 - Fix broken `bugDescriptions.html#TYPE` links by restoring legacy bug type anchors in generated docs ([#2113](https://github.com/spotbugs/spotbugs/issues/2113))
 - Fix `EI_EXPOSE_REP` false negative in package-private classes that expose mutable state through methods overriding a public super-type ([#4027](https://github.com/spotbugs/spotbugs/pull/4027))
+- Fix errors in the 4.40 Eclipse in SpotBugs plugin project ([#4052](https://github.com/spotbugs/spotbugs/issues/4052))
 
 ### Removed
 - Removed old deprecated methods: 
