@@ -1,9 +1,5 @@
 package edu.umd.cs.findbugs.detect;
 
-import static org.apache.bcel.Const.DCMPG;
-import static org.apache.bcel.Const.DCMPL;
-import static org.apache.bcel.Const.FCMPG;
-import static org.apache.bcel.Const.FCMPL;
 import static org.apache.bcel.Const.IAND;
 import static org.apache.bcel.Const.IF_ACMPEQ;
 import static org.apache.bcel.Const.IF_ACMPNE;
@@ -143,11 +139,6 @@ public class FindSelfComparison2 implements Detector {
             case IXOR:
             case ISUB:
                 checkForSelfOperation(classContext, location, valueNumberDataflow, "COMPUTATION", method, methodGen, sourceFile);
-                break;
-            case FCMPG:
-            case DCMPG:
-            case DCMPL:
-            case FCMPL:
                 break;
             case LCMP:
             case IF_ACMPEQ:

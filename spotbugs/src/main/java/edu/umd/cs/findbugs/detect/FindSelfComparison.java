@@ -217,11 +217,6 @@ public class FindSelfComparison extends OpcodeStackDetector {
         case Const.ISUB:
             checkForSelfOperation(seen, "COMPUTATION");
             break;
-        case Const.FCMPG:
-        case Const.DCMPG:
-        case Const.DCMPL:
-        case Const.FCMPL:
-            break;
         case Const.LCMP:
         case Const.IF_ACMPEQ:
         case Const.IF_ACMPNE:
