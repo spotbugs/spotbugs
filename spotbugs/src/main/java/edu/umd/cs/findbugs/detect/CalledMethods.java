@@ -38,7 +38,6 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Detector to find private methods that are never called.
@@ -91,7 +90,7 @@ public class CalledMethods extends BytecodeScanningDetector implements NonReport
                 continue;
             }
             ConstantNameAndType nameAndType = cp.getConstant(refCP.getNameAndTypeIndex());
-            xFactory.addCalledMethod(new MethodDescriptor(slashedClassName,
+            xFactory.addCalledMethod(DescriptorFactory.instance().getMethodDescriptor(slashedClassName,
                     nameAndType.getName(cp), nameAndType.getSignature(cp), kind == Const.REF_invokeStatic));
         }
     }
