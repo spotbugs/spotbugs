@@ -22,6 +22,12 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantCP;
+import org.apache.bcel.classfile.ConstantMethodHandle;
+import org.apache.bcel.classfile.ConstantNameAndType;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -31,6 +37,8 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Detector to find private methods that are never called.
@@ -46,6 +54,46 @@ public class CalledMethods extends BytecodeScanningDetector implements NonReport
 
     public CalledMethods(BugReporter bugReporter) {
 
+    }
+
+    /**
+     * Records the methods targeted by method-reference handles ({@code Foo::bar}) in the
+     * visited class's constant pool. Such targets appear only as {@code CONSTANT_MethodHandle}
+     * constants, never as {@code invoke*} opcodes, so {@link #sawOpcode(int)} cannot see them;
+     * without this they would look uncalled and cause UMAC false positives.
+     *
+     * @param obj the class whose constant pool is scanned
+     */
+    @Override
+    public void visit(JavaClass obj) {
+        ConstantPool cp = obj.getConstantPool();
+        Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+        for (Constant constant : cp.getConstantPool()) {
+            if (!(constant instanceof ConstantMethodHandle)) {
+                continue;
+            }
+            ConstantMethodHandle method = (ConstantMethodHandle) constant;
+            int kind = method.getReferenceKind();
+            if (kind < Const.REF_invokeVirtual || kind > Const.REF_invokeInterface) {
+                continue;
+            }
+            Constant ref = cp.getConstant(method.getReferenceIndex());
+            if (!(ref instanceof ConstantCP)) {
+                continue;
+            }
+            ConstantCP refCP = (ConstantCP) ref;
+            String slashedClassName = cp.getConstantString(refCP.getClassIndex(), Const.CONSTANT_Class);
+            if (slashedClassName.charAt(0) == '[') {
+                continue;
+            }
+            ClassDescriptor c = DescriptorFactory.instance().getClassDescriptor(slashedClassName);
+            if (!subtypes2.isApplicationClass(c)) {
+                continue;
+            }
+            ConstantNameAndType nameAndType = cp.getConstant(refCP.getNameAndTypeIndex());
+            xFactory.addCalledMethod(new MethodDescriptor(slashedClassName,
+                    nameAndType.getName(cp), nameAndType.getSignature(cp), kind == Const.REF_invokeStatic));
+        }
     }
 
     @Override
