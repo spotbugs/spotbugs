@@ -735,7 +735,9 @@ public class UnreadFields extends OpcodeStackDetector {
             }
             data.writtenFields.add(f);
 
-            boolean writtingNonNull = previousOpcode != Const.ACONST_NULL || previousPreviousOpcode == Const.GOTO;
+            boolean writingNull = previousOpcode == Const.ACONST_NULL
+                    || (previousOpcode == Const.CHECKCAST && previousPreviousOpcode == Const.ACONST_NULL);
+            boolean writtingNonNull = !writingNull || previousPreviousOpcode == Const.GOTO;
             if (writtingNonNull) {
                 data.writtenNonNullFields.add(f);
                 if (DEBUG) {
