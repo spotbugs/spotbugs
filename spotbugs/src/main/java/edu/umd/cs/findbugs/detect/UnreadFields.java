@@ -737,8 +737,8 @@ public class UnreadFields extends OpcodeStackDetector {
 
             boolean writingNull = previousOpcode == Const.ACONST_NULL
                     || (previousOpcode == Const.CHECKCAST && previousPreviousOpcode == Const.ACONST_NULL);
-            boolean writtingNonNull = !writingNull || previousPreviousOpcode == Const.GOTO;
-            if (writtingNonNull) {
+            boolean writingNonNull = !writingNull || previousPreviousOpcode == Const.GOTO;
+            if (writingNonNull) {
                 data.writtenNonNullFields.add(f);
                 if (DEBUG) {
                     System.out.println("put nn: " + f);
@@ -746,7 +746,7 @@ public class UnreadFields extends OpcodeStackDetector {
             } else if (DEBUG) {
                 System.out.println("put: " + f);
             }
-            if (writtingNonNull && data.readFields.contains(f)) {
+            if (writingNonNull && data.readFields.contains(f)) {
                 data.fieldAccess.remove(f);
             } else if (!data.fieldAccess.containsKey(f)) {
                 data.fieldAccess.put(f, SourceLineAnnotation.fromVisitedInstruction(this));
@@ -766,7 +766,7 @@ public class UnreadFields extends OpcodeStackDetector {
                 } else {
                     data.writtenInInitializationFields.add(f);
                 }
-                if (writtingNonNull) {
+                if (writingNonNull) {
                     data.assumedNonNull.remove(f);
                 }
             } else {
