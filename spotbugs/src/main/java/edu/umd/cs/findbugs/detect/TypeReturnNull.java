@@ -24,6 +24,7 @@ import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
@@ -73,8 +74,11 @@ public abstract class TypeReturnNull extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == Const.ARETURN && getPrevOpcode(1) == Const.ACONST_NULL) {
-            accumulateBug();
+        if (seen == Const.ARETURN) {
+            OpcodeStack.Item returnValue = stack.getStackItem(0);
+            if (getPrevOpcode(1) == Const.ACONST_NULL || returnValue.isNull()) {
+                accumulateBug();
+            }
         }
     }
 
