@@ -6,6 +6,7 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
  * <a href="https://github.com/spotbugs/spotbugs/issues/3986">#3986</a>.
  */
 public class Issue3986 {
+    @ExpectWarning("IS2_INCONSISTENT_SYNC")
     Object data;
 
     public Object getData() {
@@ -16,12 +17,10 @@ public class Issue3986 {
         this.data = data;
     }
 
-    @ExpectWarning("IS2_INCONSISTENT_SYNC")
     public synchronized int getHashWithoutNullCheck() {
         return data.hashCode();
     }
 
-    @ExpectWarning("IS2_INCONSISTENT_SYNC")
     public synchronized int getHashWithNullCheck() {
         if (data != null) {
             return data.hashCode();
