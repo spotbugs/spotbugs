@@ -18,13 +18,16 @@
 
 package edu.umd.cs.findbugs.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.bcel.classfile.BootstrapMethod;
 import org.apache.bcel.classfile.BootstrapMethods;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantCP;
+import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantInterfaceMethodref;
 import org.apache.bcel.classfile.ConstantMethodHandle;
 import org.apache.bcel.classfile.ConstantMethodref;
@@ -32,6 +35,9 @@ import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Utility methods for working with bootstrap methods
@@ -80,5 +86,50 @@ public class BootstrapMethodsUtil {
             return metOpt;
         }
         return Optional.empty();
+    }
+
+    /**
+     * Returns application methods referenced by method handles in a bootstrap method.
+     */
+    public static List<MethodDescriptor> getCalledMethodsFromBootstrap(BootstrapMethods bms, int index, ConstantPool cp) {
+        List<MethodDescriptor> result = new ArrayList<>();
+        BootstrapMethod bm = bms.getBootstrapMethods()[index];
+        for (int arg : bm.getBootstrapArguments()) {
+            MethodDescriptor called = getMethodDescriptorFromBootstrapArgument(bms, cp, arg);
+            if (called != null) {
+                result.add(called);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns all application methods referenced by method handles in a class bootstrap table.
+     */
+    public static List<MethodDescriptor> getCalledMethodsFromBootstrapMethods(BootstrapMethods bms, ConstantPool cp) {
+        List<MethodDescriptor> result = new ArrayList<>();
+        for (int i = 0; i < bms.getBootstrapMethods().length; i++) {
+            result.addAll(getCalledMethodsFromBootstrap(bms, i, cp));
+        }
+        return result;
+    }
+
+    private static MethodDescriptor getMethodDescriptorFromBootstrapArgument(BootstrapMethods bms, ConstantPool cp,
+            int arg) {
+        Constant c = bms.getConstantPool().getConstant(arg);
+        if (!(c instanceof ConstantMethodHandle)) {
+            return null;
+        }
+        ConstantMethodHandle cmh = (ConstantMethodHandle) c;
+        c = cp.getConstant(cmh.getReferenceIndex());
+        if (!(c instanceof ConstantMethodref) && !(c instanceof ConstantInterfaceMethodref)) {
+            return null;
+        }
+        ConstantCP ccp = (ConstantCP) c;
+        ConstantClass cc = (ConstantClass) cp.getConstant(ccp.getClassIndex());
+        String className = cc.getBytes(cp);
+        ConstantNameAndType cnat = (ConstantNameAndType) cp.getConstant(ccp.getNameAndTypeIndex());
+        boolean isStatic = cmh.getReferenceKind() == org.apache.bcel.Const.REF_invokeStatic;
+        return DescriptorFactory.instance().getMethodDescriptor(className, cnat.getName(cp), cnat.getSignature(cp), isStatic);
     }
 }
