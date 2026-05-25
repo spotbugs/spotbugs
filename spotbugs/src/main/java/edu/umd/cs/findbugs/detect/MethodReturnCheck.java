@@ -275,7 +275,8 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                 if (noSideEffectMethods.excluded(callSeen.getMethodDescriptor())) {
                     sawExcludedNSECall = true;
                 }
-                if (noSideEffectMethods.hasNoSideEffect(callSeen.getMethodDescriptor())) {
+                if (noSideEffectMethods.hasNoSideEffect(callSeen.getMethodDescriptor())
+                        || FindNoSideEffectMethods.isKnownNoSideEffectMethod(callSeen.getMethodDescriptor())) {
                     int priority = NORMAL_PRIORITY;
                     Type callReturnType = Type.getReturnType(callSeen.getMethodDescriptor().getSignature());
                     Type methodReturnType = Type.getReturnType(getMethodSig());

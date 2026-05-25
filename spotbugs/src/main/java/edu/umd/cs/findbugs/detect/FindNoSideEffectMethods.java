@@ -140,6 +140,18 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             new MethodDescriptor("java/util/logging/LogManager", "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;", true),
             new MethodDescriptor("org/apache/log4j/LogManager", "getLogger", "(Ljava/lang/String;)Lorg/apache/log4j/Logger;", true));
 
+    private static final Set<MethodDescriptor> ARRAYS_COPYOF_METHODS = Set.of(
+            new MethodDescriptor("java/util/Arrays", "copyOf", "([Ljava/lang/Object;I)[Ljava/lang/Object;", true),
+            new MethodDescriptor("java/util/Arrays", "copyOf", "([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;", true),
+            new MethodDescriptor("java/util/Arrays", "copyOf", "([ZI)[Z", true),
+            new MethodDescriptor("java/util/Arrays", "copyOf", "([BI)[B", true),
+            new MethodDescriptor("java/util/Arrays", "copyOf", "([CI)[C", true),
+            new MethodDescriptor("java/util/Arrays", "copyOf", "([DI)[D", true),
+            new MethodDescriptor("java/util/Arrays", "copyOf", "([FI)[F", true),
+            new MethodDescriptor("java/util/Arrays", "copyOf", "([II)[I", true),
+            new MethodDescriptor("java/util/Arrays", "copyOf", "([JI)[J", true),
+            new MethodDescriptor("java/util/Arrays", "copyOf", "([SI)[S", true));
+
     private static final Set<MethodDescriptor> NEW_OBJECT_RETURNING_METHODS = Set.of(
             new MethodDescriptor("java/util/Vector", "elements", "()Ljava/util/Enumeration;"),
             new MethodDescriptor("java/util/Hashtable", "elements", "()Ljava/util/Enumeration;"),
@@ -303,6 +315,9 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
 
     public FindNoSideEffectMethods(BugReporter bugReporter) {
         Global.getAnalysisCache().eagerlyPutDatabase(NoSideEffectMethodsDatabase.class, noSideEffectMethods);
+        for (MethodDescriptor m : ARRAYS_COPYOF_METHODS) {
+            noSideEffectMethods.add(m, MethodSideEffectStatus.NSE);
+        }
     }
 
     @Override
@@ -728,6 +743,14 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
 
     /**
      * @param m method to check
+     * @return true if the method is a known JDK/library method with no side effects
+     */
+    public static boolean isKnownNoSideEffectMethod(MethodDescriptor m) {
+        return hasNoSideEffect(m);
+    }
+
+    /**
+     * @param m method to check
      * @return true if given method is known to have no side effects
      */
     private static boolean hasNoSideEffect(MethodDescriptor m) {
@@ -776,6 +799,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             }
         }
         if ((methodName.equals("binarySearch") && (className.equals("java/util/Arrays") || className.equals("java/util/Collections")))
+                || ("java/util/Arrays".equals(className) && methodName.equals("copyOf"))
                 || methodName.startsWith("$SWITCH_TABLE$")
                 || (methodName.equals(Const.CONSTRUCTOR_NAME) && isObjectOnlyClass(className))
                 || (methodName.equals("toString") && methodSig.equals("()Ljava/lang/String;") && className.startsWith("java/"))) {
