@@ -60,6 +60,13 @@ public class FindSelfComparison extends OpcodeStackDetector {
 
     static final boolean DEBUG = SystemProperties.getBoolean("fsc.debug");
 
+    /**
+     * Maximum bytecode index span between consecutive stores to the same field
+     * while checking for double assignment. Wide constants ({@code long}/{@code double})
+     * use {@code ldc2_w} and {@code dup2_x1}, which occupy more bytes than {@code int}.
+     */
+    private static final int MAX_DOUBLE_ASSIGN_PUTFIELD_DISTANCE = 12;
+
     @Override
     public void visit(Code obj) {
         if (DEBUG) {
@@ -106,7 +113,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
             XField f = getXFieldOperand();
             XClass x = getXClassOperand();
 
-            checkPUTFIELD: if (putFieldPC + 10 > getPC() && f != null && obj != null && f.equals(putFieldXField)
+            checkPUTFIELD: if (putFieldPC + MAX_DOUBLE_ASSIGN_PUTFIELD_DISTANCE > getPC() && f != null && obj != null && f.equals(putFieldXField)
                     && !f.isSynthetic() && obj.sameValue(putFieldObj) && x != null) {
 
 
