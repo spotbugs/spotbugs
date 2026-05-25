@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
@@ -270,7 +271,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
         } else if (annotation == NullnessAnnotation.NULLABLE) {
             pushValue = IsNullValue.nonReportingNotNullValue();
         } else if (annotation == NullnessAnnotation.NONNULL
-                || (alwaysNonNull != null && alwaysNonNull.booleanValue())) {
+                || Boolean.TRUE.equals(alwaysNonNull)) {
             // Method is declared NOT to return null
             if (IsNullValueAnalysis.DEBUG) {
                 System.out.println("NonNull value return from " + calledMethod);
@@ -279,6 +280,10 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
                     calledMethod,
                     annotation);
 
+        } else if (Boolean.FALSE.equals(alwaysNonNull)) {
+            pushValue = IsNullValue.nullOnSimplePathValue().markInformationAsComingFromReturnValueOfMethod(
+                    calledMethod,
+                    annotation);
         } else {
             pushValue = IsNullValue.nonReportingNotNullValue();
         }
@@ -360,6 +365,12 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
         NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase()
                 .getResolvedAnnotation(field, false);
+        FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
+        if (fieldSummary.getSummary(field).isNull() || fieldSummary.isDefaultNullReferenceField(field)) {
+            modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
+            produce(IsNullValue.nullOnSimplePathValue().markInformationAsComingFromFieldValue(field));
+            return;
+        }
         if (annotation == NullnessAnnotation.NONNULL) {
             modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
             produce(IsNullValue.nonNullValue());

@@ -88,6 +88,8 @@ public class BuildNonnullReturnDatabase {
 
             IsNullValueDataflow inv = classContext.getIsNullValueDataflow(method);
             boolean guaranteedNonNull = true;
+            boolean sawAreReturn = false;
+            boolean mightReturnNull = false;
             for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
                 Location location = i.next();
                 InstructionHandle handle = location.getHandle();
@@ -96,27 +98,36 @@ public class BuildNonnullReturnDatabase {
                 if (!(ins instanceof ARETURN)) {
                     continue;
                 }
+                sawAreReturn = true;
                 IsNullValueFrame frame = inv.getFactAtLocation(location);
                 if (!frame.isValid()) {
                     continue;
                 }
                 IsNullValue value = frame.getTopValue();
+                if (value.mightBeNull()) {
+                    mightReturnNull = true;
+                }
                 if (!value.isDefinitelyNotNull()) {
                     guaranteedNonNull = false;
-                    break;
                 }
 
             }
 
             XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
-            if (guaranteedNonNull) {
+            if (guaranteedNonNull && sawAreReturn) {
                 returnsNonNull++;
                 AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase()
-                        .setProperty(xmethod.getMethodDescriptor(), guaranteedNonNull);
+                        .setProperty(xmethod.getMethodDescriptor(), Boolean.TRUE);
                 if (DEBUG) {
                     System.out.println("Unconditional deref: " + xmethod + "=" + guaranteedNonNull);
                 }
 
+            } else if (mightReturnNull && sawAreReturn) {
+                AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase()
+                        .setProperty(xmethod.getMethodDescriptor(), Boolean.FALSE);
+                if (DEBUG) {
+                    System.out.println("Nullable return: " + xmethod);
+                }
             }
 
         } catch (CFGBuilderException | DataflowAnalysisException e) {

@@ -138,6 +138,7 @@ public class FieldItemSummary extends OpcodeStackDetector implements NonReportin
                     char firstChar = f.getSignature().charAt(0);
                     if (firstChar == 'L' || firstChar == '[') {
                         item = OpcodeStack.Item.nullItem(f.getSignature());
+                        fieldSummary.addDefaultNullReferenceField(f);
                     } else if (firstChar == 'I') {
                         item = new OpcodeStack.Item("I", (Integer) 0);
                     } else if (firstChar == 'J') {

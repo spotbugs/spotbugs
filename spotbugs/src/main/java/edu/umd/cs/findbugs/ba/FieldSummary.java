@@ -51,6 +51,8 @@ import edu.umd.cs.findbugs.util.Util;
 public class FieldSummary {
     private final Set<XField> writtenOutsideOfConstructor = new HashSet<>();
 
+    private final Set<XField> defaultNullReferenceFields = new HashSet<>();
+
     private final Map<XField, OpcodeStack.Item> summary = new HashMap<>();
 
     private final Map<XMethod, Set<XField>> fieldsWritten = new HashMap<>();
@@ -164,6 +166,14 @@ public class FieldSummary {
 
     public boolean addWrittenOutsideOfConstructor(XField field) {
         return writtenOutsideOfConstructor.add(field);
+    }
+
+    public void addDefaultNullReferenceField(XField field) {
+        defaultNullReferenceFields.add(field);
+    }
+
+    public boolean isDefaultNullReferenceField(XField field) {
+        return defaultNullReferenceFields.contains(field);
     }
 
     public void mergeSummary(XField fieldOperand, OpcodeStack.Item mergeValue) {
