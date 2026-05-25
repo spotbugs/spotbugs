@@ -73,7 +73,7 @@ public abstract class TypeReturnNull extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == Const.ARETURN && getPrevOpcode(1) == Const.ACONST_NULL) {
+        if (seen == Const.ARETURN && getStack().getStackItem(0).isNull()) {
             accumulateBug();
         }
     }
