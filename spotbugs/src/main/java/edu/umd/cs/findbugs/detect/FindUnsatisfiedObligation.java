@@ -136,13 +136,13 @@ public class FindUnsatisfiedObligation extends CFGDetector {
             if (c instanceof ConstantNameAndType) {
                 ConstantNameAndType cnt = (ConstantNameAndType) c;
                 String signature = cnt.getSignature(jclass.getConstantPool());
-                if (factory.signatureInvolvesObligations(signature)) {
+                if (signatureReferencesObligationType(factory, signature)) {
                     super.visitClass(classDescriptor);
                     return;
                 }
             } else if (c instanceof ConstantClass) {
                 String className = ((ConstantClass) c).getBytes(jclass.getConstantPool());
-                if (factory.signatureInvolvesObligations(className)) {
+                if (classReferenceIsObligationType(factory, className)) {
                     super.visitClass(classDescriptor);
                     return;
                 }
@@ -151,6 +151,39 @@ public class FindUnsatisfiedObligation extends CFGDetector {
         if (DEBUG) {
             System.out.println(classDescriptor + " isn't interesting for obligation analysis");
         }
+    }
+
+    private static boolean signatureReferencesObligationType(ObligationFactory factory, String signature) {
+        if (factory.signatureInvolvesObligations(signature)) {
+            return true;
+        }
+        try {
+            if (typeReferencesObligationType(factory, Type.getReturnType(signature))) {
+                return true;
+            }
+            for (Type paramType : Type.getArgumentTypes(signature)) {
+                if (typeReferencesObligationType(factory, paramType)) {
+                    return true;
+                }
+            }
+        } catch (RuntimeException e) {
+            // ignore invalid signatures in the constant pool
+        }
+        return false;
+    }
+
+    private static boolean classReferenceIsObligationType(ObligationFactory factory, String className) {
+        if (factory.signatureInvolvesObligations(className)) {
+            return true;
+        }
+        return factory.isObligationType(DescriptorFactory.createClassDescriptor(className));
+    }
+
+    private static boolean typeReferencesObligationType(ObligationFactory factory, Type type) {
+        if (type instanceof ObjectType) {
+            return factory.isObligationType(DescriptorFactory.createClassDescriptor(((ObjectType) type).getClassName()));
+        }
+        return false;
     }
 
     @Override
