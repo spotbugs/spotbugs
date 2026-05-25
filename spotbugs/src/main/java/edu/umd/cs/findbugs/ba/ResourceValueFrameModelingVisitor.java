@@ -143,18 +143,8 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 
     @Override
     public void visitCHECKCAST(CHECKCAST obj) {
-        try {
-            ResourceValueFrame frame = getFrame();
-            ResourceValue topValue;
-
-            topValue = frame.getTopValue();
-
-            if (topValue.equals(ResourceValue.instance())) {
-                frame.setStatus(ResourceValueFrame.State.ESCAPED);
-            }
-        } catch (DataflowAnalysisException e) {
-            AnalysisContext.logError("Analysis error", e);
-        }
+        // CHECKCAST preserves the reference; it does not escape the resource.
+        handleNormalInstruction(obj);
     }
 
     @Override
