@@ -65,7 +65,7 @@ public class ObligationDataflowFactory extends AnalysisFactory<ObligationDataflo
 
         ObligationFactory factory = database.getFactory();
 
-        ObligationAnalysis analysis = new ObligationAnalysis(dfs, xmethod, cpg, factory, database, typeDataflow, invDataflow,
+        ObligationAnalysis analysis = new ObligationAnalysis(dfs, cfg, xmethod, cpg, factory, database, typeDataflow, invDataflow,
                 analysisCache.getErrorLogger());
         ObligationDataflow dataflow = new ObligationDataflow(cfg, analysis);
 
