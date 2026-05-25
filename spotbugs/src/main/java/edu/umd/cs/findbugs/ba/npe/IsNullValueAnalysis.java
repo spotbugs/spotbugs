@@ -600,6 +600,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         }
         super.mergeInto(other, result);
         // FIXME: update decision?
+        result.mergeUninitializedReferenceArrayLocalsWith(other);
         if (trackValueNumbers) {
             result.mergeKnownValuesWith(other);
         }
