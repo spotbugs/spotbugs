@@ -551,7 +551,7 @@ public class NullDerefAndRedundantComparisonFinder {
         for (int j = 0; j < slots; j++) {
             IsNullValue isNullValue = invFrame.getValue(j);
             ValueNumber valueNumber = vnaFrame.getValue(j);
-            if (isNullableForGuaranteedDeref(isNullValue, isEdge)
+            if (isNullableForGuaranteedDeref(isNullValue)
                     && (derefSet.isUnconditionallyDereferenced(valueNumber))) {
                 if (MY_DEBUG) {
                     System.out.println("Found NP bug");
@@ -584,7 +584,7 @@ public class NullDerefAndRedundantComparisonFinder {
         for (Map.Entry<ValueNumber, IsNullValue> entry : invFrame.getKnownValueMapEntrySet()) {
             ValueNumber valueNumber = entry.getKey();
             IsNullValue isNullValue = entry.getValue();
-            if (isNullableForGuaranteedDeref(isNullValue, isEdge)
+            if (isNullableForGuaranteedDeref(isNullValue)
                     && derefSet.isUnconditionallyDereferenced(valueNumber)) {
 
                 noteUnconditionallyDereferencedNullValue(thisLocation, knownNullAndDoomedAt, nullValueGuaranteedDerefMap,
@@ -593,7 +593,7 @@ public class NullDerefAndRedundantComparisonFinder {
         }
     }
 
-    private static boolean isNullableForGuaranteedDeref(IsNullValue isNullValue, boolean isEdge) {
+    private boolean isNullableForGuaranteedDeref(IsNullValue isNullValue) {
         if (isNullValue.isDefinitelyNull()) {
             return true;
         }
@@ -603,8 +603,11 @@ public class NullDerefAndRedundantComparisonFinder {
         if (isNullValue.isReturnValue() || isNullValue.isFieldValue()) {
             return true;
         }
-        // Short-circuit guards can leave parameters/locals as NSP without return/field flags.
-        return isEdge;
+        if (isNullValue.isException() || isNullValue.isChecked()) {
+            return false;
+        }
+        // Short-circuit && null guards in static methods can leave parameters as NSP.
+        return method.isStatic();
     }
 
     /**
