@@ -469,6 +469,9 @@ public class FindInconsistentSync2 implements Detector {
             int biasedUnlocked = numReadUnlocked + (int) (WRITE_BIAS * (numWriteUnlocked));
             // int writes = numWriteLocked + numWriteUnlocked;
 
+            boolean clearInconsistentSync = hasLockedAndUnlockedAccess(numReadLocked, numWriteLocked, numReadUnlocked,
+                    numWriteUnlocked);
+
             if (unlocked == 0) {
                 continue;
                 // propertySet.addProperty(InconsistentSyncWarningProperty.NEVER_UNLOCKED);
@@ -505,7 +508,8 @@ public class FindInconsistentSync2 implements Detector {
                 System.out.println("  WU: " + numWriteUnlocked);
                 System.out.println("  NU: " + numNullCheckUnlocked);
             }
-            if (!EVAL && numReadUnlocked > 0 && ((int) (UNSYNC_FACTOR * (biasedUnlocked - 1))) > biasedLocked
+            if (!EVAL && !clearInconsistentSync && numReadUnlocked > 0
+                    && ((int) (UNSYNC_FACTOR * (biasedUnlocked - 1))) > biasedLocked
                     && !stats.isServletField()) {
                 // continue;
                 propertySet.addProperty(InconsistentSyncWarningProperty.MANY_BIASED_UNLOCKED);
@@ -548,7 +552,7 @@ public class FindInconsistentSync2 implements Detector {
                 printFreq = freq = 0;
             }
 
-            if (freq < MIN_SYNC_PERCENT) {
+            if (freq < MIN_SYNC_PERCENT && !clearInconsistentSync) {
                 // continue;
                 propertySet.addProperty(InconsistentSyncWarningProperty.BELOW_MIN_SYNC_PERCENT);
             }
@@ -608,6 +612,11 @@ public class FindInconsistentSync2 implements Detector {
      * Implementation
      * ----------------------------------------------------------------------
      */
+
+    private static boolean hasLockedAndUnlockedAccess(int numReadLocked, int numWriteLocked, int numReadUnlocked,
+            int numWriteUnlocked) {
+        return (numReadLocked + numWriteLocked > 0) && (numReadUnlocked + numWriteUnlocked > 0);
+    }
 
     private static boolean isConstructor(String methodName) {
         return Const.CONSTRUCTOR_NAME.equals(methodName) || Const.STATIC_INITIALIZER_NAME.equals(methodName) || "readObject".equals(methodName)
