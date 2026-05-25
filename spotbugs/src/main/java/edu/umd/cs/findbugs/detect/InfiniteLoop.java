@@ -137,18 +137,20 @@ public class InfiniteLoop extends OpcodeStackDetector {
     }
 
     static class ForwardConditionalBranch extends Jump {
+        final int opcode;
         final OpcodeStack.Item item0;
         final OpcodeStack.Item item1;
 
-        ForwardConditionalBranch(OpcodeStack.Item item0, OpcodeStack.Item item1, int from, int to) {
+        ForwardConditionalBranch(int opcode, OpcodeStack.Item item0, OpcodeStack.Item item1, int from, int to) {
             super(from, to);
+            this.opcode = opcode;
             this.item0 = item0;
             this.item1 = item1;
         }
 
         @Override
         public int hashCode() {
-            return 37 * super.hashCode() + 17 * item0.hashCode() + item1.hashCode();
+            return 37 * super.hashCode() + opcode + 17 * item0.hashCode() + item1.hashCode();
         }
 
         @Override
@@ -157,7 +159,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
                 return false;
             }
             ForwardConditionalBranch that = (ForwardConditionalBranch) o;
-            return this.item0.sameValue(that.item0) && this.item1.sameValue(that.item1);
+            return this.opcode == that.opcode && this.item0.sameValue(that.item0) && this.item1.sameValue(that.item1);
         }
 
     }
@@ -228,6 +230,9 @@ public class InfiniteLoop extends OpcodeStackDetector {
             }
 
             if (isConstant(fcb.item0, bb) && isConstant(fcb.item1, bb)) {
+                if (constantForwardBranchExitsLoop(fcb, bb)) {
+                    continue backwardBranchLoop;
+                }
                 SourceLineAnnotation loopBottom = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, bb.from);
                 int loopBottomLine = loopBottom.getStartLine();
                 SourceLineAnnotation loopTop = SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, bb.to);
@@ -286,6 +291,132 @@ public class InfiniteLoop extends OpcodeStackDetector {
         return item0.getConstant() != null;
     }
 
+    /**
+     * Returns true when a constant forward branch leaves the loop on every iteration.
+     */
+    private boolean constantForwardBranchExitsLoop(ForwardConditionalBranch fcb, BackwardsBranch bb) {
+        if (fcb.to <= bb.from || !exitsLoop(fcb.to, bb)) {
+            return false;
+        }
+        return forwardBranchAlwaysTaken(fcb, bb);
+    }
+
+    private boolean exitsLoop(int pc, BackwardsBranch bb) {
+        for (BackwardsBranch back : backwardBranches) {
+            if (back.from >= pc && back.to == bb.to) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean forwardBranchAlwaysTaken(ForwardConditionalBranch fcb, BackwardsBranch bb) {
+        Integer v0 = getKnownIntValue(fcb.item0, bb);
+        Integer v1 = getKnownIntValue(fcb.item1, bb);
+        switch (fcb.opcode) {
+        case Const.IFEQ:
+            return v0 != null && v0 == 0;
+        case Const.IFNE:
+            return v0 != null && v0 != 0;
+        case Const.IFLT:
+            return v0 != null && v0 < 0;
+        case Const.IFGE:
+            return v0 != null && v0 >= 0;
+        case Const.IFGT:
+            return v0 != null && v0 > 0;
+        case Const.IFLE:
+            return v0 != null && v0 <= 0;
+        case Const.IF_ICMPEQ:
+            return v0 != null && v1 != null && v0.intValue() == v1.intValue();
+        case Const.IF_ICMPNE:
+            return v0 != null && v1 != null && v0.intValue() != v1.intValue();
+        case Const.IF_ICMPLT:
+            return v0 != null && v1 != null && v0.intValue() < v1.intValue();
+        case Const.IF_ICMPGE:
+            return v0 != null && v1 != null && v0.intValue() >= v1.intValue();
+        case Const.IF_ICMPGT:
+            return v0 != null && v1 != null && v0.intValue() > v1.intValue();
+        case Const.IF_ICMPLE:
+            return v0 != null && v1 != null && v0.intValue() <= v1.intValue();
+        default:
+            return false;
+        }
+    }
+
+    private Integer getKnownIntValue(Item item, BackwardsBranch bb) {
+        Object constant = item.getConstant();
+        if (constant instanceof Number) {
+            return ((Number) constant).intValue();
+        }
+        int reg = item.getRegisterNumber();
+        if (reg >= 0 && isConstant(item, bb)) {
+            return getIntValueStoredInRegister(reg, bb.to);
+        }
+        return null;
+    }
+
+    private Integer getIntValueStoredInRegister(int reg, int beforePC) {
+        BitSet modified = getModifiedBitSet(reg);
+        int storePc = modified.nextSetBit(0);
+        while (storePc >= 0 && storePc < beforePC) {
+            Integer value = getIntConstantBeforeStore(storePc, reg);
+            if (value != null) {
+                return value;
+            }
+            storePc = modified.nextSetBit(storePc + 1);
+        }
+        return null;
+    }
+
+    private Integer getIntConstantBeforeStore(int storePc, int reg) {
+        if (!isRegisterStoreAt(storePc, reg)) {
+            return null;
+        }
+        byte[] code = getCode().getCode();
+        int loadPc = storePc - 1;
+        if (loadPc < 0) {
+            return null;
+        }
+        int opcode = code[loadPc] & 0xFF;
+        switch (opcode) {
+        case Const.ICONST_M1:
+            return -1;
+        case Const.ICONST_0:
+            return 0;
+        case Const.ICONST_1:
+            return 1;
+        case Const.ICONST_2:
+            return 2;
+        case Const.ICONST_3:
+            return 3;
+        case Const.ICONST_4:
+            return 4;
+        case Const.ICONST_5:
+            return 5;
+        case Const.BIPUSH:
+            return (int) code[loadPc + 1];
+        case Const.SIPUSH:
+            return (int) (short) ((code[loadPc + 1] << 8) | (code[loadPc + 2] & 0xFF));
+        default:
+            return null;
+        }
+    }
+
+    private boolean isRegisterStoreAt(int pc, int reg) {
+        byte[] code = getCode().getCode();
+        if (pc < 0 || pc >= code.length) {
+            return false;
+        }
+        int opcode = code[pc] & 0xFF;
+        if (opcode >= Const.ISTORE_0 && opcode <= Const.ISTORE_3) {
+            return opcode - Const.ISTORE_0 == reg;
+        }
+        if (opcode == Const.ISTORE) {
+            return reg == (code[pc + 1] & 0xFF);
+        }
+        return false;
+    }
+
     @Override
     public void sawBranchTo(int target) {
         addForwardJump(getPC(), target);
@@ -338,12 +469,12 @@ public class InfiniteLoop extends OpcodeStackDetector {
         case Const.TABLESWITCH: {
             OpcodeStack.Item item0 = stack.getStackItem(0);
             if (getDefaultSwitchOffset() > 0) {
-                forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), getPC()
+                forwardConditionalBranches.add(new ForwardConditionalBranch(seen, item0, item0, getPC(), getPC()
                         + getDefaultSwitchOffset()));
             }
             for (int offset : getSwitchOffsets()) {
                 if (offset > 0) {
-                    forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), getPC() + offset));
+                    forwardConditionalBranches.add(new ForwardConditionalBranch(seen, item0, item0, getPC(), getPC() + offset));
                 }
             }
             break;
@@ -360,7 +491,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
             OpcodeStack.Item item0 = stack.getStackItem(0);
             int target = getBranchTarget();
             if (getBranchOffset() > 0) {
-                forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), target));
+                forwardConditionalBranches.add(new ForwardConditionalBranch(seen, item0, item0, getPC(), target));
                 break;
             }
             if (getFurthestJump(target) > getPC()) {
@@ -396,7 +527,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
             OpcodeStack.Item item1 = stack.getStackItem(1);
             int target = getBranchTarget();
             if (getBranchOffset() > 0) {
-                forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item1, getPC(), target));
+                forwardConditionalBranches.add(new ForwardConditionalBranch(seen, item0, item1, getPC(), target));
                 break;
             }
             if (getFurthestJump(target) > getPC()) {
