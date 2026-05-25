@@ -7,6 +7,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
@@ -18,6 +19,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Values;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -92,7 +94,8 @@ public class ThrowingExceptions extends OpcodeStackDetector {
     public void sawOpcode(int seen) {
         if (seen == Const.ATHROW) {
             OpcodeStack.Item item = stack.getStackItem(0);
-            if (item != null && "Ljava/lang/RuntimeException;".equals(item.getSignature())) {
+            if (item != null && "Ljava/lang/RuntimeException;".equals(item.getSignature())
+                    && !isRethrowOfCaughtRuntimeException(item)) {
                 bugReporter.reportBug(new BugInstance(this, "THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", LOW_PRIORITY)
                         .addClass(this)
                         .addMethod(getXMethod())
@@ -117,6 +120,45 @@ public class ThrowingExceptions extends OpcodeStackDetector {
             }
 
         }
+    }
+
+    private boolean isRethrowOfCaughtRuntimeException(OpcodeStack.Item thrownItem) {
+        int register = thrownItem.getRegisterNumber();
+        if (register < 0) {
+            return false;
+        }
+        Code code = getCode();
+        if (code == null) {
+            return false;
+        }
+        byte[] codeBytes = code.getCode();
+        for (CodeException handler : code.getExceptionTable()) {
+            if (getLocalVariableIndex(codeBytes, handler.getHandlerPC()) != register) {
+                continue;
+            }
+            if (handler.getCatchType() == 0) {
+                return true;
+            }
+            String catchType = getConstantPool().constantToString(getConstantPool().getConstant(handler.getCatchType()));
+            if (Subtypes2.instanceOf(ClassName.toDottedClassName(catchType), Values.DOTTED_JAVA_LANG_RUNTIMEEXCEPTION)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static int getLocalVariableIndex(byte[] codeBytes, int pc) {
+        if (pc < 0 || pc >= codeBytes.length) {
+            return -1;
+        }
+        int opcode = codeBytes[pc] & 0xff;
+        if (opcode >= Const.ASTORE_0 && opcode <= Const.ASTORE_3) {
+            return opcode - Const.ASTORE_0;
+        }
+        if (opcode == Const.ASTORE && pc + 1 < codeBytes.length) {
+            return codeBytes[pc + 1] & 0xff;
+        }
+        return -1;
     }
 
     private void reportBug(String bugName, XMethod method) {
