@@ -650,6 +650,21 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                 AnalysisContext.logError("Ooops", e);
             }
         }
+        if ("clone".equals(methodName) && "()Ljava/lang/Object;".equals(signature)) {
+            try {
+                int receiverSlot = frame.getStackLocation(0);
+                boolean receiverExact = frame.isExact(receiverSlot);
+                Type receiver = frame.getStackValue(0);
+                consumeStack(obj);
+                frame.pushValue(receiver);
+                if (receiverExact) {
+                    setTopOfStackIsExact();
+                }
+                return;
+            } catch (DataflowAnalysisException e) {
+                AnalysisContext.logError("Problem analyzing clone() call", e);
+            }
+        }
         if (handleToArray(obj)) {
             return;
         }
