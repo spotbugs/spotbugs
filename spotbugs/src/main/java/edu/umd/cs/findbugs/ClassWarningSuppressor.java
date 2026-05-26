@@ -4,6 +4,10 @@ import edu.umd.cs.findbugs.annotations.SuppressMatchType;
 import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.detect.UselessSuppressionDetector;
 
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+
 public class ClassWarningSuppressor extends WarningSuppressor {
 
     private static final String BUG_TYPE = "US_USELESS_SUPPRESSION_ON_CLASS";
@@ -45,6 +49,26 @@ public class ClassWarningSuppressor extends WarningSuppressor {
 
         if (!super.match(bugInstance)) {
             return false;
+        }
+
+        MethodAnnotation bugMethod = bugInstance.getPrimaryMethod();
+        if (bugPattern == null && bugMethod != null) {
+            try {
+                JavaClass javaClass = Repository.lookupClass(bugMethod.getClassName());
+                Method method = null;
+                for (Method candidate : javaClass.getMethods()) {
+                    if (bugMethod.getMethodName().equals(candidate.getName())
+                            && bugMethod.getMethodSignature().equals(candidate.getSignature())) {
+                        method = candidate;
+                        break;
+                    }
+                }
+                if (method == null || MemberUtils.isUserGenerated(method)) {
+                    return false;
+                }
+            } catch (ClassNotFoundException e) {
+                return false;
+            }
         }
 
         ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
