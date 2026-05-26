@@ -904,7 +904,9 @@ public class SourceLineAnnotation implements BugAnnotation {
 
         if (isSourceFileKnown()) {
             attributeList.addAttribute("sourcefile", sourceFile);
-            attributeList.addAttribute("sourcepath", sourcePath);
+            if (sourcePath != null) {
+                attributeList.addAttribute("sourcepath", sourcePath);
+            }
             Project project = myProject.get();
             if (project != null) {
                 try {
@@ -938,7 +940,21 @@ public class SourceLineAnnotation implements BugAnnotation {
         }
     }
 
-    public String getSourcePath() {
+    public @CheckForNull String getSourcePath() {
+        if (!isSourceFileKnown()) {
+            return deriveSourcePathFromClassName();
+        }
+        SourceFinder sourceFinder = getSourceFinder();
+        if (sourceFinder != null) {
+            if (sourceFinder.hasSourceFile(this)) {
+                return SourceFinder.getCanonicalName(this);
+            }
+            return null;
+        }
+        return deriveSourcePathFromClassName();
+    }
+
+    private String deriveSourcePathFromClassName() {
         String classname = getClassName();
         String packageName = "";
         if (classname.indexOf('.') > 0) {
