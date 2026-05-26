@@ -36,7 +36,10 @@ public class MethodWarningSuppressor extends ClassWarningSuppressor {
 
         MethodAnnotation bugMethod = bugInstance.getPrimaryMethod();
         if (bugMethod != null && !method.equals(bugMethod)) {
-            return false;
+            String enclosingMethod = MemberUtils.getEnclosingMethodNameFromLambda(bugMethod.getMethodName());
+            if (enclosingMethod == null || !enclosingMethod.equals(method.getMethodName())) {
+                return false;
+            }
         }
         if (DEBUG) {
             System.out.println("Suppressing " + bugInstance);
