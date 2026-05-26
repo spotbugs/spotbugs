@@ -129,7 +129,7 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
         }
 
         // Record the fact that this might be a stream escape
-        if (stream.getOpenLocation() != null) {
+        if (escapes && stream.getOpenLocation() != null) {
             resourceTracker.addStreamEscape(stream, location);
         }
 
