@@ -24,9 +24,10 @@ jobs:
       pull-requests: write
     steps:
       - name: Close PR if author exceeds open PR limit
-        # Pinned to the v7.0.1 commit SHA (mutable tags must not be used in
+        # Pinned to the v9.0.0 commit SHA (mutable tags must not be used in
         # pull_request_target workflows that hold a write-scoped GITHUB_TOKEN).
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        # v9 runs on Node.js 24; @actions/github v9 (ESM-only).
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           MAX_OPEN_PRS_PER_AUTHOR: ${{ vars.MAX_OPEN_PRS_PER_AUTHOR || '5' }}
         with:
@@ -75,14 +76,27 @@ jobs:
             }
 
             // Avoid spamming on repeated reopen events: only comment once.
-            const existing = await github.paginate(github.rest.issues.listComments, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              per_page: 100,
-            });
+            // First `opened` has no prior comments by definition, so skip the
+            // scan entirely. On `reopened`, stream pages and stop at first hit
+            // instead of paginating the whole thread.
             const marker = '<!-- pr-author-limit:auto-close -->';
-            const alreadyCommented = existing.some(c => c.body && c.body.includes(marker));
+            let alreadyCommented = false;
+            if (context.payload.action === 'reopened') {
+              const iter = github.paginate.iterator(github.rest.issues.listComments, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                per_page: 100,
+              });
+              scan: for await (const { data: page } of iter) {
+                for (const c of page) {
+                  if (c.body && c.body.includes(marker)) {
+                    alreadyCommented = true;
+                    break scan;
+                  }
+                }
+              }
+            }
 
             if (!alreadyCommented) {
               // `author` is a GitHub login (restricted charset); safe to interpolate.
