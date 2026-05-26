@@ -29,8 +29,7 @@ public class Bug3598482 {
     }
 
 
-    @DesireWarning("BC_IMPOSSIBLE_INSTANCEOF")
-    @ExpectWarning("NP_NULL_INSTANCEOF")
+    @ExpectWarning("NP_NULL_INSTANCEOF,BC_IMPOSSIBLE_INSTANCEOF")
     public static void main2(String[] args) {
 
         byte[] msg = null;
