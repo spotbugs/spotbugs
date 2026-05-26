@@ -50,14 +50,10 @@ jobs:
               return;
             }
 
-            // Skip known automation accounts (Renovate is enabled in this repo;
-            // Dependabot / GitHub Actions bot may also legitimately exceed the limit).
-            const botAllowlist = new Set([
-              'dependabot[bot]',
-              'renovate[bot]',
-              'github-actions[bot]',
-            ]);
-            if (author.endsWith('[bot]') || botAllowlist.has(author)) {
+            // Skip known automation accounts (Renovate is enabled in this repo
+            // and may legitimately exceed the per-author limit).
+            const botAllowlist = new Set(['renovate[bot]']);
+            if (botAllowlist.has(author)) {
               core.info(`Skipping bot author: ${author}.`);
               return;
             }
