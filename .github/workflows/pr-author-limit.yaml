@@ -4,15 +4,29 @@ on:
   pull_request_target:
     types: [opened, reopened]
 
+# Minimal top-level permissions; the job re-declares what it actually needs.
+# IMPORTANT: This workflow runs in the context of the base repo via
+# `pull_request_target` and therefore must NEVER check out or execute code
+# from the PR head. Do not add `actions/checkout` with the PR ref here.
 permissions:
-  pull-requests: write
+  contents: read
+
+# Serialize per-author so rapid open/reopen events don't race and double-post.
+concurrency:
+  group: pr-author-limit-${{ github.event.pull_request.user.login }}
+  cancel-in-progress: false
 
 jobs:
   close-extra:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: write
     steps:
       - name: Close PR if author exceeds open PR limit
-        uses: actions/github-script@v7
+        # Pinned to the v7.0.1 commit SHA (mutable tags must not be used in
+        # pull_request_target workflows that hold a write-scoped GITHUB_TOKEN).
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         env:
           MAX_OPEN_PRS_PER_AUTHOR: ${{ vars.MAX_OPEN_PRS_PER_AUTHOR || '5' }}
         with:
@@ -23,30 +37,63 @@ jobs:
               return;
             }
 
-            const author = context.payload.pull_request.user.login;
-            const prNumber = context.payload.pull_request.number;
+            const pr = context.payload.pull_request;
+            const author = pr.user.login;
+            const prNumber = pr.number;
 
-            const openPrs = await github.paginate(github.rest.pulls.list, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              per_page: 100,
-            });
+            // Skip trusted authors: repo owners, members, and collaborators
+            // can legitimately have many open PRs in flight.
+            const trustedAssoc = new Set(['OWNER', 'MEMBER', 'COLLABORATOR']);
+            if (trustedAssoc.has(pr.author_association)) {
+              core.info(`Skipping: ${author} has trusted association ${pr.author_association}.`);
+              return;
+            }
 
-            const fromAuthor = openPrs.filter(pr => pr.user.login === author);
-            core.info(`Author ${author} has ${fromAuthor.length} open PR(s). Limit: ${limit}.`);
+            // Skip known automation accounts (Renovate is enabled in this repo;
+            // Dependabot / GitHub Actions bot may also legitimately exceed the limit).
+            const botAllowlist = new Set([
+              'dependabot[bot]',
+              'renovate[bot]',
+              'github-actions[bot]',
+            ]);
+            if (author.endsWith('[bot]') || botAllowlist.has(author)) {
+              core.info(`Skipping bot author: ${author}.`);
+              return;
+            }
 
-            if (fromAuthor.length <= limit) {
+            // Count open, non-draft PRs by this author with a single server-side
+            // filtered query instead of paginating every open PR in the repo.
+            const q = `repo:${context.repo.owner}/${context.repo.repo} is:pr is:open draft:false author:${author}`;
+            const search = await github.rest.search.issuesAndPullRequests({ q, per_page: 1 });
+            const openCount = search.data.total_count;
+
+            core.info(`Author ${author} has ${openCount} open non-draft PR(s). Limit: ${limit}.`);
+
+            if (openCount <= limit) {
               core.info('Within limit, nothing to do.');
               return;
             }
 
-            await github.rest.issues.createComment({
+            // Avoid spamming on repeated reopen events: only comment once.
+            const existing = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
-              body: `Auto-closing: @${author} already has more than ${limit} open PR(s). Please close or merge existing ones before opening new PRs.`,
+              per_page: 100,
             });
+            const marker = '<!-- pr-author-limit:auto-close -->';
+            const alreadyCommented = existing.some(c => c.body && c.body.includes(marker));
+
+            if (!alreadyCommented) {
+              // `author` is a GitHub login (restricted charset); safe to interpolate.
+              // Do NOT interpolate untrusted fields like PR title/body here.
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: `${marker}\nAuto-closing: @${author} already has more than ${limit} open PR(s). Please close or merge existing ones before opening new PRs.`,
+              });
+            }
 
             await github.rest.pulls.update({
               owner: context.repo.owner,
