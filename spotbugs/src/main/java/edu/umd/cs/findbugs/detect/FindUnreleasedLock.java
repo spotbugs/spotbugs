@@ -294,6 +294,11 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
             try {
                 Location location = cfg.getExceptionThrowerLocation(edge);
+                Location creationLocation = resource.getLocation();
+                if (location.getHandle().getPosition() < creationLocation.getHandle().getPosition()
+                        && !edge.getTarget().isExceptionHandler()) {
+                    return true;
+                }
                 if (DEBUG) {
                     System.out.println("Exception thrower location: " + location);
                 }
