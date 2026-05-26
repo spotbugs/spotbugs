@@ -62,13 +62,13 @@ jobs:
               return;
             }
 
-            // Count open, non-draft PRs by this author with a single server-side
-            // filtered query instead of paginating every open PR in the repo.
-            const q = `repo:${context.repo.owner}/${context.repo.repo} is:pr is:open draft:false author:${author}`;
+            // Count open PRs by this author (drafts included) with a single
+            // server-side filtered query instead of paginating every open PR.
+            const q = `repo:${context.repo.owner}/${context.repo.repo} is:pr is:open author:${author}`;
             const search = await github.rest.search.issuesAndPullRequests({ q, per_page: 1 });
             const openCount = search.data.total_count;
 
-            core.info(`Author ${author} has ${openCount} open non-draft PR(s). Limit: ${limit}.`);
+            core.info(`Author ${author} has ${openCount} open PR(s). Limit: ${limit}.`);
 
             if (openCount <= limit) {
               core.info('Within limit, nothing to do.');
