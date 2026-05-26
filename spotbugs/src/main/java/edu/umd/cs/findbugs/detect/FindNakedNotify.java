@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.XField;
 
 //   2:   astore_1
 //   3:   monitorenter
@@ -80,6 +81,11 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
         switch (seen) {
         case Const.PUTFIELD:
         case Const.PUTSTATIC:
+            XField field = getXFieldOperand();
+            if (field != null && field.isVolatile()) {
+                stateChangedBeforeSync = true;
+            }
+            break;
         case Const.INVOKESTATIC:
         case Const.INVOKESPECIAL:
             stateChangedBeforeSync = true;
