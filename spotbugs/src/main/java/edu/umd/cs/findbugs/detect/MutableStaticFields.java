@@ -299,8 +299,8 @@ public class MutableStaticFields extends BytecodeScanningDetector {
             return;
         }
         boolean isFinal = (flags & Const.ACC_FINAL) != 0;
-        boolean isPublic = publicClass && (flags & Const.ACC_PUBLIC) != 0;
-        boolean isProtected = publicClass && (flags & Const.ACC_PROTECTED) != 0;
+        boolean isPublic = (flags & Const.ACC_PUBLIC) != 0;
+        boolean isProtected = (flags & Const.ACC_PROTECTED) != 0;
         if (!isPublic && !isProtected) {
             return;
         }
