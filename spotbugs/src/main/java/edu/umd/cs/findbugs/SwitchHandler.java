@@ -179,6 +179,23 @@ public class SwitchHandler {
     }
 
     /**
+     * Returns true when the switch has no {@code default} label in source but the
+     * compiler merged the implicit default target with the last {@code case} label
+     * (e.g. when the last case contains only a {@code break}).
+     */
+    public boolean isMissingDefaultWithMergedLastCase() {
+        int size = switchOffsetStack.size();
+        if (size == 0) {
+            return false;
+        }
+        SwitchDetails details = switchOffsetStack.get(size - 1);
+        if (details.exhaustive || details.swOffsets.length == 0) {
+            return false;
+        }
+        return details.swOffsets[details.swOffsets.length - 1] == details.defaultOffset;
+    }
+
+    /**
      * For type switches introduced in Java 21 we are using the invocation of a bootstrap 'typeswitch()' method to
      * detect that the switch operates on the class of the object.
      *
