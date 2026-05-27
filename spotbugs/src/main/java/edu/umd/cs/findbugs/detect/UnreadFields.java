@@ -226,7 +226,7 @@ public class UnreadFields extends OpcodeStackDetector {
             data.fieldsOfSerializableOrNativeClassed.addAll(data.myFields);
             data.fieldsOfNativeClasses.addAll(data.myFields);
         }
-        if (isSerializable) {
+        if (isSerializable && !obj.isEnum()) {
             data.fieldsOfSerializableOrNativeClassed.addAll(data.myFields);
         }
         if (sawSelfCallInConstructor) {
