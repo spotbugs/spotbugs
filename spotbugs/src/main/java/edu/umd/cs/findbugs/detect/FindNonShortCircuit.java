@@ -166,7 +166,8 @@ public class FindNonShortCircuit extends OpcodeStackDetector implements Stateles
             // System.out.println("Saw IOR or IAND at distance " + distance);
             OpcodeStack.Item item0 = stack.getStackItem(0);
             OpcodeStack.Item item1 = stack.getStackItem(1);
-            if (item0.getConstant() == null && item1.getConstant() == null && distance < 4) {
+            boolean bothOperandsAreConstants = item0.getConstant() != null && item1.getConstant() != null;
+            if (!bothOperandsAreConstants && distance < 4) {
                 //                if (item0.getRegisterNumber() >= 0 && item1.getRegisterNumber() >= 0) {
                 //                    if (false) {
                 //                        clearAll();
