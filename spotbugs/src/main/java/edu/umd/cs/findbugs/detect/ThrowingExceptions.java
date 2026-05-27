@@ -92,7 +92,8 @@ public class ThrowingExceptions extends OpcodeStackDetector {
     public void sawOpcode(int seen) {
         if (seen == Const.ATHROW) {
             OpcodeStack.Item item = stack.getStackItem(0);
-            if (item != null && "Ljava/lang/RuntimeException;".equals(item.getSignature())) {
+            if (item != null && "Ljava/lang/RuntimeException;".equals(item.getSignature())
+                    && !isReturnValueOfNonConstructorMethod(item)) {
                 bugReporter.reportBug(new BugInstance(this, "THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", LOW_PRIORITY)
                         .addClass(this)
                         .addMethod(getXMethod())
@@ -117,6 +118,11 @@ public class ThrowingExceptions extends OpcodeStackDetector {
             }
 
         }
+    }
+
+    private boolean isReturnValueOfNonConstructorMethod(OpcodeStack.Item thrownItem) {
+        XMethod returnMethod = thrownItem.getReturnValueOf();
+        return returnMethod != null && !Const.CONSTRUCTOR_NAME.equals(returnMethod.getName());
     }
 
     private void reportBug(String bugName, XMethod method) {
