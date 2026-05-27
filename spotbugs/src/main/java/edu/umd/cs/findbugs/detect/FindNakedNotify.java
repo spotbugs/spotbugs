@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 //   2:   astore_1
 //   3:   monitorenter
@@ -79,6 +80,8 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
             break;
         case LOADED:
             if (isRegisterLoad() || seen == Const.GETSTATIC || seen == Const.GETFIELD) {
+                break;
+            } else if (DismantleBytecode.isBranch(seen) || DismantleBytecode.isSwitch(seen)) {
                 break;
             } else if (seen == Const.INVOKEVIRTUAL
                     && ("notify".equals(getNameConstantOperand()) || "notifyAll".equals(getNameConstantOperand()))
