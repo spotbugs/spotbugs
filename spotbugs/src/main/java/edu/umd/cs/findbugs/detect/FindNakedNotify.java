@@ -44,6 +44,8 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
 
     private int notifyPC;
 
+    private boolean stateMutatedInSync;
+
     public FindNakedNotify(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
@@ -57,15 +59,59 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
     @Override
     public void visit(Code obj) {
         stage = synchronizedMethod ? Stage.MONITOR_ENTERED : Stage.START;
+        stateMutatedInSync = false;
         super.visit(obj);
         if (synchronizedMethod && stage == Stage.LOCK_LOADED) {
+            reportNakedNotifyIfNeeded();
+        }
+    }
+
+    private void reportNakedNotifyIfNeeded() {
+        if (!stateMutatedInSync) {
             bugReporter.reportBug(new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY).addClassAndMethod(this)
                     .addSourceLine(this, notifyPC));
         }
     }
 
+    private void noteStateChangeInSync(int seen) {
+        if ((stage == Stage.MONITOR_ENTERED || stage == Stage.LOADED) && isStateMutatingInstruction(seen)) {
+            stateMutatedInSync = true;
+            stage = Stage.START;
+        }
+    }
+
+    private boolean isStateMutatingInstruction(int seen) {
+        switch (seen) {
+        case Const.PUTFIELD:
+        case Const.PUTSTATIC:
+        case Const.IINC:
+            return true;
+        case Const.INVOKEVIRTUAL:
+        case Const.INVOKEINTERFACE:
+        case Const.INVOKESPECIAL:
+        case Const.INVOKESTATIC:
+            return !isBenignSyncInvoke(seen);
+        default:
+            return false;
+        }
+    }
+
+    private boolean isBenignSyncInvoke(int seen) {
+        if (isWaitOrNotifyMethod()) {
+            return true;
+        }
+        String className = getClassConstantOperand();
+        return className.startsWith("java/io/") || "java/lang/System".equals(className);
+    }
+
+    private boolean isWaitOrNotifyMethod() {
+        String name = getNameConstantOperand();
+        return "notify".equals(name) || "notifyAll".equals(name) || "wait".equals(name);
+    }
+
     @Override
     public void sawOpcode(int seen) {
+        noteStateChangeInSync(seen);
         switch (stage) {
         case START:
             if (seen == Const.MONITORENTER) {
@@ -85,7 +131,8 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
                     && "()V".equals(getSigConstantOperand())) {
                 stage = Stage.NOTIFY_CALLED;
                 notifyPC = getPC();
-            } else {
+            } else if (isStateMutatingInstruction(seen)) {
+                stateMutatedInSync = true;
                 stage = Stage.START;
             }
             break;
@@ -94,8 +141,7 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
             break;
         case LOCK_LOADED:
             if (seen == Const.MONITOREXIT) {
-                bugReporter.reportBug(new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY).addClassAndMethod(this)
-                        .addSourceLine(this, notifyPC));
+                reportNakedNotifyIfNeeded();
                 stage = Stage.MONITOR_EXITED;
             } else {
                 stage = Stage.START;
