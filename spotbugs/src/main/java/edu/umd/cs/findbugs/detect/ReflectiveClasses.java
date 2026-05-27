@@ -41,6 +41,15 @@ public class ReflectiveClasses extends BytecodeScanningDetector implements NonRe
 
     String constantString;
 
+    /** Class name from the most recent {@code LDC}/{@code LDC_W} of a {@code java.lang.Class} constant. */
+    private String pendingClassFromLdc;
+
+    @Override
+    public void visit(org.apache.bcel.classfile.Code obj) {
+        pendingClassFromLdc = null;
+        super.visit(obj);
+    }
+
     @Override
     public void sawString(String s) {
         constantString = s;
@@ -50,18 +59,49 @@ public class ReflectiveClasses extends BytecodeScanningDetector implements NonRe
     public void sawClass() {
         int opcode = getOpcode();
         if ((opcode == Const.LDC) || (opcode == Const.LDC_W)) {
-            process(getClassConstantOperand());
+            pendingClassFromLdc = getClassConstantOperand();
         }
     }
 
     @Override
     public void sawOpcode(int seen) {
+        resolvePendingClassLiteral(seen);
+
         if (seen == Const.INVOKESTATIC && constantString != null && "java/lang/Class".equals(getClassConstantOperand())
                 && "forName".equals(getNameConstantOperand())) {
             process(ClassName.toSlashedClassName(constantString));
         }
 
         constantString = null;
+    }
+
+    private void resolvePendingClassLiteral(int seen) {
+        if (pendingClassFromLdc == null) {
+            return;
+        }
+        if (isBenignClassLiteralUse(seen)) {
+            pendingClassFromLdc = null;
+            return;
+        }
+        if (seen == Const.DUP || seen == Const.POP || seen == Const.POP2) {
+            return;
+        }
+        process(pendingClassFromLdc);
+        pendingClassFromLdc = null;
+    }
+
+    private boolean isBenignClassLiteralUse(int seen) {
+        if (seen == Const.INVOKEVIRTUAL && "java/lang/Class".equals(getClassConstantOperand())) {
+            String methodName = getNameConstantOperand();
+            return "getSimpleName".equals(methodName) || "getName".equals(methodName)
+                    || "getCanonicalName".equals(methodName) || "getTypeName".equals(methodName);
+        }
+        if (seen == Const.INVOKESTATIC && "getLogger".equals(getNameConstantOperand())) {
+            String owner = getClassConstantOperand();
+            return owner.startsWith("org/slf4j/") || owner.startsWith("org/apache/logging/log4j/")
+                    || "java/util/logging/Logger".equals(owner);
+        }
+        return false;
     }
 
     private void process(@SlashedClassName String className) {
