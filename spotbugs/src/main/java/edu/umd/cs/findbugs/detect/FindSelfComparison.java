@@ -228,6 +228,10 @@ public class FindSelfComparison extends OpcodeStackDetector {
         case Const.IF_ICMPGE:
             checkForSelfOperation(seen, "COMPARISON");
             break;
+        case Const.FCMPG:
+        case Const.DCMPG:
+        case Const.DCMPL:
+        case Const.FCMPL:
         default:
             break;
         }

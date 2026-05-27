@@ -53,6 +53,8 @@ public class FindFloatMath extends BytecodeScanningDetector implements Stateless
                         this).addSourceLine(this));
             }
             break;
+        case Const.FCMPG:
+        case Const.FCMPL:
         default:
             break;
         }
