@@ -21,7 +21,7 @@ buildscript {
   // commons-compress 1.27.1 and earlier use a direct constructor without any AbstractStreamBuilder
   // reference, so forcing 1.27.1 avoids the cross-classloader access check entirely.
   configurations.classpath.resolutionStrategy {
-    force 'org.apache.commons:commons-compress:1.27.1'
+    force 'org.apache.commons:commons-compress:1.28.0'
   }
 }
 
