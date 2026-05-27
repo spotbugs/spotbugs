@@ -217,9 +217,7 @@ public class MineBugHistory {
             }
 
             int paddingNeeded = WIDTH - b.length() % WIDTH;
-            if (paddingNeeded > 0) {
-                b.append("                                                     ".substring(0, paddingNeeded));
-            }
+            b.append(" ".repeat(paddingNeeded));
         }
         int errors = bugCollection.getErrors().size();
         if (errors > 0) {
