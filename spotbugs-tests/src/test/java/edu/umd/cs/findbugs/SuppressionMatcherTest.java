@@ -211,6 +211,21 @@ class SuppressionMatcherTest {
     }
 
     @Test
+    void nullBugPatternClassSuppressorShouldNotSuppressUserWrittenMethod() {
+        matcher.addSuppressor(new ClassWarningSuppressor(null, SuppressMatchType.DEFAULT, CLASS_ANNOTATION, true));
+        MethodAnnotation method = new MethodAnnotation(CLASS_NAME, "numberProvider", "()I", true);
+        BugInstance bug = new BugInstance("DMI_RANDOM_USED_ONLY_ONCE", 1).addClass(CLASS_NAME).addMethod(method);
+        assertThat("Blanket class @SuppressFBWarnings must not hide bugs in user-written methods", matcher.match(bug), is(false));
+    }
+
+    @Test
+    void nullBugPatternClassSuppressorShouldStillSuppressClassLevelBug() {
+        matcher.addSuppressor(new ClassWarningSuppressor(null, SuppressMatchType.DEFAULT, CLASS_ANNOTATION, true));
+        BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 1).addClass(CLASS_NAME);
+        assertThat(matcher.match(bug), is(true));
+    }
+
+    @Test
     void nullBugPatternPackageWarningSuppressor() {
         PackageWarningSuppressor suppressor = new PackageWarningSuppressor(null, SuppressMatchType.DEFAULT, "java.lang", true);
         BugInstance bugInstance = suppressor.buildUselessSuppressionBugInstance(new UselessSuppressionDetector());
