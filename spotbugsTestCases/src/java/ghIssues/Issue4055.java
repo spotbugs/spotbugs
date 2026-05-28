@@ -1,3 +1,5 @@
+package ghIssues;
+
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 
