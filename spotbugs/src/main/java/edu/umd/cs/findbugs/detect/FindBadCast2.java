@@ -318,6 +318,11 @@ public class FindBadCast2 implements Detector {
                 if (!isCast) {
                     accumulator.accumulateBug(new BugInstance(this, "NP_NULL_INSTANCEOF", split ? LOW_PRIORITY : NORMAL_PRIORITY)
                             .addClassAndMethod(methodGen, sourceFile).addType(castSig), sourceLineAnnotation);
+                    if (castSig.charAt(0) == '[') {
+                        accumulator.accumulateBug(new BugInstance(this, "BC_IMPOSSIBLE_INSTANCEOF", NORMAL_PRIORITY)
+                                .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(castSig, castSig),
+                                sourceLineAnnotation);
+                    }
                 }
                 continue;
 

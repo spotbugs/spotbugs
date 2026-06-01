@@ -1,10 +1,10 @@
 package sfBugsNew;
 
-import edu.umd.cs.findbugs.annotations.NoWarning;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug1148 {
 
-    @NoWarning("BC_IMPOSSIBLE_INSTANCEOF")
+    @ExpectWarning("NP_NULL_INSTANCEOF,BC_IMPOSSIBLE_INSTANCEOF")
     public static void main(String[] args) {
 
         byte[] msg = null;
