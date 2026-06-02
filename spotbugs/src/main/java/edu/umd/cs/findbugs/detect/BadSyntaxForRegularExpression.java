@@ -162,7 +162,7 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
         if (b.length() > 0) {
             b.append(" | ");
         }
-        b.append("Pattern." + name);
+        b.append("Pattern.").append(name);
 
     }
 

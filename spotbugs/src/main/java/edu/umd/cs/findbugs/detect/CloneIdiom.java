@@ -155,10 +155,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
         }
 
         if (hasCloneMethod && isCloneable && !invokesSuperClone && !isFinal && obj.isPublic()) {
-            int priority = LOW_PRIORITY;
-            if (obj.isPublic() || obj.isProtected()) {
-                priority = NORMAL_PRIORITY;
-            }
+            int priority = NORMAL_PRIORITY;
             try {
                 Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
                 Set<ClassDescriptor> directSubtypes = subtypes2.getDirectSubtypes(getClassDescriptor());
