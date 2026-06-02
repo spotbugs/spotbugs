@@ -116,7 +116,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
         { NSP, NSP, NN, CHECKED_NN, }, // CHECKED_NN
         { NSP, NSP, NN, NN, NO_KABOOM_NN }, // NO_KABOOM_NN
         { NSP, NSP, NSP, NSP, NSP, NSP }, // NSP
-        { NSP, NSP, NN_UNKNOWN, NN_UNKNOWN, NN_UNKNOWN, NSP, NN_UNKNOWN, }, // NN_UNKNOWN
+        { NSP, NSP, NN_UNKNOWN, NSP, NN_UNKNOWN, NSP, NN_UNKNOWN, }, // NN_UNKNOWN
         { NSP, NSP, NCP2, NCP2, NCP2, NSP, NCP2, NCP2, }, // NCP2
         { NSP, NSP, NCP3, NCP3, NCP3, NSP, NCP3, NCP3, NCP3 } // NCP3
     };
