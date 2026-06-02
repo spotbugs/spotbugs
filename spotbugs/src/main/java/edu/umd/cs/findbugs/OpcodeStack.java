@@ -1617,7 +1617,12 @@ public class OpcodeStack {
                         setTop(true);
                         break;
                     } else {
-                        // The jump was deemed impossible after constants analysis
+                        // The jump was deemed impossible after constants analysis.
+                        // Still record that a backward branch instruction exists in the bytecode
+                        // so the hasBackBranch() mismatch check in computeJumpInfo() passes.
+                        if (dbc.getBranchTarget() <= dbc.getPC()) {
+                            backwardsBranch = true;
+                        }
                         break;
                     }
                 }
