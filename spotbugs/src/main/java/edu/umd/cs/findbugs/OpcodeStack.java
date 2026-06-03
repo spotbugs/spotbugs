@@ -473,8 +473,8 @@ public class OpcodeStack {
             case NOT_SPECIAL:
                 break;
             default:
-                buf.append(", #" + specialKind);
-                buf.append("(" + specialKindToName.get(specialKind) + ")");
+                buf.append(", #").append(specialKind);
+                buf.append("(").append(specialKindToName.get(specialKind)).append(")");
                 break;
 
             }

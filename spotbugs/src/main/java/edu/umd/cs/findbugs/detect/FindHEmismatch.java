@@ -371,7 +371,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
 
     }
 
-    public static int opcode(byte code[], int offset) {
+    public static int opcode(byte[] code, int offset) {
         return code[offset] & 0xff;
     }
 

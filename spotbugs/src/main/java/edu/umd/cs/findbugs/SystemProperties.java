@@ -77,8 +77,7 @@ public class SystemProperties {
     }
 
     private static void loadPropertiesFromConfigFile() {
-
-        URL systemProperties = DetectorFactoryCollection.getCoreResource("systemProperties.properties");
+        URL systemProperties = SystemProperties.class.getResource("/systemProperties.properties");
         loadPropertiesFromURL(systemProperties);
         String u = System.getProperty("findbugs.loadPropertiesFrom");
         if (u != null) {
@@ -151,7 +150,7 @@ public class SystemProperties {
     }
 
     private static boolean toBoolean(String name) {
-        return ((name != null) && "true".equalsIgnoreCase(name));
+        return "true".equalsIgnoreCase(name);
     }
 
     /**

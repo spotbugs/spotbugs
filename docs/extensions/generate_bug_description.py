@@ -5,6 +5,7 @@
 
 from xml.etree.ElementTree import *
 import codecs
+from html import escape
 
 def parse_bool_attr(element, attr_name):
     return element.get(attr_name) == "true"
@@ -14,6 +15,13 @@ def generate_category_title(bug_category):
 
 def generate_pattern_title(bug_pattern, message):
     return "%s: %s (%s)" % (bug_pattern.get('abbrev'), message.findtext('.//ShortDescription'), bug_pattern.get('type'))
+
+def write_raw_html(page, raw_html):
+    page.write('.. raw:: html\n')
+    page.write('\n')
+    page.write('   ')
+    page.write(raw_html)
+    page.write('\n\n')
 
 def generate_bug_description(language):
     print("Generating bug description page for %s..." % language)
@@ -47,6 +55,7 @@ def generate_bug_description(language):
                 message = findMessage(".//BugPattern[@type='%s']" % type, messages, fallback)
                 pattern_title = generate_pattern_title(bug_pattern, message)
                 bug_description_page.write("%s\n%s\n\n" % (pattern_title, '^' * len(pattern_title)))
+                write_raw_html(bug_description_page, '<span id="%s"></span>' % escape(type, quote=True))
                 details = message.findtext('.//Details')
                 bug_description_page.write('.. raw:: html\n')
                 for line in details.splitlines():

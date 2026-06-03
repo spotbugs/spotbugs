@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.classfile.engine;
 
-import java.util.BitSet;
 import java.util.HashSet;
 import java.util.TreeSet;
 
@@ -59,16 +58,6 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
     // static final boolean NO_SHIFT_INNER_CLASS_CTOR =
     // SystemProperties.getBoolean("classparser.noshift");
-
-    private static final BitSet RETURN_OPCODE_SET = new BitSet();
-    static {
-        RETURN_OPCODE_SET.set(Opcodes.ARETURN);
-        RETURN_OPCODE_SET.set(Opcodes.IRETURN);
-        RETURN_OPCODE_SET.set(Opcodes.LRETURN);
-        RETURN_OPCODE_SET.set(Opcodes.DRETURN);
-        RETURN_OPCODE_SET.set(Opcodes.FRETURN);
-        RETURN_OPCODE_SET.set(Opcodes.RETURN);
-    }
 
     private final ClassReader classReader;
 
@@ -711,14 +700,12 @@ public class ClassParserUsingASM implements ClassParserInterface {
                 break;
             case Const.CONSTANT_String:
             case Const.CONSTANT_MethodType:
+            case Const.CONSTANT_Module:
+            case Const.CONSTANT_Package:
                 size = 3;
                 break;
             case Const.CONSTANT_MethodHandle:
                 size = 4;
-                break;
-            case Const.CONSTANT_Module:
-            case Const.CONSTANT_Package:
-                size = 3;
                 break;
             default:
                 throw new IllegalStateException("Unexpected tag of " + tag + " at offset " + offset + " while parsing "

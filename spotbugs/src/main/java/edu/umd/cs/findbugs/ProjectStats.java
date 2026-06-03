@@ -31,6 +31,7 @@ import java.io.Writer;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -282,9 +283,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
      * Clear bug counts
      */
     public void clearBugCounts() {
-        for (int i = 0; i < totalErrors.length; i++) {
-            totalErrors[i] = 0;
-        }
+        Arrays.fill(totalErrors, 0);
         for (PackageStats stats : packageStatsMap.values()) {
             stats.clearBugCounts();
         }
@@ -352,9 +351,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
         if (!hasClassStats && !hasPackageStats) {
             return;
         }
-        for (int i = 0; i < totalErrors.length; i++) {
-            totalErrors[i] = 0;
-        }
+        Arrays.fill(totalErrors, 0);
         totalSize = 0;
         totalClasses = 0;
         totalSizeFromPackageStats = 0;
@@ -530,12 +527,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
     }
 
     private PackageStats getPackageStats(String packageName) {
-        PackageStats stat = packageStatsMap.get(packageName);
-        if (stat == null) {
-            stat = new PackageStats(packageName);
-            packageStatsMap.put(packageName, stat);
-        }
-        return stat;
+        return packageStatsMap.computeIfAbsent(packageName, PackageStats::new);
     }
 
     public void putPackageStats(String packageName, int numClasses, int size) {

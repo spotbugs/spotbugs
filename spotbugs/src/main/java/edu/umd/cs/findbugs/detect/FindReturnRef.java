@@ -28,10 +28,12 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.OpcodeStackScanner;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.type.TypeFrameModelingVisitor;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -152,7 +154,7 @@ public class FindReturnRef extends OpcodeStackDetector {
 
     @Override
     public void visit(Method obj) {
-        check = getThisClass().isPublic() && obj.isPublic();
+        check = obj.isPublic() && (getThisClass().isPublic() || overridesMethodFromPublicSupertype(obj));
         if (!check) {
             return;
         }
@@ -312,6 +314,23 @@ public class FindReturnRef extends OpcodeStackDetector {
                 paramCloneUnderCast = param;
             }
         }
+    }
+
+    private boolean overridesMethodFromPublicSupertype(Method method) {
+        if (method.isStatic()) {
+            return false;
+        }
+        XMethod xMethod = XFactory.createXMethod(getThisClass(), method);
+        for (XMethod superMethod : Hierarchy2.findSuperMethods(xMethod)) {
+            try {
+                if (superMethod.getClassDescriptor().getXClass().isPublic()) {
+                    return true;
+                }
+            } catch (CheckedAnalysisException e) {
+                AnalysisContext.logError("Error checking visibility of " + superMethod.getClassDescriptor(), e);
+            }
+        }
+        return false;
     }
 
     private boolean isNestedField(XField field) {

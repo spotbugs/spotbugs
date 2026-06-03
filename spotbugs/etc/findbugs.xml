@@ -91,7 +91,7 @@
                               <Earlier class="edu.umd.cs.findbugs.detect.BuildAccessMethodsDatabase"/>
                               <LaterCategory name="reporting" spanplugins="true"/>
                     </SplitPass>
-                    
+
                     <SplitPass>
                               <Earlier class="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical"/>
                               <Later class="edu.umd.cs.findbugs.detect.FindHEmismatch"/>
@@ -699,6 +699,8 @@
                     reports="ENV_USE_PROPERTY_INSTEAD_OF_ENV"/>
           <Detector class="edu.umd.cs.findbugs.detect.MultipleInstantiationsOfSingletons" speed="fast"
                     reports="SING_SINGLETON_IMPLEMENTS_CLONEABLE,SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE,SING_SINGLETON_IMPLEMENTS_CLONE_METHOD,SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR,SING_SINGLETON_IMPLEMENTS_SERIALIZABLE,SING_SINGLETON_GETTER_NOT_SYNCHRONIZED" />
+          <Detector class="edu.umd.cs.findbugs.detect.FindIncreasedAccessibilityOfMethods" speed="fast"
+                    reports="IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY"/>
           <Detector class="edu.umd.cs.findbugs.detect.SharedVariableAtomicityDetector"
                     reports="AT_NONATOMIC_64BIT_PRIMITIVE,AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE,AT_STALE_THREAD_WRITE_OF_PRIMITIVE"/>
           <Detector class="edu.umd.cs.findbugs.detect.FindHiddenMethod" speed="fast"
@@ -1343,6 +1345,7 @@
           <BugPattern abbrev="AT" type="AT_NONATOMIC_64BIT_PRIMITIVE" category="MT_CORRECTNESS" cweid="667"/>
           <BugPattern abbrev="AT" type="AT_STALE_THREAD_WRITE_OF_PRIMITIVE" category="MT_CORRECTNESS" cweid="413"/>
           <BugPattern abbrev="AT" type="AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE" category="MT_CORRECTNESS" cweid="413"/>
+          <BugPattern abbrev="IAOM" type="IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY" category="CORRECTNESS" />
           <BugPattern abbrev="HSM" type="HSM_HIDING_METHOD" category="CORRECTNESS"/>
           <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_FIELD" category="STYLE"/>
           <BugPattern abbrev="US" type="US_USELESS_SUPPRESSION_ON_CLASS" category="STYLE"/>

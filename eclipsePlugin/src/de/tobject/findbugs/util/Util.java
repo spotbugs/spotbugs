@@ -20,7 +20,6 @@
 package de.tobject.findbugs.util;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -213,22 +212,19 @@ public class Util {
      * @param markers
      */
     public static void sortIMarkers(IMarker[] markers) {
-        Arrays.sort(markers, new Comparator<IMarker>() {
-            @Override
-            public int compare(IMarker arg0, IMarker arg1) {
-                IResource resource0 = arg0.getResource();
-                IResource resource1 = arg1.getResource();
-                if (resource0 != null && resource1 != null) {
-                    return resource0.getName().compareTo(resource1.getName());
-                }
-                if (resource0 != null && resource1 == null) {
-                    return 1;
-                }
-                if (resource0 == null && resource1 != null) {
-                    return -1;
-                }
-                return 0;
+        Arrays.sort(markers, (arg0, arg1) -> {
+            IResource resource0 = arg0.getResource();
+            IResource resource1 = arg1.getResource();
+            if (resource0 != null && resource1 != null) {
+                return resource0.getName().compareTo(resource1.getName());
             }
+            if (resource0 != null && resource1 == null) {
+                return 1;
+            }
+            if (resource0 == null && resource1 != null) {
+                return -1;
+            }
+            return 0;
         });
     }
 

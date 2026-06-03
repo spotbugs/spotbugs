@@ -130,7 +130,7 @@ public class FileBugHash {
         return size;
     }
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
 
         if (args.length > 1 || (args.length > 0 && "-help".equals(args[0]))) {
             System.err.println("Usage: " + FileBugHash.class.getName() + " [<infile>]");

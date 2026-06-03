@@ -139,7 +139,7 @@ public class IO {
 
         int sz = 0;
 
-        byte buf[] = myByteBuf.get();
+        byte[] buf = myByteBuf.get();
 
         while (maxBytes > 0 && (sz = in.read(buf, 0, (int) Math.min(maxBytes, buf.length))) > 0) {
             total += sz;
@@ -157,7 +157,7 @@ public class IO {
 
         int sz;
 
-        char buf[] = myCharBuf.get();
+        char[] buf = myCharBuf.get();
 
         while (maxChars > 0 && (sz = in.read(buf, 0, (int) Math.min(maxChars, buf.length))) > 0) {
             total += sz;

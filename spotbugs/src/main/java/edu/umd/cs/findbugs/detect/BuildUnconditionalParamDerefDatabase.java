@@ -97,6 +97,7 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
         for (Type argument : method.getArgumentTypes()) {
             if (argument instanceof ReferenceType) {
                 hasReferenceParameters = true;
+                break;
             }
         }
 
@@ -141,7 +142,7 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
                         implicitNullCheckForEquals = true;
                         Code code = method.getCode();
                         ConstantPool cp = jclass.getConstantPool();
-                        byte codeBytes[] = code.getCode();
+                        byte[] codeBytes = code.getCode();
                         for (CodeException e : code.getExceptionTable()) {
                             ConstantClass cl = (ConstantClass) cp.getConstant(e.getCatchType());
                             int endPC = e.getEndPC();

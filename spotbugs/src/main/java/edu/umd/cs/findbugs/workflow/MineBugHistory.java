@@ -72,7 +72,7 @@ public class MineBugHistory {
     static class Version {
         long sequence;
 
-        int tuple[] = new int[TUPLE_SIZE];
+        int[] tuple = new int[TUPLE_SIZE];
 
         Version(long sequence) {
             this.sequence = sequence;
@@ -217,9 +217,7 @@ public class MineBugHistory {
             }
 
             int paddingNeeded = WIDTH - b.length() % WIDTH;
-            if (paddingNeeded > 0) {
-                b.append("                                                     ".substring(0, paddingNeeded));
-            }
+            b.append(" ".repeat(paddingNeeded));
         }
         int errors = bugCollection.getErrors().size();
         if (errors > 0) {
@@ -378,7 +376,7 @@ public class MineBugHistory {
             out.print("\"");
             out.println(">");
 
-            String attributeName[] = new String[TUPLE_SIZE];
+            String[] attributeName = new String[TUPLE_SIZE];
             attributeName[0] = "added";
             attributeName[1] = "newCode";
             attributeName[2] = "fixed";

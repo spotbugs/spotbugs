@@ -316,7 +316,7 @@ public class MethodReturnCheck extends OpcodeStackDetector implements UseAnnotat
                 int priority = annotation.getPriority();
                 if (catchSize <= 1) {
                     priority += 2;
-                } else if (catchSize <= 2) {
+                } else if (catchSize == 2) {
                     priority += 1;
                 }
                 if (!checkReturnAnnotationDatabase.annotationIsDirect(callSeen)

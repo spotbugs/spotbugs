@@ -45,7 +45,7 @@ jobs:
           java-version: '21'
           distribution: temurin
           cache: gradle
-      - uses: gradle/actions/wrapper-validation@0723195856401067f7a2779048b490ace7a47d7c # v5
+      - uses: gradle/actions/wrapper-validation@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6
       - name: Download Eclipse
         run: |
           curl --continue-at - --create-dirs --location 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-linux-gtk-x86_64.tar.gz&mirror_id=1' --output eclipse-sdk/eclipse.tar.gz
@@ -78,14 +78,14 @@ jobs:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
       - name: Deploy eclipse-latest
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4
         with:
           external_repository: spotbugs/eclipse-latest
           personal_token: ${{ secrets.PERSONAL_TOKEN_FOR_PAGES }}
           publish_branch: gh-pages
           publish_dir: ./eclipsePlugin/build/site/eclipse-daily
       - name: Deploy eclipse-candidate
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4
         if: startsWith(github.ref, 'refs/tags/')
         with:
           external_repository: spotbugs/eclipse-candidate
@@ -93,7 +93,7 @@ jobs:
           publish_branch: gh-pages
           publish_dir: ./eclipsePlugin/build/site/eclipse-candidate
       - name: Deploy eclipse
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4
         if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref, '_RC') && !contains(github.ref, '_beta')
         with:
           external_repository: spotbugs/eclipse
