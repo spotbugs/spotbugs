@@ -9,8 +9,11 @@ class Issue3929Test extends AbstractIntegrationTest {
     void testNoFalsePositiveSaLocalSelfAssignmentInTrySwitchIinc() {
         performAnalysis("ghIssues/Issue3929.class");
 
-        // Exactly 1 SA_LOCAL_SELF_ASSIGNMENT bug expected (the true positive only)
-        assertBugTypeCount("SA_LOCAL_SELF_ASSIGNMENT", 1);
+        // Exactly 2 SA_LOCAL_SELF_ASSIGNMENT bugs expected (the true positives only)
+        assertBugTypeCount("SA_LOCAL_SELF_ASSIGNMENT", 2);
+
+        // Minimized false positive (now fixed): ++a inside try-catch should NOT report SA
+        assertNoBugInMethod("SA_LOCAL_SELF_ASSIGNMENT", "ghIssues.Issue3929", "incrementInsideTryCatch");
 
         // False positive (now fixed): ++a inside switch inside try-catch should NOT report SA
         assertNoBugInMethod("SA_LOCAL_SELF_ASSIGNMENT", "ghIssues.Issue3929", "reproduceFalsePositive");
@@ -23,5 +26,8 @@ class Issue3929Test extends AbstractIntegrationTest {
 
         // True positive: real self-assignment must still be detected
         assertBugInMethod("SA_LOCAL_SELF_ASSIGNMENT", "ghIssues.Issue3929", "realSelfAssignment");
+
+        // True positive inside try-catch must still be detected
+        assertBugInMethod("SA_LOCAL_SELF_ASSIGNMENT", "ghIssues.Issue3929", "selfAssignmentInsideTryCatch");
     }
 }

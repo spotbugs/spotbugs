@@ -6,6 +6,15 @@ package ghIssues;
  */
 public class Issue3929 {
 
+    // Minimized false positive (now fixed): ++a inside try-catch should NOT report SA
+    public void incrementInsideTryCatch() {
+        try {
+            int a = 0;
+            ++a;
+        } catch (Exception b) {
+        }
+    }
+
     // False positive (now fixed): ++a inside switch inside try-catch should NOT report SA
     public void reproduceFalsePositive() {
         try {
@@ -52,5 +61,14 @@ public class Issue3929 {
     public void realSelfAssignment() {
         int a = 1;
         a = a; // real SA_LOCAL_SELF_ASSIGNMENT
+    }
+
+    // True positive: self-assignment inside try-catch should still be reported
+    public void selfAssignmentInsideTryCatch() {
+        try {
+            int a = 1;
+            a = a; // real SA_LOCAL_SELF_ASSIGNMENT
+        } catch (Exception e) {
+        }
     }
 }
