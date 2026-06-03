@@ -13,5 +13,5 @@ class Issue2985Test extends AbstractIntegrationTest {
 
         assertBugInClassCount("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", "ghIssues.Issue2985$NonStaticFactoryMethod", 0);
         assertBugInClassCount("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", "ghIssues.Issue2985$PublicConstructor", 0);
-    }
+        assertBugTypeCount("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE", 0);
 }
