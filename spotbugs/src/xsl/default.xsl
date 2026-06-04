@@ -228,12 +228,14 @@
 	</p>
 	<p>SpotBugs version: <xsl:value-of select="/BugCollection/@version"/></p>
 	
-	<p>Code analyzed:</p>
-	<ul>
-		<xsl:for-each select="./Jar">
-			<li><xsl:value-of select="text()"/></li>
-		</xsl:for-each>
-	</ul>
+	<details>
+		<summary>Code analyzed (<xsl:value-of select="count(./Jar)"/> files)</summary>
+		<ul>
+			<xsl:for-each select="./Jar">
+				<li><xsl:value-of select="text()"/></li>
+			</xsl:for-each>
+		</ul>
+	</details>
 	<p><br/><br/></p>
 </xsl:template>
 
