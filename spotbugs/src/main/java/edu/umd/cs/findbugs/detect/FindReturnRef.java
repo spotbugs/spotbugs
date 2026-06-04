@@ -38,11 +38,13 @@ import edu.umd.cs.findbugs.ba.type.TypeFrameModelingVisitor;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MutableClasses;
 import edu.umd.cs.findbugs.util.NestedAccessUtil;
 import org.apache.bcel.Const;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -433,7 +435,11 @@ public class FindReturnRef extends OpcodeStackDetector {
                 }
             } while (clazz2 != null);
             try {
-                clazz = clazz.getXClass().getImmediateEnclosingClass();
+                ClassDescriptor next = clazz.getXClass().getImmediateEnclosingClass();
+                if (next == null) {
+                    next = getNestHostClassDescriptor(clazz);
+                }
+                clazz = next;
                 if (clazz != null && !clazz.getXClass().isPublic()) {
                     return false;
                 }
@@ -443,5 +449,18 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
         } while (clazz != null);
         return false;
+    }
+
+    private ClassDescriptor getNestHostClassDescriptor(ClassDescriptor clazz) {
+        try {
+            JavaClass javaClass = Repository.lookupClass(clazz.getDottedClassName());
+            List<JavaClass> hostClasses = NestedAccessUtil.getHostClasses(javaClass);
+            if (!hostClasses.isEmpty()) {
+                return DescriptorFactory.createClassDescriptor(hostClasses.get(0));
+            }
+        } catch (ClassNotFoundException e) {
+            AnalysisContext.logError("Error resolving nest host of " + clazz, e);
+        }
+        return null;
     }
 }
