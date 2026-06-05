@@ -60,6 +60,11 @@ public class SynchronizeAndNullCheckField extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         // System.out.println(getPC() + " " + Const.getOpcodeName(seen) + " " +
         // currState);
+
+        // Treat the Yoda-style "null == field" guard (IF_ACMPEQ/IF_ACMPNE
+        // against null) like the IFNULL/IFNONNULL it is equivalent to.
+        seen = normalizeNullComparison(seen);
+
         switch (currState) {
         case 0:
             if (seen == Const.GETFIELD || seen == Const.GETSTATIC) {
@@ -92,7 +97,10 @@ public class SynchronizeAndNullCheckField extends BytecodeScanningDetector {
             if (seen == Const.GETFIELD || seen == Const.GETSTATIC) {
                 gottenField = FieldAnnotation.fromReferencedField(this);
                 currState = 5;
-            } else {
+            } else if (seen != Const.ACONST_NULL) {
+                // A Yoda-style "null == field" guard loads the null constant
+                // before re-reading the field; ignore it so the field load is
+                // still recognized.
                 currState = 0;
             }
             break;

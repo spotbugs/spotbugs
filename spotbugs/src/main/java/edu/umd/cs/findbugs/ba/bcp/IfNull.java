@@ -19,9 +19,12 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
+import org.apache.bcel.generic.ACONST_NULL;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.IFNONNULL;
 import org.apache.bcel.generic.IFNULL;
+import org.apache.bcel.generic.IF_ACMPEQ;
+import org.apache.bcel.generic.IF_ACMPNE;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 
@@ -40,9 +43,11 @@ public class IfNull extends OneVariableInstruction implements EdgeTypes {
     public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg, ValueNumberFrame before, ValueNumberFrame after,
             BindingSet bindingSet) throws DataflowAnalysisException {
 
-        // Instruction must be IFNULL or IFNONNULL.
+        // Instruction must be IFNULL/IFNONNULL, or a reference comparison
+        // (IF_ACMPEQ/IF_ACMPNE) against the null constant. The latter is how
+        // javac compiles a Yoda-style null check such as "null == field".
         Instruction ins = handle.getInstruction();
-        if (!(ins instanceof IFNULL || ins instanceof IFNONNULL)) {
+        if (!(ins instanceof IFNULL || ins instanceof IFNONNULL || isReferenceComparisonWithNull(handle))) {
             return null;
         }
 
@@ -52,9 +57,30 @@ public class IfNull extends OneVariableInstruction implements EdgeTypes {
         return addOrCheckDefinition(ref, bindingSet);
     }
 
+    /**
+     * For an IF_ACMPEQ/IF_ACMPNE comparison, determine whether one of the
+     * operands is the null constant. In that case the comparison is equivalent
+     * to an IFNULL/IFNONNULL on the other (non-null) operand, which is left on
+     * top of the stack by the preceding instruction.
+     */
+    private static boolean isReferenceComparisonWithNull(InstructionHandle handle) {
+        Instruction ins = handle.getInstruction();
+        if (!(ins instanceof IF_ACMPEQ || ins instanceof IF_ACMPNE)) {
+            return false;
+        }
+        // javac always emits the null constant as the lower operand, i.e. it is
+        // pushed before the value being tested. The value being tested is loaded
+        // by the immediately preceding instruction, so the null constant is two
+        // instructions back.
+        InstructionHandle value = handle.getPrev();
+        InstructionHandle nullConstant = value != null ? value.getPrev() : null;
+        return nullConstant != null && nullConstant.getInstruction() instanceof ACONST_NULL;
+    }
+
     @Override
     public boolean acceptBranch(Edge edge, InstructionHandle source) {
-        boolean isIfNull = (source.getInstruction() instanceof IFNULL);
-        return edge.getType() == (isIfNull ? IFCMP_EDGE : FALL_THROUGH_EDGE);
+        Instruction ins = source.getInstruction();
+        boolean branchOnNull = (ins instanceof IFNULL) || (ins instanceof IF_ACMPEQ);
+        return edge.getType() == (branchOnNull ? IFCMP_EDGE : FALL_THROUGH_EDGE);
     }
 }

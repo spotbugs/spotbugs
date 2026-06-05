@@ -94,6 +94,10 @@ public class FindDoubleCheck extends OpcodeStackDetector {
             System.out.println(getPC() + "\t" + Const.getOpcodeName(seen) + "\t" + stage + "\t" + count + "\t" + countSinceGetReference);
         }
 
+        // Treat the Yoda-style "null == field" guard (IF_ACMPEQ/IF_ACMPNE
+        // against null) like the IFNULL/IFNONNULL it is equivalent to.
+        seen = normalizeNullComparison(seen);
+
         if (seen == Const.MONITORENTER) {
             sawMonitorEnter = true;
         }
