@@ -414,10 +414,6 @@ public abstract class DismantleBytecode extends AnnotationVisitor {
         if (seen != Const.IF_ACMPEQ && seen != Const.IF_ACMPNE) {
             return false;
         }
-        // The null constant is the first operand pushed, so it sits behind the
-        // instructions that load the value being tested. Walk back over those
-        // value loads looking for the aconst_null, stopping as soon as we hit
-        // anything that is not part of a simple reference load.
         for (int offset = 1; offset <= 4; offset++) {
             int prev = getPrevOpcode(offset);
             if (prev == Const.ACONST_NULL) {

@@ -57,21 +57,11 @@ public class IfNull extends OneVariableInstruction implements EdgeTypes {
         return addOrCheckDefinition(ref, bindingSet);
     }
 
-    /**
-     * For an IF_ACMPEQ/IF_ACMPNE comparison, determine whether one of the
-     * operands is the null constant. In that case the comparison is equivalent
-     * to an IFNULL/IFNONNULL on the other (non-null) operand, which is left on
-     * top of the stack by the preceding instruction.
-     */
     private static boolean isReferenceComparisonWithNull(InstructionHandle handle) {
         Instruction ins = handle.getInstruction();
         if (!(ins instanceof IF_ACMPEQ || ins instanceof IF_ACMPNE)) {
             return false;
         }
-        // javac always emits the null constant as the lower operand, i.e. it is
-        // pushed before the value being tested. The value being tested is loaded
-        // by the immediately preceding instruction, so the null constant is two
-        // instructions back.
         InstructionHandle value = handle.getPrev();
         InstructionHandle nullConstant = value != null ? value.getPrev() : null;
         return nullConstant != null && nullConstant.getInstruction() instanceof ACONST_NULL;

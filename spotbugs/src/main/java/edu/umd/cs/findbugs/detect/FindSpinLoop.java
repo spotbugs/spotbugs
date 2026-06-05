@@ -55,16 +55,11 @@ public class FindSpinLoop extends BytecodeScanningDetector implements StatelessD
     @Override
     public void sawOpcode(int seen) {
 
-        // Treat the Yoda-style "null == field" guard (IF_ACMPEQ/IF_ACMPNE
-        // against null) like the IFNULL/IFNONNULL it is equivalent to.
         seen = normalizeNullComparison(seen);
 
         // System.out.println("PC: " + PC + ", stage: " + stage1);
         switch (seen) {
         case Const.ACONST_NULL:
-            // A Yoda-style "null == field" spin guard pushes null before loading
-            // the field; this is the real top of the loop, so anchor here and
-            // let the following load keep this anchor (see the stage guards).
             if (stage == 0) {
                 start = getPC();
             }
