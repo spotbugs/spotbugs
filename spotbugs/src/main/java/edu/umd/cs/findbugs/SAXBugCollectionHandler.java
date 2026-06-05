@@ -394,7 +394,12 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     }
 
     private boolean isCompoundElementTag(String qName) {
-        return outerElementTags.contains(qName);
+        for (String tag : outerElementTags) {
+            if (tag.equalsIgnoreCase(qName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isTopLevelFilter(String qName) {
@@ -435,6 +440,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
     boolean nextMatchedIsDisabled;
     private final Set<String> outerElementTags = unmodifiableSet(new HashSet<>(asList("And", "Match", "Or", "Not")));
+
+    private static boolean isFilterCompoundElement(String qName, String canonicalName) {
+        return canonicalName.equalsIgnoreCase(qName);
+    }
 
     private void parseMatcher(String qName, Attributes attributes) throws SAXException {
         if (DEBUG) {
@@ -485,13 +494,13 @@ public class SAXBugCollectionHandler extends DefaultHandler {
             String type = getOptionalAttribute(attributes, "type");
             String role = getOptionalAttribute(attributes, "role");
             addMatcher(new FieldMatcher(name, type, role));
-        } else if ("Or".equals(qName)) {
+        } else if (isFilterCompoundElement(qName, "Or")) {
             CompoundMatcher matcher = new OrMatcher();
             pushCompoundMatcherAsChild(matcher);
-        } else if ("And".equals(qName) || "Match".equals(qName)) {
+        } else if (isFilterCompoundElement(qName, "And") || isFilterCompoundElement(qName, "Match")) {
             AndMatcher matcher = new AndMatcher();
             pushCompoundMatcherAsChild(matcher);
-            if ("Match".equals(qName)) {
+            if (isFilterCompoundElement(qName, "Match")) {
                 String classregex = getOptionalAttribute(attributes, "classregex");
                 String classMatch = getOptionalAttribute(attributes, "class");
 
@@ -501,7 +510,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                     addMatcher(new ClassMatcher(classMatch));
                 }
             }
-        } else if ("Not".equals(qName)) {
+        } else if (isFilterCompoundElement(qName, "Not")) {
             NotMatcher matcher = new NotMatcher();
             pushCompoundMatcherAsChild(matcher);
         } else if ("Source".equals(qName)) {
