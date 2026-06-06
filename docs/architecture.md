@@ -16,8 +16,10 @@ At a high level, `FindBugs2.execute()` does:
 Important implementation points:
 
 - Execution planning uses ordering constraints from plugin metadata (`findbugs.xml`).
-- First pass may analyze referenced classes broadly; later passes focus on app classes.
+- In multi-pass plans, first pass runs on `referencedClassSet`; later passes run on `appClassList`.
+- First pass is typically non-reporting data collection; changing first-pass detectors can shift later-pass outcomes.
 - Per-class detector execution can run via executor service.
+- `finishPass()` is invoked once per detector after each pass-wide class traversal.
 
 ## Detector lifecycle
 
@@ -26,6 +28,7 @@ Detectors are loaded from plugin metadata and instantiated per pass:
 - Detector definitions and ordering live in `spotbugs/etc/findbugs.xml`.
 - Human-readable metadata lives in `spotbugs/etc/messages*.xml`.
 - `ExecutionPlan` resolves enabled detectors and ordering constraints.
+- `ExecutionPlan` can forcibly enable prerequisite detectors required by ordering constraints.
 - For each class in a pass, SpotBugs calls detector visit logic.
 - After each pass, detectors receive `finishPass()`.
 

@@ -16,10 +16,14 @@ Most behavior changes are in `spotbugs/` and usually require matching updates in
 
 Primary tool: Gradle wrapper.
 
+- Use `./gradlew` from repo root; do not rely on system `gradle`.
+- JDK 21 is required to run the full project build/test matrix.
+- SpotBugs core artifacts are compiled with Java release 11 (`options.release = 11`).
 - Full verification (project guideline): `./gradlew spotlessApply build smoketest`
 - Run all tests: `./gradlew test`
 - Detector regression tests: `./gradlew :spotbugs-tests:test`
 - Focused test: `./gradlew --configure-on-demand :spotbugs-tests:test --tests <fully.qualified.TestClass>`
+- In sandboxed environments where Eclipse downloads fail, keep runs module-scoped with `--configure-on-demand`.
 
 Use the smallest relevant test scope first, then expand.
 
@@ -27,10 +31,11 @@ Use the smallest relevant test scope first, then expand.
 
 When touching detector behavior:
 
-1. Locate detector code in `spotbugs/src/main/java/edu/umd/cs/findbugs/detect/`.
-2. Confirm metadata impact in `spotbugs/etc/findbugs.xml` and `spotbugs/etc/messages*.xml`.
-3. Update/add regression tests in `spotbugs-tests` and inputs in `spotbugsTestCases`.
-4. Preserve bug type IDs unless behavior intentionally changes.
+1. Reproduce with a focused failing test first (or add one) before changing detector logic.
+2. Locate detector code in `spotbugs/src/main/java/edu/umd/cs/findbugs/detect/`.
+3. Confirm metadata impact in `spotbugs/etc/findbugs.xml` and `spotbugs/etc/messages*.xml`.
+4. Update/add regression tests in `spotbugs-tests` and minimal inputs in `spotbugsTestCases`.
+5. Preserve existing bug type IDs and detector IDs; do not rename/remove them for behavior tweaks.
 
 ## Key architecture points
 
@@ -55,3 +60,4 @@ Change only with strong context and tests:
 - Keep tests close to behavior changes.
 - Avoid unrelated refactors in the same PR.
 - Prefer targeted test runs during iteration, then broader validation.
+- Do not modify `findbugs.xml` ordering constraints (`SplitPass`/`WithinPass`) without targeted regression coverage.

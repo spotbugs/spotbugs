@@ -49,3 +49,5 @@ SpotBugs is a multi-module Gradle build for bytecode analysis, integrations, and
 
 Before changing code, identify the owning module first.  
 If behavior spans modules (for example detector behavior + test harness), update tests in `spotbugs-tests` in the same change.
+For detector behavior changes, expect coordinated updates across `spotbugs` + `spotbugs-tests` + `spotbugsTestCases`.
+If bug type metadata changes, update `spotbugs/etc/findbugs.xml` and `spotbugs/etc/messages*.xml` together.

@@ -15,6 +15,8 @@ Common pattern:
 
 ## Useful commands
 
+- Use the Gradle wrapper (`./gradlew`), not a system Gradle install.
+- Full verification requires JDK 21; SpotBugs bytecode target remains Java 11.
 - Full local verification before PR (project guideline):  
   `./gradlew spotlessApply build smoketest`
 - Run all tests:  
@@ -32,13 +34,20 @@ Example focused check for message metadata:
 
 When changing detector logic, analysis behavior, or bug metadata:
 
+- Reproduce with a focused failing test (or add one) before detector logic changes.
+- Use a minimal repro in `spotbugsTestCases` first; avoid broad fixture edits unless required.
 - Update existing regression tests where possible.
 - Add a targeted regression test for the new/fixed behavior.
 - Cover both positive findings and false-positive avoidance when practical.
-- Keep bug type identifiers stable unless intentionally changing behavior and documentation.
+- Keep bug type identifiers stable unless intentionally changing behavior and metadata/docs.
 
 ## What to validate before merge
 
-- Relevant focused tests for the changed detector/engine area.
-- At least module-level test run (`:spotbugs-tests:test`) for detector changes.
-- Full verification command when change scope is broad.
+Run validation in this order and stop expanding once confidence is sufficient:
+
+1. Focused test for the changed behavior (`--tests <TestClass>`).
+2. Module suite: `./gradlew --configure-on-demand :spotbugs-tests:test`.
+3. Full verification (`spotlessApply build smoketest`) only for broad or cross-module changes.
+
+Do not skip step 1 for detector fixes.  
+Do not jump to full build for narrow detector-only changes unless earlier steps fail ambiguously.
