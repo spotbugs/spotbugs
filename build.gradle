@@ -14,7 +14,7 @@ buildscript {
     mavenCentral()
   }
   // commons-compress 1.28.0 refactored GzipCompressorInputStream to use the Builder pattern,
-  // calling AbstractStreamBuilder.getInputStream(). Gradle 9.3.1 bundles commons-io-2.15.1 in
+  // calling AbstractStreamBuilder.getInputStream(). Gradle 9.3.1 to 9.5.1 bundles commons-io-2.15.1 in
   // its own runtime classloader (parent of all plugin classloaders). With parent-first delegation,
   // AbstractStreamBuilder from commons-io-2.15.1 (protected getInputStream) is found before the
   // resolved commons-io-2.20.0, causing IllegalAccessException across classloaders.
@@ -26,9 +26,9 @@ buildscript {
 }
 
 plugins {
-  id 'org.sonarqube' version '7.2.3.7755'
+  id 'org.sonarqube' version '7.3.1.8318'
   id 'org.gradle.crypto.checksum' version '1.4.0'
-  id 'com.github.spotbugs' version '6.4.11'
+  id 'com.github.spotbugs' version '6.5.5'
   id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
@@ -57,7 +57,7 @@ allprojects {
     mavenCentral()
   }
   dependencies {
-    String junitVersion = '6.0.3'
+    String junitVersion = '6.1.0'
     implementation platform("org.junit:junit-bom:${junitVersion}")
     testImplementation platform("org.junit:junit-bom:${junitVersion}")
   }
