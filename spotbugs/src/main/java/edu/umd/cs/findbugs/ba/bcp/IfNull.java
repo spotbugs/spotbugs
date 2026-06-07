@@ -20,7 +20,10 @@
 package edu.umd.cs.findbugs.ba.bcp;
 
 import org.apache.bcel.generic.ACONST_NULL;
+import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.GETFIELD;
+import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.IFNONNULL;
 import org.apache.bcel.generic.IFNULL;
 import org.apache.bcel.generic.IF_ACMPEQ;
@@ -62,9 +65,21 @@ public class IfNull extends OneVariableInstruction implements EdgeTypes {
         if (!(ins instanceof IF_ACMPEQ || ins instanceof IF_ACMPNE)) {
             return false;
         }
-        InstructionHandle value = handle.getPrev();
-        InstructionHandle nullConstant = value != null ? value.getPrev() : null;
-        return nullConstant != null && nullConstant.getInstruction() instanceof ACONST_NULL;
+        // Yoda "null == ref": skip back over the reference load to the ACONST_NULL.
+        for (InstructionHandle prev = handle.getPrev(); prev != null; prev = prev.getPrev()) {
+            Instruction prevIns = prev.getInstruction();
+            if (prevIns instanceof ACONST_NULL) {
+                return true;
+            }
+            if (!isReferenceLoad(prevIns)) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isReferenceLoad(Instruction ins) {
+        return ins instanceof ALOAD || ins instanceof GETFIELD || ins instanceof GETSTATIC;
     }
 
     @Override
