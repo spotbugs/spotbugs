@@ -60,6 +60,8 @@ class FractionalMultisetTest {
         assertEquals(3, increasing.size());
         assertTrue(decreasing.containsAll(backing.keySet()));
         assertTrue(increasing.containsAll(backing.keySet()));
+        assertEquals(List.of("y", "z", "x"), decreasing);
+        assertEquals(List.of("x", "z", "y"), increasing);
     }
 
     private static List<String> keys(Iterable<Map.Entry<String, Double>> entries) {
