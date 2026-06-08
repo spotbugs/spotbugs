@@ -30,6 +30,23 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+      - name: Verify release version
+        if: github.ref_type == 'tag'
+        shell: bash
+        run: |
+          VERSION=$(./gradlew properties -q | awk '/^version:/ {print $2}')
+
+          if [[ "${VERSION}" == *-SNAPSHOT ]]; then
+            echo "Refusing to release SNAPSHOT version: ${VERSION}"
+            exit 1
+          fi
+
+          if [[ "${VERSION}" != "${{ github.ref_name }}" ]]; then
+            echo "Tag (${{
+              github.ref_name
+            }}) does not match build version (${VERSION})"
+            exit 1
+          fi
       - name: Ensure tag is on master
         if: github.ref_type == 'tag'
         run: |

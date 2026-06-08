@@ -4,7 +4,9 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2025-??-??
+## Unreleased - 2026-??-??
+### Build
+- Add release protection to ensure version released matches the tag and that snapshot has been removed.
 
 ## 4.10.1 - 2026-06-08
 - 4.10.0 was not released due to a release process error (artifacts were built from a -SNAPSHOT version). 4.10.1 is the corrected release and contains the intended 4.10.0 contents.
