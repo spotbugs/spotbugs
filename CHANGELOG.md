@@ -6,6 +6,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2025-??-??
 
+## 4.10.1 - 2026-06-08
+- 4.10.0 was not released due to a release process error (artifacts were built from a -SNAPSHOT version). 4.10.1 is the corrected release and contains the intended 4.10.0 contents.
+
 ## 4.10.0 - 2026-06-07
 ### Refactor
 - Move internal usage of 'javax.annotation.Nonnull' to 'jakarta.annotation.NonNull'. ([#3858](https://github.com/spotbugs/spotbugs/pull/3858))
