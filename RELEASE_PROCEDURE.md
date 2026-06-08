@@ -12,7 +12,7 @@ The PR containing these changes needs to be rebased and merged to master. Since 
 
 ## Release to Maven Central
 
-When we push a tag, the build result on GitHub Actions will be deployed to the [SonaType Nexus](https://oss.sonatype.org/), and published to the Maven Central automatically by [Gradle Nexus Publish Plugin](https://github.com/gradle-nexus/publish-plugin). Then we can find [artifacts in the Maven Central](https://repo1.maven.org/maven2/com/github/spotbugs/) after several hours.
+When we push a tag, the build result on GitHub Actions will be deployed to the [SonaType Nexus](https://central.sonatype.com/), and published to the Maven Central automatically by [Gradle Nexus Publish Plugin](https://github.com/gradle-nexus/publish-plugin). Then we can find [artifacts in the Maven Central](https://repo1.maven.org/maven2/com/github/spotbugs/) after several hours.
 See the `build` phase in `.github/workflows/release.yml` calling the `publishToSonatype` and `closeSonatypeStagingRepository` gradle tasks.
 
 ## Release to Eclipse Update Site
