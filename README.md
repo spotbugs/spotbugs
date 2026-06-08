@@ -34,6 +34,7 @@ SpotBugs can be used standalone and through several integrations, including:
 * [Eclipse](https://spotbugs.readthedocs.io/en/latest/eclipse.html)
 * [Sonarqube](https://github.com/spotbugs/sonar-findbugs)
 * [IntelliJ IDEA](https://github.com/JetBrains/spotbugs-intellij-plugin)
+* [Vs Code](https://github.com/shblue21/vscode-spotbugs)
 
 # Questions?
 You can contact us using [GitHub Discussions](https://github.com/spotbugs/spotbugs/discussions).
