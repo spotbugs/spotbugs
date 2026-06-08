@@ -37,7 +37,7 @@ public class ThrowingExceptions extends OpcodeStackDetector {
     public void visit(Method obj) {
         exceptionThrown = null;
 
-        if (obj.isSynthetic()) {
+        if (obj.isSynthetic() || obj.isAbstract()) {
             return;
         }
 
