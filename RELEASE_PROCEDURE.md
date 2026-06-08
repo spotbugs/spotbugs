@@ -13,7 +13,7 @@ The PR containing these changes needs to be rebased and merged to master. Since 
 ## Release to Maven Central
 
 When we push a tag, the build result on GitHub Actions will be deployed to the [SonaType Nexus](https://central.sonatype.com/), and published to the Maven Central automatically by [Gradle Nexus Publish Plugin](https://github.com/gradle-nexus/publish-plugin). Then we can find [artifacts in the Maven Central](https://repo1.maven.org/maven2/com/github/spotbugs/) after several hours.
-See the `build` phase in `.github/workflows/release.yml` calling the `publishToSonatype` and `closeSonatypeStagingRepository` gradle tasks.
+See the `build` phase in `.github/workflows/release.yaml` calling the `publishToSonatype` and `closeSonatypeStagingRepository` gradle tasks.
 
 ## Release to Eclipse Update Site
 
@@ -22,7 +22,7 @@ It's automated by GitHub CI.
 When we push tag, the build result will be deployed to [eclipse-candidate repository](https://github.com/spotbugs/eclipse-candidate).
 When we push tag and its name doesn't contain `_RC`, the build result will be deployed to [eclipse repository](https://github.com/spotbugs/eclipse).
 
-See `Deploy eclipse`, `Deploy eclipse-candidate` and `Deploy eclipse-latest` phases in `.github/workflows/release.yml` for detail.
+See `Deploy eclipse`, `Deploy eclipse-candidate` and `Deploy eclipse-latest` phases in `.github/workflows/release.yaml` for detail.
 
 ## Release to Eclipse Marketplace
 
