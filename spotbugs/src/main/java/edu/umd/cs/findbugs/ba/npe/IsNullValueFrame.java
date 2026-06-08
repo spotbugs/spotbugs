@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -85,9 +86,15 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 
     private Map<ValueNumber, IsNullValue> knownValueMap;
 
+    /**
+     * Local variable slots holding reference arrays with no {@code AASTORE} yet.
+     */
+    private final BitSet uninitializedReferenceArrayLocals;
+
     public IsNullValueFrame(int numLocals, boolean trackValueNumbers) {
         super(numLocals);
         this.trackValueNumbers = trackValueNumbers;
+        this.uninitializedReferenceArrayLocals = new BitSet(numLocals);
         if (trackValueNumbers) {
             this.knownValueMap = new HashMap<>(3);
         }
@@ -112,7 +119,6 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
                 i.remove();
             }
         }
-
     }
 
     @Override
@@ -121,6 +127,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         if (trackValueNumbers) {
             knownValueMap.clear();
         }
+        uninitializedReferenceArrayLocals.clear();
         decision = null;
     }
 
@@ -170,6 +177,18 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
             knownValueMap.put(newValueNumber, isNullValue);
             knownValueMap.remove(oldValueNumber);
         }
+    }
+
+    public void setLocalUninitializedReferenceArray(int localSlot) {
+        uninitializedReferenceArrayLocals.set(localSlot);
+    }
+
+    public void clearLocalUninitializedReferenceArray(int localSlot) {
+        uninitializedReferenceArrayLocals.clear(localSlot);
+    }
+
+    public boolean isLocalUninitializedReferenceArray(int localSlot) {
+        return uninitializedReferenceArrayLocals.get(localSlot);
     }
 
     public @CheckForNull IsNullValue getKnownValue(ValueNumber valueNumber) {
@@ -227,6 +246,10 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         }
     }
 
+    public void mergeUninitializedReferenceArrayLocalsWith(IsNullValueFrame otherFrame) {
+        uninitializedReferenceArrayLocals.and(otherFrame.uninitializedReferenceArrayLocals);
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -239,6 +262,8 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         if (trackValueNumbers) {
             knownValueMap = Util.makeSmallHashMap(((IsNullValueFrame) other).knownValueMap);
         }
+        uninitializedReferenceArrayLocals.clear();
+        uninitializedReferenceArrayLocals.or(((IsNullValueFrame) other).uninitializedReferenceArrayLocals);
     }
 
     @Override
@@ -254,6 +279,9 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
             return false;
         }
         if (trackValueNumbers && !Objects.equals(knownValueMap, o2.knownValueMap)) {
+            return false;
+        }
+        if (!uninitializedReferenceArrayLocals.equals(o2.uninitializedReferenceArrayLocals)) {
             return false;
         }
 
