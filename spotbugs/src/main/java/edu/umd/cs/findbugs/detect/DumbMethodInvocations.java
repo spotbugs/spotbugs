@@ -2,14 +2,30 @@ package edu.umd.cs.findbugs.detect;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
+
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.ConstantString;
+import org.apache.bcel.classfile.ConstantValue;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.PUTSTATIC;
+import org.apache.bcel.generic.StackConsumer;
+import org.apache.bcel.generic.StackProducer;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -47,6 +63,8 @@ public class DumbMethodInvocations implements Detector {
     private final Map<MethodDescriptor, int[]> allFileNameStringMethods;
     private final Map<MethodDescriptor, int[]> allDatabasePasswordMethods;
 
+    private Map<String, String> staticStringFields = Collections.emptyMap();
+
     public DumbMethodInvocations(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.bugAccumulator = new BugAccumulator(bugReporter);
@@ -60,6 +78,7 @@ public class DumbMethodInvocations implements Detector {
 
     @Override
     public void visitClassContext(ClassContext classContext) {
+        staticStringFields = buildStaticStringFields(classContext.getJavaClass(), classContext.getConstantPoolGen());
         Method[] methodList = classContext.getJavaClass().getMethods();
 
         for (Method method : methodList) {
@@ -110,16 +129,17 @@ public class DumbMethodInvocations implements Detector {
             if (allDatabasePasswordMethods.containsKey(md)) {
                 for (int paramNumber : allDatabasePasswordMethods.get(md)) {
                     Constant operandValue = frame.getArgument(iins, cpg, paramNumber, parser);
-                    if (operandValue.isConstantString()) {
-                        String password = operandValue.getConstantString();
-                        if (password.isEmpty()) {
-                            bugAccumulator.accumulateBug(new BugInstance(this, "DMI_EMPTY_DB_PASSWORD", NORMAL_PRIORITY)
-                                    .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
-                        } else {
-                            bugAccumulator.accumulateBug(new BugInstance(this, "DMI_CONSTANT_DB_PASSWORD", NORMAL_PRIORITY)
-                                    .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
-                        }
-
+                    String password = resolveDatabasePasswordString(operandValue, location, iins, cpg, paramNumber,
+                            parser);
+                    if (password == null) {
+                        continue;
+                    }
+                    if (password.isEmpty()) {
+                        bugAccumulator.accumulateBug(new BugInstance(this, "DMI_EMPTY_DB_PASSWORD", NORMAL_PRIORITY)
+                                .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
+                    } else {
+                        bugAccumulator.accumulateBug(new BugInstance(this, "DMI_CONSTANT_DB_PASSWORD", NORMAL_PRIORITY)
+                                .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
                     }
                 }
             }
@@ -168,6 +188,117 @@ public class DumbMethodInvocations implements Detector {
             }
 
         }
+    }
+
+    private static Map<String, String> buildStaticStringFields(JavaClass javaClass, ConstantPoolGen cpg) {
+        Map<String, String> result = new HashMap<>();
+        for (Field field : javaClass.getFields()) {
+            if (!field.isStatic() || !Type.STRING.equals(Type.getType(field.getSignature()))) {
+                continue;
+            }
+            ConstantValue constantValue = field.getConstantValue();
+            if (constantValue != null) {
+                org.apache.bcel.classfile.Constant constant = cpg.getConstant(constantValue.getConstantValueIndex());
+                if (constant instanceof ConstantString) {
+                    result.put(field.getName(),
+                            ((ConstantString) constant).getBytes(cpg.getConstantPool()));
+                }
+            }
+        }
+        Method clinit = null;
+        for (Method method : javaClass.getMethods()) {
+            if (Const.STATIC_INITIALIZER_NAME.equals(method.getName())) {
+                clinit = method;
+                break;
+            }
+        }
+        if (clinit == null || clinit.getCode() == null) {
+            return result;
+        }
+        MethodGen methodGen = new MethodGen(clinit, javaClass.getClassName(), cpg);
+        InstructionList instructionList = methodGen.getInstructionList();
+        String pendingString = null;
+        for (InstructionHandle handle = instructionList.getStart(); handle != null; handle = handle.getNext()) {
+            Instruction instruction = handle.getInstruction();
+            if (instruction instanceof LDC) {
+                Object value = ((LDC) instruction).getValue(cpg);
+                if (value instanceof String) {
+                    pendingString = (String) value;
+                } else {
+                    pendingString = null;
+                }
+            } else if (instruction instanceof PUTSTATIC && pendingString != null) {
+                PUTSTATIC putStatic = (PUTSTATIC) instruction;
+                if (putStatic.getClassName(cpg).equals(javaClass.getClassName())
+                        && Type.STRING.equals(Type.getType(putStatic.getSignature(cpg)))) {
+                    result.put(putStatic.getName(cpg), pendingString);
+                }
+                pendingString = null;
+            } else if (instruction instanceof StackConsumer || instruction instanceof StackProducer) {
+                pendingString = null;
+            }
+        }
+        return result;
+    }
+
+    private @CheckForNull String resolveDatabasePasswordString(Constant operandValue, Location location,
+            InvokeInstruction invokeInstruction, ConstantPoolGen cpg, int paramNumber, SignatureParser parser) {
+        if (operandValue.isConstantString()) {
+            return operandValue.getConstantString();
+        }
+        return stringFromStaticFieldOnStack(location, invokeInstruction, cpg, paramNumber, parser, staticStringFields);
+    }
+
+    private static @CheckForNull String stringFromStaticFieldOnStack(Location location, InvokeInstruction invokeInstruction,
+            ConstantPoolGen cpg, int paramNumber, SignatureParser parser, Map<String, String> staticStringFields) {
+        if (staticStringFields.isEmpty()) {
+            return null;
+        }
+        int targetSlot = parser.getSlotsFromTopOfStackForParameter(paramNumber);
+        InstructionHandle handle = location.getHandle().getPrev();
+        int producersSeen = 0;
+        while (handle != null) {
+            Instruction instruction = handle.getInstruction();
+            if (instruction instanceof StackProducer) {
+                int produce = ((StackProducer) instruction).produceStack(cpg);
+                if (produce == Const.UNPREDICTABLE) {
+                    return null;
+                }
+                for (int i = produce - 1; i >= 0; i--) {
+                    if (producersSeen == targetSlot) {
+                        return stringFromProducer(instruction, cpg, staticStringFields);
+                    }
+                    producersSeen++;
+                }
+            }
+            if (instruction instanceof StackConsumer) {
+                int consume = ((StackConsumer) instruction).consumeStack(cpg);
+                if (consume == Const.UNPREDICTABLE) {
+                    return null;
+                }
+                producersSeen = Math.max(0, producersSeen - consume);
+            }
+            handle = handle.getPrev();
+        }
+        return null;
+    }
+
+    private static @CheckForNull String stringFromProducer(Instruction instruction, ConstantPoolGen cpg,
+            Map<String, String> staticStringFields) {
+        if (instruction instanceof GETSTATIC) {
+            GETSTATIC getStatic = (GETSTATIC) instruction;
+            if (!Type.STRING.equals(Type.getType(getStatic.getSignature(cpg)))) {
+                return null;
+            }
+            return staticStringFields.get(getStatic.getName(cpg));
+        }
+        if (instruction instanceof LDC) {
+            Object value = ((LDC) instruction).getValue(cpg);
+            if (value instanceof String) {
+                return (String) value;
+            }
+        }
+        return null;
     }
 
     private boolean isAbsoluteFileName(String v) {
