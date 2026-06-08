@@ -39,6 +39,12 @@ import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.GETSTATIC;
+import org.apache.bcel.generic.IFNONNULL;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.MethodGen;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -168,6 +174,9 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
                             bugReporter.logError(String.format("Detector %s caught an exception while analyzing %s.",
                                     this.getClass().getName(), getClassContext().getJavaClass().getClassName()), e);
                         }
+                        if (!isInstanceFieldLazilyInitialized) {
+                            isInstanceFieldLazilyInitialized = isProtectedByInstanceNullCheck(field);
+                        }
                     }
                 }
             }
@@ -212,6 +221,49 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     private boolean isInstanceField(XField field, String clsName) {
         String className = "L" + clsName + ";";
         return field != null && field.isPrivate() && field.isStatic() && className.equals(field.getSignature());
+    }
+
+    /**
+     * Detect {@code if (instance == null) { instance = new ...; }} when value-number tracking
+     * loses the null fact after unrelated instructions (e.g. a helper method call).
+     */
+    private boolean isProtectedByInstanceNullCheck(XField field) {
+        MethodGen methodGen = getClassContext().getMethodGen(getMethod());
+        if (methodGen == null) {
+            return false;
+        }
+        InstructionList instructionList = methodGen.getInstructionList();
+        int pc = getPC();
+        org.apache.bcel.generic.ConstantPoolGen cpg = getClassContext().getConstantPoolGen();
+        for (InstructionHandle handle = instructionList.getStart(); handle != null; handle = handle.getNext()) {
+            if (handle.getPosition() >= pc) {
+                break;
+            }
+            Instruction instruction = handle.getInstruction();
+            if (!(instruction instanceof GETSTATIC)) {
+                continue;
+            }
+            GETSTATIC getStatic = (GETSTATIC) instruction;
+            if (!field.getName().equals(getStatic.getName(cpg))
+                    || !getDottedClassName().equals(getStatic.getClassName(cpg))) {
+                continue;
+            }
+            InstructionHandle ifHandle = handle.getNext();
+            if (ifHandle == null || !(ifHandle.getInstruction() instanceof IFNONNULL)) {
+                continue;
+            }
+            IFNONNULL ifNonNull = (IFNONNULL) ifHandle.getInstruction();
+            InstructionHandle nullBranchStart = ifHandle.getNext();
+            if (nullBranchStart == null) {
+                continue;
+            }
+            int nullBranchStartPc = nullBranchStart.getPosition();
+            int nonNullTargetPc = ifNonNull.getTarget().getPosition();
+            if (nullBranchStartPc <= pc && nonNullTargetPc > nullBranchStartPc && pc < nonNullTargetPc) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
