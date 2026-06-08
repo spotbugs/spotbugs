@@ -33,7 +33,7 @@ plugins {
 }
 
 group = 'com.github.spotbugs'
-version = '4.10.0-SNAPSHOT'
+version = '4.10.1-SNAPSHOT'
 
 apply from: "${rootDir}/gradle/java.gradle"
 apply from: "${rootDir}/gradle/jacoco.gradle"
