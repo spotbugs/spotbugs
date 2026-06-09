@@ -5,14 +5,15 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2026-??-??
-### Build
-- Add release protection to ensure version released matches the tag and that snapshot has been removed.
 
 ## 4.10.2 - 2026-06-09
-- Drop binary incompatible Saxon-HE back to 12.9 to keep java 11 compatibility.
-- Add binary check to the gradle build to ensure compatibility remains.
+### Build
+- Add release protection to ensure version released matches the tag and that snapshot has been removed. ([#4156](https://github.com/spotbugs/spotbugs/pull/4156))
+- Drop binary incompatible Saxon-HE back to 12.9 to keep java 11 compatibility. ([#4159](https://github.com/spotbugs/spotbugs/pull/4159))
+- Add binary check to the gradle build to ensure compatibility remains. ([#4159](https://github.com/spotbugs/spotbugs/pull/4159))
 
 ## 4.10.1 - 2026-06-08
+### Build
 - 4.10.0 was not released due to a release process error (artifacts were built from a -SNAPSHOT version). 4.10.1 is the corrected release and contains the intended 4.10.0 contents.
 
 ## 4.10.0 - 2026-06-07
