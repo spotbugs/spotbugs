@@ -402,6 +402,62 @@ public abstract class DismantleBytecode extends AnnotationVisitor {
         return prevOpcode[pos];
     }
 
+    /**
+     * Is the given opcode an {@code IF_ACMPEQ}/{@code IF_ACMPNE} that compares a
+     * reference against the {@code null} constant? This is how javac compiles a
+     * Yoda-style null check such as {@code null == field}: it emits
+     * {@code aconst_null} followed by the load of the value being tested and
+     * then the reference comparison, instead of the {@code ifnull}/
+     * {@code ifnonnull} it would emit for {@code field == null}.
+     */
+    public boolean isNullComparison(int seen) {
+        if (seen != Const.IF_ACMPEQ && seen != Const.IF_ACMPNE) {
+            return false;
+        }
+        for (int offset = 1; offset <= 4; offset++) {
+            int prev = getPrevOpcode(offset);
+            if (prev == Const.ACONST_NULL) {
+                return true;
+            }
+            if (!isReferenceLoad(prev)) {
+                break;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Map a Yoda-style reference comparison against {@code null} onto the
+     * equivalent {@code ifnull}/{@code ifnonnull} opcode, so that callers can
+     * treat both spellings of a null check uniformly. Any other opcode is
+     * returned unchanged.
+     *
+     * @see #isNullComparison(int)
+     */
+    public int normalizeNullComparison(int seen) {
+        if (isNullComparison(seen)) {
+            // null == field : IF_ACMPEQ branches when the field IS null  -> IFNULL
+            // null != field : IF_ACMPNE branches when it is NOT null      -> IFNONNULL
+            return seen == Const.IF_ACMPEQ ? Const.IFNULL : Const.IFNONNULL;
+        }
+        return seen;
+    }
+
+    private static boolean isReferenceLoad(int opcode) {
+        switch (opcode) {
+        case Const.ALOAD:
+        case Const.ALOAD_0:
+        case Const.ALOAD_1:
+        case Const.ALOAD_2:
+        case Const.ALOAD_3:
+        case Const.GETFIELD:
+        case Const.GETSTATIC:
+            return true;
+        default:
+            return false;
+        }
+    }
+
     public boolean isWideOpcode() {
         return opcodeIsWide;
     }
