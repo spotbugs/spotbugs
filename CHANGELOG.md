@@ -4,7 +4,19 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2025-??-??
+## Unreleased - 2026-??-??
+
+## 4.10.2 - 2026-06-09
+### Build
+- Add release protection to ensure version released matches the tag and that snapshot has been removed. ([#4156](https://github.com/spotbugs/spotbugs/pull/4156))
+- Drop binary incompatible Saxon-HE back to 12.9 to keep java 11 compatibility. ([#4159](https://github.com/spotbugs/spotbugs/pull/4159))
+- Add binary check to the gradle build to ensure compatibility remains. ([#4159](https://github.com/spotbugs/spotbugs/pull/4159))
+
+## 4.10.1 - 2026-06-08
+### Build
+- 4.10.0 was not released due to a release process error (artifacts were built from a -SNAPSHOT version). 4.10.1 is the corrected release and contains the intended 4.10.0 contents.
+
+## 4.10.0 - 2026-06-07
 ### Refactor
 - Move internal usage of 'javax.annotation.Nonnull' to 'jakarta.annotation.NonNull'. ([#3858](https://github.com/spotbugs/spotbugs/pull/3858))
 - Move internal usage of 'javax.annotation.Nullable' to 'jakarta.annotation.Nullable'. ([#3861](https://github.com/spotbugs/spotbugs/pull/3861))
@@ -13,6 +25,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Reuse DismantleBytecode.isIf introduced in ([#3869](https://github.com/spotbugs/spotbugs/pull/3869))
 
 ### Added
+- Add partial support for `org.jspecify.annotations.Nullable`, `org.jspecify.annotations.NonNull`, `org.jspecify.annotations.NullUnmarked` and `org.jspecify.annotations.NullMarked` annotations. These are aliased to the closest existing SpotBugs nullness annotations. This is not a complete implementation of the JSpecify spec; scope-level semantics of `@NullMarked` and `@NullUnmarked` are not yet supported. ([#3996](https://github.com/spotbugs/spotbugs/pull/3996))
 - Recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3780](https://github.com/spotbugs/spotbugs/pull/3780))
 - Detect use of `sun.misc.Unsafe` and `jdk.internal.misc.Unsafe` ([#3804](https://github.com/spotbugs/spotbugs/pull/3804))
 - New bug type is introduced: `NCR_NOT_PROPERLY_CHECKED_READ`. Improper validation of the return value from the read() method in InputStream and Reader classes may result in an array not being fully filled. ([#3766](https://github.com/spotbugs/spotbugs/pull/3766))
