@@ -47,6 +47,8 @@ public class IncompatMask extends OpcodeStackDetector {
 
     private Item bitresultItem;
 
+    private int bitResultRegister = -1;
+
     public IncompatMask(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
@@ -160,8 +162,7 @@ public class IncompatMask extends OpcodeStackDetector {
                 bugReporter.reportBug(bug);
             }
         }
-        arg1 = arg2 = null;
-        bitresultItem = null;
+        clearBitResultTracking();
     }
 
     private static String toHex(Number n) {
@@ -169,16 +170,32 @@ public class IncompatMask extends OpcodeStackDetector {
     }
 
     private boolean checkItem(int n) {
-        if (bitresultItem != null) {
+        if (bitresultItem != null || bitResultRegister >= 0) {
             for (int i = 0; i < n; i++) {
-                if (stack.getStackItem(i) == bitresultItem) {
+                if (isBitResultOnStack(stack.getStackItem(i))) {
                     return true;
                 }
             }
         }
+        clearBitResultTracking();
+        return false;
+    }
+
+    private boolean isBitResultOnStack(Item item) {
+        if (bitresultItem != null && item == bitresultItem) {
+            return true;
+        }
+        if (bitResultRegister >= 0 && item.getRegisterNumber() == bitResultRegister) {
+            return true;
+        }
+        return bitresultItem != null && bitresultItem.getRegisterNumber() >= 0
+                && item.getRegisterNumber() == bitresultItem.getRegisterNumber();
+    }
+
+    private void clearBitResultTracking() {
         arg1 = arg2 = null;
         bitresultItem = null;
-        return false;
+        bitResultRegister = -1;
     }
 
     @Override
@@ -189,8 +206,22 @@ public class IncompatMask extends OpcodeStackDetector {
         case Const.LAND:
         case Const.IOR:
         case Const.LOR:
+            bitResultRegister = -1;
             if (stack.getStackDepth() > 0) {
                 bitresultItem = stack.getStackItem(0);
+            }
+            break;
+        case Const.ISTORE:
+            if (bitresultItem != null) {
+                bitResultRegister = getRegisterOperand();
+            }
+            break;
+        case Const.ISTORE_0:
+        case Const.ISTORE_1:
+        case Const.ISTORE_2:
+        case Const.ISTORE_3:
+            if (bitresultItem != null) {
+                bitResultRegister = seen - Const.ISTORE_0;
             }
             break;
         default:
