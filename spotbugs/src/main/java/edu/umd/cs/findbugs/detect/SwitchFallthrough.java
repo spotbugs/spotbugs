@@ -278,6 +278,9 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
             reachable = false;
             biggestJumpTarget = -1;
             switchHdlr.enterSwitch(this, enumType);
+            if (enumType == null && switchHdlr.isMissingDefaultWithMergedLastCase()) {
+                foundSwitchNoDefault(switchHdlr.getCurrentSwitchStatement(this));
+            }
             if (DEBUG) {
                 System.out.printf("  entered switch, default is %d%n", switchHdlr.getDefaultCasePC());
             }
