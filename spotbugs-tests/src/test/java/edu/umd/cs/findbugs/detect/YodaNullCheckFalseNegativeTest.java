@@ -18,21 +18,24 @@ class YodaNullCheckFalseNegativeTest extends AbstractIntegrationTest {
     @Test
     void doubleCheck() {
         performAnalysis("ghIssues/issue4138/DoubleCheckYoda.class");
-        assertBugInMethod("DC_DOUBLECHECK", "DoubleCheckYoda", "getNormal");
-        assertBugInMethod("DC_DOUBLECHECK", "DoubleCheckYoda", "getYoda");
+        assertBugTypeCount("DC_DOUBLECHECK", 2);
+        assertBugInMethodAtField("DC_DOUBLECHECK", "DoubleCheckYoda", "getNormal", "normal");
+        assertBugInMethodAtField("DC_DOUBLECHECK", "DoubleCheckYoda", "getYoda", "yoda");
     }
 
     @Test
     void syncAndNullCheckField() {
         performAnalysis("ghIssues/issue4138/SyncNullCheckYoda.class");
-        assertBugInMethod("NP_SYNC_AND_NULL_CHECK_FIELD", "SyncNullCheckYoda", "useNormal");
-        assertBugInMethod("NP_SYNC_AND_NULL_CHECK_FIELD", "SyncNullCheckYoda", "useYoda");
+        assertBugTypeCount("NP_SYNC_AND_NULL_CHECK_FIELD", 2);
+        assertBugInMethodAtField("NP_SYNC_AND_NULL_CHECK_FIELD", "SyncNullCheckYoda", "useNormal", "normal");
+        assertBugInMethodAtField("NP_SYNC_AND_NULL_CHECK_FIELD", "SyncNullCheckYoda", "useYoda", "yoda");
     }
 
     @Test
     void spinLoop() {
         performAnalysis("ghIssues/issue4138/SpinLoopYoda.class");
-        assertBugInMethod("SP_SPIN_ON_FIELD", "SpinLoopYoda", "spinNormal");
-        assertBugInMethod("SP_SPIN_ON_FIELD", "SpinLoopYoda", "spinYoda");
+        assertBugTypeCount("SP_SPIN_ON_FIELD", 2);
+        assertBugInMethodAtField("SP_SPIN_ON_FIELD", "SpinLoopYoda", "spinNormal", "normal");
+        assertBugInMethodAtField("SP_SPIN_ON_FIELD", "SpinLoopYoda", "spinYoda", "yoda");
     }
 }

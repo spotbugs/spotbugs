@@ -402,15 +402,7 @@ public abstract class DismantleBytecode extends AnnotationVisitor {
         return prevOpcode[pos];
     }
 
-    /**
-     * Is the given opcode an {@code IF_ACMPEQ}/{@code IF_ACMPNE} that compares a
-     * reference against the {@code null} constant? This is how javac compiles a
-     * Yoda-style null check such as {@code null == field}: it emits
-     * {@code aconst_null} followed by the load of the value being tested and
-     * then the reference comparison, instead of the {@code ifnull}/
-     * {@code ifnonnull} it would emit for {@code field == null}.
-     */
-    public boolean isNullComparison(int seen) {
+    private boolean isNullComparison(int seen) {
         if (seen != Const.IF_ACMPEQ && seen != Const.IF_ACMPNE) {
             return false;
         }
