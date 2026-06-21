@@ -70,17 +70,27 @@ public class FindReturnRef extends OpcodeStackDetector {
     private OpcodeStack.Item paramUnderClone = null;
     private XField fieldCloneUnderCast = null;
     private OpcodeStack.Item paramCloneUnderCast = null;
+    private XField fieldCopyUnderCast = null;
+    private OpcodeStack.Item paramCopyUnderCast = null;
     private XField bufferFieldUnderDuplication = null;
     private OpcodeStack.Item bufferParamUnderDuplication = null;
+    private XField bufferFieldUnderArray = null;
+    private OpcodeStack.Item bufferParamUnderArray = null;
     private XField fieldUnderWrapToBuffer = null;
     private OpcodeStack.Item paramUnderWrapToBuffer = null;
+    private XField fieldUnderCopyOf = null;
+    private OpcodeStack.Item paramUnderCopyOf = null;
 
     private final Map<OpcodeStack.Item, XField> bufferFieldDuplicates = new HashMap<>();
     private final Map<OpcodeStack.Item, OpcodeStack.Item> bufferParamDuplicates = new HashMap<>();
+    private final Map<OpcodeStack.Item, XField> bufferFieldArrays = new HashMap<>();
+    private final Map<OpcodeStack.Item, OpcodeStack.Item> bufferParamArrays = new HashMap<>();
     private final Map<OpcodeStack.Item, XField> arrayFieldsWrappedToBuffers = new HashMap<>();
     private final Map<OpcodeStack.Item, OpcodeStack.Item> arrayParamsWrappedToBuffers = new HashMap<>();
     private final Map<OpcodeStack.Item, XField> arrayFieldClones = new HashMap<>();
     private final Map<OpcodeStack.Item, OpcodeStack.Item> arrayParamClones = new HashMap<>();
+    private final Map<OpcodeStack.Item, XField> arrayFieldCopies = new HashMap<>();
+    private final Map<OpcodeStack.Item, OpcodeStack.Item> arrayParamCopies = new HashMap<>();
     private final Map<XField, List<OpcodeStack.Item>> fieldValues = new HashMap<>();
 
     private final BugAccumulator bugAccumulator;
@@ -90,6 +100,8 @@ public class FindReturnRef extends OpcodeStackDetector {
             Pattern.compile("\\(\\)Ljava/nio/[A-Za-z]+Buffer;");
     private static final Pattern WRAP_METHOD_SIGNATURE_PATTERN =
             Pattern.compile("\\(\\[.\\)Ljava/nio/[A-Za-z]+Buffer;");
+    private static final Pattern ARRAY_METHODS_SIGNATURE_PATTERN =
+            Pattern.compile("\\(\\)(\\[.|Ljava/lang/Object;)");
 
     private enum CaptureKind {
         NONE, REP, ARRAY_CLONE, BUF
@@ -178,10 +190,16 @@ public class FindReturnRef extends OpcodeStackDetector {
         paramUnderClone = null;
         fieldCloneUnderCast = null;
         paramCloneUnderCast = null;
+        fieldCopyUnderCast = null;
+        paramCopyUnderCast = null;
         fieldUnderWrapToBuffer = null;
         paramUnderWrapToBuffer = null;
         bufferFieldUnderDuplication = null;
         bufferParamUnderDuplication = null;
+        bufferFieldUnderArray = null;
+        bufferParamUnderArray = null;
+        fieldUnderCopyOf = null;
+        paramUnderCopyOf = null;
 
         if (staticMethod && seen == Const.PUTSTATIC && nonPublicFieldOperand()
                 && MutableClasses.mutableSignature(getSigConstantOperand())) {
@@ -228,6 +246,12 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
             if (field == null) {
                 field = bufferFieldDuplicates.get(item);
+                if (field != null) {
+                    isBuf = true;
+                }
+            }
+            if (field == null) {
+                field = bufferFieldArrays.get(item);
                 if (field != null) {
                     isBuf = true;
                 }
@@ -285,21 +309,44 @@ public class FindReturnRef extends OpcodeStackDetector {
                     bufferParamUnderDuplication = item;
                 }
             }
+
+            if ("array".equals(method.getName())
+                    && ARRAY_METHODS_SIGNATURE_PATTERN.matcher(method.getSignature()).matches()
+                    && BUFFER_CLASS_PATTERN.matcher(method.getClassDescriptor().getSignature()).matches()) {
+                if (field != null && !field.isPublic() && isFieldOf(field, getClassDescriptor())) {
+                    bufferFieldUnderArray = field;
+                } else if (item.isInitialParameter()) {
+                    bufferParamUnderArray = item;
+                }
+            }
         }
 
         if (seen == Const.INVOKESTATIC) {
             MethodDescriptor method = getMethodDescriptorOperand();
-            if (method == null || !"wrap".equals(method.getName())
-                    || !WRAP_METHOD_SIGNATURE_PATTERN.matcher(method.getSignature()).matches()
-                    || !BUFFER_CLASS_PATTERN.matcher(method.getClassDescriptor().getSignature()).matches()) {
+            if (method == null) {
                 return;
             }
-            OpcodeStack.Item arg = stack.getStackItem(0);
-            XField fieldArg = arg.getXField();
-            if (fieldArg != null && !fieldArg.isPublic() && isFieldOf(fieldArg, getClassDescriptor())) {
-                fieldUnderWrapToBuffer = fieldArg;
-            } else if (arg.isInitialParameter()) {
-                paramUnderWrapToBuffer = arg;
+            if ("wrap".equals(method.getName())
+                    && WRAP_METHOD_SIGNATURE_PATTERN.matcher(method.getSignature()).matches()
+                    && BUFFER_CLASS_PATTERN.matcher(method.getClassDescriptor().getSignature()).matches()) {
+                OpcodeStack.Item arg = stack.getStackItem(0);
+                XField fieldArg = arg.getXField();
+                if (fieldArg != null && !fieldArg.isPublic() && isFieldOf(fieldArg, getClassDescriptor())) {
+                    fieldUnderWrapToBuffer = fieldArg;
+                } else if (arg.isInitialParameter()) {
+                    paramUnderWrapToBuffer = arg;
+                }
+            } else if ("copyOf".equals(method.getName())
+                    && "java/util/Arrays".equals(method.getClassDescriptor().getClassName())
+                    && stack.getStackDepth() >= 2
+                    && isMutableObjectArrayCopyOf(method, stack.getStackItem(1))) {
+                OpcodeStack.Item arrayArg = stack.getStackItem(1);
+                XField fieldArg = arrayArg.getXField();
+                if (fieldArg != null && !fieldArg.isPublic() && isFieldOf(fieldArg, getClassDescriptor())) {
+                    fieldUnderCopyOf = fieldArg;
+                } else if (arrayArg.isInitialParameter()) {
+                    paramUnderCopyOf = arrayArg;
+                }
             }
         }
 
@@ -312,6 +359,14 @@ public class FindReturnRef extends OpcodeStackDetector {
             OpcodeStack.Item param = arrayParamClones.get(item);
             if (param != null) {
                 paramCloneUnderCast = param;
+            }
+            XField copyField = arrayFieldCopies.get(item);
+            if (copyField != null) {
+                fieldCopyUnderCast = copyField;
+            }
+            OpcodeStack.Item copyParam = arrayParamCopies.get(item);
+            if (copyParam != null) {
+                paramCopyUnderCast = copyParam;
             }
         }
     }
@@ -364,6 +419,12 @@ public class FindReturnRef extends OpcodeStackDetector {
                     bufferParamDuplicates.put(stack.getStackItem(0), bufferParamUnderDuplication);
                 }
             }
+            if (bufferFieldUnderArray != null) {
+                bufferFieldArrays.put(stack.getStackItem(0), bufferFieldUnderArray);
+            }
+            if (bufferParamUnderArray != null) {
+                bufferParamArrays.put(stack.getStackItem(0), bufferParamUnderArray);
+            }
         }
 
         if (seen == Const.INVOKESTATIC) {
@@ -372,6 +433,12 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
             if (paramUnderWrapToBuffer != null) {
                 arrayParamsWrappedToBuffers.put(stack.getStackItem(0), paramUnderWrapToBuffer);
+            }
+            if (fieldUnderCopyOf != null) {
+                arrayFieldCopies.put(stack.getStackItem(0), fieldUnderCopyOf);
+            }
+            if (paramUnderCopyOf != null) {
+                arrayParamCopies.put(stack.getStackItem(0), paramUnderCopyOf);
             }
         }
 
@@ -382,6 +449,12 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
             if (paramCloneUnderCast != null) {
                 arrayParamClones.put(item, paramCloneUnderCast);
+            }
+            if (fieldCopyUnderCast != null) {
+                arrayFieldCopies.put(item, fieldCopyUnderCast);
+            }
+            if (paramCopyUnderCast != null) {
+                arrayParamCopies.put(item, paramCopyUnderCast);
             }
         }
     }
@@ -394,7 +467,10 @@ public class FindReturnRef extends OpcodeStackDetector {
     private CaptureKind getPotentialCapture(OpcodeStack.Item top) {
         CaptureKind kind = CaptureKind.REP;
         if (!top.isInitialParameter()) {
-            OpcodeStack.Item newTop = arrayParamClones.get(top);
+            OpcodeStack.Item newTop = arrayParamCopies.get(top);
+            if (newTop == null) {
+                newTop = arrayParamClones.get(top);
+            }
             if (newTop == null) {
                 newTop = arrayParamsWrappedToBuffers.get(top);
                 if (newTop == null) {
@@ -416,6 +492,22 @@ public class FindReturnRef extends OpcodeStackDetector {
         // var-arg parameter
         return (top.getRegisterNumber() != parameterCount - 1) ? kind : CaptureKind.NONE;
 
+    }
+
+    private boolean isMutableObjectArrayCopyOf(MethodDescriptor method, OpcodeStack.Item arrayArg) {
+        if (!"copyOf".equals(method.getName())
+                || !"java/util/Arrays".equals(method.getClassDescriptor().getClassName())) {
+            return false;
+        }
+        String signature = method.getSignature();
+        if (!signature.startsWith("([") || !signature.contains(";I)")) {
+            return false;
+        }
+        if (!arrayArg.isArray()) {
+            return false;
+        }
+        String elementSignature = arrayArg.getSignature().substring(1);
+        return elementSignature.startsWith("L") && MutableClasses.mutableSignature(elementSignature);
     }
 
     private boolean isFieldOf(XField field, ClassDescriptor clazz) {
