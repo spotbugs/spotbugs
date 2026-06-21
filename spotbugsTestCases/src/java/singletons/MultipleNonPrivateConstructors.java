@@ -6,7 +6,7 @@ public class MultipleNonPrivateConstructors {
     private MultipleNonPrivateConstructors() {
     }
 
-    public MultipleNonPrivateConstructors(Object parameter) {
+    protected MultipleNonPrivateConstructors(Object parameter) {
     }
 
     public static synchronized MultipleNonPrivateConstructors getInstance() {   
