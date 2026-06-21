@@ -5,9 +5,18 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.BootstrapMethod;
+import org.apache.bcel.classfile.BootstrapMethods;
+import org.apache.bcel.classfile.ConstantInvokeDynamic;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.ConstantString;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
@@ -147,27 +156,86 @@ public class DumbMethodInvocations implements Detector {
 
                 for (int paramNumber : allFileNameStringMethods.get(md)) {
                     Constant operandValue = frame.getArgument(iins, cpg, paramNumber, parser);
-                    if (!operandValue.isConstantString()) {
-                        continue;
-                    }
-                    String v = operandValue.getConstantString();
-                    if (isAbsoluteFileName(v) && !v.startsWith("/etc/") && !v.startsWith("/dev/")
-                            && !v.startsWith("/proc")) {
-                        int priority = NORMAL_PRIORITY;
-                        if (v.startsWith("/tmp")) {
-                            priority = LOW_PRIORITY;
-                        } else if (v.indexOf("/home") >= 0) {
-                            priority = HIGH_PRIORITY;
+                    if (operandValue.isConstantString()) {
+                        reportHardcodedAbsoluteFilename(operandValue.getConstantString(), classContext, methodGen, sourceFile,
+                                location);
+                    } else {
+                        String recipe = extractPrecedingMakeConcatRecipe(location, classContext);
+                        if (recipe != null) {
+                            for (String literal : literalPartsFromConcatRecipe(recipe)) {
+                                reportHardcodedAbsoluteFilename(literal, classContext, methodGen, sourceFile, location);
+                            }
                         }
-                        bugAccumulator.accumulateBug(new BugInstance(this, "DMI_HARDCODED_ABSOLUTE_FILENAME", priority)
-                                .addClassAndMethod(methodGen, sourceFile).addString(v).describe("FILE_NAME"), classContext,
-                                methodGen, sourceFile, location);
                     }
                 }
 
             }
 
         }
+    }
+
+    private void reportHardcodedAbsoluteFilename(String v, ClassContext classContext, MethodGen methodGen, String sourceFile,
+            Location location) {
+        if (isAbsoluteFileName(v) && !v.startsWith("/etc/") && !v.startsWith("/dev/") && !v.startsWith("/proc")) {
+            int priority = NORMAL_PRIORITY;
+            if (v.startsWith("/tmp")) {
+                priority = LOW_PRIORITY;
+            } else if (v.indexOf("/home") >= 0) {
+                priority = HIGH_PRIORITY;
+            }
+            bugAccumulator.accumulateBug(new BugInstance(this, "DMI_HARDCODED_ABSOLUTE_FILENAME", priority)
+                    .addClassAndMethod(methodGen, sourceFile).addString(v).describe("FILE_NAME"), classContext, methodGen,
+                    sourceFile, location);
+        }
+    }
+
+    private String extractPrecedingMakeConcatRecipe(Location location, ClassContext classContext) {
+        InstructionHandle handle = location.getHandle().getPrev();
+        if (handle == null) {
+            return null;
+        }
+        return extractMakeConcatRecipe(handle.getInstruction(), classContext.getJavaClass(), classContext.getConstantPoolGen());
+    }
+
+    static String extractMakeConcatRecipe(Instruction instruction, JavaClass javaClass, ConstantPoolGen cpg) {
+        if (!(instruction instanceof INVOKEDYNAMIC)) {
+            return null;
+        }
+        INVOKEDYNAMIC invokeDynamic = (INVOKEDYNAMIC) instruction;
+        if (!"makeConcatWithConstants".equals(invokeDynamic.getMethodName(cpg))) {
+            return null;
+        }
+        ConstantPool constantPool = javaClass.getConstantPool();
+        org.apache.bcel.classfile.Constant poolConstant = constantPool.getConstant(invokeDynamic.getIndex());
+        if (!(poolConstant instanceof ConstantInvokeDynamic)) {
+            return null;
+        }
+        BootstrapMethod bootstrapMethod = findBootstrapMethod(javaClass,
+                ((ConstantInvokeDynamic) poolConstant).getBootstrapMethodAttrIndex());
+        if (bootstrapMethod == null || bootstrapMethod.getBootstrapArguments().length == 0) {
+            return null;
+        }
+        org.apache.bcel.classfile.Constant recipeConstant = constantPool.getConstant(bootstrapMethod.getBootstrapArguments()[0]);
+        if (!(recipeConstant instanceof ConstantString)) {
+            return null;
+        }
+        return ((ConstantString) recipeConstant).getBytes(constantPool);
+    }
+
+    static String[] literalPartsFromConcatRecipe(String recipe) {
+        return recipe.split("\u0001", -1);
+    }
+
+    private static BootstrapMethod findBootstrapMethod(JavaClass javaClass, int bootstrapMethodIndex) {
+        for (Attribute attribute : javaClass.getAttributes()) {
+            if (attribute instanceof BootstrapMethods) {
+                BootstrapMethods bootstrapMethods = (BootstrapMethods) attribute;
+                if (bootstrapMethodIndex >= 0 && bootstrapMethodIndex < bootstrapMethods.getBootstrapMethods().length) {
+                    return bootstrapMethods.getBootstrapMethods()[bootstrapMethodIndex];
+                }
+            }
+        }
+        return null;
     }
 
     private boolean isAbsoluteFileName(String v) {
