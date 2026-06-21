@@ -21,9 +21,11 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import org.apache.bcel.Const;
@@ -267,6 +269,8 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 
     private final List<PotentialOpenStream> potentialOpenStreamList;
 
+    private Set<String> resourceDelegatingMethods = Collections.emptySet();
+
     /*
      * ----------------------------------------------------------------------
      * Implementation
@@ -347,7 +351,9 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
         }
 
         if (sawResourceClass) {
+            resourceDelegatingMethods = OpenDatabaseResourceDelegators.findDelegatingMethods(classContext.getJavaClass());
             super.visitClassContext(classContext);
+            resourceDelegatingMethods = Collections.emptySet();
         }
     }
 
@@ -364,7 +370,14 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 
     @Override
     public StreamResourceTracker getResourceTracker(ClassContext classContext, Method method) {
-        return new StreamResourceTracker(streamFactoryList, bugReporter);
+        StreamFactory[] factories = streamFactoryList;
+        if (!resourceDelegatingMethods.isEmpty()) {
+            StreamFactory[] extended = new StreamFactory[streamFactoryList.length + 1];
+            System.arraycopy(streamFactoryList, 0, extended, 0, streamFactoryList.length);
+            extended[streamFactoryList.length] = new DelegatingResourceMethodStreamFactory(resourceDelegatingMethods);
+            factories = extended;
+        }
+        return new StreamResourceTracker(factories, bugReporter);
     }
 
     @Override

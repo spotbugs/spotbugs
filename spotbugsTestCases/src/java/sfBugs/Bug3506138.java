@@ -27,7 +27,7 @@ public class Bug3506138 {
         }
     }
 
-    @DesireWarning("ODR_OPEN_DATABASE_RESOURCE")
+    @ExpectWarning("ODR_OPEN_DATABASE_RESOURCE")
     public static void test1() throws Exception {
         Connection conn;
         PreparedStatement pstm = null;
