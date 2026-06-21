@@ -32,7 +32,9 @@ import javax.annotation.WillClose;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
@@ -83,6 +85,8 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
 
     private final IsNullValueDataflow invDataflow;
 
+    private final ConstantPoolGen cpg;
+
     private final IErrorLogger errorLogger;
 
     private final InstructionActionCache actionCache;
@@ -119,6 +123,7 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
         this.database = database;
         this.typeDataflow = typeDataflow;
         this.invDataflow = invDataflow;
+        this.cpg = cpg;
         this.errorLogger = errorLogger;
         this.actionCache = new InstructionActionCache(database, xmethod, cpg, typeDataflow);
     }
@@ -259,6 +264,11 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
         case Const.IF_ACMPNE:
             type = acmpNullCheck(opcode, edge, last, sourceBlock);
             break;
+
+        case Const.IFEQ:
+        case Const.IFNE:
+            type = objectsNullCheckMethod(opcode, edge, last, sourceBlock);
+            break;
         default:
             break;
         }
@@ -293,6 +303,58 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
                     System.out.println("ifnull comparison of " + type + " to null at " + last);
                 }
             }
+        }
+        return type;
+    }
+
+    private Type objectsNullCheckMethod(short opcode, Edge edge, InstructionHandle last, BasicBlock sourceBlock)
+            throws DataflowAnalysisException {
+        InstructionHandle prev = last.getPrev();
+        if (prev == null) {
+            return null;
+        }
+        Instruction prevIns = prev.getInstruction();
+        if (prevIns.getOpcode() != Const.INVOKESTATIC || !(prevIns instanceof InvokeInstruction)) {
+            return null;
+        }
+        InvokeInstruction invoke = (InvokeInstruction) prevIns;
+        String className = invoke.getReferenceType(cpg).getClassName();
+        String methodName = invoke.getMethodName(cpg);
+        boolean isNonNull = "java.util.Objects".equals(className) && "nonNull".equals(methodName);
+        boolean isIsNull = "java.util.Objects".equals(className) && "isNull".equals(methodName);
+        if (!isNonNull && !isIsNull) {
+            return null;
+        }
+
+        boolean referenceIsNullOnEdge;
+        if (isNonNull) {
+            if (opcode == Const.IFEQ) {
+                referenceIsNullOnEdge = edge.getType() == EdgeTypes.IFCMP_EDGE;
+            } else if (opcode == Const.IFNE) {
+                referenceIsNullOnEdge = edge.getType() == EdgeTypes.FALL_THROUGH_EDGE;
+            } else {
+                return null;
+            }
+        } else if (opcode == Const.IFEQ) {
+            referenceIsNullOnEdge = edge.getType() == EdgeTypes.FALL_THROUGH_EDGE;
+        } else if (opcode == Const.IFNE) {
+            referenceIsNullOnEdge = edge.getType() == EdgeTypes.IFCMP_EDGE;
+        } else {
+            return null;
+        }
+
+        if (!referenceIsNullOnEdge) {
+            return null;
+        }
+
+        Location location = new Location(prev, sourceBlock);
+        TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
+        if (!typeFrame.isValid()) {
+            return null;
+        }
+        Type type = typeFrame.getTopValue();
+        if (DEBUG_NULL_CHECK) {
+            System.out.println("Objects null-check comparison of " + type + " to null at " + last);
         }
         return type;
     }
