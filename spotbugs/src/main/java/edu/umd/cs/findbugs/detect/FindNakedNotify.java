@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.XField;
 
 //   2:   astore_1
 //   3:   monitorenter
@@ -44,6 +45,8 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
 
     private int notifyPC;
 
+    private boolean stateChangedBeforeSync;
+
     public FindNakedNotify(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
@@ -57,15 +60,55 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
     @Override
     public void visit(Code obj) {
         stage = synchronizedMethod ? Stage.MONITOR_ENTERED : Stage.START;
+        stateChangedBeforeSync = false;
         super.visit(obj);
         if (synchronizedMethod && stage == Stage.LOCK_LOADED) {
+            reportNakedNotifyIfNeeded();
+        }
+    }
+
+    private void reportNakedNotifyIfNeeded() {
+        if (!stateChangedBeforeSync) {
             bugReporter.reportBug(new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY).addClassAndMethod(this)
                     .addSourceLine(this, notifyPC));
         }
     }
 
+    private void noteStateChangeBeforeSync(int seen) {
+        if (stage != Stage.START) {
+            return;
+        }
+        switch (seen) {
+        case Const.PUTFIELD:
+        case Const.PUTSTATIC:
+            XField field = getXFieldOperand();
+            if (field != null && field.isVolatile()) {
+                stateChangedBeforeSync = true;
+            }
+            break;
+        case Const.INVOKESTATIC:
+        case Const.INVOKESPECIAL:
+            stateChangedBeforeSync = true;
+            break;
+        case Const.INVOKEVIRTUAL:
+        case Const.INVOKEINTERFACE:
+            if (!isWaitOrNotifyMethod()) {
+                stateChangedBeforeSync = true;
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
+    private boolean isWaitOrNotifyMethod() {
+        String name = getNameConstantOperand();
+        return "notify".equals(name) || "notifyAll".equals(name) || "wait".equals(name);
+    }
+
     @Override
     public void sawOpcode(int seen) {
+        noteStateChangeBeforeSync(seen);
         switch (stage) {
         case START:
             if (seen == Const.MONITORENTER) {
@@ -94,8 +137,7 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
             break;
         case LOCK_LOADED:
             if (seen == Const.MONITOREXIT) {
-                bugReporter.reportBug(new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY).addClassAndMethod(this)
-                        .addSourceLine(this, notifyPC));
+                reportNakedNotifyIfNeeded();
                 stage = Stage.MONITOR_EXITED;
             } else {
                 stage = Stage.START;
