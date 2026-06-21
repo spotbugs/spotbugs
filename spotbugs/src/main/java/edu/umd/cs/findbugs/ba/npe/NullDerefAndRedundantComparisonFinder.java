@@ -551,7 +551,7 @@ public class NullDerefAndRedundantComparisonFinder {
         for (int j = 0; j < slots; j++) {
             IsNullValue isNullValue = invFrame.getValue(j);
             ValueNumber valueNumber = vnaFrame.getValue(j);
-            if ((isNullValue.isDefinitelyNull() || isNullValue.isNullOnSomePath() && isNullValue.isReturnValue())
+            if (isNullableForGuaranteedDeref(isNullValue)
                     && (derefSet.isUnconditionallyDereferenced(valueNumber))) {
                 if (MY_DEBUG) {
                     System.out.println("Found NP bug");
@@ -584,14 +584,30 @@ public class NullDerefAndRedundantComparisonFinder {
         for (Map.Entry<ValueNumber, IsNullValue> entry : invFrame.getKnownValueMapEntrySet()) {
             ValueNumber valueNumber = entry.getKey();
             IsNullValue isNullValue = entry.getValue();
-            if ((isNullValue.isDefinitelyNull() || isNullValue.isNullOnSomePath()
-                    && (isNullValue.isReturnValue() || isNullValue.isFieldValue()))
+            if (isNullableForGuaranteedDeref(isNullValue)
                     && derefSet.isUnconditionallyDereferenced(valueNumber)) {
 
                 noteUnconditionallyDereferencedNullValue(thisLocation, knownNullAndDoomedAt, nullValueGuaranteedDerefMap,
                         derefSet, isNullValue, valueNumber);
             }
         }
+    }
+
+    private boolean isNullableForGuaranteedDeref(IsNullValue isNullValue) {
+        if (isNullValue.isDefinitelyNull()) {
+            return true;
+        }
+        if (!isNullValue.isNullOnSomePath()) {
+            return false;
+        }
+        if (isNullValue.isReturnValue() || isNullValue.isFieldValue()) {
+            return true;
+        }
+        if (isNullValue.isException() || isNullValue.isChecked()) {
+            return false;
+        }
+        // Short-circuit && null guards in static methods can leave parameters as NSP.
+        return method.isStatic();
     }
 
     /**
