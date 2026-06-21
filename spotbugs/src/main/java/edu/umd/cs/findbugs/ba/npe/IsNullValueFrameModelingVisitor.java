@@ -23,7 +23,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.generic.ACONST_NULL;
+import org.apache.bcel.generic.AALOAD;
+import org.apache.bcel.generic.AASTORE;
+import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ANEWARRAY;
+import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.GETFIELD;
@@ -34,6 +38,7 @@ import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.LDC2_W;
@@ -477,6 +482,71 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
     public void visitANEWARRAY(ANEWARRAY obj) {
         modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
         produce(IsNullValue.nonNullValue());
+    }
+
+    @Override
+    public void visitASTORE(ASTORE obj) {
+        InstructionHandle prev = getLocation().getHandle().getPrev();
+        if (prev != null && prev.getInstruction() instanceof ANEWARRAY) {
+            getFrame().setLocalUninitializedReferenceArray(obj.getIndex());
+        }
+        handleStoreInstruction(obj);
+    }
+
+    @Override
+    public void visitAASTORE(AASTORE obj) {
+        InstructionHandle aloadHandle = findAloadOfArrayRefBeforeStore(getLocation().getHandle());
+        if (aloadHandle != null) {
+            getFrame().clearLocalUninitializedReferenceArray(((ALOAD) aloadHandle.getInstruction()).getIndex());
+        }
+        handleNormalInstruction(obj);
+    }
+
+    @Override
+    public void visitAALOAD(AALOAD obj) {
+        if (loadsNullElementFromUninitializedReferenceArray()) {
+            modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
+            produce(IsNullValue.nullValue());
+            return;
+        }
+        handleNormalInstruction(obj);
+    }
+
+    private InstructionHandle findAloadOfArrayRefBeforeStore(InstructionHandle storeHandle) {
+        InstructionHandle handle = storeHandle.getPrev();
+        if (handle == null) {
+            return null;
+        }
+        handle = handle.getPrev();
+        if (handle == null) {
+            return null;
+        }
+        handle = handle.getPrev();
+        if (handle == null) {
+            return null;
+        }
+        Instruction instruction = handle.getInstruction();
+        if (instruction instanceof ALOAD) {
+            return handle;
+        }
+        return null;
+    }
+
+    private boolean loadsNullElementFromUninitializedReferenceArray() {
+        InstructionHandle handle = getLocation().getHandle();
+        InstructionHandle indexHandle = handle.getPrev();
+        if (indexHandle == null) {
+            return false;
+        }
+        InstructionHandle arrayRefHandle = indexHandle.getPrev();
+        if (arrayRefHandle == null) {
+            return false;
+        }
+        Instruction arrayRefInstruction = arrayRefHandle.getInstruction();
+        if (arrayRefInstruction instanceof ALOAD) {
+            return getFrame().isLocalUninitializedReferenceArray(((ALOAD) arrayRefInstruction).getIndex());
+        }
+        return arrayRefInstruction instanceof ANEWARRAY;
     }
 
     @Override
