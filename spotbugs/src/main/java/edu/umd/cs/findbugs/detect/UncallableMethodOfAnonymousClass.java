@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.BootstrapMethods;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -43,7 +44,9 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.BootstrapMethodsUtil;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.EditDistance;
 import edu.umd.cs.findbugs.util.Values;
@@ -271,9 +274,8 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 
             JavaClass clazz = getThisClass();
             XMethod xmethod = XFactory.createXMethod(clazz, obj);
-            XFactory factory = AnalysisContext.currentXFactory();
             String key = obj.getName() + ":" + obj.getSignature();
-            if (!factory.isCalled(xmethod) && (obj.isStatic() || !definedInSuperClassOrInterface(clazz, key))) {
+            if (!isMethodCalled(xmethod) && (obj.isStatic() || !definedInSuperClassOrInterface(clazz, key))) {
                 int priority = NORMAL_PRIORITY;
                 JavaClass superClass = clazz.getSuperClass();
                 String superClassName = superClass.getClassName();
@@ -304,6 +306,46 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
             bugReporter.reportMissingClass(e);
         }
 
+    }
+
+    private boolean isMethodCalled(XMethod xmethod) {
+        XFactory factory = AnalysisContext.currentXFactory();
+        if (factory.isCalled(xmethod)) {
+            return true;
+        }
+        return isReferencedFromEnclosingBootstrap(xmethod);
+    }
+
+    private boolean isReferencedFromEnclosingBootstrap(XMethod xmethod) {
+        MethodDescriptor target = xmethod.getMethodDescriptor();
+        for (String outerName = getImmediateEnclosingClassName(xmethod.getClassName()); outerName != null; outerName = getImmediateEnclosingClassName(
+                outerName)) {
+            try {
+                JavaClass outer = Global.getAnalysisCache().getClassAnalysis(JavaClass.class,
+                        DescriptorFactory.createClassDescriptorFromDottedClassName(outerName));
+                for (Attribute attr : outer.getAttributes()) {
+                    if (attr instanceof BootstrapMethods) {
+                        for (MethodDescriptor called : BootstrapMethodsUtil.getCalledMethodsFromBootstrapMethods(
+                                (BootstrapMethods) attr, outer.getConstantPool())) {
+                            if (called.equals(target)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            } catch (CheckedAnalysisException e) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private static String getImmediateEnclosingClassName(String className) {
+        int i = className.lastIndexOf('$');
+        if (i >= 0 && i + 1 < className.length() && Character.isDigit(className.charAt(i + 1))) {
+            return className.substring(0, i);
+        }
+        return null;
     }
 
 }

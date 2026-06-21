@@ -22,6 +22,10 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.BootstrapMethods;
+import org.apache.bcel.classfile.ConstantInvokeDynamic;
+import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -31,6 +35,8 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.util.BootstrapMethodsUtil;
 
 /**
  * Detector to find private methods that are never called.
@@ -46,6 +52,22 @@ public class CalledMethods extends BytecodeScanningDetector implements NonReport
 
     public CalledMethods(BugReporter bugReporter) {
 
+    }
+
+    @Override
+    public void visitJavaClass(JavaClass obj) {
+        Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+        for (Attribute attr : obj.getAttributes()) {
+            if (attr instanceof BootstrapMethods) {
+                for (MethodDescriptor md : BootstrapMethodsUtil.getCalledMethodsFromBootstrapMethods(
+                        (BootstrapMethods) attr, obj.getConstantPool())) {
+                    if (subtypes2.isApplicationClass(md.getClassDescriptor())) {
+                        xFactory.addCalledMethod(md);
+                    }
+                }
+            }
+        }
+        super.visitJavaClass(obj);
     }
 
     @Override
@@ -71,6 +93,22 @@ public class CalledMethods extends BytecodeScanningDetector implements NonReport
             }
         }
         switch (seen) {
+        case Const.INVOKEDYNAMIC:
+            if (getConstantRefOperand() instanceof ConstantInvokeDynamic) {
+                ConstantInvokeDynamic invokeDynamic = (ConstantInvokeDynamic) getConstantRefOperand();
+                for (Attribute attr : getThisClass().getAttributes()) {
+                    if (attr instanceof BootstrapMethods) {
+                        Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+                        for (MethodDescriptor md : BootstrapMethodsUtil.getCalledMethodsFromBootstrap(
+                                (BootstrapMethods) attr, invokeDynamic.getBootstrapMethodAttrIndex(), getConstantPool())) {
+                            if (subtypes2.isApplicationClass(md.getClassDescriptor())) {
+                                xFactory.addCalledMethod(md);
+                            }
+                        }
+                    }
+                }
+            }
+            break;
         case Const.INVOKEVIRTUAL:
         case Const.INVOKESPECIAL:
         case Const.INVOKESTATIC:
