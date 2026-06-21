@@ -35,17 +35,27 @@ import edu.umd.cs.findbugs.util.MultiThreadedCodeIdentifierUtils;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
 
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
+    private static final Set<String> DIRECT_LOCK_METHODS = Set.of(
+            "lock", "unlock", "tryLock", "lockInterruptibly", "newCondition");
+
     private final BugAccumulator bugAccumulator;
     private Method currentMethod;
     private CFG currentCFG;
     private LockDataflow currentLockDataFlow;
+    private BitSet autoCloseableLockPcs = new BitSet(0);
     private boolean isFirstVisit = true;
     private boolean hadOperation = false;
     private final Map<XMethod, Set<XField>> readFieldsByMethods = new HashMap<>();
@@ -114,6 +124,7 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
             currentMethod = method;
             currentLockDataFlow = getClassContext().getLockDataflow(currentMethod);
             currentCFG = getClassContext().getCFG(currentMethod);
+            autoCloseableLockPcs = computeAutoCloseableLockPcs(method);
         } catch (CFGBuilderException | DataflowAnalysisException e) {
             AnalysisContext.logError("There was an error while SharedVariableAtomicityDetector analyzed " + getClassName(), e);
         }
@@ -131,7 +142,8 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         if (Const.CONSTRUCTOR_NAME.equals(getMethodName()) || Const.STATIC_INITIALIZER_NAME.equals(getMethodName())
-                || MultiThreadedCodeIdentifierUtils.isLocked(currentMethod, currentCFG, currentLockDataFlow, getPC())) {
+                || MultiThreadedCodeIdentifierUtils.isLocked(currentMethod, currentCFG, currentLockDataFlow, getPC())
+                || autoCloseableLockPcs.get(getPC())) {
             return;
         }
         XMethod method = getXMethod();
@@ -252,5 +264,57 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
 
     private boolean is64bitPrimitive(String className) {
         return "D".equals(className) || "J".equals(className);
+    }
+
+    private BitSet computeAutoCloseableLockPcs(Method method) {
+        BitSet lockedPcs = new BitSet();
+        MethodGen methodGen = getClassContext().getMethodGen(method);
+        if (methodGen == null) {
+            return lockedPcs;
+        }
+        ConstantPoolGen constantPool = methodGen.getConstantPool();
+        InstructionHandle handle = methodGen.getInstructionList().getStart();
+        while (handle != null) {
+            Instruction instruction = handle.getInstruction();
+            if (instruction instanceof InvokeInstruction) {
+                InvokeInstruction invoke = (InvokeInstruction) instruction;
+                String methodName = invoke.getMethodName(constantPool);
+                String signature = invoke.getSignature(constantPool);
+                String receiverClass = invoke.getClassName(constantPool);
+                if (!"()V".equals(signature) && isLockType(receiverClass) && !DIRECT_LOCK_METHODS.contains(methodName)) {
+                    markUntilLockGuardClose(handle.getNext(), lockedPcs, constantPool);
+                }
+            }
+            handle = handle.getNext();
+        }
+        return lockedPcs;
+    }
+
+    private static void markUntilLockGuardClose(InstructionHandle start, BitSet lockedPcs, ConstantPoolGen constantPool) {
+        InstructionHandle handle = start;
+        while (handle != null) {
+            lockedPcs.set(handle.getPosition());
+            Instruction instruction = handle.getInstruction();
+            if (instruction instanceof InvokeInstruction) {
+                InvokeInstruction invoke = (InvokeInstruction) instruction;
+                if ("()V".equals(invoke.getSignature(constantPool)) && "close".equals(invoke.getMethodName(constantPool))
+                        && isLockGuardType(invoke.getClassName(constantPool))) {
+                    return;
+                }
+            }
+            handle = handle.getNext();
+        }
+    }
+
+    private static boolean isLockType(String className) {
+        return className.contains("Lock");
+    }
+
+    private static boolean isLockGuardType(String className) {
+        int dollar = className.lastIndexOf('$');
+        if (dollar <= 0) {
+            return false;
+        }
+        return isLockType(className.substring(0, dollar));
     }
 }
