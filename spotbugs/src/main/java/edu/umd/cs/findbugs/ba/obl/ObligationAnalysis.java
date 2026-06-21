@@ -32,12 +32,15 @@ import javax.annotation.WillClose;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKESTATIC;
+import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
@@ -73,6 +76,8 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
 
     private static final boolean DEBUG_NULL_CHECK = SystemProperties.getBoolean("oa.debug.nullcheck");
 
+    private final CFG cfg;
+
     private final XMethod xmethod;
 
     private final ObligationFactory factory;
@@ -86,6 +91,8 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
     private final IErrorLogger errorLogger;
 
     private final InstructionActionCache actionCache;
+
+    private final ConstantPoolGen cpg;
 
     private StateSet cachedEntryFact;
 
@@ -110,16 +117,18 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
      * @param errorLogger
      *            callback to use when reporting missing classes
      */
-    public ObligationAnalysis(DepthFirstSearch dfs, XMethod xmethod, ConstantPoolGen cpg, ObligationFactory factory,
+    public ObligationAnalysis(DepthFirstSearch dfs, CFG cfg, XMethod xmethod, ConstantPoolGen cpg, ObligationFactory factory,
             ObligationPolicyDatabase database, TypeDataflow typeDataflow, IsNullValueDataflow invDataflow,
             IErrorLogger errorLogger) {
         super(dfs);
+        this.cfg = cfg;
         this.xmethod = xmethod;
         this.factory = factory;
         this.database = database;
         this.typeDataflow = typeDataflow;
         this.invDataflow = invDataflow;
         this.errorLogger = errorLogger;
+        this.cpg = cpg;
         this.actionCache = new InstructionActionCache(database, xmethod, cpg, typeDataflow);
     }
 
@@ -259,6 +268,10 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
         case Const.IF_ACMPNE:
             type = acmpNullCheck(opcode, edge, last, sourceBlock);
             break;
+        case Const.IFEQ:
+        case Const.IFNE:
+            type = objectsNullCheck(opcode, edge, last, sourceBlock);
+            break;
         default:
             break;
         }
@@ -333,6 +346,73 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
             }
         }
         return type;
+    }
+
+    private Type objectsNullCheck(short opcode, Edge edge, InstructionHandle last, BasicBlock sourceBlock)
+            throws DataflowAnalysisException {
+        InstructionHandle invokeHandle = findObjectsNullCheckInvoke(last, sourceBlock);
+        if (invokeHandle == null) {
+            return null;
+        }
+        INVOKESTATIC inv = (INVOKESTATIC) invokeHandle.getInstruction();
+        String methodName = inv.getMethodName(cpg);
+        BasicBlock invokeBlock = findBlockContaining(invokeHandle);
+        if (invokeBlock == null) {
+            return null;
+        }
+        Location location = new Location(invokeHandle, invokeBlock);
+        TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
+        if (!typeFrame.isValid()) {
+            return null;
+        }
+        Type testedType = typeFrame.getStackValue(0);
+        if (DEBUG_NULL_CHECK) {
+            System.out.println("Objects." + methodName + " comparison of " + testedType + " at " + last);
+        }
+
+        if ("nonNull".equals(methodName)) {
+            if ((opcode == Const.IFEQ && edge.getType() == EdgeTypes.IFCMP_EDGE)
+                    || (opcode == Const.IFNE && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)) {
+                return testedType;
+            }
+        } else if ("isNull".equals(methodName)) {
+            if ((opcode == Const.IFEQ && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)
+                    || (opcode == Const.IFNE && edge.getType() == EdgeTypes.IFCMP_EDGE)) {
+                return testedType;
+            }
+        }
+        return null;
+    }
+
+    private InstructionHandle findObjectsNullCheckInvoke(InstructionHandle last, BasicBlock sourceBlock) {
+        InstructionHandle scan = last;
+        for (int steps = 0; scan != null && steps < 6; steps++, scan = scan.getPrev()) {
+            Instruction ins = scan.getInstruction();
+            if (ins instanceof INVOKESTATIC) {
+                INVOKESTATIC inv = (INVOKESTATIC) ins;
+                if (isObjectsClass(inv.getClassName(cpg))) {
+                    String methodName = inv.getMethodName(cpg);
+                    if ("nonNull".equals(methodName) || "isNull".equals(methodName)) {
+                        return scan;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private static boolean isObjectsClass(String className) {
+        return "java/util/Objects".equals(className) || "java.util.Objects".equals(className);
+    }
+
+    private BasicBlock findBlockContaining(InstructionHandle handle) {
+        for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext();) {
+            BasicBlock block = i.next();
+            if (block.containsInstruction(handle)) {
+                return block;
+            }
+        }
+        return null;
     }
 
     @Override
