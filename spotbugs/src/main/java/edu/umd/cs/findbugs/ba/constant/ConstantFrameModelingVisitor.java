@@ -20,11 +20,17 @@ package edu.umd.cs.findbugs.ba.constant;
 
 import org.apache.bcel.generic.BIPUSH;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.ICONST;
 import org.apache.bcel.generic.IINC;
 import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.LDC2_W;
 import org.apache.bcel.generic.SIPUSH;
+
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.ConstantValue;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,6 +108,36 @@ public class ConstantFrameModelingVisitor extends AbstractFrameModelingVisitor<C
         Constant c = new Constant(value);
         getFrame().pushValue(c);
         getFrame().pushValue(c);
+    }
+
+    @Override
+    public void visitGETSTATIC(GETSTATIC obj) {
+        getFrame().pushValue(getStaticStringConstant(obj));
+    }
+
+    private Constant getStaticStringConstant(GETSTATIC obj) {
+        ConstantPoolGen cpg = getCPG();
+        try {
+            JavaClass javaClass = Repository.lookupClass(obj.getClassName(cpg));
+            String fieldName = obj.getName(cpg);
+            for (Field field : javaClass.getFields()) {
+                if (!field.getName().equals(fieldName)) {
+                    continue;
+                }
+                ConstantValue constantValue = field.getConstantValue();
+                if (constantValue == null) {
+                    break;
+                }
+                org.apache.bcel.classfile.Constant poolConstant = cpg.getConstant(constantValue.getConstantValueIndex());
+                if (poolConstant instanceof org.apache.bcel.classfile.ConstantString) {
+                    return new Constant(((org.apache.bcel.classfile.ConstantString) poolConstant).getBytes(cpg.getConstantPool()));
+                }
+                break;
+            }
+        } catch (ClassNotFoundException e) {
+            // ignore
+        }
+        return Constant.NOT_CONSTANT;
     }
 
 }
