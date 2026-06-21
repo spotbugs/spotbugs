@@ -26,13 +26,15 @@ public class DontUseFloatsAsLoopCounters extends OpcodeStackDetector implements 
             (int) Const.DLOAD_2, 1,
             (int) Const.DLOAD_3, 1);
 
-    private static final Map<Integer, Integer> FLOAT_CONSTANT_PUSHERS = Map.of(
-            (int) Const.FCONST_1, 1,
-            (int) Const.FCONST_2, 1,
-            (int) Const.DCONST_1, 1,
-            (int) Const.LDC, 2,
-            (int) Const.LDC_W, 3,
-            (int) Const.LDC2_W, 3);
+    private static final Map<Integer, Integer> FLOAT_CONSTANT_PUSHERS = Map.ofEntries(
+            Map.entry((int) Const.FCONST_0, 1),
+            Map.entry((int) Const.FCONST_1, 1),
+            Map.entry((int) Const.FCONST_2, 1),
+            Map.entry((int) Const.DCONST_0, 1),
+            Map.entry((int) Const.DCONST_1, 1),
+            Map.entry((int) Const.LDC, 2),
+            Map.entry((int) Const.LDC_W, 3),
+            Map.entry((int) Const.LDC2_W, 3));
 
     private static final Set<Integer> FLOAT_COMPARERS = Set.of(
             (int) Const.FCMPG,
@@ -72,9 +74,16 @@ public class DontUseFloatsAsLoopCounters extends OpcodeStackDetector implements 
         }
     }
 
+    private static final int MAX_LOOP_UPDATE_SCAN = 20;
+
     private boolean checkLoopEnd() {
-        return FLOAT_STORERS.contains(getPrevOpcode(1)) &&
-                FLOAT_ADDITIVE_OPS.contains(getPrevOpcode(2));
+        for (int distance = 1; distance <= MAX_LOOP_UPDATE_SCAN; distance++) {
+            if (FLOAT_STORERS.contains(getPrevOpcode(distance))
+                    && FLOAT_ADDITIVE_OPS.contains(getPrevOpcode(distance + 1))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean checkLoopStart(int startPC) {
