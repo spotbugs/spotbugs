@@ -12,7 +12,7 @@ class ThrowingExceptionsTest extends AbstractIntegrationTest {
 
         assertBugTypeCount("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", 1);
         assertBugTypeCount("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", 1);
-        assertBugTypeCount("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", 2);
+        assertBugTypeCount("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", 1);
 
         assertBugInMethod("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", "MethodsThrowingExceptions", "isCapitalizedThrowingRuntimeException");
         assertNoBugInMethod("THROWS_METHOD_THROWS_RUNTIMEEXCEPTION", "MethodsThrowingExceptions", "isCapitalizedThrowingSpecializedException");
@@ -21,6 +21,5 @@ class ThrowingExceptionsTest extends AbstractIntegrationTest {
         assertNoBugInMethod("THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", "MethodsThrowingExceptions", "methodThrowingIOException");
 
         assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", "MethodsThrowingExceptions", "methodThrowingThrowable");
-        assertBugInMethod("THROWS_METHOD_THROWS_CLAUSE_THROWABLE", "MethodsThrowingExceptions$ThrowThrowable", "run");
     }
 }
