@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.detect;
 import java.util.BitSet;
 import java.util.Objects;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LineNumberTable;
@@ -106,7 +108,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
             XField f = getXFieldOperand();
             XClass x = getXClassOperand();
 
-            checkPUTFIELD: if (putFieldPC + 10 > getPC() && f != null && obj != null && f.equals(putFieldXField)
+            checkPUTFIELD: if (putFieldPC + maxDoubleAssignmentPutFieldDistance(f) > getPC() && f != null && obj != null && f.equals(putFieldXField)
                     && !f.isSynthetic() && obj.sameValue(putFieldObj) && x != null) {
 
 
@@ -256,6 +258,17 @@ public class FindSelfComparison extends OpcodeStackDetector {
     int whichRegister;
 
     int registerLoadCount;
+
+    private static int maxDoubleAssignmentPutFieldDistance(@CheckForNull XField field) {
+        if (field == null) {
+            return 10;
+        }
+        String signature = field.getSignature();
+        if ("J".equals(signature) || "D".equals(signature)) {
+            return 14;
+        }
+        return 10;
+    }
 
     private void checkForSelfOperation(int opCode, String op) {
         {
