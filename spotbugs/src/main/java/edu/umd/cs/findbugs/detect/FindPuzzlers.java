@@ -78,6 +78,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
     @Override
     public void visit(Code obj) {
         prevOpcodeIncrementedRegister = -1;
+        prevOpcodeLoadedRegister = -1;
         best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = LOW_PRIORITY + 1;
         prevOpCode = Const.NOP;
         previousMethodInvocation = null;
@@ -99,6 +100,8 @@ public class FindPuzzlers extends OpcodeStackDetector {
     boolean imul_operand_is_parameter;
 
     int prevOpcodeIncrementedRegister;
+
+    int prevOpcodeLoadedRegister;
 
     int valueOfConstantArgumentToShift;
 
@@ -447,12 +450,10 @@ public class FindPuzzlers extends OpcodeStackDetector {
                 && getRegisterOperand() == prevOpcodeIncrementedRegister) {
             bugAccumulator.accumulateBug(
                     new BugInstance(this, "DLS_OVERWRITTEN_INCREMENT", HIGH_PRIORITY).addClassAndMethod(this), this);
-
-        }
-        if (seen == Const.IINC) {
-            prevOpcodeIncrementedRegister = getRegisterOperand();
-        } else {
             prevOpcodeIncrementedRegister = -1;
+        }
+        if (seen == Const.IINC && getRegisterOperand() == prevOpcodeLoadedRegister) {
+            prevOpcodeIncrementedRegister = getRegisterOperand();
         }
 
         // Java Puzzlers, Chapter 2, puzzle 1
@@ -733,6 +734,10 @@ public class FindPuzzlers extends OpcodeStackDetector {
                         .addClassAndMethod(this)
                         .addCalledMethod(m).addValueSource(top, this), this);
             }
+        }
+        if (isRegisterLoad() && (seen == Const.ILOAD || seen == Const.ILOAD_0 || seen == Const.ILOAD_1 || seen == Const.ILOAD_2
+                || seen == Const.ILOAD_3)) {
+            prevOpcodeLoadedRegister = getRegisterOperand();
         }
         prevOpCode = seen;
 
