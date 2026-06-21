@@ -2,14 +2,21 @@ package edu.umd.cs.findbugs.detect;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.IfInstruction;
 import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.GOTO;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -20,6 +27,7 @@ import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.SignatureParser;
@@ -109,9 +117,8 @@ public class DumbMethodInvocations implements Detector {
             MethodDescriptor md = new MethodDescriptor(iins, cpg);
             if (allDatabasePasswordMethods.containsKey(md)) {
                 for (int paramNumber : allDatabasePasswordMethods.get(md)) {
-                    Constant operandValue = frame.getArgument(iins, cpg, paramNumber, parser);
-                    if (operandValue.isConstantString()) {
-                        String password = operandValue.getConstantString();
+                    for (String password : collectDatabasePasswordCandidates(frame, constantDataflow, cfg, location,
+                            iins, cpg, paramNumber, parser, methodGen)) {
                         if (password.isEmpty()) {
                             bugAccumulator.accumulateBug(new BugInstance(this, "DMI_EMPTY_DB_PASSWORD", NORMAL_PRIORITY)
                                     .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
@@ -119,7 +126,6 @@ public class DumbMethodInvocations implements Detector {
                             bugAccumulator.accumulateBug(new BugInstance(this, "DMI_CONSTANT_DB_PASSWORD", NORMAL_PRIORITY)
                                     .addClassAndMethod(methodGen, sourceFile), classContext, methodGen, sourceFile, location);
                         }
-
                     }
                 }
             }
@@ -167,6 +173,84 @@ public class DumbMethodInvocations implements Detector {
 
             }
 
+        }
+    }
+
+    private Set<String> collectDatabasePasswordCandidates(ConstantFrame frame, ConstantDataflow constantDataflow,
+            CFG cfg, Location location, InvokeInstruction invokeInstruction, ConstantPoolGen cpg, int paramNumber,
+            SignatureParser parser, MethodGen methodGen) throws DataflowAnalysisException {
+        Constant operandValue = frame.getArgument(invokeInstruction, cpg, paramNumber, parser);
+        if (operandValue.isConstantString()) {
+            return Collections.singleton(operandValue.getConstantString());
+        }
+
+        Set<String> candidates = new HashSet<>();
+        for (Iterator<Edge> edgeIter = cfg.incomingEdgeIterator(location.getBasicBlock()); edgeIter.hasNext();) {
+            Edge edge = edgeIter.next();
+            ConstantFrame predFrame = constantDataflow.getResultFact(edge.getSource());
+            if (!predFrame.isValid()) {
+                continue;
+            }
+            Constant edgeValue = predFrame.getArgument(invokeInstruction, cpg, paramNumber, parser);
+            if (edgeValue.isConstantString()) {
+                candidates.add(edgeValue.getConstantString());
+            }
+        }
+        if (candidates.isEmpty()) {
+            candidates.addAll(collectStringConstantsFromConditionalBranches(methodGen, location, cpg));
+        }
+        return candidates;
+    }
+
+    private Set<String> collectStringConstantsFromConditionalBranches(MethodGen methodGen, Location location,
+            ConstantPoolGen cpg) {
+        Set<String> result = new HashSet<>();
+        InstructionHandle join = location.getHandle();
+        InstructionList instructionList = methodGen.getInstructionList();
+        for (InstructionHandle handle = instructionList.getStart(); handle != null; handle = handle.getNext()) {
+            Instruction instruction = handle.getInstruction();
+            if (!(instruction instanceof IfInstruction)) {
+                continue;
+            }
+            IfInstruction ifInstruction = (IfInstruction) instruction;
+            InstructionHandle falseStart = handle.getNext();
+            InstructionHandle trueStart = ifInstruction.getTarget();
+            if (!branchLeadsTo(trueStart, join) || !branchLeadsTo(falseStart, join)) {
+                continue;
+            }
+            addLeadingLdcString(trueStart, join, cpg, result);
+            addLeadingLdcString(falseStart, join, cpg, result);
+        }
+        return result;
+    }
+
+    private static boolean branchLeadsTo(InstructionHandle start, InstructionHandle join) {
+        for (InstructionHandle handle = start; handle != null && handle.getPosition() <= join.getPosition(); handle = handle
+                .getNext()) {
+            if (handle == join) {
+                return true;
+            }
+            Instruction instruction = handle.getInstruction();
+            if (instruction instanceof GOTO && ((GOTO) instruction).getTarget() == join) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void addLeadingLdcString(InstructionHandle start, InstructionHandle join, ConstantPoolGen cpg,
+            Set<String> result) {
+        for (InstructionHandle handle = start; handle != null && handle != join; handle = handle.getNext()) {
+            Instruction instruction = handle.getInstruction();
+            if (instruction instanceof LDC) {
+                Object value = ((LDC) instruction).getValue(cpg);
+                if (value instanceof String) {
+                    result.add((String) value);
+                }
+            }
+            if (instruction instanceof GOTO) {
+                return;
+            }
         }
     }
 
