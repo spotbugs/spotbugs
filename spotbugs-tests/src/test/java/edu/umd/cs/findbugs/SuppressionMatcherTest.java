@@ -74,6 +74,16 @@ class SuppressionMatcherTest {
     }
 
     @Test
+    void shouldMatchMethodLevelSuppressorForLambdaBody() {
+        MethodAnnotation outer = new MethodAnnotation(CLASS_NAME, "outer", "()V", false);
+        MethodAnnotation lambda = new MethodAnnotation(CLASS_NAME, "lambda$outer$0", "()V", false);
+        BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 1).addClass(CLASS_NAME).addMethod(lambda);
+        matcher.addSuppressor(new MethodWarningSuppressor("UUF_UNUSED_FIELD", SuppressMatchType.DEFAULT, CLASS_ANNOTATION, outer, true, true));
+
+        assertThat("Should match the bug in a lambda body", matcher.match(bug), is(true));
+    }
+
+    @Test
     void shouldMatchParameterLevelSuppressor() {
         // given
         MethodAnnotation method = new MethodAnnotation(CLASS_NAME, "test", "bool test()", false);

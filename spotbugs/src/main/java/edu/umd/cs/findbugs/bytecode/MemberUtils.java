@@ -17,6 +17,8 @@
  */
 package edu.umd.cs.findbugs.bytecode;
 
+import javax.annotation.CheckForNull;
+
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import org.apache.bcel.classfile.AnnotationEntry;
@@ -146,6 +148,22 @@ public final class MemberUtils {
      */
     public static boolean couldBeLambda(final MethodGen m) {
         return m.isPrivate() && internalIsSynthetic(m);
+    }
+
+    /**
+     * Returns the enclosing source method name for a javac-generated lambda method
+     * (e.g. {@code lambda$outer$0} → {@code outer}), or null if not a lambda name.
+     */
+    @CheckForNull
+    public static String getEnclosingMethodNameFromLambda(@CheckForNull String methodName) {
+        if (methodName == null || !methodName.startsWith("lambda$")) {
+            return null;
+        }
+        int lastDollar = methodName.lastIndexOf('$');
+        if (lastDollar <= "lambda$".length()) {
+            return null;
+        }
+        return methodName.substring("lambda$".length(), lastDollar);
     }
 
     /**
