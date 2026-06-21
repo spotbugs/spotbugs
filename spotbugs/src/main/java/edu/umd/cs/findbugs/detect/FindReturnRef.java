@@ -38,13 +38,17 @@ import edu.umd.cs.findbugs.ba.type.TypeFrameModelingVisitor;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MutableClasses;
 import edu.umd.cs.findbugs.util.NestedAccessUtil;
 import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.NestHost;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.Instruction;
@@ -154,7 +158,8 @@ public class FindReturnRef extends OpcodeStackDetector {
 
     @Override
     public void visit(Method obj) {
-        check = obj.isPublic() && (getThisClass().isPublic() || overridesMethodFromPublicSupertype(obj));
+        check = obj.isPublic() && (getThisClass().isPublic() || overridesMethodFromPublicSupertype(obj)
+                || implementsMethodOfPublicInterface(obj));
         if (!check) {
             return;
         }
@@ -333,6 +338,27 @@ public class FindReturnRef extends OpcodeStackDetector {
         return false;
     }
 
+    private boolean implementsMethodOfPublicInterface(Method method) {
+        if (method.isStatic() || !ClassName.isLocalOrAnonymous(getDottedClassName())) {
+            return false;
+        }
+        try {
+            XMethod xMethod = XFactory.createXMethod(getThisClass(), method);
+            for (String interfaceName : getThisClass().getInterfaceNames()) {
+                ClassDescriptor ifaceDesc = DescriptorFactory.createClassDescriptorFromDottedClassName(interfaceName);
+                if (!ifaceDesc.getXClass().isPublic()) {
+                    continue;
+                }
+                if (ifaceDesc.getXClass().findMatchingMethod(xMethod.getMethodDescriptor()) != null) {
+                    return true;
+                }
+            }
+        } catch (CheckedAnalysisException e) {
+            AnalysisContext.logError("Error checking declared interfaces of " + getDottedClassName(), e);
+        }
+        return false;
+    }
+
     private boolean isNestedField(XField field) {
         if (field != null && getThisClass().isNested() && field.getName().startsWith("this$")) {
             try {
@@ -419,6 +445,10 @@ public class FindReturnRef extends OpcodeStackDetector {
     }
 
     private boolean isFieldOf(XField field, ClassDescriptor clazz) {
+        return isFieldOf(field, clazz, true);
+    }
+
+    private boolean isFieldOf(XField field, ClassDescriptor clazz, boolean tryNestHost) {
         do {
             ClassDescriptor clazz2 = clazz;
             do {
@@ -442,6 +472,27 @@ public class FindReturnRef extends OpcodeStackDetector {
                 return false;
             }
         } while (clazz != null);
+
+        if (tryNestHost && ClassName.isLocalOrAnonymous(getDottedClassName())) {
+            ClassDescriptor nestHost = getNestHostClassDescriptor();
+            if (nestHost != null && isFieldOf(field, nestHost, false)) {
+                return true;
+            }
+        }
         return false;
+    }
+
+    private ClassDescriptor getNestHostClassDescriptor() {
+        for (Attribute attribute : getThisClass().getAttributes()) {
+            if (attribute instanceof NestHost) {
+                NestHost nestHostAttribute = (NestHost) attribute;
+                ConstantPool constantPool = nestHostAttribute.getConstantPool();
+                String hostClassName = constantPool.getConstantString(nestHostAttribute.getHostClassIndex(),
+                        Const.CONSTANT_Class);
+                return DescriptorFactory.createClassDescriptorFromDottedClassName(
+                        ClassName.toDottedClassName(hostClassName));
+            }
+        }
+        return null;
     }
 }
