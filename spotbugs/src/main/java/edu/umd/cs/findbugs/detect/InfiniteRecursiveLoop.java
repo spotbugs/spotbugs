@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
@@ -227,11 +228,70 @@ public class InfiniteRecursiveLoop extends OpcodeStackDetector implements Statel
                     || "log".equals(getNameConstantOperand()) || "toString".equals(getNameConstantOperand())) {
                 break;
             }
-            seenStateChange = true;
+            if (!isTrivialConstantBooleanProvider() && !isDirectRecursiveSelfCall(seen)) {
+                seenStateChange = true;
+            }
             break;
         default:
             break;
         }
+    }
+
+    private boolean isDirectRecursiveSelfCall(int seen) {
+        if (!getNameConstantOperand().equals(getMethodName()) || !getSigConstantOperand().equals(getMethodSig())) {
+            return false;
+        }
+        if ((seen == Const.INVOKESTATIC) != getMethod().isStatic()) {
+            return false;
+        }
+        if (seen == Const.INVOKESPECIAL && !(getMethod().isPrivate() && !getMethod().isStatic()
+                || Const.CONSTRUCTOR_NAME.equals(getMethodName()))) {
+            return false;
+        }
+        XMethod callee = XFactory.createReferencedXMethod(this);
+        return ClassName.toSlashedClassName(callee.getClassName()).equals(getClassName());
+    }
+
+    /**
+     * Same-class {@code ()Z} helpers that always return a constant do not make a
+     * recursive call's control flow data-dependent (e.g. {@code if (getCondition()) a(); else a();}).
+     */
+    private boolean isTrivialConstantBooleanProvider() {
+        if (!"()Z".equals(getSigConstantOperand())) {
+            return false;
+        }
+        String calleeClass = getClassConstantOperand().replace('.', '/');
+        if (!calleeClass.equals(getClassName())) {
+            return false;
+        }
+        for (Method method : getThisClass().getMethods()) {
+            if (method.getName().equals(getNameConstantOperand()) && method.getSignature().equals(getSigConstantOperand())) {
+                Code code = method.getCode();
+                return code != null && methodAlwaysReturnsConstantBoolean(code.getCode());
+            }
+        }
+        return false;
+    }
+
+    private static boolean methodAlwaysReturnsConstantBoolean(byte[] code) {
+        int index = 0;
+        while (index < code.length) {
+            int opcode = code[index] & 0xff;
+            if (opcode == Const.ALOAD_0) {
+                index++;
+                continue;
+            }
+            if (opcode == Const.ICONST_0 || opcode == Const.ICONST_1) {
+                index++;
+                return index < code.length && (code[index] & 0xff) == Const.IRETURN;
+            }
+            if (opcode == Const.BIPUSH || opcode == Const.SIPUSH) {
+                index += opcode == Const.BIPUSH ? 2 : 3;
+                return index < code.length && (code[index] & 0xff) == Const.IRETURN;
+            }
+            return false;
+        }
+        return false;
     }
 
 }
