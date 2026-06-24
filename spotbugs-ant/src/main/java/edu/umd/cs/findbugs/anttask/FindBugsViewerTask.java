@@ -56,7 +56,7 @@ import java.io.File;
  */
 public class FindBugsViewerTask extends AbstractFindBugsTask {
 
-    private static final long DEFAULT_TIMEOUT = -1; // no timeout
+    private static final long NO_TIMEOUT = -1;
 
     private File projectFile;
 
@@ -67,7 +67,7 @@ public class FindBugsViewerTask extends AbstractFindBugsTask {
     /** Creates a new instance of FindBugsViewerTask */
     public FindBugsViewerTask() {
         super("edu.umd.cs.findbugs.LaunchAppropriateUI");
-        setTimeout(DEFAULT_TIMEOUT);
+        setTimeout(NO_TIMEOUT);
     }
 
     /**
