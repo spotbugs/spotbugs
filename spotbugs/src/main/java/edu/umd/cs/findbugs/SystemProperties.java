@@ -77,7 +77,8 @@ public class SystemProperties {
     }
 
     private static void loadPropertiesFromConfigFile() {
-        URL systemProperties = SystemProperties.class.getResource("/systemProperties.properties");
+
+        URL systemProperties = DetectorFactoryCollection.getCoreResource("systemProperties.properties");
         loadPropertiesFromURL(systemProperties);
         String u = System.getProperty("findbugs.loadPropertiesFrom");
         if (u != null) {
