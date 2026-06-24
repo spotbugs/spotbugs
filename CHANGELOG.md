@@ -5,6 +5,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2026-??-??
+### Fixed
+- Fix plugins not loading by reverting [#3943](https://github.com/spotbugs/spotbugs/pull/3943) and [#4010](https://github.com/spotbugs/spotbugs/pull/4010) ([#4163](https://github.com/spotbugs/spotbugs/issues/4163))
 
 ## 4.10.2 - 2026-06-09
 ### Build
