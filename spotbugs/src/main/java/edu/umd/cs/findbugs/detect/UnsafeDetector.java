@@ -71,7 +71,7 @@ public class UnsafeDetector extends OpcodeStackDetector {
                             .addClassAndMethod(this)
                             .addSourceLine(this, getPC())
                             .addCalledMethod(this)
-                            .addString(getClassConstantOperand());
+                            .addClass(getClassConstantOperand());
             bugReporter.reportBug(bug);
         }
     }
