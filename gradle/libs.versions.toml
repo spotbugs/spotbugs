@@ -1,7 +1,7 @@
 [versions]
 asm = "9.10.1"
 guice = "7.0.0"
-log4j = "2.26.0"
+log4j = "2.26.1"
 mockito = "5.23.0"
 
 [libraries]
