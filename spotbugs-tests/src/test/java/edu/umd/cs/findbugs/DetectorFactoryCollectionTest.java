@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
@@ -79,22 +80,34 @@ class DetectorFactoryCollectionTest {
     @Test
     void defaultConstructorLoadsInitialPluginsInFreshJvm() throws Exception {
         Path spotBugsHome = Files.createTempDirectory("spotbugs-home");
-        Path pluginJar = spotBugsHome.resolve("plugin").resolve("cli-regression-test-plugin.jar");
-        Files.createDirectories(pluginJar.getParent());
-        createTestPluginJar(pluginJar);
+        try {
+            Path pluginJar = spotBugsHome.resolve("plugin").resolve("cli-regression-test-plugin.jar");
+            Files.createDirectories(pluginJar.getParent());
+            createTestPluginJar(pluginJar);
 
-        String javaBin = Path.of(System.getProperty("java.home"), "bin", "java").toString();
-        Process process = new ProcessBuilder(
-                javaBin,
-                "-Dfindbugs.home=" + spotBugsHome,
-                "-cp",
-                System.getProperty("java.class.path"),
-                CliBootstrapVerifier.class.getName())
-                .redirectErrorStream(true)
-                .start();
-        String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-        int exitCode = process.waitFor();
-        assertEquals(0, exitCode, output);
+            String javaBin = Path.of(System.getProperty("java.home"), "bin", "java").toString();
+            Process process = new ProcessBuilder(
+                    javaBin,
+                    "-Dfindbugs.home=" + spotBugsHome,
+                    "-cp",
+                    System.getProperty("java.class.path"),
+                    CliBootstrapVerifier.class.getName())
+                    .redirectErrorStream(true)
+                    .start();
+            String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            int exitCode = process.waitFor();
+            assertEquals(0, exitCode, "Subprocess failed with output:\n" + output);
+        } finally {
+            Files.walk(spotBugsHome)
+                    .sorted(Comparator.reverseOrder())
+                    .forEach(path -> {
+                        try {
+                            Files.deleteIfExists(path);
+                        } catch (IOException ignored) {
+                            // ignore cleanup failures in test teardown
+                        }
+                    });
+        }
     }
 
     private static void createTestPluginJar(Path pluginJar) throws IOException {
