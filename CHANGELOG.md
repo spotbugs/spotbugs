@@ -7,6 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2026-??-??
 ### Fixed
 - Fix message for `UNS_UNSAFE_CALL` bug pattern
+- Restore CLI plugin loading by fixing DetectorFactoryCollection bootstrap ordering ([#4191](https://github.com/spotbugs/spotbugs/pull/4191))
 
 ## 4.10.2 - 2026-06-09
 ### Build
