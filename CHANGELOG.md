@@ -9,6 +9,12 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix message for `UNS_UNSAFE_CALL` bug pattern
 - Restore CLI plugin loading by fixing DetectorFactoryCollection bootstrap ordering ([#4191](https://github.com/spotbugs/spotbugs/pull/4191))
 
+### Changed
+- Ant `FindBugsViewerTask`: use default look and feel by default. ([#4165](https://github.com/spotbugs/spotbugs/pull/4165))
+
+### Refactor
+- Ant `FindBugsViewerTask`: extend `AbstractFindBugsTask` to reduce duplicate code. ([#4165](https://github.com/spotbugs/spotbugs/pull/4165))
+
 ## 4.10.2 - 2026-06-09
 ### Build
 - Add release protection to ensure version released matches the tag and that snapshot has been removed. ([#4156](https://github.com/spotbugs/spotbugs/pull/4156))
