@@ -74,7 +74,7 @@ public class BootstrapMethodsUtil {
                     .filter(m -> m.getNameIndex() == cnat.getNameIndex()
                             && m.getSignatureIndex() == cnat.getSignatureIndex())
                     .findAny();
-            if (!metOpt.isPresent()) {
+            if (metOpt.isEmpty()) {
                 continue;
             }
             return metOpt;

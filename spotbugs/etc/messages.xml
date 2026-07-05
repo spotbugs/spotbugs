@@ -9868,7 +9868,7 @@ Using floating-point variables should not be used as loop counters, as they are 
 
   <BugPattern type="UNS_UNSAFE_CALL">
     <ShortDescription>Call to Unsafe.</ShortDescription>
-    <LongDescription>Do not use {0}. As the class name indicates, its methods are not safe to use.
+    <LongDescription>Do not use {4}. As the class name indicates, its methods are not safe to use.
     </LongDescription>
     <Details>
       <![CDATA[

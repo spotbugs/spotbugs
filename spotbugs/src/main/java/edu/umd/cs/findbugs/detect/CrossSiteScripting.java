@@ -54,11 +54,11 @@ public class CrossSiteScripting extends OpcodeStackDetector {
         allFileNameStringMethods = database.getFileNameStringMethods();
     }
 
+    private static final Pattern XML_SAFE = Pattern.compile("\\p{Alnum}+");
+
     Map<String, OpcodeStack.Item> map = new HashMap<>();
 
     OpcodeStack.Item top = null;
-
-    Pattern xmlSafe = Pattern.compile("\\p{Alnum}+");
 
     @Override
     public void visit(Code code) {
@@ -72,7 +72,7 @@ public class CrossSiteScripting extends OpcodeStackDetector {
         assert item.isServletParameterTainted();
         String s = item.getHttpParameterName();
         int pc = item.getInjectionPC();
-        if (s != null && xmlSafe.matcher(s).matches()) {
+        if (s != null && XML_SAFE.matcher(s).matches()) {
             bug.addString(s).describe(StringAnnotation.PARAMETER_NAME_ROLE);
         }
         SourceLineAnnotation thisLine = SourceLineAnnotation.fromVisitedInstruction(this);

@@ -22,6 +22,7 @@ public abstract class WarningSuppressor implements Matcher {
 
     protected final String bugPattern;
     protected final SuppressMatchType matchType;
+    private final Pattern compiledBugPattern;
 
     private Set<WarningSuppressor> alternateSuppressors = Collections.emptySet();
 
@@ -33,6 +34,10 @@ public abstract class WarningSuppressor implements Matcher {
         } else {
             this.matchType = matchType;
         }
+
+        this.compiledBugPattern = (this.matchType == SuppressMatchType.REGEX && bugPattern != null)
+                ? Pattern.compile(bugPattern)
+                : null;
 
         if (DEBUG) {
             System.out.println("Suppressing " + bugPattern);
@@ -69,10 +74,9 @@ public abstract class WarningSuppressor implements Matcher {
                 }
                 break;
             case REGEX:
-                Pattern pattern = Pattern.compile(bugPattern);
-                if (!pattern.matcher(bugInstance.getType()).matches()
-                        && !pattern.matcher(bugInstance.getBugPattern().getCategory()).matches()
-                        && !pattern.matcher(bugInstance.getBugPattern().getAbbrev()).matches()) {
+                if (!compiledBugPattern.matcher(bugInstance.getType()).matches()
+                        && !compiledBugPattern.matcher(bugInstance.getBugPattern().getCategory()).matches()
+                        && !compiledBugPattern.matcher(bugInstance.getBugPattern().getAbbrev()).matches()) {
                     return false;
                 }
                 break;
