@@ -8,6 +8,14 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 - Fix `LI_LAZY_INIT_STATIC` false negative when the null guard is written in yoda-style (`null == field`) ([#4144](https://github.com/spotbugs/spotbugs/pull/4144))
 - Fix `DC_DOUBLECHECK`, `NP_SYNC_AND_NULL_CHECK_FIELD` and `SP_SPIN_ON_FIELD` false negatives when the null guard is written in yoda-style (`null == field`) ([#4144](https://github.com/spotbugs/spotbugs/pull/4144))
+- Fix message for `UNS_UNSAFE_CALL` bug pattern
+- Restore CLI plugin loading by fixing DetectorFactoryCollection bootstrap ordering ([#4191](https://github.com/spotbugs/spotbugs/pull/4191))
+
+### Changed
+- Ant `FindBugsViewerTask`: use default look and feel by default. ([#4165](https://github.com/spotbugs/spotbugs/pull/4165))
+
+### Refactor
+- Ant `FindBugsViewerTask`: extend `AbstractFindBugsTask` to reduce duplicate code. ([#4165](https://github.com/spotbugs/spotbugs/pull/4165))
 
 ## 4.10.2 - 2026-06-09
 ### Build
