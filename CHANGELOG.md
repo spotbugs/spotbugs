@@ -8,6 +8,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 - Fix message for `UNS_UNSAFE_CALL` bug pattern
 - Restore CLI plugin loading by fixing DetectorFactoryCollection bootstrap ordering ([#4191](https://github.com/spotbugs/spotbugs/pull/4191))
+- Fix `UWF_NULL_FIELD` false negative for fields initialized with cast null values ([#4034](https://github.com/spotbugs/spotbugs/issues/4034))
 
 ### Changed
 - Ant `FindBugsViewerTask`: use default look and feel by default. ([#4165](https://github.com/spotbugs/spotbugs/pull/4165))
