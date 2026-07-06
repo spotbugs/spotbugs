@@ -25,13 +25,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import edu.umd.cs.findbugs.io.IO;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
-import edu.umd.cs.findbugs.io.IO;
 
 /**
  * A scannable code base class for a zip (or Jar) file nested inside some other
@@ -61,37 +61,26 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
         this.parentCodeBase = codeBaseLocator.getParentCodeBase();
         this.resourceName = codeBaseLocator.getResourceName();
 
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
-        try {
-            // Create a temp file
-            this.tempFile = File.createTempFile("spotbugs", ".zip");
-            tempFile.deleteOnExit(); // just in case we crash before the
-            // codebase is closed
+        // Create a temp file
+        this.tempFile = File.createTempFile("spotbugs", ".zip");
+        tempFile.deleteOnExit(); // just in case we crash before the
+        // codebase is closed
 
-            // Copy nested zipfile to the temporary file
-            // FIXME: potentially long blocking operation - should be
-            // interruptible
-            ICodeBaseEntry resource = parentCodeBase.lookupResource(resourceName);
-            if (resource == null) {
-                throw new ResourceNotFoundException(resourceName);
-            }
-            inputStream = resource.openResource();
-            outputStream = new BufferedOutputStream(Files.newOutputStream(tempFile.toPath()));
+        // Copy nested zipfile to the temporary file
+        // FIXME: potentially long blocking operation - should be
+        // interruptible
+        ICodeBaseEntry resource = parentCodeBase.lookupResource(resourceName);
+        if (resource == null) {
+            throw new ResourceNotFoundException(resourceName);
+        }
+        try (InputStream inputStream = resource.openResource();
+                OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(tempFile.toPath()))) {
             IO.copy(inputStream, outputStream);
             outputStream.flush();
-
-            // Create the delegate to read from the temporary file
-            delegateCodeBase = ZipCodeBaseFactory.makeZipCodeBase(codeBaseLocator, tempFile);
-        } finally {
-            if (inputStream != null) {
-                IO.close(inputStream);
-            }
-
-            if (outputStream != null) {
-                IO.close(outputStream);
-            }
         }
+
+        // Create the delegate to read from the temporary file
+        delegateCodeBase = ZipCodeBaseFactory.makeZipCodeBase(codeBaseLocator, tempFile);
     }
 
     /*
