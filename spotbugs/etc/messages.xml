@@ -3323,7 +3323,8 @@ Don't do it.
     <ShortDescription>Class doesn't override equals in superclass</ShortDescription>
     <LongDescription>{0} doesn't override {2.givenClass}</LongDescription>
     <Details>
-<p> This class extends a class that defines an equals method and adds fields, but doesn't
+<![CDATA[
+  <p> This class extends a class that defines an equals method and adds fields, but doesn't
     define an equals method itself. Thus, equality on instances of this class will
     ignore the identity of the subclass and the added fields. Be sure this is what is intended,
     and that you don't need to override the equals method.
@@ -3334,6 +3335,7 @@ Don't do it.
     <code>child.equals(parent)</code> may return <code>false</code>.
     Consider whether overriding equals is truly necessary before doing so.
     </p>
+]]>
     </Details>
   </BugPattern>
   <BugPattern type="EQ_SELF_NO_OBJECT">
