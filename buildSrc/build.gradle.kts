@@ -1,6 +1,6 @@
 plugins {
     `kotlin-dsl`
-    id("com.diffplug.spotless") version "8.7.0"
+    id("com.diffplug.spotless") version "8.8.0"
 }
 
 repositories {
@@ -8,5 +8,5 @@ repositories {
 }
 dependencies {
     implementation("com.diffplug.gradle:goomph:4.4.1")
-    implementation("com.diffplug.spotless:spotless-plugin-gradle:8.7.0")
+    implementation("com.diffplug.spotless:spotless-plugin-gradle:8.8.0")
 }
