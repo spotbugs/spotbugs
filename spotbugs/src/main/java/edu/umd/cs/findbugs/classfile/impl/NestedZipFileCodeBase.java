@@ -76,7 +76,6 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase {
         try (InputStream inputStream = resource.openResource();
                 OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(tempFile.toPath()))) {
             IO.copy(inputStream, outputStream);
-            outputStream.flush();
         }
 
         // Create the delegate to read from the temporary file
