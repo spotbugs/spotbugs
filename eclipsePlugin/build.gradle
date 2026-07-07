@@ -1,7 +1,5 @@
 import static groovy.io.FileType.FILES
 
-import java.nio.file.Files
-import java.nio.file.Path
 import org.ajoberstar.grgit.Grgit
 import org.gradle.plugins.ide.eclipse.model.Classpath
 import org.gradle.plugins.ide.eclipse.model.ClasspathEntry
@@ -161,7 +159,7 @@ eclipse.classpath.file {
     copyLibsForEclipse
     Set<File> libFiles = fileTree(dir: 'lib').files
     libFiles.forEach { File file ->
-      File rel = projectDir.toPath().relativize(Path.of(file.toString())).toFile()
+      File rel = projectDir.toPath().relativize(file.toPath())).toFile()
       
       def fileRefMap = [
         getFile: { rel },
