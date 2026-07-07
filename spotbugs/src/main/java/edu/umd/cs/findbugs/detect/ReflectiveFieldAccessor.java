@@ -18,74 +18,67 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.detect.ReflectiveAccessTracker.AccessType;
 
 /**
- * Handles and logs reflective access to a field.
+ * A reflective field accessor (VarHandle, MethodHandle or AtomicFieldUpdater).
+ * <p>
+ * A plain mutable value class. It is created when the accessor handle is obtained (findGetter,
+ * findVarHandle, newUpdater, ...) and completed once the handle is stored into a field, at which
+ * point {@link #accessorField} is filled in. For a MethodHandle the {@link #accessType} is fixed
+ * at creation (GETTER or SETTER); for VarHandle/AtomicFieldUpdater it is {@link AccessType#BOTH}
+ * because the actual access type is only known at invocation time.
  */
 class ReflectiveFieldAccessor {
 
-    private final AccessType accessType;
-    private final ReflectiveFieldAccessLog accessLog;
-    private final SourceLineAnnotation declarationSourceLine;
-    private boolean wasUsed = false;
+    /** The field the accessor reads or writes. */
+    private final XField actualField;
 
-    public ReflectiveFieldAccessor(final ReflectiveFieldAccessLog accessLog, final AccessType accessType,
+    /** GETTER/SETTER for MethodHandle, BOTH for VarHandle/AtomicFieldUpdater. */
+    private final AccessType accessType;
+
+    /** Source line where the accessor was declared. */
+    private final SourceLineAnnotation declarationSourceLine;
+
+    /** The field holding the handle; set once the handle is stored. */
+    private XField accessorField;
+
+    /** Set during resolution if the accessor is actually invoked. */
+    private boolean wasUsed;
+
+    ReflectiveFieldAccessor(final XField actualField, final AccessType accessType,
             final SourceLineAnnotation declarationSourceLine) {
+        this.actualField = actualField;
         this.accessType = accessType;
-        this.accessLog = accessLog;
         this.declarationSourceLine = declarationSourceLine;
     }
 
-    public ReflectiveFieldAccessLog getReflectiveAccessLog() {
-        return accessLog;
-    }
-
-    public AccessType getAccessType() {
-        return accessType;
-    }
-
-    public SourceLineAnnotation getDeclarationSourceLine() {
-        return declarationSourceLine;
-    }
-
-    public boolean wasUsed() {
-        return wasUsed;
-    }
-
-    protected void markUsed() {
+    void markUsed() {
         wasUsed = true;
     }
 
-    /**
-     * Accessor which can be invoked to both set and get the value. The accessType is supplied at invocation.
-     */
-    static class ExplicitAccessor extends ReflectiveFieldAccessor {
-
-        public ExplicitAccessor(final ReflectiveFieldAccessLog reflectiveAccessLog,
-                final SourceLineAnnotation declarationSourceLine) {
-            super(reflectiveAccessLog, AccessType.BOTH, declarationSourceLine);
-        }
-
-        public void markAccess(final AccessType accessType) {
-            markUsed();
-            getReflectiveAccessLog().markAccess(accessType);
-        }
+    boolean wasUsed() {
+        return wasUsed;
     }
 
-    /**
-     * Accessor which can access a field only in pre-defined way. The accessType is defined at instantiation.
-     */
-    static class ImplicitAccessor extends ReflectiveFieldAccessor {
+    XField accessorField() {
+        return accessorField;
+    }
 
-        public ImplicitAccessor(final ReflectiveFieldAccessLog reflectiveAccessLog,
-                final AccessType accessType, final SourceLineAnnotation declarationSourceLine) {
-            super(reflectiveAccessLog, accessType, declarationSourceLine);
-        }
+    void setAccessorField(final XField accessorField) {
+        this.accessorField = accessorField;
+    }
 
-        public void markAccess() {
-            markUsed();
-            getReflectiveAccessLog().markAccess(getAccessType());
-        }
+    XField actualField() {
+        return actualField;
+    }
+
+    AccessType accessType() {
+        return accessType;
+    }
+
+    SourceLineAnnotation sourceLine() {
+        return declarationSourceLine;
     }
 }

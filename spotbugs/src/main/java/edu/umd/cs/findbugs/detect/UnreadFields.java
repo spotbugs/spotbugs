@@ -88,12 +88,7 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.detect.ReflectiveAccessTracker.AccessType;
-import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorBuilder.AtomicUpdaterAccessorBuilder;
-import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorBuilder.MethodHandleAccessorBuilder;
-import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorBuilder.VarHandleAccessorBuilder;
-import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorInvocation.AtomicUpdaterInvocation;
-import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorInvocation.MethodHandleInvocation;
-import edu.umd.cs.findbugs.detect.ReflectiveFieldAccessorInvocation.VarHandleInvocation;
+import edu.umd.cs.findbugs.detect.ReflectiveInvocation.Kind;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.util.Bag;
@@ -330,13 +325,16 @@ public class UnreadFields extends OpcodeStackDetector {
 
     private final ReflectiveAccessTracker reflectiveAccessTracker = new ReflectiveAccessTracker();
 
-    // A builder used to construct reflective Accessors. It's created at Accessor instantiation and then finished when
-    // the instance gets assigned to a field.
-    private ReflectiveFieldAccessorBuilder inFlightRFABuilder = null;
+    // A reflective accessor under construction. It's created when the handle is obtained and then completed when
+    // the handle gets assigned to a field.
+    private ReflectiveFieldAccessor inFlightRFAccessor = null;
+
+    // PC at which the in-flight accessor's handle is expected to be stored into its field.
+    private int inFlightRFAssignmentPC;
 
     @Override
     public void visit(Code obj) {
-        inFlightRFABuilder = null;
+        inFlightRFAccessor = null;
         count_aload_1 = 0;
         previousOpcode = -1;
         previousPreviousOpcode = -1;
@@ -362,7 +360,7 @@ public class UnreadFields extends OpcodeStackDetector {
         if (Const.CONSTRUCTOR_NAME.equals(getMethodName()) && (obj.isPublic() || obj.isProtected())) {
             publicOrProtectedConstructor = true;
         }
-        inFlightRFABuilder = null;
+        inFlightRFAccessor = null;
         pendingGetField = null;
         saState = 0;
         super.visit(obj);
@@ -436,15 +434,14 @@ public class UnreadFields extends OpcodeStackDetector {
 
         // Check whether this static field assignment occurs immediately after the instantiation of a reflective accessor.
         // If so, register this accessor with the Tracker so that all accesses performed through it can be monitored.
-        if (seen == Const.PUTSTATIC && inFlightRFABuilder != null
-                && inFlightRFABuilder.getAssignmentExpectedAtPC() == getPC()) {
+        if (seen == Const.PUTSTATIC && inFlightRFAccessor != null
+                && inFlightRFAssignmentPC == getPC()) {
             String dottedClassName = ClassName.toDottedClassName(getClassConstantOperand());
             String fieldSignature = stack.getStackItem(0).getSignature();
             String fieldName = getNameConstantOperand();
-            XField accessorField = XFactory.createXField(dottedClassName, fieldName, fieldSignature, true);
-            ReflectiveFieldAccessorBuilder accessorBuilder = inFlightRFABuilder.withAccessor(accessorField);
-            reflectiveAccessTracker.newAccessorDeclared(accessorBuilder);
-            inFlightRFABuilder = null;
+            inFlightRFAccessor.setAccessorField(XFactory.createXField(dottedClassName, fieldName, fieldSignature, true));
+            reflectiveAccessTracker.newAccessorDeclared(inFlightRFAccessor);
+            inFlightRFAccessor = null;
         }
 
         // ---- Mark instantiations of new reflective accessors ----
@@ -456,8 +453,9 @@ public class UnreadFields extends OpcodeStackDetector {
             String fieldClass = (String) stack.getStackItem(2).getConstant();
             if (fieldName != null && fieldSignature != null && fieldClass != null) {
                 XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, ClassName.toSignature(fieldSignature), false);
-                inFlightRFABuilder = new AtomicUpdaterAccessorBuilder(f, getNextPC(),
+                inFlightRFAccessor = new ReflectiveFieldAccessor(f, AccessType.BOTH,
                         SourceLineAnnotation.fromVisitedInstruction(this));
+                inFlightRFAssignmentPC = getNextPC();
             }
         }
         if (seen == Const.INVOKESTATIC && "java/util/concurrent/atomic/AtomicIntegerFieldUpdater".equals(getClassConstantOperand())
@@ -466,8 +464,9 @@ public class UnreadFields extends OpcodeStackDetector {
             String fieldClass = (String) stack.getStackItem(1).getConstant();
             if (fieldName != null && fieldClass != null) {
                 XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, "I", false);
-                inFlightRFABuilder = new AtomicUpdaterAccessorBuilder(f, getNextPC(),
+                inFlightRFAccessor = new ReflectiveFieldAccessor(f, AccessType.BOTH,
                         SourceLineAnnotation.fromVisitedInstruction(this));
+                inFlightRFAssignmentPC = getNextPC();
             }
 
         }
@@ -477,8 +476,9 @@ public class UnreadFields extends OpcodeStackDetector {
             String fieldClass = (String) stack.getStackItem(1).getConstant();
             if (fieldName != null && fieldClass != null) {
                 XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, "J", false);
-                inFlightRFABuilder = new AtomicUpdaterAccessorBuilder(f, getNextPC(),
+                inFlightRFAccessor = new ReflectiveFieldAccessor(f, AccessType.BOTH,
                         SourceLineAnnotation.fromVisitedInstruction(this));
+                inFlightRFAssignmentPC = getNextPC();
             }
         }
 
@@ -491,9 +491,10 @@ public class UnreadFields extends OpcodeStackDetector {
                 String fieldClass = (String) stack.getStackItem(2).getConstant();
                 if (fieldName != null && fieldSignature != null && fieldClass != null) {
                     XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, fieldSignature, false);
-                    inFlightRFABuilder = new MethodHandleAccessorBuilder(f, getNextPC(),
+                    inFlightRFAccessor = new ReflectiveFieldAccessor(f,
                             methodName.equals("findGetter") ? AccessType.GETTER : AccessType.SETTER,
                             SourceLineAnnotation.fromVisitedInstruction(this));
+                    inFlightRFAssignmentPC = getNextPC();
                 }
             }
             if ("findVarHandle".equals(methodName) && getSigConstantOperand().endsWith("Ljava/lang/invoke/VarHandle;")) {
@@ -502,8 +503,9 @@ public class UnreadFields extends OpcodeStackDetector {
                 String fieldClass = (String) stack.getStackItem(2).getConstant();
                 if (fieldName != null && fieldSignature != null && fieldClass != null) {
                     XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, fieldSignature, false);
-                    inFlightRFABuilder = new VarHandleAccessorBuilder(f, getNextPC(),
+                    inFlightRFAccessor = new ReflectiveFieldAccessor(f, AccessType.BOTH,
                             SourceLineAnnotation.fromVisitedInstruction(this));
+                    inFlightRFAssignmentPC = getNextPC();
                 }
             }
         }
@@ -514,51 +516,15 @@ public class UnreadFields extends OpcodeStackDetector {
                 && ("java/util/concurrent/atomic/AtomicReferenceFieldUpdater".equals(getClassConstantOperand())
                         || "java/util/concurrent/atomic/AtomicLongFieldUpdater".equals(getClassConstantOperand())
                         || "java/util/concurrent/atomic/AtomicIntegerFieldUpdater".equals(getClassConstantOperand()))) {
-            XField accessorField = stack.getStackItem(stack.getStackDepth() - 1).getXField();
-            String invocation = getNameConstantOperand();
-            if (accessorField != null) {
-                AccessType accessType = AtomicUpdaterInvocation.resolveInvocationType(invocation);
-                if (accessType != null) {
-                    reflectiveAccessTracker.registerReflectiveInvocation(
-                            new AtomicUpdaterInvocation(accessorField, accessType, SourceLineAnnotation.fromVisitedInstruction(this)));
-                } else if (DEBUG) {
-                    System.out.printf("Unresolved invocation of: %s.%s", getClassConstantOperand(), invocation);
-                }
-            } else if (DEBUG) {
-                System.out.printf("Could not find XField for invoked %s.%s%n", getClassConstantOperand(), invocation);
-            }
+            registerReflectiveInvocation(Kind.ATOMIC_UPDATER);
         }
 
         if (seen == Const.INVOKEVIRTUAL && "java/lang/invoke/MethodHandle".equals(getClassConstantOperand())) {
-            int stackDepth = stack.getStackDepth();
-            XField accessorField = stack.getStackItem(stackDepth - 1).getXField();
-            String invocation = getNameConstantOperand();
-            if (accessorField != null) {
-                if (MethodHandleInvocation.isValidInvocation(invocation)) {
-                    reflectiveAccessTracker.registerReflectiveInvocation(
-                            new MethodHandleInvocation(accessorField, SourceLineAnnotation.fromVisitedInstruction(this)));
-                } else if (DEBUG) {
-                    System.out.printf("Unresolved invocation of: %s.%s", getClassConstantOperand(), invocation);
-                }
-            } else if (DEBUG) {
-                System.out.printf("Could not find XField for invoked %s.%s%n", getClassConstantOperand(), invocation);
-            }
+            registerReflectiveInvocation(Kind.METHOD_HANDLE);
         }
 
         if (seen == Const.INVOKEVIRTUAL && "java/lang/invoke/VarHandle".equals(getClassConstantOperand())) {
-            XField accessorField = stack.getStackItem(stack.getStackDepth() - 1).getXField();
-            String invocation = getNameConstantOperand();
-            if (accessorField != null) {
-                AccessType accessType = VarHandleInvocation.resolveInvocationType(invocation);
-                if (accessType != null) {
-                    reflectiveAccessTracker.registerReflectiveInvocation(
-                            new VarHandleInvocation(accessorField, accessType, SourceLineAnnotation.fromVisitedInstruction(this)));
-                } else if (DEBUG) {
-                    System.out.printf("Unresolved invocation of: %s.%s", getClassConstantOperand(), invocation);
-                }
-            } else if (DEBUG) {
-                System.out.printf("Could not find XField for invoked %s.%s%n", getClassConstantOperand(), invocation);
-            }
+            registerReflectiveInvocation(Kind.VAR_HANDLE);
         }
 
         if (seen == Const.GETSTATIC) {
@@ -914,6 +880,27 @@ public class UnreadFields extends OpcodeStackDetector {
 
     private boolean isPrimitiveFieldSignature(String signature) {
         return signature.length() == 1 && "BCDFIJSZV".indexOf(signature.charAt(0)) >= 0;
+    }
+
+    /**
+     * Registers an invocation of the reflective accessor currently on top of the stack, if the invoked method is a
+     * recognized field-accessing call for the given accessor kind.
+     */
+    private void registerReflectiveInvocation(final Kind kind) {
+        XField accessorField = stack.getStackItem(stack.getStackDepth() - 1).getXField();
+        String invocation = getNameConstantOperand();
+        if (accessorField == null) {
+            if (DEBUG) {
+                System.out.printf("Could not find XField for invoked %s.%s%n", getClassConstantOperand(), invocation);
+            }
+            return;
+        }
+        ReflectiveInvocation reflectiveInvocation = ReflectiveInvocation.create(kind, accessorField, invocation);
+        if (reflectiveInvocation != null) {
+            reflectiveAccessTracker.registerReflectiveInvocation(reflectiveInvocation);
+        } else if (DEBUG) {
+            System.out.printf("Unresolved invocation of: %s.%s", getClassConstantOperand(), invocation);
+        }
     }
 
     /**
@@ -1388,12 +1375,12 @@ public class UnreadFields extends OpcodeStackDetector {
     }
 
     private void reportUnusedReflectiveAccessors(final Set<XField> declaredFields) {
-        MultiMap<XField, ReflectiveFieldAccessor> unusedAccessors =
-                reflectiveAccessTracker.getUnusedAccessorsByActualField();
+        MultiMap<XField, SourceLineAnnotation> unusedAccessorLines =
+                reflectiveAccessTracker.getUnusedAccessorDeclarationLines();
         XFactory xFactory = AnalysisContext.currentXFactory();
-        for (XField actualField : unusedAccessors.keySet()) {
+        for (XField actualField : unusedAccessorLines.keySet()) {
             declaredFields.remove(actualField);
-            for (ReflectiveFieldAccessor unusedAccessor : unusedAccessors.get(actualField)) {
+            for (SourceLineAnnotation line : unusedAccessorLines.get(actualField)) {
                 int priority = NORMAL_PRIORITY;
                 if (xFactory.isReflectiveClass(actualField.getClassDescriptor())) {
                     priority++;
@@ -1403,7 +1390,6 @@ public class UnreadFields extends OpcodeStackDetector {
                         : "UUF_UNUSED_FIELD";
                 BugInstance bug = new BugInstance(this, bugType, priority)
                         .addClass(actualField.getClassName()).addField(actualField);
-                SourceLineAnnotation line = unusedAccessor.getDeclarationSourceLine();
                 if (line != null) {
                     bug.add(line);
                 }
