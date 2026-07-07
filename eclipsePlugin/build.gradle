@@ -159,7 +159,7 @@ eclipse.classpath.file {
     copyLibsForEclipse
     Set<File> libFiles = fileTree(dir: 'lib').files
     libFiles.forEach { File file ->
-      File rel = projectDir.toPath().relativize(file.toPath())).toFile()
+      File rel = projectDir.toPath().relativize(file.toPath()).toFile()
       
       def fileRefMap = [
         getFile: { rel },
