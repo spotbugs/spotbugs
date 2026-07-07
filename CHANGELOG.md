@@ -23,6 +23,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Refactor
 - Ant `FindBugsViewerTask`: extend `AbstractFindBugsTask` to reduce duplicate code. ([#4165](https://github.com/spotbugs/spotbugs/pull/4165))
 
+### build
+- Remove eclipse IDE requirements for build greatly streamlining process ([#4195](https://github.com/spotbugs/spotbugs/pull/4195))
+
 ## 4.10.2 - 2026-06-09
 ### Build
 - Add release protection to ensure version released matches the tag and that snapshot has been removed. ([#4156](https://github.com/spotbugs/spotbugs/pull/4156))

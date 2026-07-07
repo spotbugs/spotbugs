@@ -12,10 +12,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: true
 
-env:
-  eclipse-version: 4.24
-  eclipse-date: 202206070700
-
 jobs:
   build:
     permissions:
@@ -63,11 +59,6 @@ jobs:
           distribution: temurin
           cache: gradle
       - uses: gradle/actions/wrapper-validation@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
-      - name: Download Eclipse
-        run: |
-          curl --continue-at - --create-dirs --location 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-linux-gtk-x86_64.tar.gz&mirror_id=1' --output eclipse-sdk/eclipse.tar.gz
-          tar xzf eclipse-sdk/eclipse.tar.gz eclipse
-          echo "eclipseRoot.dir=$(pwd)/eclipse" | tee eclipsePlugin/local.properties
       - name: Build on tag
         if: github.ref_type == 'tag'
         run: |
@@ -100,7 +91,7 @@ jobs:
           external_repository: spotbugs/eclipse-latest
           personal_token: ${{ secrets.PERSONAL_TOKEN_FOR_PAGES }}
           publish_branch: gh-pages
-          publish_dir: ./eclipsePlugin/build/site/eclipse-daily
+          publish_dir: ./eclipsePlugin/build/site/eclipse
       - name: Deploy eclipse-candidate
         uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4
         if: startsWith(github.ref, 'refs/tags/')
@@ -108,7 +99,7 @@ jobs:
           external_repository: spotbugs/eclipse-candidate
           personal_token: ${{ secrets.PERSONAL_TOKEN_FOR_PAGES }}
           publish_branch: gh-pages
-          publish_dir: ./eclipsePlugin/build/site/eclipse-candidate
+          publish_dir: ./eclipsePlugin/build/site/eclipse
       - name: Deploy eclipse
         uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4
         if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref, '_RC') && !contains(github.ref, '_beta')
