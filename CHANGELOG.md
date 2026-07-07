@@ -10,6 +10,8 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `DC_DOUBLECHECK`, `NP_SYNC_AND_NULL_CHECK_FIELD` and `SP_SPIN_ON_FIELD` false negatives when the null guard is written in yoda-style (`null == field`) ([#4144](https://github.com/spotbugs/spotbugs/pull/4144))
 - Fix message for `UNS_UNSAFE_CALL` bug pattern
 - Restore CLI plugin loading by fixing DetectorFactoryCollection bootstrap ordering ([#4191](https://github.com/spotbugs/spotbugs/pull/4191))
+- Fix `UWF_NULL_FIELD` false negative for fields initialized with cast null values ([#4034](https://github.com/spotbugs/spotbugs/issues/4034))
+- Fix `UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS` false positive for methods reached only through method references ([#4059](https://github.com/spotbugs/spotbugs/pull/4059))
 
 ### Changed
 - Ant `FindBugsViewerTask`: use default look and feel by default. ([#4165](https://github.com/spotbugs/spotbugs/pull/4165))
