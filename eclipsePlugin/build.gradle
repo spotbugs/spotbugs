@@ -461,8 +461,21 @@ ext.writeP2Metadata = { File outDir ->
     <property name='p2.timestamp' value='${System.currentTimeMillis()}'/>
     <property name='p2.compressed' value='false'/>
   </properties>
-  <units size='${jarCount}'>
+  <units size='${jarCount + 1}'>
 ${unitsMetadataContent}
+    <unit id='com.github.spotbugs.plugin.eclipse.category' version='1.0.0' singleton='true'>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='SpotBugs Eclipse Plugins'/>
+        <property name='org.eclipse.equinox.p2.type.category' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='com.github.spotbugs.plugin.eclipse.category' version='1.0.0'/>
+      </provides>
+      <requires size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='com.github.spotbugs.plugin.eclipse.feature' range='[0.0.0,30.0.0)'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+    </unit>
   </units>
 </repository>"""
 
