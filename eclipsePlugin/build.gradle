@@ -404,12 +404,56 @@ ext.writeP2Metadata = { File outDir ->
   // Invoke the restored jar verification hook on the target folder
   signJar(outDir)
 
-  logger.lifecycle("Generating pure, lightweight P2 structural maps inside: ${outDir}")
+  logger.lifecycle("Generating functional P2 structural maps inside: ${outDir}")
   outDir.mkdirs()
-  
+
+  // 1. Collect jars from both the nested "plugins" and "features" subdirectories
+  java.io.File pluginsDir = new java.io.File(outDir, "plugins")
+  java.io.File featuresDir = new java.io.File(outDir, "features")
+
+  java.io.File[] pluginJars = pluginsDir.exists() && pluginsDir.isDirectory() ? pluginsDir.listFiles() : new java.io.File[0]
+  java.io.File[] featureJars = featuresDir.exists() && featuresDir.isDirectory() ? featuresDir.listFiles() : new java.io.File[0]
+
+  // Combine both arrays into a single stream pool
+  java.util.List<java.io.File> allJars = new java.util.ArrayList<>()
+  for (java.io.File f : pluginJars) { if (f.getName().endsWith(".jar")) allJars.add(f) }
+  for (java.io.File f : featureJars) { if (f.getName().endsWith(".jar")) allJars.add(f) }
+
+  // 2. Extract lists using your working functional map stream
+  def artifactLines = allJars.stream()
+    .map({ f -> 
+      def name = f.getName().substring(0, f.getName().lastIndexOf('.'))
+      def split = name.indexOf('_')
+      def id = split != -1 ? name.substring(0, split) : name
+      def ver = split != -1 ? name.substring(split + 1) : "1.0.0"
+      def cls = f.getParentFile().getName().equals("features") ? "org.eclipse.update.feature" : "osgi.bundle"
+      return "    <artifact classifier='" + cls + "' id='" + id + "' version='" + ver + "'/>"
+    })
+    .collect(java.util.stream.Collectors.toList())
+
+  def unitLines = allJars.stream()
+    .map({ f ->
+      def name = f.getName().substring(0, f.getName().lastIndexOf('.'))
+      def split = name.indexOf('_')
+      def id = split != -1 ? name.substring(0, split) : name
+      def ver = split != -1 ? name.substring(split + 1) : "1.0.0"
+      def cls = f.getParentFile().getName().equals("features") ? "org.eclipse.update.feature" : "osgi.bundle"
+      return "    <unit id='" + id + "' version='" + ver + "' singleton='true'>\n" +
+             "      <provides size='1'>\n" +
+             "        <provided namespace='" + cls + "' name='" + id + "' version='" + ver + "'/>\n" +
+             "      </provides>\n" +
+             "    </unit>"
+    })
+    .collect(java.util.stream.Collectors.toList())
+
+  // 3. Map safely to your flat template string variables
+  def jarCount = allJars.size()
+  def unitsMetadataContent = String.join("\n", unitLines)
+  def artifactsMetadataContent = String.join("\n", artifactLines)
+
   File contentXml = new File(outDir, "content.xml")
   File artifactsXml = new File(outDir, "artifacts.xml")
-  
+
   contentXml.text = """<?xml version='1.0' encoding='UTF-8'?>
 <?metadataRepository version='1.1.0'?>
 <repository name='SpotBugs Eclipse Update Site' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1'>
@@ -417,7 +461,9 @@ ext.writeP2Metadata = { File outDir ->
     <property name='p2.timestamp' value='${System.currentTimeMillis()}'/>
     <property name='p2.compressed' value='false'/>
   </properties>
-  <units size='0'/>
+  <units size='${jarCount}'>
+${unitsMetadataContent}
+  </units>
 </repository>"""
 
   artifactsXml.text = """<?xml version='1.0' encoding='UTF-8'?>
@@ -427,7 +473,9 @@ ext.writeP2Metadata = { File outDir ->
     <property name='p2.timestamp' value='${System.currentTimeMillis()}'/>
     <property name='p2.compressed' value='false'/>
   </properties>
-  <artifacts size='0'/>
+  <artifacts size='${jarCount}'>
+${artifactsMetadataContent}
+  </artifacts>
 </repository>"""
 }
 
