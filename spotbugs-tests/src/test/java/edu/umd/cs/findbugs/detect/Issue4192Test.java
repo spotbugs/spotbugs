@@ -13,10 +13,14 @@ class Issue4192Test extends AbstractIntegrationTest {
         performAnalysis("ghIssues/Issue4192.class");
 
         // Only always-true, never-true, out-of-range comparisons are reported.
-        assertBugTypeCount(BUG, 3);
+        assertBugTypeCount(BUG, 5);
         assertBugInMethod(BUG, CLASS, "lessOrEqual127");
         assertBugInMethod(BUG, CLASS, "greaterThan127");
         assertBugInMethod(BUG, CLASS, "equal255");
+
+        // Out-of-range comparisons must still be reported (no false negatives).
+        assertBugInMethod(BUG, CLASS, "lessThan128");
+        assertBugInMethod(BUG, CLASS, "greaterThanMinus129");
 
         // Meaningful comparisons against 127 must not be reported (the #4192 fix).
         assertNoBugInMethod(BUG, CLASS, "lessThan127");

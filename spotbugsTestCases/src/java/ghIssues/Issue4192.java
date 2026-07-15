@@ -32,6 +32,16 @@ public class Issue4192 {
         return b == 255;
     }
 
+    /** Reported: out of range above the maximum, always true. */
+    public boolean lessThan128(byte b) {
+        return b < 128;
+    }
+
+    /** Reported: out of range below the minimum, always true. */
+    public boolean greaterThanMinus129(byte b) {
+        return b > -129;
+    }
+
     /** Not reported: equality against the boundary is meaningful. */
     public boolean equal127(byte b) {
         return b == 127;

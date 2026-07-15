@@ -1012,7 +1012,7 @@ public class DumbMethods extends OpcodeStackDetector {
                         int v1 = ((Number) constant1).intValue();
                         // For 127, only report x <= 127 (always true) and x > 127 (never true);
                         // x < 127 and x >= 127 are meaningful comparisons of a signed byte.
-                        if (v1 <= -129 || v1 >= 128 || v1 == 127 && (seen2 == Const.IF_ICMPGE || seen2 == Const.IF_ICMPLT)) {
+                        if (v1 <= -129 || v1 >= 128 || (v1 == 127 && (seen2 == Const.IF_ICMPGE || seen2 == Const.IF_ICMPLT))) {
                             int priority = HIGH_PRIORITY;
                             if (v1 == 127) {
                                 switch (seen2) {
