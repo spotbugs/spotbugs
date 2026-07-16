@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.classfile.ConstantInvokeDynamic;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -31,6 +32,8 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.util.BootstrapMethodsUtil;
 
 /**
  * Detector to find private methods that are never called.
@@ -74,14 +77,24 @@ public class CalledMethods extends BytecodeScanningDetector implements NonReport
         case Const.INVOKEVIRTUAL:
         case Const.INVOKESPECIAL:
         case Const.INVOKESTATIC:
-        case Const.INVOKEINTERFACE:
+        case Const.INVOKEINTERFACE: {
             ClassDescriptor c = getClassDescriptorOperand();
             Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
             if (subtypes2.isApplicationClass(c)) {
                 xFactory.addCalledMethod(getMethodDescriptorOperand());
             }
-
             break;
+        }
+        case Const.INVOKEDYNAMIC: {
+            int bootstrapIndex = ((ConstantInvokeDynamic) getConstantRefOperand()).getBootstrapMethodAttrIndex();
+            Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
+            for (MethodDescriptor target : BootstrapMethodsUtil.getInvokedMethodTargets(getThisClass(), bootstrapIndex, getConstantPool())) {
+                if (subtypes2.isApplicationClass(target.getClassDescriptor())) {
+                    xFactory.addCalledMethod(target);
+                }
+            }
+            break;
+        }
         default:
             break;
         }

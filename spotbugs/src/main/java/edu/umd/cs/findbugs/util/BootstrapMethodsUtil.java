@@ -18,9 +18,14 @@
 
 package edu.umd.cs.findbugs.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.BootstrapMethod;
 import org.apache.bcel.classfile.BootstrapMethods;
 import org.apache.bcel.classfile.Constant;
@@ -33,12 +38,64 @@ import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+
 /**
  * Utility methods for working with bootstrap methods
  *
  * @author Ádám Balogh
  */
 public class BootstrapMethodsUtil {
+
+    /**
+     * Returns the methods invoked by handle arguments of a bootstrap method from a Java class.
+     *
+     * @param cls            the java class whose bootstrap method attribute is consulted
+     * @param bootstrapIndex the index of the bootstrap method
+     * @param cp             the constant pool of the java class
+     * @return the invoked methods if found, an empty list otherwise
+     */
+    public static List<MethodDescriptor> getInvokedMethodTargets(JavaClass cls, int bootstrapIndex, ConstantPool cp) {
+        BootstrapMethod bm = findBootstrapMethod(cls, bootstrapIndex);
+        if (bm == null) {
+            return Collections.emptyList();
+        }
+        List<MethodDescriptor> targets = new ArrayList<>();
+        for (int arg : bm.getBootstrapArguments()) {
+            Constant constant = cp.getConstant(arg);
+            if (!(constant instanceof ConstantMethodHandle)) {
+                continue;
+            }
+            ConstantMethodHandle method = (ConstantMethodHandle) constant;
+            int kind = method.getReferenceKind();
+            if (kind < Const.REF_invokeVirtual || kind > Const.REF_invokeInterface) {
+                continue;
+            }
+            Constant ref = cp.getConstant(method.getReferenceIndex());
+            if (!(ref instanceof ConstantCP)) {
+                continue;
+            }
+            ConstantCP refCP = (ConstantCP) ref;
+            String slashedClassName = cp.getConstantString(refCP.getClassIndex(), Const.CONSTANT_Class);
+            if (slashedClassName.charAt(0) == '[') {
+                continue;
+            }
+            ConstantNameAndType nameAndType = cp.getConstant(refCP.getNameAndTypeIndex());
+            targets.add(DescriptorFactory.instance().getMethodDescriptor(slashedClassName,
+                    nameAndType.getName(cp), nameAndType.getSignature(cp), kind == Const.REF_invokeStatic));
+        }
+        return targets;
+    }
+
+    private static BootstrapMethod findBootstrapMethod(JavaClass cls, int index) {
+        for (Attribute attr : cls.getAttributes()) {
+            if (attr instanceof BootstrapMethods) {
+                return ((BootstrapMethods) attr).getBootstrapMethods()[index];
+            }
+        }
+        return null;
+    }
 
     /**
      * Returns the method representation of a bootstrap method from a Java class.
