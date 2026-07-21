@@ -80,14 +80,6 @@ msgstr ""
 msgid "Provides latest SpotBugs Eclipse plugin built from master branch."
 msgstr "最新のSpotBugs Eclipseプラグインをマスターブランチからビルドします。"
 
-#: ../../eclipse.rst:29
-msgid "https://spotbugs.github.io/eclipse-stable-latest/"
-msgstr ""
-
-#: ../../eclipse.rst:29
-msgid "Provides latest SpotBugs Eclipse plugin built from release-3.1 branch."
-msgstr "最新で安定しているSpotBugs Eclipseプラグインをrelease-3.1ブランチからビルドします。"
-
 #: ../../eclipse.rst:31
 msgid ""
 "Or just use `Eclipse marketplace <https://marketplace.eclipse.org/content"
