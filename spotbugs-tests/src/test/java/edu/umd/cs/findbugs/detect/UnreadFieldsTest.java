@@ -76,8 +76,7 @@ class UnreadFieldsTest {
     @Test
     void shouldReportConstantFinalFieldAssignedInInitializerBlock(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
-                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/Issue4136.class")
-        );
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/Issue4136.class"));
 
         Optional<BugInstance> reportedBug = bugCollection.getCollection()
                 .stream()
@@ -86,7 +85,6 @@ class UnreadFieldsTest {
 
         assertTrue(
                 reportedBug.isPresent(),
-               "Expected SS_SHOULD_BE_STATIC for constant final field assigned in an initializer block"
-        );
+                "Expected SS_SHOULD_BE_STATIC for constant final field assigned in an initializer block");
     }
 }
