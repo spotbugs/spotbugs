@@ -117,5 +117,5 @@ exec "$fb_javacmd" \
 	-Dspotbugs.home="$spotbugs_home" \
 	$jvm_debug $jvm_maxheap $jvm_ea $jvm_conservespace $jvm_user_props \
 	-Dfindbugs.launchUI=$fb_launchui \
-	-jar $spotbugs_home/lib/spotbugs.jar \
+	-jar "$spotbugs_home/lib/spotbugs.jar" \
 	${@:+"$@"}
