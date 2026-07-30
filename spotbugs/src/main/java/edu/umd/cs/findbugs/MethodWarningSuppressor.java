@@ -1,5 +1,7 @@
 package edu.umd.cs.findbugs;
 
+import org.apache.bcel.Const;
+
 import edu.umd.cs.findbugs.annotations.SuppressMatchType;
 import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.detect.UselessSuppressionDetector;
@@ -35,7 +37,7 @@ public class MethodWarningSuppressor extends ClassWarningSuppressor {
         }
 
         MethodAnnotation bugMethod = bugInstance.getPrimaryMethod();
-        if (bugMethod != null && !method.equals(bugMethod)) {
+        if (bugMethod != null && !method.equals(bugMethod) && !isLambdaOfSuppressedMethod(bugMethod)) {
             return false;
         }
         if (DEBUG) {
@@ -55,5 +57,17 @@ public class MethodWarningSuppressor extends ClassWarningSuppressor {
     @Override
     public boolean isUselessSuppressionReportable() {
         return userGeneratedMethod && super.isUselessSuppressionReportable();
+    }
+
+    private boolean isLambdaOfSuppressedMethod(MethodAnnotation bugMethod) {
+        if (!method.getClassName().equals(bugMethod.getClassName())) {
+            return false;
+        }
+
+        if (Const.CONSTRUCTOR_NAME.equals(method.getMethodName())) {
+            return bugMethod.getMethodName().startsWith("lambda$new$");
+        }
+
+        return bugMethod.getMethodName().startsWith("lambda$" + method.getMethodName() + "$");
     }
 }

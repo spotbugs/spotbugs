@@ -35,6 +35,19 @@ class WarningSuppressorTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void methodSuppressionAppliesToInnerLambdas() {
+        performAnalysis("ghIssues/Issue724.class");
+
+        assertNoBugType("US_USELESS_SUPPRESSION_ON_METHOD");
+
+        assertBugTypeCount("NP_ALWAYS_NULL", 1);
+        assertBugTypeCount("NP_LOAD_OF_KNOWN_NULL_VALUE", 1);
+
+        assertBugAtLine("NP_ALWAYS_NULL", 63);
+        assertBugAtLine("NP_LOAD_OF_KNOWN_NULL_VALUE", 63);
+    }
+
+    @Test
     void customSuppressAnnotationMethodTest() {
         performAnalysis("suppress/custom/CustomSuppressedBugs.class", "suppress/custom/SuppressFBWarnings.class");
 
