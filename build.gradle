@@ -21,7 +21,7 @@ buildscript {
     mavenCentral()
   }
   // commons-compress 1.28.0 refactored GzipCompressorInputStream to use the Builder pattern,
-  // calling AbstractStreamBuilder.getInputStream(). Gradle 9.3.1 to 9.5.1 bundles commons-io-2.15.1 in
+  // calling AbstractStreamBuilder.getInputStream(). Gradle 9.3.1 to 9.6.1 bundles commons-io-2.15.1 in
   // its own runtime classloader (parent of all plugin classloaders). With parent-first delegation,
   // AbstractStreamBuilder from commons-io-2.15.1 (protected getInputStream) is found before the
   // resolved commons-io-2.20.0, causing IllegalAccessException across classloaders.
