@@ -46,7 +46,6 @@ apply from: "${rootDir}/gradle/java.gradle"
 apply from: "${rootDir}/gradle/jacoco.gradle"
 
 subprojects {
-  apply plugin: 'constraints'
   apply from: "${rootDir}/gradle/java.gradle"
   apply from: "${rootDir}/gradle/eclipse.gradle"
   apply from: "${rootDir}/gradle/idea.gradle"
@@ -65,7 +64,6 @@ allprojects {
   }
   dependencies {
     String junitVersion = '6.1.2'
-    implementation platform("org.junit:junit-bom:${junitVersion}")
     testImplementation platform("org.junit:junit-bom:${junitVersion}")
   }
 }
