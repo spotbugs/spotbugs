@@ -1,8 +1,6 @@
 package edu.umd.cs.findbugs.ba;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 
@@ -28,7 +26,6 @@ class Issue1254Test extends AbstractIntegrationTest {
      * Test that accessing private members of a nested class doesn't result in uncalled method problems.
      */
     @Test
-    @EnabledForJreRange(min = JRE.JAVA_11)
     void testUncalledPrivateMethod() {
         performAnalysis(CLASS_LIST);
         assertBugTypeCount("UPM_UNCALLED_PRIVATE_METHOD", 2);
