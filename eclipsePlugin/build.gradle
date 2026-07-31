@@ -304,14 +304,6 @@ TaskProvider<Copy> pluginDailyJar = tasks.register('pluginDailyJar', Copy) {
   mustRunAfter(siteXml)
 }
 
-TaskProvider<Copy> pluginStableLatestJar = tasks.register('pluginStableLatestJar', Copy) {
-  dependsOn pluginJar
-  from pluginJar.map { Zip zipTask -> zipTask.outputs.files }
-  into layout.buildDirectory.dir('site/eclipse-stable-latest/plugins/')
-  mustRunAfter(siteHtml)
-  mustRunAfter(siteXml)
-}
-
 Map<String, String> siteFilterTokens = [
   'PLUGIN_ID': eclipsePluginId,
   'PLUGIN_VERSION':project.version.toString(),
@@ -361,20 +353,6 @@ TaskProvider<Zip> featureDailyJar = tasks.register('featureDailyJar', Zip) {
   destinationDirectory = layout.buildDirectory.dir('site/eclipse-daily/features/')
 }
 
-TaskProvider<Zip> featureStableLatestJar = tasks.register('featureStableLatestJar', Zip) {
-  archiveFileName = "${eclipsePluginId}_${project.version}.jar"
-  entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
-  from('plugin_feature-stable_latest.xml') {
-    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
-    rename { 'feature.xml' }
-  }
-  from('feature_p2.inf') {
-    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
-    rename { 'p2.inf' }
-  }
-  destinationDirectory = layout.buildDirectory.dir('site/eclipse-stable-latest/features/')
-}
-
 TaskProvider<Copy> siteHtml = tasks.register('siteHtml', Copy) {
   filter(tokens:[
     'URL': 'https://spotbugs.github.io/eclipse/'
@@ -416,19 +394,6 @@ TaskProvider<Copy> siteDailyHtml = tasks.register('siteDailyHtml', Copy) {
   }
 }
 
-TaskProvider<Copy> siteStableLatestHtml = tasks.register('siteStableLatestHtml', Copy) {
-  filter(tokens:[
-    'URL': 'https://spotbugs.github.io/eclipse-stable-latest/'
-  ] + siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
-  from 'plugin_site.html'
-  into layout.buildDirectory.dir('site/eclipse-stable-latest')
-  rename { 'index.html' }
-  outputs.upToDateWhen {
-    // even if we have generated file, we should rerun this task to overwrite it.
-    false
-  }
-}
-
 TaskProvider<Copy> siteXml = tasks.register('siteXml', Copy) {
   filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site.xml'
@@ -457,17 +422,6 @@ TaskProvider<Copy> siteDailyXml = tasks.register('siteDailyXml', Copy) {
   filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site-daily.xml'
   into layout.buildDirectory.dir('site/eclipse-daily')
-  rename { 'site.xml' }
-  outputs.upToDateWhen {
-    // even if we have generated file, we should rerun this task to overwrite it.
-    false
-  }
-}
-
-TaskProvider<Copy> siteStableLatestXml = tasks.register('siteStableLatestXml', Copy) {
-  filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
-  from 'plugin_site-stable_latest.xml'
-  into layout.buildDirectory.dir('site/eclipse-stable-latest')
   rename { 'site.xml' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -567,27 +521,8 @@ TaskProvider<Exec> generateP2MetadataDaily = tasks.register('generateP2MetadataD
     '-vm', "${System.getProperty('java.home')}/bin"
 }
 
-TaskProvider<Exec> generateP2MetadataStableLatest = tasks.register('generateP2MetadataStableLatest', Exec) {
-  doFirst {
-    Provider<Directory> eclipseSiteStableLatestDir = layout.buildDirectory.dir('site/eclipse-stable-latest')
-    File artifactsXml = eclipseSiteStableLatestDir.map { Directory dir -> dir.file('artifacts.xml') }.get().asFile
-    File contentXml = eclipseSiteStableLatestDir.map { Directory dir -> dir.file('content.xml') }.get().asFile
-    delete artifactsXml
-    delete contentXml
-    signJar(eclipseSiteStableLatestDir.get().asFile)
-  }
-  inputs.file 'local.properties'
-  dependsOn confirmEclipse, pluginStableLatestJar, featureStableLatestJar, siteStableLatestXml, siteStableLatestHtml
-  commandLine eclipseExecutable, '-nosplash',
-    '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
-    '-metadataRepository', "file:${resolvedBuildDir}/site/eclipse-stable-latest",
-    '-artifactRepository', "file:${resolvedBuildDir}/site/eclipse-stable-latest",
-    '-source', "${resolvedBuildDir}/site/eclipse-stable-latest",
-    '-vm', "${System.getProperty('java.home')}/bin"
-}
-
 TaskProvider<Task> eclipseSite = tasks.register('eclipseSite') {
-  dependsOn generateP2Metadata, generateCandidateP2Metadata, generateP2MetadataDaily, generateP2MetadataStableLatest
+  dependsOn generateP2Metadata, generateCandidateP2Metadata, generateP2MetadataDaily
 }
 
 // create zip file to upload to GitHub release page
