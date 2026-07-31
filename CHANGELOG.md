@@ -8,6 +8,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 - Fix `INT_BAD_COMPARISON_WITH_SIGNED_BYTE` false positive for meaningful comparisons of a signed byte with `127` (`b < 127`, `b >= 127`) ([#4201](https://github.com/spotbugs/spotbugs/pull/4201))
 
+### Changed
+- `@SuppressFBWarnings` annotation on a method or a constructor now suppresses warnings reported in their lambdas too ([#724](https://github.com/spotbugs/spotbugs/issues/724))
+
 ## 4.10.3 - 2026-07-12
 ### Fixed
 - Fix `LI_LAZY_INIT_STATIC` false negative when the null guard is written in yoda-style (`null == field`) ([#4144](https://github.com/spotbugs/spotbugs/pull/4144))
