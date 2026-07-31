@@ -7,7 +7,7 @@ import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -25,7 +25,7 @@ class IncorrectSelfComparisonInstanceOfPatternMatchingTest {
      *      issue</a>
      */
     @Test
-    @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11 })
+    @EnabledForJreRange(min = JRE.JAVA_17)
     void testIssue1136(SpotBugsRunner spotbugs) {
         final BugInstanceMatcher selfComparisonMatcher = new BugInstanceMatcherBuilder()
                 .bugType("SA_LOCAL_SELF_COMPARISON").build();

@@ -3,7 +3,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 
 class FindReturnRefTest extends AbstractIntegrationTest {
@@ -258,7 +258,7 @@ class FindReturnRefTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11 })
+    @EnabledForJreRange(min = JRE.JAVA_17)
     void testUnmodifiableClass() {
         performAnalysis("../java17/exposemutable/UnmodifiableClass.class");
 
@@ -320,7 +320,7 @@ class FindReturnRefTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11 })
+    @EnabledForJreRange(min = JRE.JAVA_17)
     @Disabled
     void testUnmodifiableRecord() {
         performAnalysis("../java17/exposemutable/UnmodifiableRecord.class");
@@ -328,7 +328,7 @@ class FindReturnRefTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11 })
+    @EnabledForJreRange(min = JRE.JAVA_17)
     void testUnmodifiableRecordWithAllParamConstructor() {
         performAnalysis("../java17/exposemutable/UnmodifiableRecordWithAllParamConstructor.class");
         assertNoExposeBug();

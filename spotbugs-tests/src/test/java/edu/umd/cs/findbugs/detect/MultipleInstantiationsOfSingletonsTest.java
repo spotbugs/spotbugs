@@ -3,7 +3,7 @@ package edu.umd.cs.findbugs.detect;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 
 class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
@@ -298,7 +298,7 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11 })
+    @EnabledForJreRange(min = JRE.JAVA_17)
     void recordNotSingletonTest() {
         performAnalysis("../java17/Issue2981.class");
         assertNoBugs();
