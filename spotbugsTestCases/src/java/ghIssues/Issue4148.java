@@ -25,4 +25,13 @@ public class Issue4148 {
             statement.execute();
         }
     }
+
+    public void prepareCallClosedWithFinally(Connection connection) throws SQLException {
+        CallableStatement statement = connection.prepareCall("call procedure()");
+        try {
+            statement.execute();
+        } finally {
+            statement.close();
+        }
+    }
 }
