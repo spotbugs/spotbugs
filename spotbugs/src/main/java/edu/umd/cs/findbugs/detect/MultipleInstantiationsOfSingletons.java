@@ -20,8 +20,12 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.PruneUnconditionalExceptionThrowerEdges;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XField;
@@ -39,11 +43,18 @@ import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.INVOKESPECIAL;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -143,30 +154,42 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     XMethod calledMethod = item.getReturnValueOf();
-                    if (calledMethod != null && Const.CONSTRUCTOR_NAME.equals(calledMethod.getName())
-                            && calledMethod.getClassName().equals(getDottedClassName())) {
+                    boolean storesConstructorResult = calledMethod != null && Const.CONSTRUCTOR_NAME.equals(calledMethod.getName())
+                            && calledMethod.getClassName().equals(getDottedClassName());
+                    boolean ternaryStyleLazyStore = !storesConstructorResult
+                            && !Const.STATIC_INITIALIZER_NAME.equals(getMethodName())
+                            && field.getSignature().equals(item.getSignature())
+                            && isMergedConstructorAndFieldStore(field);
+
+                    if (storesConstructorResult || ternaryStyleLazyStore) {
                         isInstanceAssignOk = true;
                         instanceField = field;
 
-                        try {
-                            ValueNumberDataflow vnaDataflow = getClassContext().getValueNumberDataflow(getMethod());
-                            IsNullValueDataflow invDataflow = getClassContext().getIsNullValueDataflow(getMethod());
-                            ValueNumberFrame vFrame = vnaDataflow.getAnalysis().getFactAtPC(vnaDataflow.getCFG(), getPC());
-                            IsNullValueFrame iFrame = invDataflow.getAnalysis().getFactAtPC(invDataflow.getCFG(), getPC());
-                            AvailableLoad l = new AvailableLoad(field);
-                            ValueNumber[] availableLoads = vFrame.getAvailableLoad(l);
-                            if (availableLoads != null && iFrame.isTrackValueNumbers()) {
-                                for (ValueNumber v : availableLoads) {
-                                    IsNullValue knownValue = iFrame.getKnownValue(v);
-                                    if (knownValue != null && knownValue.isDefinitelyNull()) {
-                                        isInstanceFieldLazilyInitialized = true;
+                        if (storesConstructorResult) {
+                            try {
+                                ValueNumberDataflow vnaDataflow = getClassContext().getValueNumberDataflow(getMethod());
+                                IsNullValueDataflow invDataflow = getClassContext().getIsNullValueDataflow(getMethod());
+                                ValueNumberFrame vFrame = vnaDataflow.getAnalysis().getFactAtPC(vnaDataflow.getCFG(), getPC());
+                                IsNullValueFrame iFrame = invDataflow.getAnalysis().getFactAtPC(invDataflow.getCFG(), getPC());
+                                AvailableLoad l = new AvailableLoad(field);
+                                ValueNumber[] availableLoads = vFrame.getAvailableLoad(l);
+                                if (availableLoads != null && iFrame.isTrackValueNumbers()) {
+                                    for (ValueNumber v : availableLoads) {
+                                        IsNullValue knownValue = iFrame.getKnownValue(v);
+                                        if (knownValue != null && knownValue.isDefinitelyNull()) {
+                                            isInstanceFieldLazilyInitialized = true;
+                                        }
                                     }
                                 }
-                            }
 
-                        } catch (DataflowAnalysisException | CFGBuilderException e) {
-                            bugReporter.logError(String.format("Detector %s caught an exception while analyzing %s.",
-                                    this.getClass().getName(), getClassContext().getJavaClass().getClassName()), e);
+                            } catch (DataflowAnalysisException | CFGBuilderException e) {
+                                bugReporter.logError(String.format("Detector %s caught an exception while analyzing %s.",
+                                        this.getClass().getName(), getClassContext().getJavaClass().getClassName()), e);
+                            }
+                        }
+
+                        if (!isInstanceFieldLazilyInitialized && ternaryStyleLazyStore) {
+                            isInstanceFieldLazilyInitialized = true;
                         }
                     }
                 }
@@ -212,6 +235,117 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
     private boolean isInstanceField(XField field, String clsName) {
         String className = "L" + clsName + ";";
         return field != null && field.isPrivate() && field.isStatic() && className.equals(field.getSignature());
+    }
+
+    private boolean isMergedConstructorAndFieldStore(XField field) {
+        try {
+            CFG cfg = getClassContext().getCFG(getMethod());
+            ConstantPoolGen cpg = getClassContext().getConstantPoolGen();
+            Collection<BasicBlock> blocks = cfg.getBlocksContainingInstructionWithOffset(getPC());
+            for (BasicBlock block : blocks) {
+                if (cfg.getNumIncomingEdges(block) < 2) {
+                    continue;
+                }
+                boolean constructorPath = false;
+                boolean fieldReloadPath = false;
+                for (Iterator<Edge> edgeIter = cfg.incomingEdgeIterator(block); edgeIter.hasNext();) {
+                    BasicBlock source = edgeIter.next().getSource();
+                    if (pathHasSelfConstructor(cfg, source, cpg, 3)) {
+                        constructorPath = true;
+                    }
+                    if (pathHasGetStaticOf(cfg, source, field, cpg, 3)) {
+                        fieldReloadPath = true;
+                    }
+                }
+                if (constructorPath && fieldReloadPath) {
+                    return true;
+                }
+            }
+        } catch (CFGBuilderException e) {
+            bugReporter.logError(String.format("Detector %s caught an exception while analyzing %s.",
+                    this.getClass().getName(), getClassContext().getJavaClass().getClassName()), e);
+        }
+        return false;
+    }
+
+    private boolean pathHasSelfConstructor(CFG cfg, BasicBlock block, ConstantPoolGen cpg, int depth) {
+        if (block == null || depth < 0) {
+            return false;
+        }
+        if (blockHasSelfConstructor(block, cpg)) {
+            return true;
+        }
+        if (depth == 0 || !isPassthroughBlock(block)) {
+            return false;
+        }
+        for (Iterator<Edge> edgeIter = cfg.incomingEdgeIterator(block); edgeIter.hasNext();) {
+            if (pathHasSelfConstructor(cfg, edgeIter.next().getSource(), cpg, depth - 1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean pathHasGetStaticOf(CFG cfg, BasicBlock block, XField field, ConstantPoolGen cpg, int depth) {
+        if (block == null || depth < 0) {
+            return false;
+        }
+        if (blockHasGetStaticOf(block, field, cpg)) {
+            return true;
+        }
+        if (depth == 0 || !isPassthroughBlock(block)) {
+            return false;
+        }
+        for (Iterator<Edge> edgeIter = cfg.incomingEdgeIterator(block); edgeIter.hasNext();) {
+            if (pathHasGetStaticOf(cfg, edgeIter.next().getSource(), field, cpg, depth - 1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean blockHasSelfConstructor(BasicBlock block, ConstantPoolGen cpg) {
+        for (Iterator<InstructionHandle> iter = block.instructionIterator(); iter.hasNext();) {
+            Instruction instruction = iter.next().getInstruction();
+            if (instruction.getOpcode() != Const.INVOKESPECIAL) {
+                continue;
+            }
+            INVOKESPECIAL invoke = (INVOKESPECIAL) instruction;
+            if (Const.CONSTRUCTOR_NAME.equals(invoke.getMethodName(cpg))
+                    && invoke.getClassName(cpg).equals(getDottedClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean blockHasGetStaticOf(BasicBlock block, XField field, ConstantPoolGen cpg) {
+        for (Iterator<InstructionHandle> iter = block.instructionIterator(); iter.hasNext();) {
+            Instruction instruction = iter.next().getInstruction();
+            if (instruction.getOpcode() != Const.GETSTATIC) {
+                continue;
+            }
+            XField loaded = Hierarchy.findXField((FieldInstruction) instruction, cpg);
+            if (field.equals(loaded)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isPassthroughBlock(BasicBlock block) {
+        if (block.isEmpty()) {
+            return true;
+        }
+        int count = 0;
+        for (Iterator<InstructionHandle> iter = block.instructionIterator(); iter.hasNext();) {
+            iter.next();
+            count++;
+            if (count > 2) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
