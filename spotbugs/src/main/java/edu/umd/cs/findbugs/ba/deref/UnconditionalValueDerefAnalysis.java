@@ -215,6 +215,19 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
             throws DataflowAnalysisException {
         if (reportPotentialDereference(location, invDataflow.getFactAtLocation(location))) {
             ValueNumber vn = vnaFrame.getTopValue();
+            // A field read is represented by a single value number shared across every
+            // getfield of that field (available-load elimination), so modelling an
+            // `if (field == null) throw new NullPointerException()` guard as an
+            // unconditional dereference would also cover every earlier read of the same
+            // field. That turns a protective guard into a false NP_NULL_ON_SOME_PATH
+            // whenever the field has a preceding null path (issue #4147). For local
+            // variables and parameters the value number is specific to the guarded
+            // value, so the modelling stays precise and remains required to recognize
+            // require-nonnull guard methods (NP_NULL_PARAM_DEREF) and explicit local
+            // null guards (NP_NULL_ON_SOME_PATH).
+            if (vnaFrame.getLoad(vn) != null) {
+                return;
+            }
             fact.addDeref(vn, location);
         }
     }
