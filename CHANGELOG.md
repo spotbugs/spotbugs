@@ -6,6 +6,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2026-??-??
 ### Fixed
+- Fix `DMI_RANDOM_USED_ONLY_ONCE` FP when Random is used inside loop but created before ([#3937](https://github.com/spotbugs/spotbugs/pull/3937))
 - Fix `INT_BAD_COMPARISON_WITH_SIGNED_BYTE` false positive for meaningful comparisons of a signed byte with `127` (`b < 127`, `b >= 127`) ([#4201](https://github.com/spotbugs/spotbugs/pull/4201))
 
 ## 4.10.3 - 2026-07-12

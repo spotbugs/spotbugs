@@ -20,7 +20,9 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
@@ -82,6 +84,9 @@ public class DumbMethods extends OpcodeStackDetector {
         }
 
         public abstract void sawOpcode(int seen);
+
+        public void afterMethod(Method method) {
+        }
     }
 
     private final class InvalidMinMaxSubDetector extends SubDetector {
@@ -494,6 +499,10 @@ public class DumbMethods extends OpcodeStackDetector {
 
         private boolean freshRandomOneBelowTos = false;
 
+        private int randomInitPC;
+
+        private final Map<Integer, BugInstance> pcToBugInstanceMap = new HashMap<>();
+
         @Override
         public void initMethod(Method method) {
             freshRandomOnTos = false;
@@ -507,17 +516,38 @@ public class DumbMethods extends OpcodeStackDetector {
                 if ((CLASS_NAME_RANDOM.equals(classConstantOperand) || "java/security/SecureRandom".equals(classConstantOperand))
                         && !("doubles".equals(nameConstantOperand) || "ints".equals(nameConstantOperand) || "longs".equals(nameConstantOperand))
                         && (freshRandomOnTos || freshRandomOneBelowTos)) {
-                    accumulator.accumulateBug(new BugInstance(DumbMethods.this, "DMI_RANDOM_USED_ONLY_ONCE", HIGH_PRIORITY)
-                            .addClassAndMethod(DumbMethods.this).addCalledMethod(DumbMethods.this), DumbMethods.this);
 
+                    pcToBugInstanceMap.put(getPC(), new BugInstance(DumbMethods.this, "DMI_RANDOM_USED_ONLY_ONCE", HIGH_PRIORITY)
+                            .addClassAndMethod(DumbMethods.this).addCalledMethod(DumbMethods.this).addSourceLine(DumbMethods.this));
                 }
             }
             if (seen == Const.INVOKESPECIAL) {
                 String classConstantOperand = getClassConstantOperand();
                 freshRandomOneBelowTos = freshRandomOnTos && isRegisterLoad();
-                freshRandomOnTos = (CLASS_NAME_RANDOM.equals(classConstantOperand) || "java/security/SecureRandom".equals(classConstantOperand))
-                        && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand());
+                if ((CLASS_NAME_RANDOM.equals(classConstantOperand) || "java/security/SecureRandom".equals(classConstantOperand))
+                        && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())) {
+                    freshRandomOnTos = true;
+                    randomInitPC = getPC();
+                } else {
+                    freshRandomOnTos = false;
+                }
             }
+            if (isBranch(seen)) {
+                int loopstart = getBranchTarget();
+                int loopend = getPC();
+                // if the Random init is before the loop, but the usage is inside
+                if (loopstart < loopend && randomInitPC < loopstart) {
+                    pcToBugInstanceMap.keySet().removeIf(pc -> pc >= loopstart && pc <= loopend);
+                }
+            }
+        }
+
+        @Override
+        public void afterMethod(Method method) {
+            for (Map.Entry<Integer, BugInstance> entry : pcToBugInstanceMap.entrySet()) {
+                bugReporter.reportBug(entry.getValue());
+            }
+            pcToBugInstanceMap.clear();
         }
     }
 
@@ -600,6 +630,13 @@ public class DumbMethods extends OpcodeStackDetector {
     }
 
     @Override
+    public void visitAfter(Method method) {
+        for (SubDetector subDetector : subDetectors) {
+            subDetector.afterMethod(method);
+        }
+    }
+
+    @Override
     public void visitAfter(JavaClass obj) {
         accumulator.reportAccumulatedBugs();
     }
@@ -651,7 +688,6 @@ public class DumbMethods extends OpcodeStackDetector {
         sawCheckForNonNegativeSignedByte = -1000;
         sawLoadOfMinValue = false;
         previousMethodCall = null;
-
     }
 
     int opcodesSincePendingAbsoluteValueBug;
