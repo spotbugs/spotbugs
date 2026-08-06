@@ -29,6 +29,9 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.LockDataflow;
 import edu.umd.cs.findbugs.ba.LockSet;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Field;
@@ -56,7 +59,32 @@ public class MultiThreadedCodeIdentifierUtils {
     private static final String ATOMIC_PACKAGE = "java/util/concurrent/atomic";
 
     public static boolean isPartOfMultiThreadedCode(ClassContext classContext) {
-        JavaClass javaClass = classContext.getJavaClass();
+        if (isDirectlyPartOfMultiThreadedCode(classContext.getJavaClass(), classContext)) {
+            return true;
+        }
+
+        // A non-static inner class shares the multi-threaded context of its
+        // enclosing class (for example an inner class declared in a Thread or
+        // Runnable subtype), so walk up the enclosing-class chain before
+        // deciding that this class is not part of multi-threaded code.
+        try {
+            AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
+            ClassDescriptor enclosing = classContext.getXClass().getImmediateEnclosingClass();
+            while (enclosing != null) {
+                JavaClass enclosingJavaClass = Global.getAnalysisCache().getClassAnalysis(JavaClass.class, enclosing);
+                if (isDirectlyPartOfMultiThreadedCode(enclosingJavaClass, analysisContext.getClassContext(enclosingJavaClass))) {
+                    return true;
+                }
+                enclosing = enclosing.getXClass().getImmediateEnclosingClass();
+            }
+        } catch (CheckedAnalysisException e) {
+            AnalysisContext.logError("Error while looking up enclosing class for multi-threaded-code check", e);
+        }
+
+        return false;
+    }
+
+    private static boolean isDirectlyPartOfMultiThreadedCode(JavaClass javaClass, ClassContext classContext) {
         if (Subtypes2.instanceOf(javaClass, JAVA_LANG_RUNNABLE) ||
                 Stream.of(javaClass.getFields()).anyMatch(MultiThreadedCodeIdentifierUtils::isFieldIndicatingMultiThreadedContainer)) {
             return true;
