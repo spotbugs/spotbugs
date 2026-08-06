@@ -38,11 +38,15 @@ import edu.umd.cs.findbugs.ba.type.TypeFrameModelingVisitor;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MutableClasses;
 import edu.umd.cs.findbugs.util.NestedAccessUtil;
 import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.EnclosingMethod;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -433,7 +437,15 @@ public class FindReturnRef extends OpcodeStackDetector {
                 }
             } while (clazz2 != null);
             try {
-                clazz = clazz.getXClass().getImmediateEnclosingClass();
+                ClassDescriptor enclosing = clazz.getXClass().getImmediateEnclosingClass();
+                // For local and anonymous classes the InnerClasses attribute does not carry the
+                // enclosing class (outer_class_info_index is unset), so getImmediateEnclosingClass()
+                // returns null. Fall back to the EnclosingMethod attribute, which by JVMS 4.7.7 is
+                // required for local/anonymous classes and names the enclosing class directly.
+                if (enclosing == null && clazz.equals(getClassDescriptor())) {
+                    enclosing = getEnclosingClassFromAttribute();
+                }
+                clazz = enclosing;
                 if (clazz != null && !clazz.getXClass().isPublic()) {
                     return false;
                 }
@@ -443,5 +455,26 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
         } while (clazz != null);
         return false;
+    }
+
+    /**
+     * Resolves the immediate enclosing class of the class under analysis from its
+     * {@code EnclosingMethod} attribute.
+     *
+     * @return the enclosing class descriptor, or {@code null} if the analyzed class has no
+     *         {@code EnclosingMethod} attribute (i.e. it is not a local or anonymous class)
+     */
+    private ClassDescriptor getEnclosingClassFromAttribute() {
+        for (Attribute attribute : getThisClass().getAttributes()) {
+            if (attribute instanceof EnclosingMethod) {
+                ConstantClass enclosingClass = ((EnclosingMethod) attribute).getEnclosingClass();
+                if (enclosingClass == null) {
+                    return null;
+                }
+                return DescriptorFactory.createClassDescriptor(
+                        enclosingClass.getBytes(getThisClass().getConstantPool()));
+            }
+        }
+        return null;
     }
 }
