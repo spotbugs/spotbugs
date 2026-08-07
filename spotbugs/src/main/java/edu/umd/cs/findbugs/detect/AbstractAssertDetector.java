@@ -19,7 +19,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -43,18 +43,8 @@ public abstract class AbstractAssertDetector extends OpcodeStackDetector {
      */
     protected abstract void detect(int seen);
 
-    /**
-     * Resets the state before scanning a method.
-     *
-     * <p>An assertion never spans a method boundary, but {@code inAssert} is only cleared when
-     * a {@code new AssertionError} is seen. A method that reads {@code $assertionsDisabled}
-     * without ever throwing (for example a guard that just returns) therefore leaves the flag
-     * set, and every method scanned afterwards is treated as if it were inside an assertion.
-     * Detector instances are reused for the whole analysis run, so the state also leaks into
-     * the following classes.</p>
-     */
     @Override
-    public void visit(Code obj) {
+    public void visit(Method obj) {
         inAssert = false;
         super.visit(obj);
     }
