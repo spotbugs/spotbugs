@@ -63,7 +63,7 @@ allprojects {
     mavenCentral()
   }
   dependencies {
-    String junitVersion = '6.1.2'
+    String junitVersion = '6.1.3'
     testImplementation platform("org.junit:junit-bom:${junitVersion}")
   }
 }
