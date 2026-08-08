@@ -7,6 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2026-??-??
 ### Fixed
 - Fix `INT_BAD_COMPARISON_WITH_SIGNED_BYTE` false positive for meaningful comparisons of a signed byte with `127` (`b < 127`, `b >= 127`) ([#4201](https://github.com/spotbugs/spotbugs/pull/4201))
+- Fix `MS_EXPOSE_BUF` and `EI_EXPOSE_BUF` false negative when returning `Buffer.array()` ([#4235](https://github.com/spotbugs/spotbugs/pull/4235))
 
 ## 4.10.3 - 2026-07-12
 ### Fixed
