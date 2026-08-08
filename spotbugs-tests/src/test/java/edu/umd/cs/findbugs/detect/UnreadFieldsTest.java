@@ -72,4 +72,19 @@ class UnreadFieldsTest {
         assertEquals(Priorities.LOW_PRIORITY, reportedBug.get().getPriority(),
                 "Expected low priority unread field bug");
     }
+
+    @Test
+    void shouldReportConstantFinalFieldAssignedInInitializerBlock(SpotBugsRunner spotbugs) {
+        BugCollection bugCollection = spotbugs.performAnalysis(
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/Issue4136.class"));
+
+        Optional<BugInstance> reportedBug = bugCollection.getCollection()
+                .stream()
+                .filter(bug -> "SS_SHOULD_BE_STATIC".equals(bug.getBugPattern().getType()))
+                .findAny();
+
+        assertTrue(
+                reportedBug.isPresent(),
+                "Expected SS_SHOULD_BE_STATIC for constant final field assigned in an initializer block");
+    }
 }

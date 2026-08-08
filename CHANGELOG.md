@@ -7,6 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2026-??-??
 ### Fixed
 - Fix `INT_BAD_COMPARISON_WITH_SIGNED_BYTE` false positive for meaningful comparisons of a signed byte with `127` (`b < 127`, `b >= 127`) ([#4201](https://github.com/spotbugs/spotbugs/pull/4201))
+- Fix `SS_SHOULD_BE_STATIC` false negative for final fields initialized in initializer blocks ([#4136](https://github.com/spotbugs/spotbugs/issues/4136))
 
 ## 4.10.3 - 2026-07-12
 ### Fixed
