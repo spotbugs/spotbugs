@@ -4,7 +4,7 @@ apply from: "${rootDir}/gradle/javadoc.gradle"
 apply from: "${rootDir}/gradle/maven.gradle"
 
 dependencies {
-  String junitVersion = '6.1.2'
+  String junitVersion = '6.1.3'
   compileOnly project(':spotbugs')
   compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
   compileOnly "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
