@@ -78,10 +78,6 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
             }
             break;
         case LOADED:
-            // Storing a value into a local variable cannot change the state of the monitored
-            // object, so a notify() that follows is still naked. Everything that may mutate
-            // state - PUTFIELD, PUTSTATIC, invocations, arithmetic feeding them - still falls
-            // through to the reset below.
             if (isRegisterLoad() || isRegisterStore() || seen == Const.GETSTATIC || seen == Const.GETFIELD) {
                 break;
             } else if (seen == Const.INVOKEVIRTUAL
