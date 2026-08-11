@@ -22,8 +22,6 @@ package edu.umd.cs.findbugs.detect;
 import java.math.BigDecimal;
 import java.util.Iterator;
 
-import edu.umd.cs.findbugs.bytecode.MemberUtils;
-import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
@@ -45,6 +43,7 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugPcMap;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.IntAnnotation;
@@ -67,9 +66,11 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.util.Values;
@@ -501,15 +502,20 @@ public class DumbMethods extends OpcodeStackDetector {
 
         @Override
         public void sawOpcode(int seen) {
+            if (seen == Const.PUTSTATIC || seen == Const.PUTFIELD) {
+                bugPcMap.addFieldAnnotation(DumbMethods.this);
+
+                return;
+            }
+
             if (seen == Const.INVOKEVIRTUAL) {
                 String classConstantOperand = getClassConstantOperand();
                 String nameConstantOperand = getNameConstantOperand();
                 if ((CLASS_NAME_RANDOM.equals(classConstantOperand) || "java/security/SecureRandom".equals(classConstantOperand))
                         && !("doubles".equals(nameConstantOperand) || "ints".equals(nameConstantOperand) || "longs".equals(nameConstantOperand))
                         && (freshRandomOnTos || freshRandomOneBelowTos)) {
-                    accumulator.accumulateBug(new BugInstance(DumbMethods.this, "DMI_RANDOM_USED_ONLY_ONCE", HIGH_PRIORITY)
+                    bugPcMap.accumulateBug(new BugInstance(DumbMethods.this, "DMI_RANDOM_USED_ONLY_ONCE", HIGH_PRIORITY)
                             .addClassAndMethod(DumbMethods.this).addCalledMethod(DumbMethods.this), DumbMethods.this);
-
                 }
             }
             if (seen == Const.INVOKESPECIAL) {
@@ -529,6 +535,8 @@ public class DumbMethods extends OpcodeStackDetector {
     private static final ObjectType CONDITION_TYPE = ObjectTypeFactory.getInstance("java.util.concurrent.locks.Condition");
 
     private final BugReporter bugReporter;
+
+    private final BugPcMap bugPcMap;
 
     private boolean sawCurrentTimeMillis;
 
@@ -576,6 +584,8 @@ public class DumbMethods extends OpcodeStackDetector {
 
     public DumbMethods(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+        this.bugPcMap = new BugPcMap(bugReporter);
+
         accumulator = new BugAccumulator(bugReporter);
         absoluteValueAccumulator = new BugAccumulator(bugReporter);
         testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
@@ -602,6 +612,11 @@ public class DumbMethods extends OpcodeStackDetector {
     @Override
     public void visitAfter(JavaClass obj) {
         accumulator.reportAccumulatedBugs();
+    }
+
+    @Override
+    public void visitAfter(Code obj) {
+        bugPcMap.reportAccumulatedBugs();
     }
 
     public static boolean isTestMethod(Method method) {
