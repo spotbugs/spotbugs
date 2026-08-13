@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -30,14 +31,18 @@ import edu.umd.cs.findbugs.ba.LockDataflow;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MultiThreadedCodeIdentifierUtils;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,9 +53,32 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
     private LockDataflow currentLockDataFlow;
     private boolean isFirstVisit = true;
     private boolean hadOperation = false;
+    // Field reads and inner-method call edges are accumulated across every
+    // analyzed multi-threaded class for the lifetime of the detector: a field
+    // owned by an enclosing class can be read in another method of the
+    // enclosing class (or a sibling inner class), and that "is this shared
+    // field actually read elsewhere?" signal must survive the per-class visit
+    // boundary. Bug emission is deferred to report() so the shared/read
+    // evaluation sees the fully accumulated map regardless of class visit order.
     private final Map<XMethod, Set<XField>> readFieldsByMethods = new HashMap<>();
     private final Set<XField> relevantFields = new HashSet<>();
     private final Map<XMethod, Set<XMethod>> nonSyncedMethodCallsByCallingMethods = new HashMap<>();
+    private final List<PendingBug> pendingBugs = new ArrayList<>();
+
+    /** A candidate bug captured at the PUTFIELD/PUTSTATIC site, evaluated in report(). */
+    private static final class PendingBug {
+        final BugInstance bug;
+        final SourceLineAnnotation sourceLine;
+        final XField field;
+        final XMethod method;
+
+        PendingBug(BugInstance bug, SourceLineAnnotation sourceLine, XField field, XMethod method) {
+            this.bug = bug;
+            this.sourceLine = sourceLine;
+            this.field = field;
+            this.method = method;
+        }
+    }
 
     private static final Set<Short> readOpCodes = Set.of(Const.GETFIELD, Const.GETSTATIC,
             Const.ALOAD, Const.ALOAD_0, Const.ALOAD_1, Const.ALOAD_2, Const.ALOAD_3,
@@ -121,11 +149,10 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
 
     @Override
     public void visitAfter(JavaClass obj) {
-        bugAccumulator.reportAccumulatedBugs();
+        // readFieldsByMethods / nonSyncedMethodCallsByCallingMethods intentionally
+        // keep accumulating across classes; bug emission happens in report().
         relevantFields.clear();
-        readFieldsByMethods.clear();
         hadOperation = false;
-        nonSyncedMethodCallsByCallingMethods.clear();
     }
 
     @Override
@@ -161,7 +188,7 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
     }
 
     private void addNonFinalFieldsOfClass(XField field, XMethod method, Map<XMethod, Set<XField>> map) {
-        if (field != null && !field.isFinal() && !field.isSynthetic() && field.getClassDescriptor().equals(method.getClassDescriptor())) {
+        if (field != null && !field.isFinal() && !field.isSynthetic() && isFieldOfMethodClassOrEnclosing(field, method)) {
             map.computeIfAbsent(method, k -> new HashSet<>()).add(field);
         }
     }
@@ -201,29 +228,20 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
         } else if (seen == Const.PUTFIELD || seen == Const.PUTSTATIC) {
             XField field = getXFieldOperand();
             if (field != null && !field.isFinal() && !field.isSynthetic()
-                    && (seen == Const.PUTSTATIC || stack.getStackItem(1).getRegisterNumber() == 0)
-                    && field.getClassDescriptor().equals(method.getClassDescriptor())
-                    && hasNonSyncedNonPrivateCallToMethod(method, new HashSet<>())) {
-                boolean fieldReadInOtherMethod = mapContainsFieldWithOtherMethod(field, method, readFieldsByMethods);
-                if (fieldReadInOtherMethod) {
-                    if (hadOperation && !relevantFields.isEmpty() && relevantFields.contains(field)
-                            && isPrimitiveOrItsBoxingType(field.getSignature())) {
-                        bugAccumulator.accumulateBug(
-                                new BugInstance(this, "AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE", NORMAL_PRIORITY)
-                                        .addClass(this)
-                                        .addMethod(method)
-                                        .addField(field),
-                                this);
-                    } else if (!field.isVolatile() && ClassName.isValidBaseTypeFieldDescriptor(field.getSignature())) {
-                        String bugType = is64bitPrimitive(field.getSignature()) ? "AT_NONATOMIC_64BIT_PRIMITIVE"
-                                : "AT_STALE_THREAD_WRITE_OF_PRIMITIVE";
-                        bugAccumulator.accumulateBug(
-                                new BugInstance(this, bugType, NORMAL_PRIORITY)
-                                        .addClass(this)
-                                        .addMethod(method)
-                                        .addField(field),
-                                this);
-                    }
+                    && (seen == Const.PUTSTATIC || stack.getStackItem(1).getRegisterNumber() == 0
+                            || isEnclosingThisReference(stack.getStackItem(1).getXField()))
+                    && isFieldOfMethodClassOrEnclosing(field, method)) {
+                // Whether the field is actually shared (read in another reachable
+                // method) is evaluated in report() once the cross-class read map
+                // is fully accumulated. Capture the candidate bug now, while the
+                // per-instruction state (hadOperation, relevantFields) is live.
+                if (hadOperation && !relevantFields.isEmpty() && relevantFields.contains(field)
+                        && isPrimitiveOrItsBoxingType(field.getSignature())) {
+                    addPendingBug("AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE", method, field);
+                } else if (!field.isVolatile() && ClassName.isValidBaseTypeFieldDescriptor(field.getSignature())) {
+                    String bugType = is64bitPrimitive(field.getSignature()) ? "AT_NONATOMIC_64BIT_PRIMITIVE"
+                            : "AT_STALE_THREAD_WRITE_OF_PRIMITIVE";
+                    addPendingBug(bugType, method, field);
                 }
             }
             relevantFields.clear();
@@ -252,5 +270,56 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
 
     private boolean is64bitPrimitive(String className) {
         return "D".equals(className) || "J".equals(className);
+    }
+
+    /**
+     * True if {@code field} is declared on {@code method}'s own class or on one
+     * of its enclosing classes. A non-static inner class can read and write
+     * fields of its enclosing instance via the synthetic {@code this$0}
+     * reference, so the detector must follow that chain instead of only
+     * matching the inner class itself.
+     */
+    private boolean isFieldOfMethodClassOrEnclosing(XField field, XMethod method) {
+        ClassDescriptor fieldClass = field.getClassDescriptor();
+        ClassDescriptor enclosing = method.getClassDescriptor();
+        while (enclosing != null) {
+            if (fieldClass.equals(enclosing)) {
+                return true;
+            }
+            try {
+                enclosing = enclosing.getXClass().getImmediateEnclosingClass();
+            } catch (CheckedAnalysisException e) {
+                AnalysisContext.logError("Error walking enclosing-class chain for field " + field, e);
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isEnclosingThisReference(XField field) {
+        // javac names the synthetic enclosing-instance reference this$0,
+        // this$1, ... and marks it ACC_SYNTHETIC; it is the only synthetic
+        // field whose load can be the target of a PUTFIELD on an outer field.
+        return field != null && field.isSynthetic() && field.getName().startsWith("this$");
+    }
+
+    private void addPendingBug(String bugType, XMethod method, XField field) {
+        BugInstance bug = new BugInstance(this, bugType, NORMAL_PRIORITY)
+                .addClass(this)
+                .addMethod(method)
+                .addField(field);
+        pendingBugs.add(new PendingBug(bug, SourceLineAnnotation.fromVisitedInstruction(this), field, method));
+    }
+
+    @Override
+    public void report() {
+        for (PendingBug pendingBug : pendingBugs) {
+            if (hasNonSyncedNonPrivateCallToMethod(pendingBug.method, new HashSet<>())
+                    && mapContainsFieldWithOtherMethod(pendingBug.field, pendingBug.method, readFieldsByMethods)) {
+                bugAccumulator.accumulateBug(pendingBug.bug, pendingBug.sourceLine);
+            }
+        }
+        bugAccumulator.reportAccumulatedBugs();
+        pendingBugs.clear();
     }
 }
