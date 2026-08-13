@@ -645,7 +645,15 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
             @Override
             public void visitOuterClass(String owner, String name, String desc) {
-
+                // ASM fires this for the EnclosingMethod attribute, which per JVMS 4.7.7 is present
+                // only for local and anonymous classes. For those the InnerClasses attribute does not
+                // carry the enclosing class (outer_class_info_index is unset), so visitInnerClass above
+                // never sets the immediate enclosing class. Populate it here so all callers of
+                // XClass.getImmediateEnclosingClass() resolve local/anonymous classes correctly.
+                if (owner != null && cBuilder instanceof ClassInfo.Builder) {
+                    ClassDescriptor outerClassDescriptor = DescriptorFactory.createClassDescriptor(owner);
+                    ((ClassInfo.Builder) cBuilder).setImmediateEnclosingClass(outerClassDescriptor);
+                }
             }
 
             @Override
