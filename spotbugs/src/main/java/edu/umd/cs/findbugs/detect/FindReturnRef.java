@@ -426,19 +426,20 @@ public class FindReturnRef extends OpcodeStackDetector {
         if (!top.isInitialParameter()) {
             OpcodeStack.Item newTop = arrayParamClones.get(top);
             if (newTop == null) {
+                // array() returns the backing array, so it is an array (REP) result like clone(), not a buffer.
+                newTop = bufferParamArrays.get(top);
+            }
+            if (newTop != null) {
+                kind = CaptureKind.ARRAY_CLONE;
+            } else {
                 newTop = arrayParamsWrappedToBuffers.get(top);
                 if (newTop == null) {
                     newTop = bufferParamDuplicates.get(top);
                     if (newTop == null) {
-                        newTop = bufferParamArrays.get(top);
-                        if (newTop == null) {
-                            return CaptureKind.NONE;
-                        }
+                        return CaptureKind.NONE;
                     }
                 }
                 kind = CaptureKind.BUF;
-            } else {
-                kind = CaptureKind.ARRAY_CLONE;
             }
             top = newTop;
         }
