@@ -12,9 +12,11 @@ class Issue4139Test extends AbstractIntegrationTest {
     void testCompoundAndExplicitAssignmentReportEqually() {
         performAnalysis("ghIssues/Issue4139.class");
 
-        // Both the compound form '|=' and the equivalent explicit form 'x = x | ...'
-        // read the uninitialized field in the constructor and must be reported.
-        assertBugTypeCount(BUG, 2);
-        assertBugInMethodCount(BUG, CLASS, "<init>", 2);
+        // Each form below reads an uninitialized field in a constructor and must be
+        // reported: the '|=' and explicit 'x = x | ...' pair from the original issue,
+        // plus '+=' and '++' which share the same ALOAD_0; DUP; GETFIELD pattern and
+        // lock the fix for the whole compound-assignment family.
+        assertBugTypeCount(BUG, 4);
+        assertBugInMethodCount(BUG, CLASS, "<init>", 4);
     }
 }

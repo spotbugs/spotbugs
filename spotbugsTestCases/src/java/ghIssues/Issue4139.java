@@ -12,6 +12,8 @@ public class Issue4139 {
 
     protected int m_iType;
 
+    protected int counter;
+
     public Issue4139(boolean available) {
         // Compound form: javac emits ALOAD_0; DUP; GETFIELD m_iType; ...; IOR; PUTFIELD m_iType.
         // The DUP keeps a copy of 'this' for the PUTFIELD, but the GETFIELD still reads
@@ -23,5 +25,16 @@ public class Issue4139 {
     public Issue4139(int seed) {
         // Explicit form (control case): already reported before the fix.
         m_iType = m_iType | seed;
+    }
+
+    public Issue4139(short delta) {
+        // Compound '+=' on a second field: same ALOAD_0; DUP; GETFIELD pattern as '|='.
+        // Locks the fix for the whole compound-assignment family, not only '|='.
+        counter += delta;
+    }
+
+    public Issue4139() {
+        // Post-increment 'counter++': same ALOAD_0; DUP; GETFIELD pattern.
+        counter++;
     }
 }
