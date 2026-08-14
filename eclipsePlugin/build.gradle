@@ -20,7 +20,6 @@ eclipse {
   jdt {
     sourceCompatibility = 11
     targetCompatibility = 11
-    javaRuntimeName = 'JavaSE-11'
   }
 }
 
@@ -212,7 +211,7 @@ eclipse.classpath.file {
     copyLibsForEclipse
     Set<File> libFiles = fileTree(dir: 'lib').files
     libFiles.forEach { File file ->
-      File rel = projectDir.toPath().relativize(Path.of(file.toString())).toFile()
+      File rel = projectDir.toPath().relativize(file.toPath()).toFile()
       ClasspathEntry entry = new Library(new FileRef(rel))
       classpath.entries.add(entry)
     }

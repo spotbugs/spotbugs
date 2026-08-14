@@ -94,6 +94,8 @@ public class FindDoubleCheck extends OpcodeStackDetector {
             System.out.println(getPC() + "\t" + Const.getOpcodeName(seen) + "\t" + stage + "\t" + count + "\t" + countSinceGetReference);
         }
 
+        seen = normalizeNullComparison(seen);
+
         if (seen == Const.MONITORENTER) {
             sawMonitorEnter = true;
         }

@@ -9,6 +9,14 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Add `ReflectiveAccessTracker` to track fields accessed via reflection - such as VarHandle, MethodHandle or AtomicFieldUpdaters ([#3954](https://github.com/spotbugs/spotbugs/pull/3954)) to fix issue ([#2749](https://github.com/spotbugs/spotbugs/issues/2749))
 
 ### Fixed
+- Fix `ASE_ASSERTION_WITH_SIDE_EFFECT` and `ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD` false positives in every method analysed after a method that reads `$assertionsDisabled` without throwing an `AssertionError` ([#3483](https://github.com/spotbugs/spotbugs/issues/3483))
+- Fix `INT_BAD_COMPARISON_WITH_SIGNED_BYTE` false positive for meaningful comparisons of a signed byte with `127` (`b < 127`, `b >= 127`) ([#4201](https://github.com/spotbugs/spotbugs/pull/4201))
+- Fix missing class report for `java.util.Collections$EmptyNavigableSet` and `java.util.Collections$EmptyNavigableMap` when the result of `Collections.emptySortedSet()`, `emptyNavigableSet()`, `emptySortedMap()` or `emptyNavigableMap()` is stored ([#4244](https://github.com/spotbugs/spotbugs/pull/4244))
+
+## 4.10.3 - 2026-07-12
+### Fixed
+- Fix `LI_LAZY_INIT_STATIC` false negative when the null guard is written in yoda-style (`null == field`) ([#4144](https://github.com/spotbugs/spotbugs/pull/4144))
+- Fix `DC_DOUBLECHECK`, `NP_SYNC_AND_NULL_CHECK_FIELD` and `SP_SPIN_ON_FIELD` false negatives when the null guard is written in yoda-style (`null == field`) ([#4144](https://github.com/spotbugs/spotbugs/pull/4144))
 - Fix message for `UNS_UNSAFE_CALL` bug pattern
 - Restore CLI plugin loading by fixing DetectorFactoryCollection bootstrap ordering ([#4191](https://github.com/spotbugs/spotbugs/pull/4191))
 - Fix `UWF_NULL_FIELD` false negative for fields initialized with cast null values ([#4034](https://github.com/spotbugs/spotbugs/issues/4034))

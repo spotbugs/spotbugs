@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsBetween;
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -110,6 +111,14 @@ public abstract class AbstractIntegrationTest {
 
     protected BugCollection getBugCollection() {
         return bugReporter.getBugCollection();
+    }
+
+    /**
+     * Asserts that the analysis did not record any missing classes, i.e. every class
+     * needed for the analysis could be resolved.
+     */
+    protected final void assertNoMissingClasses() {
+        assertThat(bugReporter.getMissingClasses(), empty());
     }
 
     /**
