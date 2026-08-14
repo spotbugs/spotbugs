@@ -327,7 +327,7 @@ public class UnreadFields extends OpcodeStackDetector {
 
     // A reflective accessor under construction. It's created when the handle is obtained and then completed when
     // the handle gets assigned to a field.
-    private ReflectiveFieldAccessor inFlightRFAccessor = null;
+    private ReflectiveFieldAccessor inFlightRFAccessor;
 
     // PC at which the in-flight accessor's handle is expected to be stored into its field.
     private int inFlightRFAssignmentPC;
