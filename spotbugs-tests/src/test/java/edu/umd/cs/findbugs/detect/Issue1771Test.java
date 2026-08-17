@@ -10,5 +10,6 @@ class Issue1771Test extends AbstractIntegrationTest {
     void testIssue() {
         performAnalysis("../java11/ghIssues/Issue1771.class");
         assertNoBugType("EI_EXPOSE_REP");
+        assertNoMissingClasses();
     }
 }
