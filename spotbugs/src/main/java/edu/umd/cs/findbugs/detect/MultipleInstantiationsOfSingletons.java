@@ -161,36 +161,33 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
                             && field.getSignature().equals(item.getSignature())
                             && isMergedConstructorAndFieldStore(field);
 
-                    if (storesConstructorResult || ternaryStyleLazyStore) {
+                    if (storesConstructorResult) {
                         isInstanceAssignOk = true;
                         instanceField = field;
-
-                        if (storesConstructorResult) {
-                            try {
-                                ValueNumberDataflow vnaDataflow = getClassContext().getValueNumberDataflow(getMethod());
-                                IsNullValueDataflow invDataflow = getClassContext().getIsNullValueDataflow(getMethod());
-                                ValueNumberFrame vFrame = vnaDataflow.getAnalysis().getFactAtPC(vnaDataflow.getCFG(), getPC());
-                                IsNullValueFrame iFrame = invDataflow.getAnalysis().getFactAtPC(invDataflow.getCFG(), getPC());
-                                AvailableLoad l = new AvailableLoad(field);
-                                ValueNumber[] availableLoads = vFrame.getAvailableLoad(l);
-                                if (availableLoads != null && iFrame.isTrackValueNumbers()) {
-                                    for (ValueNumber v : availableLoads) {
-                                        IsNullValue knownValue = iFrame.getKnownValue(v);
-                                        if (knownValue != null && knownValue.isDefinitelyNull()) {
-                                            isInstanceFieldLazilyInitialized = true;
-                                        }
+                        try {
+                            ValueNumberDataflow vnaDataflow = getClassContext().getValueNumberDataflow(getMethod());
+                            IsNullValueDataflow invDataflow = getClassContext().getIsNullValueDataflow(getMethod());
+                            ValueNumberFrame vFrame = vnaDataflow.getAnalysis().getFactAtPC(vnaDataflow.getCFG(), getPC());
+                            IsNullValueFrame iFrame = invDataflow.getAnalysis().getFactAtPC(invDataflow.getCFG(), getPC());
+                            AvailableLoad l = new AvailableLoad(field);
+                            ValueNumber[] availableLoads = vFrame.getAvailableLoad(l);
+                            if (availableLoads != null && iFrame.isTrackValueNumbers()) {
+                                for (ValueNumber v : availableLoads) {
+                                    IsNullValue knownValue = iFrame.getKnownValue(v);
+                                    if (knownValue != null && knownValue.isDefinitelyNull()) {
+                                        isInstanceFieldLazilyInitialized = true;
                                     }
                                 }
-
-                            } catch (DataflowAnalysisException | CFGBuilderException e) {
-                                bugReporter.logError(String.format("Detector %s caught an exception while analyzing %s.",
-                                        this.getClass().getName(), getClassContext().getJavaClass().getClassName()), e);
                             }
-                        }
 
-                        if (!isInstanceFieldLazilyInitialized && ternaryStyleLazyStore) {
-                            isInstanceFieldLazilyInitialized = true;
+                        } catch (DataflowAnalysisException | CFGBuilderException e) {
+                            bugReporter.logError(String.format("Detector %s caught an exception while analyzing %s.",
+                                    this.getClass().getName(), getClassContext().getJavaClass().getClassName()), e);
                         }
+                    } else if (ternaryStyleLazyStore) {
+                        isInstanceAssignOk = true;
+                        instanceField = field;
+                        isInstanceFieldLazilyInitialized = true;
                     }
                 }
             }
