@@ -5,6 +5,9 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2026-??-??
+### Added
+- Add `ReflectiveAccessTracker` to track fields accessed via reflection - such as VarHandle, MethodHandle or AtomicFieldUpdaters ([#3954](https://github.com/spotbugs/spotbugs/pull/3954)) to fix issue ([#2749](https://github.com/spotbugs/spotbugs/issues/2749))
+
 ### Fixed
 - Fix `ASE_ASSERTION_WITH_SIDE_EFFECT` and `ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD` false positives in every method analysed after a method that reads `$assertionsDisabled` without throwing an `AssertionError` ([#3483](https://github.com/spotbugs/spotbugs/issues/3483))
 - Fix `INT_BAD_COMPARISON_WITH_SIGNED_BYTE` false positive for meaningful comparisons of a signed byte with `127` (`b < 127`, `b >= 127`) ([#4201](https://github.com/spotbugs/spotbugs/pull/4201))
