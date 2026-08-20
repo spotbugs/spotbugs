@@ -9,6 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `ASE_ASSERTION_WITH_SIDE_EFFECT` and `ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD` false positives in every method analysed after a method that reads `$assertionsDisabled` without throwing an `AssertionError` ([#3483](https://github.com/spotbugs/spotbugs/issues/3483))
 - Fix `INT_BAD_COMPARISON_WITH_SIGNED_BYTE` false positive for meaningful comparisons of a signed byte with `127` (`b < 127`, `b >= 127`) ([#4201](https://github.com/spotbugs/spotbugs/pull/4201))
 - Fix missing class report for `java.util.Collections$EmptyNavigableSet` and `java.util.Collections$EmptyNavigableMap` when the result of `Collections.emptySortedSet()`, `emptyNavigableSet()`, `emptySortedMap()` or `emptyNavigableMap()` is stored ([#4244](https://github.com/spotbugs/spotbugs/pull/4244))
+- Stop publishing global dependency-management constraints to consumer POMs. ([#4223](https://github.com/spotbugs/spotbugs/pull/4223))
 
 ## 4.10.3 - 2026-07-12
 ### Fixed
