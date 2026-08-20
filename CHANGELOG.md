@@ -5,6 +5,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2026-??-??
+
+## 4.10.4 - 2026-08-19
 ### Fixed
 - Fix `NN_NAKED_NOTIFY` false negatives when a field read is stored in a local variable before `notify()` or `notifyAll()` ([#3884](https://github.com/spotbugs/spotbugs/issues/3884))
 - Fix `ASE_ASSERTION_WITH_SIDE_EFFECT` and `ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD` false positives in every method analysed after a method that reads `$assertionsDisabled` without throwing an `AssertionError` ([#3483](https://github.com/spotbugs/spotbugs/issues/3483))
