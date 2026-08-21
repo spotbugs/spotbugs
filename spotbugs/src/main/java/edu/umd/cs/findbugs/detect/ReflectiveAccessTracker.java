@@ -18,10 +18,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.util.MultiMap;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +32,28 @@ import java.util.function.Predicate;
 
 /**
  * Tracks the fields accessed through reflection such as VarHandles, MethodHandles and AtomicFieldUpdaters.
+ * <p>
+ * Only one shape is recognized, and every condition below has to hold for a field to be tracked:
+ * <ul>
+ * <li>the accessor is created by {@code Lookup.findVarHandle}, {@code Lookup.findGetter},
+ * {@code Lookup.findSetter}, or {@code newUpdater} on one of the reference, integer and long
+ * {@code AtomicFieldUpdater} classes. All of those target a non-static field, so the accessed field
+ * is always an instance field.</li>
+ * <li>the accessor is stored into a <em>static</em> field by the instruction immediately following
+ * the creating call.</li>
+ * <li>the accessor is invoked directly on the value loaded from that static field.</li>
+ * <li>that static field is assigned exactly once.</li>
+ * </ul>
+ * <p>
+ * Everything else is invisible here, so such a field keeps whatever {@code UUF}/{@code URF}/
+ * {@code UWF} report the ordinary analysis produces for it. That includes accessors stored into an
+ * instance field, kept in a local variable, cached in an array or a map, returned from a factory
+ * method or never stored at all; accessors whose accessed class or field name is not a compile-time
+ * constant at the creation site; static target fields via {@code findStaticGetter},
+ * {@code findStaticSetter} or {@code findStaticVarHandle}; accessors obtained from
+ * {@code Lookup.unreflect*}, {@code java.lang.reflect.Field} or {@code Unsafe}; and invocations made
+ * on a derived accessor such as the result of {@code MethodHandle.asType}, {@code bindTo} or
+ * {@code VarHandle.toMethodHandle}.
  */
 class ReflectiveAccessTracker {
 
@@ -53,8 +72,6 @@ class ReflectiveAccessTracker {
     private final Set<XField> gettersInvoked = new HashSet<>();
     private final Set<XField> settersInvoked = new HashSet<>();
 
-    private XFactory xFactory;
-
     void newAccessorDeclared(final ReflectiveFieldAccessor accessor) {
         accessors.add(accessor);
         accessorByAccessorField.putIfAbsent(accessor.accessorField(), accessor);
@@ -66,7 +83,6 @@ class ReflectiveAccessTracker {
     }
 
     void resolve() {
-        xFactory = AnalysisContext.currentXFactory();
         for (ReflectiveInvocation invocation : invocations) {
             ReflectiveFieldAccessor accessor = accessorByAccessorField.get(invocation.accessorField());
             if (accessor == null) {
@@ -92,45 +108,27 @@ class ReflectiveAccessTracker {
         return selectFieldsWithLines(field -> settersInvoked.contains(field) && !gettersInvoked.contains(field));
     }
 
-    List<XField> getAllAccessedFields() {
-        Collection<XField> allKnownFields = xFactory.allFields();
+    Set<XField> getAllAccessedFields() {
         Set<XField> accessedFields = new HashSet<>(gettersInvoked);
         accessedFields.addAll(settersInvoked);
-        List<XField> result = new ArrayList<>();
-        for (XField accessedField : accessedFields) {
-            XField knownField = findMatchingAmongAll(accessedField, allKnownFields);
-            if (knownField != null) {
-                result.add(knownField);
-            }
-        }
-        return result;
+        return accessedFields;
     }
 
     private Map<XField, SourceLineAnnotation> selectFieldsWithLines(final Predicate<XField> filter) {
-        Collection<XField> allKnownFields = xFactory.allFields();
         Map<XField, SourceLineAnnotation> fieldToLineMap = new LinkedHashMap<>();
         for (XField actualField : accessorsByActualField.keySet()) {
-            if (!filter.test(actualField)) {
-                continue;
-            }
-            XField knownField = findMatchingAmongAll(actualField, allKnownFields);
-            if (knownField != null) {
-                fieldToLineMap.put(knownField, getMostRelevantAccessorLine(actualField));
+            if (filter.test(actualField)) {
+                fieldToLineMap.put(actualField, getMostRelevantAccessorLine(actualField));
             }
         }
         return fieldToLineMap;
     }
 
     MultiMap<XField, SourceLineAnnotation> getUnusedAccessorDeclarationLines() {
-        Collection<XField> allKnownFields = xFactory.allFields();
         MultiMap<XField, SourceLineAnnotation> fieldToLinesMap = new MultiMap<>(ArrayList.class);
         for (ReflectiveFieldAccessor accessor : accessors) {
-            if (accessor.wasUsed()) {
-                continue;
-            }
-            XField knownField = findMatchingAmongAll(accessor.actualField(), allKnownFields);
-            if (knownField != null) {
-                fieldToLinesMap.add(knownField, accessor.sourceLine());
+            if (!accessor.wasUsed()) {
+                fieldToLinesMap.add(accessor.actualField(), accessor.sourceLine());
             }
         }
         return fieldToLinesMap;
@@ -167,16 +165,6 @@ class ReflectiveAccessTracker {
         for (ReflectiveFieldAccessor accessor : fieldAccessors) {
             if (accessor.accessType() == accessType || accessor.accessType() == AccessType.BOTH) {
                 return accessor.sourceLine();
-            }
-        }
-        return null;
-    }
-
-    private XField findMatchingAmongAll(final XField matchField, final Collection<XField> allKnownFields) {
-        FieldDescriptor fieldDsc = matchField.getFieldDescriptor();
-        for (XField field : allKnownFields) {
-            if (field.getFieldDescriptor().equals(fieldDsc)) {
-                return field;
             }
         }
         return null;

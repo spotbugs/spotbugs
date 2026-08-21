@@ -29,6 +29,10 @@ import edu.umd.cs.findbugs.detect.ReflectiveAccessTracker.AccessType;
  * point {@link #accessorField} is filled in. For a MethodHandle the {@link #accessType} is fixed
  * at creation (GETTER or SETTER); for VarHandle/AtomicFieldUpdater it is {@link AccessType#BOTH}
  * because the actual access type is only known at invocation time.
+ * <p>
+ * {@link #expectedAssignmentPC} is scanning-phase state: it tells the detector at which PC the
+ * handle is expected to be stored into its field, and is meaningless once the accessor has been
+ * registered.
  */
 class ReflectiveFieldAccessor {
 
@@ -41,6 +45,9 @@ class ReflectiveFieldAccessor {
     /** Source line where the accessor was declared. */
     private final SourceLineAnnotation declarationSourceLine;
 
+    /** PC at which the handle is expected to be stored into its field. */
+    private final int expectedAssignmentPC;
+
     /** The field holding the handle; set once the handle is stored. */
     private XField accessorField;
 
@@ -48,10 +55,15 @@ class ReflectiveFieldAccessor {
     private boolean wasUsed;
 
     ReflectiveFieldAccessor(final XField actualField, final AccessType accessType,
-            final SourceLineAnnotation declarationSourceLine) {
+            final SourceLineAnnotation declarationSourceLine, final int expectedAssignmentPC) {
         this.actualField = actualField;
         this.accessType = accessType;
         this.declarationSourceLine = declarationSourceLine;
+        this.expectedAssignmentPC = expectedAssignmentPC;
+    }
+
+    int expectedAssignmentPC() {
+        return expectedAssignmentPC;
     }
 
     void markUsed() {

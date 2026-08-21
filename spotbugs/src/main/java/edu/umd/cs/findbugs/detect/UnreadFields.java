@@ -326,11 +326,9 @@ public class UnreadFields extends OpcodeStackDetector {
     private final ReflectiveAccessTracker reflectiveAccessTracker = new ReflectiveAccessTracker();
 
     // A reflective accessor under construction. It's created when the handle is obtained and then completed when
-    // the handle gets assigned to a field.
+    // the handle gets assigned to a field. It carries the PC at which that assignment is expected, so there is a
+    // single piece of in-flight state, reset for every visited method by both visit(Code) and visit(Method).
     private ReflectiveFieldAccessor inFlightRFAccessor;
-
-    // PC at which the in-flight accessor's handle is expected to be stored into its field.
-    private int inFlightRFAssignmentPC;
 
     @Override
     public void visit(Code obj) {
@@ -434,12 +432,11 @@ public class UnreadFields extends OpcodeStackDetector {
 
         // Check whether this static field assignment occurs immediately after the instantiation of a reflective accessor.
         // If so, register this accessor with the Tracker so that all accesses performed through it can be monitored.
+        // Only accessors kept in a static field are tracked; handles stored into an instance field or held in a local
+        // variable are out of scope.
         if (seen == Const.PUTSTATIC && inFlightRFAccessor != null
-                && inFlightRFAssignmentPC == getPC()) {
-            String dottedClassName = ClassName.toDottedClassName(getClassConstantOperand());
-            String fieldSignature = stack.getStackItem(0).getSignature();
-            String fieldName = getNameConstantOperand();
-            inFlightRFAccessor.setAccessorField(XFactory.createXField(dottedClassName, fieldName, fieldSignature, true));
+                && inFlightRFAccessor.expectedAssignmentPC() == getPC()) {
+            inFlightRFAccessor.setAccessorField(XFactory.createReferencedXField(this));
             reflectiveAccessTracker.newAccessorDeclared(inFlightRFAccessor);
             inFlightRFAccessor = null;
         }
@@ -454,8 +451,7 @@ public class UnreadFields extends OpcodeStackDetector {
             if (fieldName != null && fieldSignature != null && fieldClass != null) {
                 XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, ClassName.toSignature(fieldSignature), false);
                 inFlightRFAccessor = new ReflectiveFieldAccessor(f, AccessType.BOTH,
-                        SourceLineAnnotation.fromVisitedInstruction(this));
-                inFlightRFAssignmentPC = getNextPC();
+                        SourceLineAnnotation.fromVisitedInstruction(this), getNextPC());
             }
         }
         if (seen == Const.INVOKESTATIC && "java/util/concurrent/atomic/AtomicIntegerFieldUpdater".equals(getClassConstantOperand())
@@ -465,8 +461,7 @@ public class UnreadFields extends OpcodeStackDetector {
             if (fieldName != null && fieldClass != null) {
                 XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, "I", false);
                 inFlightRFAccessor = new ReflectiveFieldAccessor(f, AccessType.BOTH,
-                        SourceLineAnnotation.fromVisitedInstruction(this));
-                inFlightRFAssignmentPC = getNextPC();
+                        SourceLineAnnotation.fromVisitedInstruction(this), getNextPC());
             }
 
         }
@@ -477,8 +472,7 @@ public class UnreadFields extends OpcodeStackDetector {
             if (fieldName != null && fieldClass != null) {
                 XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, "J", false);
                 inFlightRFAccessor = new ReflectiveFieldAccessor(f, AccessType.BOTH,
-                        SourceLineAnnotation.fromVisitedInstruction(this));
-                inFlightRFAssignmentPC = getNextPC();
+                        SourceLineAnnotation.fromVisitedInstruction(this), getNextPC());
             }
         }
 
@@ -493,8 +487,7 @@ public class UnreadFields extends OpcodeStackDetector {
                     XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, fieldSignature, false);
                     inFlightRFAccessor = new ReflectiveFieldAccessor(f,
                             methodName.equals("findGetter") ? AccessType.GETTER : AccessType.SETTER,
-                            SourceLineAnnotation.fromVisitedInstruction(this));
-                    inFlightRFAssignmentPC = getNextPC();
+                            SourceLineAnnotation.fromVisitedInstruction(this), getNextPC());
                 }
             }
             if ("findVarHandle".equals(methodName) && getSigConstantOperand().endsWith("Ljava/lang/invoke/VarHandle;")) {
@@ -504,8 +497,7 @@ public class UnreadFields extends OpcodeStackDetector {
                 if (fieldName != null && fieldSignature != null && fieldClass != null) {
                     XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, fieldSignature, false);
                     inFlightRFAccessor = new ReflectiveFieldAccessor(f, AccessType.BOTH,
-                            SourceLineAnnotation.fromVisitedInstruction(this));
-                    inFlightRFAssignmentPC = getNextPC();
+                            SourceLineAnnotation.fromVisitedInstruction(this), getNextPC());
                 }
             }
         }
@@ -871,24 +863,28 @@ public class UnreadFields extends OpcodeStackDetector {
             return null;
         }
         // Class constants for primitive and array types are already encoded as JVM descriptors.
-        if (classNameOrSignature.startsWith("[") || isPrimitiveFieldSignature(classNameOrSignature)) {
+        if (classNameOrSignature.startsWith("[") || ClassName.isValidBaseTypeFieldDescriptor(classNameOrSignature)) {
             return classNameOrSignature;
         }
         // Object field
         return ClassName.toSignature(classNameOrSignature);
     }
 
-    private boolean isPrimitiveFieldSignature(String signature) {
-        return signature.length() == 1 && "BCDFIJSZV".indexOf(signature.charAt(0)) >= 0;
-    }
-
     /**
-     * Registers an invocation of the reflective accessor currently on top of the stack, if the invoked method is a
+     * Registers an invocation of the reflective accessor the invoked method is called on, if that method is a
      * recognized field-accessing call for the given accessor kind.
      */
     private void registerReflectiveInvocation(final Kind kind) {
-        XField accessorField = stack.getStackItem(stack.getStackDepth() - 1).getXField();
         String invocation = getNameConstantOperand();
+        int argumentCount = getNumberArguments(getSigConstantOperand());
+        if (stack.getStackDepth() <= argumentCount) {
+            // The modelled stack is shallower than the call requires, so nothing can be attributed reliably.
+            if (DEBUG) {
+                System.out.printf("Incomplete stack for invoked %s.%s%n", getClassConstantOperand(), invocation);
+            }
+            return;
+        }
+        XField accessorField = stack.getItemMethodInvokedOn(this).getXField();
         if (accessorField == null) {
             if (DEBUG) {
                 System.out.printf("Could not find XField for invoked %s.%s%n", getClassConstantOperand(), invocation);
@@ -1379,6 +1375,9 @@ public class UnreadFields extends OpcodeStackDetector {
                 reflectiveAccessTracker.getUnusedAccessorDeclarationLines();
         XFactory xFactory = AnalysisContext.currentXFactory();
         for (XField actualField : unusedAccessorLines.keySet()) {
+            if (!actualField.isResolved()) {
+                continue;
+            }
             declaredFields.remove(actualField);
             for (SourceLineAnnotation line : unusedAccessorLines.get(actualField)) {
                 int priority = NORMAL_PRIORITY;
@@ -1391,7 +1390,7 @@ public class UnreadFields extends OpcodeStackDetector {
                 BugInstance bug = new BugInstance(this, bugType, priority)
                         .addClass(actualField.getClassName()).addField(actualField);
                 if (line != null) {
-                    bug.add(line);
+                    bug.addSourceLine(line);
                 }
                 bugReporter.reportBug(bug.lowerPriorityIfDeprecated());
             }
@@ -1420,7 +1419,7 @@ public class UnreadFields extends OpcodeStackDetector {
                     .addClass(f.getClassName()).addField(f);
             SourceLineAnnotation line = entry.getValue();
             if (line != null) {
-                bug.add(line);
+                bug.addSourceLine(line);
             }
             bugReporter.reportBug(bug);
         }
@@ -1432,7 +1431,7 @@ public class UnreadFields extends OpcodeStackDetector {
             XField f = entry.getKey();
             if (!f.isResolved()
                     || containsSpecialAnnotation(f.getAnnotations())
-                    || f.getName().toLowerCase().indexOf("guardian") >= 0) {
+                    || f.getName().toLowerCase().contains("guardian")) {
                 continue;
             }
             int priority = NORMAL_PRIORITY;
@@ -1452,7 +1451,7 @@ public class UnreadFields extends OpcodeStackDetector {
                     .addClass(f.getClassName()).addField(f);
             SourceLineAnnotation line = entry.getValue();
             if (line != null) {
-                bug.add(line);
+                bug.addSourceLine(line);
             }
             bugReporter.reportBug(bug);
         }

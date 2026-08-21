@@ -190,6 +190,56 @@ class Issue2749Test extends AbstractIntegrationTest {
 
     @Test
     @DisabledOnJre(JRE.JAVA_8)
+    void testVarHandleNestedInvocation() {
+        performAnalysis(
+                "../java11/ghIssues/issue2749/WithVarHandleNestedInvocation.class",
+                "../java11/ghIssues/issue2749/WithVarHandleNestedInvocation$Value.class");
+
+        // The inner invocation must be credited to its own accessor, not to the one sitting deeper on the stack.
+        assertNoBugType("UUF_UNUSED_FIELD");
+
+        assertBugTypeCount("UWF_UNWRITTEN_FIELD", 1);
+        assertBugAtFieldAtLine("UWF_UNWRITTEN_FIELD", "WithVarHandleNestedInvocation", "source", 20);
+        assertBugTypeCount("URF_UNREAD_FIELD", 1);
+        assertBugAtFieldAtLine("URF_UNREAD_FIELD", "WithVarHandleNestedInvocation", "target", 21);
+    }
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_8)
+    void testVarHandleInObjectField() {
+        performAnalysis("../java11/ghIssues/issue2749/WithVarHandleInObjectField.class");
+
+        // The accessor field is declared wider than the handle it holds, which must not break the
+        // link between an accessor and the field it accesses.
+        assertNoBugType("UUF_UNUSED_FIELD");
+        assertNoBugType("URF_UNREAD_FIELD");
+        assertNoBugType("UWF_UNWRITTEN_FIELD");
+    }
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_8)
+    void testMethodHandlesInObjectField() {
+        performAnalysis("../java11/ghIssues/issue2749/WithMethodHandlesInObjectField.class");
+
+        assertNoBugType("UUF_UNUSED_FIELD");
+        assertNoBugType("URF_UNREAD_FIELD");
+        assertNoBugType("UWF_UNWRITTEN_FIELD");
+    }
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_8)
+    void testAtomicUpdatersInObjectFields() {
+        performAnalysis(
+                "../java11/ghIssues/issue2749/WithAtomicUpdatersInObjectFields.class",
+                "../java11/ghIssues/issue2749/WithAtomicUpdatersInObjectFields$Value.class");
+
+        assertNoBugType("UUF_UNUSED_FIELD");
+        assertNoBugType("URF_UNREAD_FIELD");
+        assertNoBugType("UWF_UNWRITTEN_FIELD");
+    }
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_8)
     void testAccessViaGettersAndSetters() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithMethodHandlesPrimitive.class",
