@@ -5,6 +5,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2026-??-??
+### Fixed
+- Fix `OBL_UNSATISFIED_OBLIGATION` false negatives for unclosed `CallableStatement`s returned by `Connection.prepareCall` ([#4148](https://github.com/spotbugs/spotbugs/issues/4148))
 
 ## 4.10.4 - 2026-08-19
 ### Fixed
