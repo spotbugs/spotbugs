@@ -2,7 +2,7 @@ configurations {
   mockitoAgent
 }
 dependencies {
-  mockitoAgent(libs.mockito) {
+  mockitoAgent(rootProject.libs.mockito) {
     transitive = false
   }
 }
