@@ -21,3 +21,11 @@ sonar {
 tasks.named('sonar').configure {
   dependsOn jacocoRootReport
 }
+
+allprojects {
+    tasks.matching { task -> task.name == 'sonarResolver' }.configureEach {
+        dependsOn tasks.matching { task -> task.name == 'compileJava' }
+        dependsOn tasks.matching { task -> task.name == 'compileGroovy' }
+        dependsOn tasks.matching { task -> task.name == 'processResources' }
+    }
+}
