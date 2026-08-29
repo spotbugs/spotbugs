@@ -14,4 +14,7 @@ public class InnerChildAndMoreInstance {
     public static InnerChildAndMoreInstance instance() {
         return INSTANCE;
     }
+
+    protected InnerChildAndMoreInstance() {
+    }
 }
