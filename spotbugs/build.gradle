@@ -395,8 +395,6 @@ smokeTest.configure {
 }
 
 publishing.publications.maven {
-  artifact distTar
-  artifact distZip
   pom {
     name = 'SpotBugs'
     description = 'SpotBugs: Because it is easy!'
