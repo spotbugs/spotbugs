@@ -1,10 +1,3 @@
-// Workaround for Sonar plugin classloader collision with Gradle 9 runtime:
-// commons-compress 1.28.0+ uses AbstractStreamBuilder.getInputStream() (public in commons-io 2.18+),
-// but Gradle 9's parent classloader exposes commons-io 2.15.1 (where it was protected).
-// Forcing commons-compress 1.27.1 avoids the Builder pattern and cross-classloader check.
-buildscript.configurations.getByName("classpath").resolutionStrategy {
-    force 'org.apache.commons:commons-compress:1.27.1'
-}
 apply plugin: 'org.sonarqube'
 
 sonar {
@@ -20,4 +13,10 @@ sonar {
 
 tasks.named('sonar').configure {
   dependsOn jacocoRootReport
+}
+
+allprojects {
+    tasks.matching { task -> task.name == 'sonarResolver' }.configureEach {
+        dependsOn tasks.matching { task -> task.name == 'classes' }
+    }
 }
