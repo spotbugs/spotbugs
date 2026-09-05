@@ -34,6 +34,7 @@ version = '4.10.5-SNAPSHOT'
 
 apply from: "${rootDir}/gradle/java.gradle"
 apply from: "${rootDir}/gradle/jacoco.gradle"
+apply from: "${rootDir}/gradle/spotless.gradle"
 
 subprojects {
   apply from: "${rootDir}/gradle/java.gradle"
@@ -63,9 +64,9 @@ subprojects {
 
     // Explicitly skip the test case modules you don't want to enforce rules on
     if (project.name == 'eclipsePlugin-junit' || project.name == 'eclipsePlugin-test'
-        || project.name == 'spotbugsTestCases' || project.name == 'spotbugs-tests'
-        || project.name == 'test-harness' || project.name == 'test-harness-core'
-        || project.name == 'test-harness-jupiter') {
+    || project.name == 'spotbugsTestCases' || project.name == 'spotbugs-tests'
+    || project.name == 'test-harness' || project.name == 'test-harness-core'
+    || project.name == 'test-harness-jupiter') {
       return
     }
 
@@ -74,7 +75,9 @@ subprojects {
       description = 'Enforces that production dependency binaries are fully compatible with Java 11 (Major version <= 55)'
 
       Provider<NamedDomainObjectSet> runtimeConfigs = provider {
-        configurations.matching { it.name.endsWith('RuntimeClasspath') && it.canBeResolved }
+        configurations.matching {
+          it.name.endsWith('RuntimeClasspath') && it.canBeResolved
+        }
       }
 
       inputs.files(runtimeConfigs)
@@ -121,7 +124,7 @@ subprojects {
                       int minor = (zip.read() << 8) | zip.read()
                       int major = (zip.read() << 8) | zip.read()
 
-                      if (major > maxAllowedMajorVersion) {
+                      if (major> maxAllowedMajorVersion) {
                         String id = "${artifact.moduleVersion.id} (${file.name})"
                         String details = "      - ${entry.name} (Compiled for Java ${major - 44} / Major: ${major})"
 
@@ -129,7 +132,7 @@ subprojects {
                           illegalDependencies[id] = []
                         }
                         illegalDependencies[id] << details
-                        break 
+                        break
                       }
                     }
                   }
@@ -252,7 +255,9 @@ createReleaseBody.configure { Task releaseTask ->
 """
     fileTree(layout.buildDirectory.dir('checksums')).matching { PatternFilterable pattern ->
       pattern.include '*.sha256'
-    }.sort { File a, File b -> a.name <=> b.name }.forEach { File checksumFile ->
+    }.sort { File a, File b ->
+      a.name <=> b.name
+    }.forEach { File checksumFile ->
       String name = checksumFile.name.replace('.sha256', '')
       String hash = checksumFile.text.trim()
       outputFile.get().asFile << "| ${name} | ${hash} |\n"
