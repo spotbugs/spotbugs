@@ -156,7 +156,9 @@ subprojects {
 
           illegalDependencies.each { dependencyId, classes ->
             errorMsg.append("\n  * Found Banned Dependency: ${dependencyId}\n")
-            classes.each { errorMsg.append("${it}\n") }
+            classes.each {
+              errorMsg.append("${it}\n")
+            }
           }
 
           errorMsg.append("\nUse './gradlew :${project.name}:dependencies' to locate the dependency tree paths.\n")
@@ -213,7 +215,9 @@ createChecksums.configure { Checksum checksumTask ->
         }
       }
       return []
-    }.flatten().findAll { File file -> file != null && file.exists() }
+    }.flatten().findAll { File file ->
+      file != null && file.exists()
+    }
   }
   if (publishTask != null) {
     checksumTask.dependsOn publishTask

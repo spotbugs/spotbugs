@@ -183,7 +183,9 @@ TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
   }
 }
 
-tasks.named('compileJava').configure { dependsOn ':spotbugs:jar' }
+tasks.named('compileJava').configure {
+  dependsOn ':spotbugs:jar'
+}
 
 // create manifest when importing to eclipse
 tasks.named('eclipse').configure {
@@ -233,7 +235,9 @@ TaskProvider<Jar> jar = tasks.named('jar', Jar) {
 }
 
 CopySpec distSpec = copySpec {
-  from jar.map { Jar jarTask -> jarTask.outputs.files }
+  from jar.map { Jar jarTask ->
+    jarTask.outputs.files
+  }
   from(project.projectDir) {
     include 'RELEASENOTES'
     include 'plugin.xml'
@@ -297,13 +301,17 @@ TaskProvider<Zip> pluginJar = tasks.register('pluginJar', Zip) {
 
 TaskProvider<Copy> pluginCandidateJar = tasks.register('pluginCandidateJar', Copy) {
   dependsOn pluginJar
-  from pluginJar.map { Zip zipTask -> zipTask.outputs.files }
+  from pluginJar.map { Zip zipTask ->
+    zipTask.outputs.files
+  }
   into layout.buildDirectory.dir('site/eclipse-candidate/plugins/')
 }
 
 TaskProvider<Copy> pluginDailyJar = tasks.register('pluginDailyJar', Copy) {
   dependsOn pluginJar
-  from pluginJar.map { Zip zipTask -> zipTask.outputs.files }
+  from pluginJar.map { Zip zipTask ->
+    zipTask.outputs.files
+  }
   into layout.buildDirectory.dir('site/eclipse-daily/plugins/')
   mustRunAfter(siteHtml)
   mustRunAfter(siteXml)
@@ -552,7 +560,9 @@ TaskProvider<Zip> eclipseSiteZip = tasks.register('eclipseSiteZip', Zip) {
 if (eclipseExecutable == null) {
   logger.lifecycle('Create local.properties to build eclipse site')
 } else {
-  tasks.named('assemble').configure { dependsOn eclipseSiteZip }
+  tasks.named('assemble').configure {
+    dependsOn eclipseSiteZip
+  }
 }
 
 spotbugs {

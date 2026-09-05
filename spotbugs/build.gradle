@@ -122,7 +122,9 @@ project(':spotbugs-annotations') {
   tasks.named('spotbugsMain') {
     dependsOn(jarTask)
 
-    inputs.file(jarTask.flatMap { Jar jar -> jar.archiveFile })
+    inputs.file(jarTask.flatMap { Jar jar ->
+      jar.archiveFile
+    })
     .withPathSensitivity(PathSensitivity.RELATIVE)
     .withPropertyName('spotbugsJarInput')
   }
@@ -375,7 +377,9 @@ tasks.named('assemble') {
 String version = project.version
 TaskProvider<Copy> unzipDist = tasks.register('unzipDist', Copy) {
   dependsOn distZip
-  from distZip.map { Zip zipTask -> zipTree(zipTask.outputs.files.singleFile) }
+  from distZip.map { Zip zipTask ->
+    zipTree(zipTask.outputs.files.singleFile)
+  }
   into file("${resolvedBuildDir}/smoketest/")
   // Remove prefix
   eachFile { FileCopyDetails details ->
