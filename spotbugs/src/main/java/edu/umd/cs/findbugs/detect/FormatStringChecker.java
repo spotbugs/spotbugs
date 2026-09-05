@@ -48,7 +48,7 @@ public class FormatStringChecker extends OpcodeStackDetector {
 
     int stackDepth;
 
-    OpcodeStack.Item arguments[];
+    OpcodeStack.Item[] arguments;
 
     @Override
     public void visit(Code code) {

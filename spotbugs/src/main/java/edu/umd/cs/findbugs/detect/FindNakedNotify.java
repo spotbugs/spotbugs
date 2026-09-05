@@ -78,7 +78,7 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
             }
             break;
         case LOADED:
-            if (isRegisterLoad() || seen == Const.GETSTATIC || seen == Const.GETFIELD) {
+            if (isRegisterLoad() || isRegisterStore() || seen == Const.GETSTATIC || seen == Const.GETFIELD) {
                 break;
             } else if (seen == Const.INVOKEVIRTUAL
                     && ("notify".equals(getNameConstantOperand()) || "notifyAll".equals(getNameConstantOperand()))

@@ -44,7 +44,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import org.apache.bcel.classfile.ClassParser;
@@ -291,7 +291,7 @@ public class RejarClassesForAnalysis {
 
     int numFilesToAnalyze = 0;
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         FindBugs.setNoAnalysis();
         RejarClassesForAnalysisCommandLine commandLine = new RejarClassesForAnalysisCommandLine();
         int argCount = commandLine.parse(args, 0, Integer.MAX_VALUE, "Usage: " + RejarClassesForAnalysis.class.getName()
@@ -304,7 +304,7 @@ public class RejarClassesForAnalysis {
 
     ZipOutputStream auxiliaryOut;
 
-    final byte buffer[] = new byte[8192];
+    final byte[] buffer = new byte[8192];
 
     private boolean exclude(String dottedName) {
         if (!Character.isJavaIdentifierStart(dottedName.charAt(0))) {

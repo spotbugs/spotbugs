@@ -2,8 +2,8 @@ plugins {
   id ("com.diffplug.eclipse.mavencentral")
 }
 
-val pdeTool by configurations.creating {
-  setTransitive(false)
+val pdeTool = configurations.create("pdeTool") {
+  isTransitive = false
 }
 
 eclipseMavenCentral {

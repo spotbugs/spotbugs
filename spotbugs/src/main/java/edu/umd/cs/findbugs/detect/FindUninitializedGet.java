@@ -136,6 +136,14 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
             return;
         }
 
+        if (thisOnTOS && seen == Const.DUP) {
+            // javac emits ALOAD_0; DUP before GETFIELD for compound assignments on fields
+            // (e.g. 'field |= e' compiles to ALOAD_0; DUP; GETFIELD field; ...; PUTFIELD field).
+            // The DUP leaves a copy of 'this' on top of the operand stack so the following
+            // GETFIELD still reads 'this.field'; keep thisOnTOS set (#4139).
+            return;
+        }
+
         if (seen == Const.PUTFIELD && getClassConstantOperand().equals(getClassName())) {
             initializedFields.add(FieldAnnotation.fromReferencedField(this));
         } else if (thisOnTOS && seen == Const.GETFIELD && getClassConstantOperand().equals(getClassName())) {

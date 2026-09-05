@@ -42,7 +42,10 @@ public class AWTEventQueueExecutor extends AbstractExecutorService {
         }
         try {
             SwingUtilities.invokeAndWait(command);
-        } catch (InterruptedException | InvocationTargetException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException(e);
+        } catch (InvocationTargetException e) {
             throw new IllegalStateException(e);
         }
     }

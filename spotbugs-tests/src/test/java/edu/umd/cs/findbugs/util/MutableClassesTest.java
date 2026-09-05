@@ -2,13 +2,21 @@ package edu.umd.cs.findbugs.util;
 
 import javax.annotation.concurrent.Immutable;
 
+import edu.umd.cs.findbugs.FindBugs2;
+import edu.umd.cs.findbugs.PrintingBugReporter;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
+import edu.umd.cs.findbugs.classfile.impl.ClassPathImpl;
 import org.apache.bcel.Repository;
 import org.apache.bcel.util.SyntheticRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnJre;
-import org.junit.jupiter.api.condition.JRE;
 
 @Immutable
 class Annotated {
@@ -29,6 +37,23 @@ class MutableClassesTest {
     static void setUp() {
         // When running inside the build other tests might set the spotbugs repository
         Repository.setRepository(SyntheticRepository.getInstance());
+    }
+
+    @BeforeEach
+    void setUpEach() {
+        IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(new ClassPathImpl(), new PrintingBugReporter());
+        Global.setAnalysisCacheForCurrentThread(analysisCache);
+        FindBugs2.registerBuiltInAnalysisEngines(analysisCache);
+
+        Project project = new Project();
+        AnalysisContext analysisContext = new AnalysisContext(project);
+        AnalysisContext.setCurrentAnalysisContext(analysisContext);
+    }
+
+    @AfterEach
+    void teardown() {
+        Global.removeAnalysisCacheForCurrentThread();
+        AnalysisContext.removeCurrentAnalysisContext();
     }
 
     @Test
@@ -99,6 +124,14 @@ class MutableClassesTest {
             return new Immutable(n);
         }
 
+        public void setNUnsupported(int n) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void setNUnsupported2(int n) {
+            throw new UnsupportedOperationException("This class is immutable, setters are unsupported.");
+        }
+
         public static Immutable getImmutable() {
             return immutable;
         }
@@ -113,9 +146,7 @@ class MutableClassesTest {
         Assertions.assertFalse(MutableClasses.mutableSignature("Ledu/umd/cs/findbugs/util/MutableClassesTest$Immutable;"));
     }
 
-    // This tests fails on java 8/11, so disable it and only run on java 17+ unless its determined how to fix
     @Test
-    @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11 })
     void testImmutableValuedBased() {
         // Annotated with @jdk.internal.ValueBased and has "setValue", which should normally trip detection
         System.out.println("starting.....");

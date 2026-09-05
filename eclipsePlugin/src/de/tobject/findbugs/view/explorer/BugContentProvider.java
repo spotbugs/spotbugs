@@ -384,10 +384,7 @@ public class BugContentProvider implements ICommonContentProvider {
                 }
                 continue;
             }
-            if (!groupIds.containsKey(id)) {
-                groupIds.put(id, new HashSet<>());
-            }
-            groupIds.get(id).add(marker);
+            groupIds.computeIfAbsent(id, k -> new HashSet<>()).add(marker);
         }
 
         // now create groups from the sorted bug sets

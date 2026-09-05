@@ -202,7 +202,10 @@ public class MultipleInstantiationsOfSingletons extends OpcodeStackDetector {
             if (!calledMethodsByMethods.containsKey(getXMethod())) {
                 calledMethodsByMethods.put(getXMethod(), new ArrayList<>());
             }
-            calledMethodsByMethods.get(getXMethod()).add(getXMethodOperand());
+            XMethod calledMethod = getXMethodOperand();
+            if (calledMethod != null) {
+                calledMethodsByMethods.get(getXMethod()).add(calledMethod);
+            }
         }
     }
 

@@ -45,8 +45,5 @@ import java.lang.annotation.Target;
 public @interface DefaultAnnotationForParameters {
     Class<? extends Annotation>[] value();
 
-    @Deprecated
-    Priority priority() default Priority.MEDIUM;
-
     Confidence confidence() default Confidence.MEDIUM;
 }

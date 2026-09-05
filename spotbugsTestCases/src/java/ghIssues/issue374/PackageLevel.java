@@ -1,6 +1,6 @@
 package ghIssues.issue374;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 public class PackageLevel {
     public String method() {

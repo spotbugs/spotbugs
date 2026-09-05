@@ -1,7 +1,7 @@
 package sfBugs;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 public class Bug3527825 {
     public interface GenericFindBugsParameterChecking<T> {
