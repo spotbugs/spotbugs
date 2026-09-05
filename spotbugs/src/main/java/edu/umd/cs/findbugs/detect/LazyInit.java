@@ -197,9 +197,9 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
         }
 
         // Strings are (mostly) safe to pass by data race in 1.5
-        if ("Ljava/lang/String;".equals(signature)) {
-            return;
-        }
+        // However, if the initialization involves a method call, it could be executed
+        // multiple times in a race condition, so we should report it.
+        // We'll check for method calls later and override this exemption if sawINVOKE is true.
 
         // GUI types should not be accessed from multiple threads
 
@@ -364,6 +364,14 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
         if (classContext.getXClass().usesConcurrency()) {
             priority--;
         }
+
+        // Skip reporting for String fields if there's no method call involved
+        // Simple string literal assignments (value = "hello") are safe as String is immutable
+        boolean isStringField = "Ljava/lang/String;".equals(signature);
+        if (isStringField && !sawINVOKE) {
+            return;
+        }
+
         // Report the bug.
         InstructionHandle start = match.getLabeledInstruction("start");
         InstructionHandle end = match.getLabeledInstruction("end");
