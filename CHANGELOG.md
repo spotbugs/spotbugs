@@ -7,6 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2026-??-??
 ### Fixed
 - Fix `MS_EXPOSE_BUF` and `EI_EXPOSE_BUF` false negative when returning `Buffer.array()` ([#4235](https://github.com/spotbugs/spotbugs/pull/4235))
+- Fix `LI_LAZY_INIT_STATIC` false negative where string field initialized with some method lazily ([#4276](https://github.com/spotbugs/spotbugs/issues/4276))
 
 ## 4.10.4 - 2026-08-19
 ### Fixed
