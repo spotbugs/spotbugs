@@ -62,13 +62,11 @@ public class IntCast2LongAsInstant extends OpcodeStackDetector {
                     if (property != null && property.hasProperty(i)) {
                         int priority = NORMAL_PRIORITY;
 
-                        if (getPrevOpcode(1) == Const.I2L && getPrevOpcode(2) == Const.IMUL && getPrevOpcode(3) == Const.SIPUSH
+                        if (getPrevOpcode(1) == Const.I2L && getPrevOpcode(2) == Const.IMUL
+                                && (getPrevOpcode(3) == Const.SIPUSH || getPrevOpcode(4) == Const.SIPUSH)
                                 && lastConstantForSIPUSH == 1000) {
                             priority = HIGH_PRIORITY;
 
-                        } else if (getPrevOpcode(1) == Const.I2L && getPrevOpcode(2) == Const.IMUL && getPrevOpcode(4) == Const.SIPUSH
-                                && lastConstantForSIPUSH == 1000) {
-                            priority = HIGH_PRIORITY;
                         }
                         BugInstance bug = new BugInstance(this, "ICAST_INT_2_LONG_AS_INSTANT", priority).addClassAndMethod(this)
                                 .addCalledMethod(this).addValueSource(item, this).addSourceLine(this);

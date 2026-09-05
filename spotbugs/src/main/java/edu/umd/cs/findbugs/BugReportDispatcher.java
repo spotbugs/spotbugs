@@ -39,6 +39,11 @@ public class BugReportDispatcher implements ConfigurableBugReporter {
     }
 
     @Override
+    public void setPriorityAdjuster(PriorityAdjuster priorityAdjuster) {
+        throw new UnsupportedOperationException("Priority adjustment is not supported by " + BugReportDispatcher.class);
+    }
+
+    @Override
     public void finish() {
         forEach(BugReporter::finish);
     }

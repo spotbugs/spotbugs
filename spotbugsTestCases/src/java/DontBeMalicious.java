@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class DontBeMalicious {
 
-    final static HashMap myMap = new HashMap();
+    static final HashMap myMap = new HashMap();
 
     /**
      * @param args

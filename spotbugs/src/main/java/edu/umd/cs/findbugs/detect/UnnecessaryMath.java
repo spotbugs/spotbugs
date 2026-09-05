@@ -21,7 +21,6 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.Const;
@@ -56,56 +55,14 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
     private double constValue;
 
     @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
-    private static final Set<String> zeroMethods = new HashSet<String>() {
-        {
-            add("acos");
-            add("asin");
-            add("atan");
-            add("atan2");
-            add("cbrt");
-            add("cos");
-            add("cosh");
-            add("exp");
-            add("expm1");
-            add("log");
-            add("log10");
-            add("pow");
-            add("sin");
-            add("sinh");
-            add("sqrt");
-            add("tan");
-            add("tanh");
-            add("toDegrees");
-            add("toRadians");
-        }
-    };
+    private static final Set<String> zeroMethods = Set.of("acos", "asin", "atan", "atan2", "cbrt", "cos", "cosh", "exp", "expm1", "log", "log10",
+            "pow", "sin", "sinh", "sqrt", "tan", "tanh", "toDegrees", "toRadians");
 
     @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
-    private static final Set<String> oneMethods = new HashSet<String>() {
-        {
-            add("acos");
-            add("asin");
-            add("atan");
-            add("cbrt");
-            add("exp");
-            add("log");
-            add("log10");
-            add("pow");
-            add("sqrt");
-            add("toDegrees");
-        }
-    };
+    private static final Set<String> oneMethods = Set.of("acos", "asin", "atan", "cbrt", "exp", "log", "log10", "pow", "sqrt", "toDegrees");
 
     @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
-    private static final Set<String> anyMethods = new HashSet<String>() {
-        {
-            add("abs");
-            add("ceil");
-            add("floor");
-            add("rint");
-            add("round");
-        }
-    };
+    private static final Set<String> anyMethods = Set.of("abs", "ceil", "floor", "rint", "round");
 
     public UnnecessaryMath(BugReporter bugReporter) {
         this.bugReporter = bugReporter;

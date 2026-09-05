@@ -53,7 +53,7 @@ class DeltaInfo {
     @Override
     public String toString() {
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         switch (changeKind) {
         case IResourceDelta.ADDED:
             sb.append("ADDED");

@@ -331,8 +331,9 @@ Detector (visitor) configuration options
 -choosePlugins <+p1,-p2,...>:
   Selectively enable/disable plugins.
 
--adjustPriority <v1=(raise|lower)[,...]>:
-  Raise/lower priority of warnings for given visitor(s)
+-adjustPriority <v1=(+[int]|-[int]|[int]|raise|lower|suppress)[,...]>:
+  Adjust priority of warnings for given detectors (simple or fully qualified class names) or bug patterns, or suppress them completely.
+  [int] sets it to an absolute value. Note that -1 is equivalent to raise, and semantically increases the priority.
 
 Project configuration options
 *****************************

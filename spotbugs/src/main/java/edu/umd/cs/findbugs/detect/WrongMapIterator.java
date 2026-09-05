@@ -172,7 +172,7 @@ public class WrongMapIterator extends BytecodeScanningDetector implements Statel
                     return true;
                 }
                 XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, d);
-                ClassDescriptor is[] = classNameAndInfo.getInterfaceDescriptorList();
+                ClassDescriptor[] is = classNameAndInfo.getInterfaceDescriptorList();
                 d = classNameAndInfo.getSuperclassDescriptor();
                 for (ClassDescriptor i : is) {
                     if ("java.util.Map".equals(i.getDottedClassName())) {

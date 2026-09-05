@@ -282,11 +282,6 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
         }
     }
 
-    @Override
-    public String getDetectorClassName() {
-        return this.getClass().getName();
-    }
-
     private void addBuiltInPolicies() {
 
         // Add the database entries describing methods that add and delete
@@ -438,7 +433,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
             // Is this class a resource type?
             if (xclass.getAnnotation(cleanupObligation) != null) {
                 // Add it as an obligation type
-                database.getFactory().addObligation(xclass.getClassDescriptor().toDottedClassName());
+                database.getFactory().addObligation(xclass.getClassDescriptor().getDottedClassName());
             }
         }
 

@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 public class QuickFixContribution {
     private static final int PRIME = 31;
@@ -56,7 +56,7 @@ public class QuickFixContribution {
                 params.put(keyValueArr[0], keyValueArr[1]);
             }
         }
-        return params.size() == 0 ? Collections.EMPTY_MAP : Collections.unmodifiableMap(params);
+        return params.size() == 0 ? Collections.emptyMap() : Collections.unmodifiableMap(params);
     }
 
     @Override

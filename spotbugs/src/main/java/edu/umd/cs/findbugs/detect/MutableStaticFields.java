@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,31 +46,23 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.util.MutableClasses;
 
 public class MutableStaticFields extends BytecodeScanningDetector {
-    private static final Set<String> COLLECTION_SUPERCLASSES = new HashSet<>(Arrays.asList("java/util/Collection",
+    private static final Set<String> COLLECTION_SUPERCLASSES = Set.of("java/util/Collection",
             "java/util/List", "java/util/Set", "java/util/Map", "java/util/AbstractList", "java/util/SortedSet",
-            "java/util/SortedMap", "java/util/NavigableMap", "java/util/Dictionary"));
+            "java/util/SortedMap", "java/util/NavigableMap", "java/util/Dictionary");
 
-    private static final Set<String> MUTABLE_COLLECTION_CLASSES = new HashSet<>(Arrays.asList("java/util/ArrayList",
+    private static final Set<String> MUTABLE_COLLECTION_CLASSES = Set.of("java/util/ArrayList",
             "java/util/HashSet", "java/util/HashMap", "java/util/Hashtable", "java/util/IdentityHashMap",
             "java/util/LinkedHashSet", "java/util/LinkedList", "java/util/LinkedHashMap", "java/util/TreeSet",
-            "java/util/TreeMap", "java/util/Properties"));
+            "java/util/TreeMap", "java/util/Properties");
 
     private static enum AllowedParameter {
         NONE, EMPTY_ARRAY
     }
 
-    private static final Map<String, Map<String, AllowedParameter>> MUTABLE_COLLECTION_METHODS = new HashMap<>();
-    static {
-        MUTABLE_COLLECTION_METHODS.put("java/util/Arrays", Collections.singletonMap("asList", AllowedParameter.EMPTY_ARRAY));
-        Map<String, AllowedParameter> listsMap = new HashMap<>();
-        listsMap.put("newArrayList", AllowedParameter.NONE);
-        listsMap.put("newLinkedList", AllowedParameter.NONE);
-        MUTABLE_COLLECTION_METHODS.put("com/google/common/collect/Lists", listsMap);
-        Map<String, AllowedParameter> setsMap = new HashMap<>();
-        setsMap.put("newHashSet", AllowedParameter.NONE);
-        setsMap.put("newTreeSet", AllowedParameter.NONE);
-        MUTABLE_COLLECTION_METHODS.put("com/google/common/collect/Sets", setsMap);
-    }
+    private static final Map<String, Map<String, AllowedParameter>> MUTABLE_COLLECTION_METHODS = Map.of(
+            "java/util/Arrays", Collections.singletonMap("asList", AllowedParameter.EMPTY_ARRAY),
+            "com/google/common/collect/Lists", Map.of("newArrayList", AllowedParameter.NONE, "newLinkedList", AllowedParameter.NONE),
+            "com/google/common/collect/Sets", Map.of("newHashSet", AllowedParameter.NONE, "newTreeSet", AllowedParameter.NONE));
 
     static String extractPackage(String c) {
         int i = c.lastIndexOf('/');

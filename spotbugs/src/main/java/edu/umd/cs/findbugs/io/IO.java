@@ -76,7 +76,7 @@ public class IO {
             copy(in, byteSink);
             return byteSink.toByteArray();
         } finally {
-            close(in);
+            close((Closeable) in);
         }
     }
 
@@ -113,7 +113,7 @@ public class IO {
                 result[pos++] = (byte) nextByte;
             }
         } finally {
-            close(in);
+            close((Closeable) in);
         }
     }
 
@@ -139,7 +139,7 @@ public class IO {
 
         int sz = 0;
 
-        byte buf[] = myByteBuf.get();
+        byte[] buf = myByteBuf.get();
 
         while (maxBytes > 0 && (sz = in.read(buf, 0, (int) Math.min(maxBytes, buf.length))) > 0) {
             total += sz;
@@ -157,7 +157,7 @@ public class IO {
 
         int sz;
 
-        char buf[] = myCharBuf.get();
+        char[] buf = myCharBuf.get();
 
         while (maxChars > 0 && (sz = in.read(buf, 0, (int) Math.min(maxChars, buf.length))) > 0) {
             total += sz;
@@ -197,7 +197,9 @@ public class IO {
      * @param inputStream
      *            the InputStream to close; may be null (in which case nothing
      *            happens)
+     * @deprecated This method is deprecated and will be removed in or after October 2026. Use try-with resources when creating the stream instead.
      */
+    @Deprecated(forRemoval = true)
     public static void close(@CheckForNull InputStream inputStream) {
         if (inputStream == null) {
             return;

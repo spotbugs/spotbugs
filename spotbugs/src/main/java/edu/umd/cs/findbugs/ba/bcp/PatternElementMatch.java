@@ -115,7 +115,8 @@ public class PatternElementMatch {
      * Get <em>first</em> match element with given label, if any.
      */
     public PatternElementMatch getFirstLabeledMatch(String label) {
-        PatternElementMatch cur = this, result = null;
+        PatternElementMatch cur = this;
+        PatternElementMatch result = null;
         while (cur != null) {
             String elementLabel = cur.patternElement.getLabel();
             if (elementLabel != null && elementLabel.equals(label)) {
@@ -153,9 +154,9 @@ public class PatternElementMatch {
     public String toString() {
         StringBuilder buf = new StringBuilder();
         PatternElementMatch cur = this;
-        buf.append(cur.patternElement.toString());
+        buf.append(cur.patternElement);
         buf.append(", ");
-        buf.append(cur.matchedInstruction.toString());
+        buf.append(cur.matchedInstruction);
         buf.append(", ");
         buf.append(cur.matchCount);
         return buf.toString();

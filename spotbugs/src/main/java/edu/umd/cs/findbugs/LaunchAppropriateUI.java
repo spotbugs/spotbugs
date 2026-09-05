@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs;
 
 import java.awt.GraphicsEnvironment;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.internalAnnotations.StaticConstant;
@@ -64,16 +63,13 @@ public class LaunchAppropriateUI {
      * Map of UI name strings to integer UI codes.
      */
     @StaticConstant
-    public static final Map<String, Integer> uiNameToCodeMap;
-    static {
-        uiNameToCodeMap = new HashMap<>();
-        uiNameToCodeMap.put("textui", TEXTUI);
-        uiNameToCodeMap.put("gui", GUI2);
-        uiNameToCodeMap.put("gui1", GUI1);
-        uiNameToCodeMap.put("gui2", GUI2);
-        uiNameToCodeMap.put("help", SHOW_HELP);
-        uiNameToCodeMap.put("version", SHOW_VERSION);
-    }
+    public static final Map<String, Integer> uiNameToCodeMap = Map.of(
+            "textui", TEXTUI,
+            "gui", GUI2,
+            "gui1", GUI1,
+            "gui2", GUI2,
+            "help", SHOW_HELP,
+            "version", SHOW_VERSION);
 
     // Fields
     /** Command line arguments. */

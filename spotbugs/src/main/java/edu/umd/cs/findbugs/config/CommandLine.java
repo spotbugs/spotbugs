@@ -20,11 +20,13 @@
 package edu.umd.cs.findbugs.config;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -189,7 +191,7 @@ public abstract class CommandLine {
                 continue;
             }
 
-            try (FileInputStream stream = new FileInputStream(arg.substring(1));
+            try (InputStream stream = Files.newInputStream(Path.of(arg.substring(1)));
                     BufferedReader reader = UTF8.bufferedReader(stream)) {
                 addCommandLineOptions(expandedOptionsList, reader, ignoreComments, ignoreBlankLines);
             }
@@ -225,7 +227,7 @@ public abstract class CommandLine {
                 continue;
             }
 
-            if (ignoreBlankLines && "".equals(line)) {
+            if (ignoreBlankLines && line.isEmpty()) {
                 continue;
             }
             if (line.length() >= 2 && line.charAt(0) == '"' && line.charAt(line.length() - 1) == '"') {
@@ -258,7 +260,7 @@ public abstract class CommandLine {
      * @return number of arguments parsed
      */
     @SuppressFBWarnings("DM_EXIT")
-    public int parse(String argv[], int minArgs, int maxArgs, String usage) {
+    public int parse(String[] argv, int minArgs, int maxArgs, String usage) {
         try {
             int count = parse(argv);
             int remaining = argv.length - count;
@@ -294,11 +296,11 @@ public abstract class CommandLine {
      *         entire command line was parsed
      * @throws HelpRequestedException
      */
-    public int parse(String argv[]) throws IOException, HelpRequestedException {
+    public int parse(String[] argv) throws IOException, HelpRequestedException {
         return parse(argv, false);
     }
 
-    private int parse(String argv[], boolean dryRun) throws IOException, HelpRequestedException {
+    private int parse(String[] argv, boolean dryRun) throws IOException, HelpRequestedException {
         int arg = 0;
 
         while (arg < argv.length) {

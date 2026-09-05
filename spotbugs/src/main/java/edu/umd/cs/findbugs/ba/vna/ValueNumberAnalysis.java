@@ -32,7 +32,6 @@ import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
@@ -385,26 +384,6 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         }
     }
      */
-
-    /**
-     * <p>Compact the value numbers assigned. This should be done only after the
-     * dataflow algorithm has executed. This works by modifying the actual
-     * ValueNumber objects assigned. After this method is called, the
-     * getNumValuesAllocated() method of this object will return a value less
-     * than or equal to the value it would have returned before the call to this
-     * method.
-     * </p>
-     * <p>
-     * <em>This method should be called at most once</em>.
-     * </p>
-     * @param dataflow
-     *            the Dataflow object which executed this analysis (and has all
-     *            of the block result values)
-     */
-    @Deprecated
-    public void compactValueNumbers(Dataflow<ValueNumberFrame, ValueNumberAnalysis> dataflow) {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Mark value numbers in a value number frame for compaction.

@@ -90,38 +90,35 @@ class RefreshJob extends Job implements IViewerRefreshJob {
             final Set<BugGroup> changedParents = contentProvider.updateContent(deltas);
             final boolean fullRefreshNeeded = changedParents.isEmpty() || containsRoot(changedParents);
 
-            Display.getDefault().syncExec(new Runnable() {
-                @Override
-                public void run() {
-                    if (checkCancellation(monitor)) {
-                        return;
-                    }
-                    viewer.getControl().setRedraw(false);
-                    try {
-                        if (fullRefreshNeeded) {
-                            // Attempt to fix https://sourceforge.net/p/findbugs/bugs/1213/
-                            // discard selection (if any) before refreshing content
-                            viewer.setSelection(StructuredSelection.EMPTY);
-                            viewer.refresh();
+            Display.getDefault().syncExec(() -> {
+                if (checkCancellation(monitor)) {
+                    return;
+                }
+                viewer.getControl().setRedraw(false);
+                try {
+                    if (fullRefreshNeeded) {
+                        // Attempt to fix https://sourceforge.net/p/findbugs/bugs/1213/
+                        // discard selection (if any) before refreshing content
+                        viewer.setSelection(StructuredSelection.EMPTY);
+                        viewer.refresh();
+                        if (BugContentProvider.DEBUG) {
+                            System.out.println("Refreshing ROOT!!!");
+                        }
+                    } else {
+                        // update the viewer based on the marker changes.
+                        for (BugGroup parent : changedParents) {
                             if (BugContentProvider.DEBUG) {
-                                System.out.println("Refreshing ROOT!!!");
+                                System.out.println("Refreshing: " + parent);
                             }
-                        } else {
-                            // update the viewer based on the marker changes.
-                            for (BugGroup parent : changedParents) {
-                                if (BugContentProvider.DEBUG) {
-                                    System.out.println("Refreshing: " + parent);
-                                }
-                                if (checkCancellation(monitor)) {
-                                    break;
-                                }
-                                viewer.refresh(parent, true);
+                            if (checkCancellation(monitor)) {
+                                break;
                             }
+                            viewer.refresh(parent, true);
                         }
-                    } finally {
-                        if (viewer != null && !viewer.getControl().isDisposed()) {
-                            viewer.getControl().setRedraw(true);
-                        }
+                    }
+                } finally {
+                    if (viewer != null && !viewer.getControl().isDisposed()) {
+                        viewer.getControl().setRedraw(true);
                     }
                 }
             });

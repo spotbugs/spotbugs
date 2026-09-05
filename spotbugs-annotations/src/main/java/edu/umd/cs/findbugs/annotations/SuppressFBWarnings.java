@@ -28,7 +28,6 @@ import java.lang.annotation.RetentionPolicy;
  * It should be used instead of
  * {@link edu.umd.cs.findbugs.annotations.SuppressWarnings} to avoid conflicts with
  * {@link java.lang.SuppressWarnings}.
- *
  */
 @Retention(RetentionPolicy.CLASS)
 public @interface SuppressFBWarnings {

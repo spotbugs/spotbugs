@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.bugReporter;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;

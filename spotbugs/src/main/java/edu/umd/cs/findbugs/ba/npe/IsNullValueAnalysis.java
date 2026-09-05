@@ -200,7 +200,8 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
     }
 
     public static class PointerEqualityCheck {
-        final ValueNumber reg1, reg2;
+        final ValueNumber reg1;
+        final ValueNumber reg2;
 
         final int firstValuePC;
 

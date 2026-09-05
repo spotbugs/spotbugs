@@ -27,7 +27,7 @@ You can increase this using the ``-maxHeap n`` option, where n is the number of 
 Q3: What is the "auxiliary classpath"? Why should I specify it?
 ---------------------------------------------------------------
 
-Many important facts about a Java class require information about the classes that it references.  For example:
+Many important facts about a Java class require information about the classes that it references. For example:
 
 * What other classes and interfaces the class inherits from
 * What exceptions can be thrown by methods in external classes and interfaces
@@ -70,7 +70,7 @@ Q6: The Eclipse plugin loads, but doesn't work correctly
 --------------------------------------------------------
 
 * Make sure the Java code you trying to analyze is built properly and has no classpath or compile errors.
-* Make sure the project and workspace SpotBugs settings are valid - in doubt, revert them to defaults.
+* Make sure the project and workspace SpotBugs settings are valid. In doubt, revert them to defaults.
 * Make sure the Error log view does not show errors.
 
 Q7: Where is the Maven plugin for SpotBugs?

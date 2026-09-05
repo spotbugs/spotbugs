@@ -68,7 +68,9 @@ public class SerializableIdiom extends OpcodeStackDetector {
 
     boolean sawSerialVersionUID;
 
-    boolean isSerializable, implementsSerializableDirectly;
+    boolean isSerializable;
+
+    boolean implementsSerializableDirectly;
 
     boolean isExternalizable;
 
@@ -315,6 +317,7 @@ public class SerializableIdiom extends OpcodeStackDetector {
             for (Field f : obj.getFields()) {
                 if (f.isTransient()) {
                     seenTransientField = true;
+                    break;
                 }
             }
         }

@@ -87,7 +87,7 @@ Parameters
 This section describes the parameters that may be specified when using the FindBugs task.
 
 class
-  A optional nested element specifying which classes to analyze.
+  An optional nested element specifying which classes to analyze.
   The class element must specify a location attribute which names the archive file (jar, zip, etc.), directory, or class file to be analyzed.
   Multiple class elements may be specified as children of a single spotbugs element.
 

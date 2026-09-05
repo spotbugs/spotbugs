@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.apache.bcel.Const;
 
@@ -302,5 +302,8 @@ class UnresolvedXMethod extends AbstractMethod {
         return false;
     }
 
-
+    @Override
+    public boolean hasPolymorphicSignature() {
+        return false;
+    }
 }

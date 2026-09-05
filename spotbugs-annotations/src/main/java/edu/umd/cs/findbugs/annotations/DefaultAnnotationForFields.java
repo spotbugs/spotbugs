@@ -39,15 +39,11 @@ import java.lang.annotation.Target;
  *
  * @author William Pugh
  */
-
 @Documented
 @Target({ ElementType.TYPE, ElementType.PACKAGE })
 @Retention(RetentionPolicy.CLASS)
 public @interface DefaultAnnotationForFields {
     Class<? extends Annotation>[] value();
-
-    @Deprecated
-    Priority priority() default Priority.MEDIUM;
 
     Confidence confidence() default Confidence.MEDIUM;
 }

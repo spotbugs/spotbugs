@@ -15,6 +15,8 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.util.SyntheticRepository;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -52,6 +54,8 @@ class PlaceholderTest {
             }
         };
         AnalysisContext.setCurrentAnalysisContext(analysisContext);
+        // When running inside the build other tests might set the spotbugs repository
+        Repository.setRepository(SyntheticRepository.getInstance());
     }
 
     @AfterEach
@@ -68,7 +72,7 @@ class PlaceholderTest {
 
         JavaClass clazz = Repository.lookupClass(PlaceholderTest.class);
         Method method = Arrays.stream(clazz.getMethods()).filter(m -> m.getName().equals("testFormatWithKey")).findFirst().get();
-        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addClassAndMethod(clazz, method));
+        reporter.reportBug(new BugInstance(bugPattern.getType(), 0).addClassAndMethod(clazz, method));
         reporter.finish();
 
         String json = writer.toString();

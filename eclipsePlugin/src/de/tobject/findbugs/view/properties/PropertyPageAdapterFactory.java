@@ -311,12 +311,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 
         private boolean isDisposed;
 
-        static ITabbedPropertySheetPageContributor contributor = new ITabbedPropertySheetPageContributor() {
-            @Override
-            public String getContributorId() {
-                return FindbugsPlugin.TREE_VIEW_ID;
-            }
-        };
+        static ITabbedPropertySheetPageContributor contributor = () -> FindbugsPlugin.TREE_VIEW_ID;
 
         public BugPropertySheetPage() {
             super(contributor);

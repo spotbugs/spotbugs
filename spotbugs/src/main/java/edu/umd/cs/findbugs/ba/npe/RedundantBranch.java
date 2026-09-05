@@ -32,7 +32,9 @@ public class RedundantBranch {
 
     public final int lineNumber;
 
-    public final IsNullValue firstValue, secondValue;
+    public final IsNullValue firstValue;
+
+    public final IsNullValue secondValue;
 
     public Edge infeasibleEdge;
 

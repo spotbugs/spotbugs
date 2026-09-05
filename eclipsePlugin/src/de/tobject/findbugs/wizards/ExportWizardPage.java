@@ -226,11 +226,12 @@ public class ExportWizardPage extends WizardPage {
     }
 
     private Record createProjectLine(IProject project) {
-        if (ProjectUtilities.isJavaProject(project) /*
-                                                     * TODO why not working ??
-                                                     * && project.hasNature(
-                                                     * FindbugsPlugin.NATURE_ID)
-                                                     */) {
+        if (ProjectUtilities.isJavaProject(project)) {
+            /*
+             * TODO why not working ??
+             * && project.hasNature(
+             * FindbugsPlugin.NATURE_ID)
+             */
             IMarker[] markerArr = MarkerUtil.getAllMarkers(project);
             if (markerArr.length == 0) {
                 return null;

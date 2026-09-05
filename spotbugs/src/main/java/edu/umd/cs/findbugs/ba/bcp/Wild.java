@@ -34,7 +34,8 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * @see PatternElement
  */
 public class Wild extends PatternElement {
-    private int min, max;
+    private int min;
+    private int max;
 
     /**
      * Default constructor. Creates a wildcard that matches from 0 to

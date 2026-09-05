@@ -8,7 +8,7 @@ package foundOnTheWeb;
  *
  * <pre>
  * class Foo {
- *     static private final String LOCK = &quot;LOCK&quot;;
+ *     private static final String LOCK = &quot;LOCK&quot;;
  *
  *     void someMethod() {
  *     synchronized(LOCK) {
@@ -38,7 +38,7 @@ package foundOnTheWeb;
  *
  */
 public class SynchronizationOnSharedBuiltinConstant {
-    static private final String LOCK = "LOCK";
+    private static final String LOCK = "LOCK";
 
     void someMethod() {
         synchronized (LOCK) {

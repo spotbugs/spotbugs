@@ -71,9 +71,7 @@ public class NestedAccessUtil {
         if (supportsNestedAccess(javaClass)) {
             Attribute[] attributes = javaClass.getAttributes();
             for (Attribute attribute : attributes) {
-                if (attribute instanceof NestHost) {
-                    return true;
-                } else if (attribute instanceof NestMembers) {
+                if (attribute instanceof NestHost || attribute instanceof NestMembers) {
                     return true;
                 }
             }

@@ -63,7 +63,8 @@ public class JavaClassAndMethod {
 
         this.javaClass = Repository.lookupClass(method.getClassName());
         for (Method m : javaClass.getMethods()) {
-            if (m.getName().equals(method.getName()) && m.getSignature().equals(method.getSignature())
+            if (m.getName().equals(method.getName())
+                    && (m.getSignature().equals(method.getSignature()) || method.hasPolymorphicSignature())
                     && m.isStatic() == method.isStatic()) {
                 this.method = m;
                 return;

@@ -138,6 +138,12 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
             if (configChanged) {
                 files = new ArrayList<>();
                 files.add(new WorkItem(project));
+                // Clear previously saved user preferences
+                try {
+                    project.setSessionProperty(FindbugsPlugin.SESSION_PROPERTY_USERPREFS, null);
+                } catch (CoreException e) {
+                    FindbugsPlugin.getDefault().logException(e, "Failed to clear user preferences in session");
+                }
             } else {
                 files = ResourceUtils.collectIncremental(resourceDelta);
                 if (files.size() == 1) {
@@ -192,7 +198,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
         }
     }
 
-    private boolean isConfigUnchanged(IResourceDelta resourceDelta) {
+    private static boolean isConfigUnchanged(IResourceDelta resourceDelta) {
         return resourceDelta != null && resourceDelta.findMember(new Path(".project")) == null
                 && resourceDelta.findMember(new Path(".classpath")) == null
                 && resourceDelta.findMember(FindbugsPlugin.DEPRECATED_PREFS_PATH) == null

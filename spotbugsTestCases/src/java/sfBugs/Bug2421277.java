@@ -3,14 +3,15 @@ package sfBugs;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 
-import javax.ejb.EJBException;
-import javax.ejb.EJBHome;
-import javax.ejb.EJBObject;
-import javax.ejb.SessionContext;
+import jakarta.ejb.EJBException;
+import jakarta.ejb.EJBHome;
+import jakarta.ejb.EJBObject;
+import jakarta.ejb.SessionBean;
+import jakarta.ejb.SessionContext;
 import javax.naming.Context;
-import javax.transaction.UserTransaction;
+import jakarta.transaction.UserTransaction;
 
-public class Bug2421277 implements javax.ejb.SessionBean, Serializable {
+public class Bug2421277 implements SessionBean, Serializable {
 
     static abstract class FakeHomeReference implements EJBHome {
     }
@@ -21,7 +22,7 @@ public class Bug2421277 implements javax.ejb.SessionBean, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private javax.ejb.SessionContext mySessionCtx;
+    private SessionContext mySessionCtx;
 
     private UserTransaction transaction;
 

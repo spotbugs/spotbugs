@@ -29,10 +29,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-import javax.annotation.Nonnull;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -49,7 +47,6 @@ import org.junit.jupiter.api.BeforeEach;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.FindbugsTestPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
-import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolution;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator;
 
@@ -129,25 +126,21 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
     }
 
     protected void sortMarkers(IMarker[] markers) {
-        Arrays.sort(markers, new Comparator<>() {
-
-            @Override
-            public int compare(IMarker marker1, IMarker marker2) {
-                String pattern1 = MarkerUtil.getBugPatternString(marker1);
-                String pattern2 = MarkerUtil.getBugPatternString(marker2);
-                if (pattern1 != null) {
-                    if (pattern1.equals(pattern2)) {
-                        return MarkerUtil.findPrimaryLineForMaker(marker1) -
-                                MarkerUtil.findPrimaryLineForMaker(marker2);
-                    }
-                    return pattern1.compareTo(pattern2);
+        Arrays.sort(markers, (marker1, marker2) -> {
+            String pattern1 = MarkerUtil.getBugPatternString(marker1);
+            String pattern2 = MarkerUtil.getBugPatternString(marker2);
+            if (pattern1 != null) {
+                if (pattern1.equals(pattern2)) {
+                    return MarkerUtil.findPrimaryLineForMaker(marker1) -
+                            MarkerUtil.findPrimaryLineForMaker(marker2);
                 }
-                //else, perhaps fail because markers don't have bugPatternStrings?
-                else if (pattern2 == null) {
-                    return 0; //neither is a bugPattern?
-                }
-                return MarkerUtil.findPrimaryLineForMaker(marker1) - MarkerUtil.findPrimaryLineForMaker(marker2);
+                return pattern1.compareTo(pattern2);
             }
+            //else, perhaps fail because markers don't have bugPatternStrings?
+            else if (pattern2 == null) {
+                return 0; //neither is a bugPattern?
+            }
+            return MarkerUtil.findPrimaryLineForMaker(marker1) - MarkerUtil.findPrimaryLineForMaker(marker2);
         });
     }
 
@@ -196,17 +189,6 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
     protected void assertEqualFiles(URL expectedFile, ICompilationUnit compilationUnit) throws IOException, JavaModelException {
         String expectedSource = readFileContents(expectedFile);
         assertEquals(expectedSource, compilationUnit.getSource());
-    }
-
-    @Deprecated
-    protected void assertPresentBugPattern(@Nonnull String bugPatternType, IMarker[] markers) {
-        for (int i = 0; i < markers.length; i++) {
-            BugPattern pattern = MarkerUtil.findBugPatternForMarker(markers[i]);
-            if (pattern != null && bugPatternType.equals(pattern.getType())) {
-                return;
-            }
-        }
-        fail("Couldn't find pattern " + bugPatternType);
     }
 
     protected void assertPresentBugPatterns(List<QuickFixTestPackage> packages, IMarker[] markers) {
@@ -268,20 +250,14 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
     }
 
     private String readFileContents(URL url) throws IOException {
-        StringWriter writer = new StringWriter();
-        InputStream input = null;
-        try {
-            input = url.openStream();
+        try (StringWriter writer = new StringWriter();
+                InputStream input = url.openStream()) {
             int nextChar;
             while ((nextChar = input.read()) != -1) {
                 writer.write(nextChar);
             }
-        } finally {
-            if (input != null) {
-                input.close();
-            }
+            return writer.toString();
         }
-        return writer.toString();
     }
 
     public static class QuickFixTestPackage {
@@ -321,15 +297,11 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
          * @return a sorted list of QuickFixTestPackages to be used in assertions.
          */
         public List<QuickFixTestPackage> asList() {
-            Collections.sort(packages, new Comparator<QuickFixTestPackage>() {
-
-                @Override
-                public int compare(QuickFixTestPackage o1, QuickFixTestPackage o2) {
-                    if (o1.expectedPattern.equals(o2.expectedPattern)) {
-                        return o1.lineNumber - o2.lineNumber;
-                    }
-                    return o1.expectedPattern.compareTo(o2.expectedPattern);
+            Collections.sort(packages, (o1, o2) -> {
+                if (o1.expectedPattern.equals(o2.expectedPattern)) {
+                    return o1.lineNumber - o2.lineNumber;
                 }
+                return o1.expectedPattern.compareTo(o2.expectedPattern);
             });
             return Collections.unmodifiableList(packages);
         }

@@ -34,5 +34,5 @@ public interface ApplicabilityVisitor {
      *
      * @return true if this resolution should be visible to the user at the given marker
      */
-    public abstract boolean isApplicable();
+    boolean isApplicable();
 }

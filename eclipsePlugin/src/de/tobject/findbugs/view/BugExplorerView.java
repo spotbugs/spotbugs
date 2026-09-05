@@ -103,11 +103,6 @@ public class BugExplorerView extends CommonNavigator implements IMarkerSelection
     }
 
     @Override
-    public void updateTitle() {
-        super.updateTitle();
-    }
-
-    @Override
     public void init(IViewSite site, IMemento memento) throws PartInitException {
         viewMemento = memento;
         if (memento == null) {
@@ -138,11 +133,6 @@ public class BugExplorerView extends CommonNavigator implements IMarkerSelection
             return viewMemento;
         }
         return adapter;
-    }
-
-    @Override
-    public void saveState(IMemento memento) {
-        super.saveState(memento);
     }
 
     @Override

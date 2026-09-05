@@ -71,7 +71,7 @@ public class ClassNotFoundExceptionParser {
             String resourceName = ((ResourceNotFoundException) cause).getResourceName();
             if (resourceName != null) {
                 ClassDescriptor classDesc = DescriptorFactory.createClassDescriptorFromResourceName(resourceName);
-                return classDesc.toDottedClassName();
+                return classDesc.getDottedClassName();
             }
         }
 

@@ -23,7 +23,7 @@ import java.lang.annotation.ElementType;
 import java.util.Collection;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 

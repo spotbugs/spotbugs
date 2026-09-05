@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -80,12 +79,12 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.Bag;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -96,7 +95,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class UnreadFields extends OpcodeStackDetector {
     private static final boolean DEBUG = SystemProperties.getBoolean("unreadfields.debug");
 
-    private static final List<String> INITIALIZER_ANNOTATIONS = Arrays.asList(
+    private static final List<String> INITIALIZER_ANNOTATIONS = List.of(
             "Ljakarta/annotation/PostConstruct;",
             "Ljavax/annotation/PostConstruct;",
             "Lorg/testng/annotations/BeforeClass;",
@@ -108,7 +107,7 @@ public class UnreadFields extends OpcodeStackDetector {
     /**
      * A list of annotations for fields that might be read by frameworks, even though they are private
      */
-    private static final List<ClassDescriptor> READ_BY_FRAMEWORK_ANNOTATIONS = Arrays.asList(
+    private static final List<ClassDescriptor> READ_BY_FRAMEWORK_ANNOTATIONS = List.of(
             DescriptorFactory.createClassDescriptor("com/google/gson/annotations/SerializedName"),
             DescriptorFactory.createClassDescriptor("javax/xml/bind/annotation/XmlElement"),
             DescriptorFactory.createClassDescriptor("javax/xml/bind/annotation/XmlAttribute"),
@@ -117,16 +116,6 @@ public class UnreadFields extends OpcodeStackDetector {
             DescriptorFactory.createClassDescriptor("jakarta/xml/bind/annotation/XmlAttribute"),
             DescriptorFactory.createClassDescriptor("jakarta/xml/bind/annotation/XmlValue"),
             DescriptorFactory.createClassDescriptor("org/junit/jupiter/api/extension/RegisterExtension"));
-
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isContainerField(XField)} instead
-     */
-    @Deprecated
-    public boolean isContainerField(XField f) {
-        return data.isContainerField(f);
-    }
-
-
 
     boolean hasNativeMethods;
 
@@ -143,46 +132,6 @@ public class UnreadFields extends OpcodeStackDetector {
     private final Map<String, List<BugAnnotation>> anonymousClassAnnotation = new HashMap<>();
 
     private final ClassDescriptor junitNestedAnnotation = DescriptorFactory.createClassDescriptor("org/junit/jupiter/api/Nested");
-
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#getReadFields()} instead
-     */
-    @Deprecated
-    public Set<? extends XField> getReadFields() {
-        return data.getReadFields();
-    }
-
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#getWrittenFields()} instead
-     */
-    @Deprecated
-    public Set<? extends XField> getWrittenFields() {
-        return data.getWrittenFields();
-    }
-
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isWrittenOutsideOfInitialization(XField)} instead
-     */
-    @Deprecated
-    public boolean isWrittenOutsideOfInitialization(XField f) {
-        return data.isWrittenOutsideOfInitialization(f);
-    }
-
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isWrittenDuringInitialization(XField)} instead
-     */
-    @Deprecated
-    public boolean isWrittenDuringInitialization(XField f) {
-        return data.isWrittenDuringInitialization(f);
-    }
-
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isWrittenInConstructor(XField)} instead
-     */
-    @Deprecated
-    public boolean isWrittenInConstructor(XField f) {
-        return data.isWrittenInConstructor(f);
-    }
 
     static final int DO_NOT_CONSIDER = Const.ACC_PUBLIC | Const.ACC_PROTECTED;
 
@@ -201,22 +150,6 @@ public class UnreadFields extends OpcodeStackDetector {
         data.reflectiveFields.add(XFactory.createXField("java.lang.System", "err", "Ljava/io/PrintStream;", true));
         data = context.getUnreadFieldsData();
         context.setUnreadFields(this);
-    }
-
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#strongEvidenceForIntendedSerialization(ClassDescriptor)} instead
-     */
-    @Deprecated
-    public void strongEvidenceForIntendedSerialization(ClassDescriptor c) {
-        data.strongEvidenceForIntendedSerialization(c);
-    }
-
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#existsStrongEvidenceForIntendedSerialization(ClassDescriptor)} instead
-     */
-    @Deprecated
-    public boolean existsStrongEvidenceForIntendedSerialization(ClassDescriptor c) {
-        return data.existsStrongEvidenceForIntendedSerialization(c);
     }
 
     @Override
@@ -293,7 +226,8 @@ public class UnreadFields extends OpcodeStackDetector {
             data.fieldsOfSerializableOrNativeClassed.addAll(data.myFields);
             data.fieldsOfNativeClasses.addAll(data.myFields);
         }
-        if (isSerializable) {
+        if (isSerializable && !obj.isEnum()) {
+            // Enums are serializable, but only their name is serialized, not instance fields.
             data.fieldsOfSerializableOrNativeClassed.addAll(data.myFields);
         }
         if (sawSelfCallInConstructor) {
@@ -336,7 +270,9 @@ public class UnreadFields extends OpcodeStackDetector {
         if (isInjectionAttribute(annotationClass)) {
             data.containerFields.add(XFactory.createXField(this));
         }
-        if (!annotationClass.startsWith("edu.umd.cs.findbugs") && !annotationClass.startsWith("javax.lang")) {
+        if (!annotationClass.startsWith("edu.umd.cs.findbugs")
+                && !annotationClass.startsWith("javax.lang")
+                && !NoteSuppressedWarnings.isSuppressWarnings(annotationClass)) {
             data.unknownAnnotation.add(XFactory.createXField(this), annotationClass);
         }
 
@@ -800,8 +736,11 @@ public class UnreadFields extends OpcodeStackDetector {
             }
             data.writtenFields.add(f);
 
-            boolean writtingNonNull = previousOpcode != Const.ACONST_NULL || previousPreviousOpcode == Const.GOTO;
-            if (writtingNonNull) {
+            boolean definitelyNullValue = item != null && item.isNull();
+            boolean writingNull = previousOpcode == Const.ACONST_NULL
+                    || (previousOpcode == Const.CHECKCAST && previousPreviousOpcode == Const.ACONST_NULL && definitelyNullValue);
+            boolean writingNonNull = !writingNull || previousPreviousOpcode == Const.GOTO;
+            if (writingNonNull) {
                 data.writtenNonNullFields.add(f);
                 if (DEBUG) {
                     System.out.println("put nn: " + f);
@@ -809,7 +748,7 @@ public class UnreadFields extends OpcodeStackDetector {
             } else if (DEBUG) {
                 System.out.println("put: " + f);
             }
-            if (writtingNonNull && data.readFields.contains(f)) {
+            if (writingNonNull && data.readFields.contains(f)) {
                 data.fieldAccess.remove(f);
             } else if (!data.fieldAccess.containsKey(f)) {
                 data.fieldAccess.put(f, SourceLineAnnotation.fromVisitedInstruction(this));
@@ -829,7 +768,7 @@ public class UnreadFields extends OpcodeStackDetector {
                 } else {
                     data.writtenInInitializationFields.add(f);
                 }
-                if (writtingNonNull) {
+                if (writingNonNull) {
                     data.assumedNonNull.remove(f);
                 }
             } else {
@@ -859,15 +798,17 @@ public class UnreadFields extends OpcodeStackDetector {
             }
         }
 
-        return false;
-    }
+        try {
+            if ("setUp".equals(getMethodName()) && InvalidJUnitTest.isJunit3TestCase(getXClass())) {
+                return true;
+            }
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
+        } catch (CheckedAnalysisException e) {
+            bugReporter.reportMissingClass(getXClass().getSuperclassDescriptor(), e);
+        }
 
-    /**
-     * @deprecated Use {@link edu.umd.cs.findbugs.detect.UnreadFieldsData#isReflexive(XField)} instead
-     */
-    @Deprecated
-    public boolean isReflexive(XField f) {
-        return data.isReflexive(f);
+        return false;
     }
 
     static Pattern dontComplainAbout = Pattern.compile("class[$]");
@@ -988,16 +929,11 @@ public class UnreadFields extends OpcodeStackDetector {
             if (myMaxCount > 0) {
                 maxCount.put(f, myMaxCount);
             }
-            if (myMaxCount > 15) {
-                assumeReflective.add(f);
-            } else if (nullOnlyFieldNames.getCount(f.getName()) > 8) {
-                assumeReflective.add(f);
-            } else if (classContainingNullOnlyFields.getCount(f.getClassDescriptor()) > 4) {
-                assumeReflective.add(f);
-            } else if (classContainingNullOnlyFields.getCount(f.getClassDescriptor()) > 2 && f.getName().length() == 1) {
+            if (myMaxCount > 15 || nullOnlyFieldNames.getCount(f.getName()) > 8
+                    || classContainingNullOnlyFields.getCount(f.getClassDescriptor()) > 4
+                    || (classContainingNullOnlyFields.getCount(f.getClassDescriptor()) > 2 && f.getName().length() == 1)) {
                 assumeReflective.add(f);
             }
-
         }
 
         readOnlyFields.removeAll(assumeReflective);

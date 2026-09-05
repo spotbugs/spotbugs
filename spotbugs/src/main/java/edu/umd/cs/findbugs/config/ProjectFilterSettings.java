@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.config;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -62,13 +61,11 @@ public class ProjectFilterSettings implements Cloneable {
 
     /** Map of priority level names to their numeric values. */
     @StaticConstant
-    private static Map<String, Integer> priorityNameToValueMap = new HashMap<>();
-    static {
-        priorityNameToValueMap.put(HIGH_PRIORITY, (Priorities.HIGH_PRIORITY));
-        priorityNameToValueMap.put(MEDIUM_PRIORITY, (Priorities.NORMAL_PRIORITY));
-        priorityNameToValueMap.put(LOW_PRIORITY, (Priorities.LOW_PRIORITY));
-        priorityNameToValueMap.put(EXPERIMENTAL_PRIORITY, (Priorities.EXP_PRIORITY));
-    }
+    private static final Map<String, Integer> priorityNameToValueMap = Map.of(
+            HIGH_PRIORITY, Priorities.HIGH_PRIORITY,
+            MEDIUM_PRIORITY, Priorities.NORMAL_PRIORITY,
+            LOW_PRIORITY, Priorities.LOW_PRIORITY,
+            EXPERIMENTAL_PRIORITY, Priorities.EXP_PRIORITY);
 
     /**
      * The character used for delimiting whole fields in filter settings encoded

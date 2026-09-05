@@ -50,7 +50,7 @@ public class URLProblems extends OpcodeStackDetector {
     private static final String[] HASHMAP_KEY_METHODS = { "containsKey", "get", "remove" };
     private static final String[] HASHMAP_TWO_ARG_KEY_METHODS = { "put" };
 
-    private static final List<MethodDescriptor> methods = Arrays.asList(URL_EQUALS, URL_HASHCODE,
+    private static final List<MethodDescriptor> methods = List.of(URL_EQUALS, URL_HASHCODE,
             new MethodDescriptor("", "add", "(Ljava/lang/Object;)Z"),
             new MethodDescriptor("", "contains", "(Ljava/lang/Object;)Z"),
             new MethodDescriptor("", "remove", "(Ljava/lang/Object;)Z"),

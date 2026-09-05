@@ -457,6 +457,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
 
         // Java Puzzlers, Chapter 2, puzzle 1
         // Look for ICONST_2 IREM ICONST_1 IF_ICMPNE L1
+        // Also detect Yoda-style: ICONST_1 ... ICONST_2 IREM IF_ICMPEQ/NE (i.e. 1 == i % 2)
 
         switch (badlyComputingOddState) {
         case 0:
@@ -479,6 +480,18 @@ public class FindPuzzlers extends OpcodeStackDetector {
         case 2:
             if (seen == Const.ICONST_1) {
                 badlyComputingOddState++;
+            } else if (seen == Const.IF_ICMPEQ || seen == Const.IF_ICMPNE) {
+                // Yoda-style: 1 == i % 2
+                // After IREM, stack is [..., 1, i%2]; check that the item below is the constant 1
+                if (stack.getStackDepth() >= 2) {
+                    OpcodeStack.Item belowItem = stack.getStackItem(1);
+                    Object constant = belowItem.getConstant();
+                    if (constant instanceof Integer && ((Integer) constant) == 1) {
+                        bugAccumulator.accumulateBug(
+                                new BugInstance(this, "IM_BAD_CHECK_FOR_ODD", NORMAL_PRIORITY).addClassAndMethod(this), this);
+                    }
+                }
+                badlyComputingOddState = 0;
             } else {
                 badlyComputingOddState = 0;
             }
@@ -495,7 +508,7 @@ public class FindPuzzlers extends OpcodeStackDetector {
         }
 
         // Java Puzzlers, chapter 3, puzzle 12
-        if (seen == Const.INVOKEVIRTUAL
+        if ((seen == Const.INVOKEVIRTUAL
                 && stack.getStackDepth() > 0
                 && ("toString".equals(getNameConstantOperand()) && "()Ljava/lang/String;".equals(getSigConstantOperand())
                         || "append".equals(getNameConstantOperand())
@@ -505,7 +518,13 @@ public class FindPuzzlers extends OpcodeStackDetector {
                                 && "(Ljava/lang/Object;)Ljava/lang/StringBuffer;".equals(getSigConstantOperand())
                                 && "java/lang/StringBuffer".equals(getClassConstantOperand()) || ("print".equals(getNameConstantOperand())
                                         || "println".equals(getNameConstantOperand()))
-                                        && "(Ljava/lang/Object;)V".equals(getSigConstantOperand()))) {
+                                        && "(Ljava/lang/Object;)V".equals(getSigConstantOperand())))
+                || (seen == Const.INVOKESTATIC
+                        && stack.getStackDepth() > 0
+                        && ("valueOf".equals(getNameConstantOperand()) && "(Ljava/lang/Object;)Ljava/lang/String;".equals(getSigConstantOperand())))
+                || (seen == Const.INVOKEDYNAMIC
+                        && stack.getStackDepth() > 0
+                        && ("makeConcatWithConstants".equals(getNameConstantOperand())))) {
             OpcodeStack.Item item = stack.getStackItem(0);
             String signature = item.getSignature();
             if (signature != null && signature.startsWith("[")) {
@@ -515,13 +534,14 @@ public class FindPuzzlers extends OpcodeStackDetector {
                     for (CodeException e : getCode().getExceptionTable()) {
                         if (e.getHandlerPC() <= getPC() && e.getHandlerPC() + 30 >= getPC()) {
                             debuggingContext = true;
+                            break;
                         }
                     }
 
                     for (int i = 1; !debuggingContext && i < stack.getStackDepth(); i++) {
                         OpcodeStack.Item e = stack.getStackItem(i);
 
-                        if (e.getSignature().indexOf("Logger") >= 0 || e.getSignature().indexOf("Exception") >= 0) {
+                        if (e.getSignature().contains("Logger") || e.getSignature().contains("Exception")) {
                             debuggingContext = true;
                         }
 

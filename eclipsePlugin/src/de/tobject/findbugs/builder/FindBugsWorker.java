@@ -20,9 +20,9 @@
 
 package de.tobject.findbugs.builder;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +32,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import edu.umd.cs.findbugs.PriorityAdjuster;
 import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -48,7 +49,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import de.tobject.findbugs.EclipseGuiCallback;
 import de.tobject.findbugs.FindbugsPlugin;
-import de.tobject.findbugs.io.IO;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.preferences.FindBugsConstants;
 import de.tobject.findbugs.reporter.MarkerUtil;
@@ -159,7 +159,9 @@ public class FindBugsWorker {
             bugReporter.setReportingStream(FindBugsConsole.getConsole().newOutputStream());
         }
         bugReporter.setPriorityThreshold(userPrefs.getUserDetectorThreshold());
-
+        if (userPrefs.getAdjustPriority() != null && !userPrefs.getAdjustPriority().isEmpty()) {
+            bugReporter.setPriorityAdjuster(new PriorityAdjuster(userPrefs.getAdjustPriority()));
+        }
         FindBugs.setHome(FindbugsPlugin.getFindBugsEnginePluginLocation());
 
         Map<IPath, IPath> outLocations = createOutputLocations();
@@ -206,7 +208,7 @@ public class FindBugsWorker {
 
         // configure extended preferences
         findBugs.setAnalysisFeatureSettings(userPrefs.getAnalysisFeatureSettings());
-        findBugs.setMergeSimilarWarnings(false);
+        findBugs.setMergeSimilarWarnings(userPrefs.getMergeSimilarWarnings());
 
         if (cacheClassData) {
             FindBugs2Eclipse.checkClassPathChanges(findBugs.getProject().getAuxClasspathEntryList(), project);
@@ -363,8 +365,7 @@ public class FindBugsWorker {
             resultCollection.getProject().setGuiCallback(new EclipseGuiCallback(project));
             resultCollection.setTimestamp(System.currentTimeMillis());
 
-            // will store bugs in the default FB file + Eclipse project session
-            // props
+            // will store bugs in the default FB file + Eclipse project session props
             st.newPoint("storeBugCollection");
             FindbugsPlugin.storeBugCollection(project, resultCollection, monitor);
         } catch (CoreException e) {
@@ -379,10 +380,8 @@ public class FindBugsWorker {
     private SortedBugCollection mergeBugCollections(SortedBugCollection firstCollection, SortedBugCollection secondCollection,
             boolean incremental) {
         Update update = new Update();
-        // TODO copyDeadBugs must be true, otherwise incremental compile leads
-        // to
-        // unknown bug instances appearing (merged collection doesn't contain
-        // all bugs)
+        // TODO copyDeadBugs must be true, otherwise incremental compile leads to
+        // unknown bug instances appearing (merged collection doesn't contain all bugs)
         boolean copyDeadBugs = incremental;
         return (SortedBugCollection) (update.mergeCollections(firstCollection, secondCollection, copyDeadBugs, incremental));
     }
@@ -506,9 +505,8 @@ public class FindBugsWorker {
         IPath defaultOutputLocation = ResourceUtils.relativeToAbsolute(javaProject.getOutputLocation());
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
         // path to the project without project name itself
-        IClasspathEntry entries[] = javaProject.getResolvedClasspath(true);
-        for (int i = 0; i < entries.length; i++) {
-            IClasspathEntry classpathEntry = entries[i];
+        IClasspathEntry[] entries = javaProject.getResolvedClasspath(true);
+        for (IClasspathEntry classpathEntry : entries) {
             if (classpathEntry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
                 IPath outputLocation = ResourceUtils.getOutputLocation(classpathEntry, defaultOutputLocation);
                 if (outputLocation == null) {
@@ -533,18 +531,12 @@ public class FindBugsWorker {
 
     private void reportFromXml(final String xmlFileName, final Project findBugsProject, final Reporter bugReporter) {
         if (!"".equals(xmlFileName)) {
-            FileInputStream input = null;
-            try {
-                input = new FileInputStream(xmlFileName);
+            try (InputStream input = Files.newInputStream(java.nio.file.Path.of(xmlFileName))) {
                 bugReporter.reportBugsFromXml(input, findBugsProject);
-            } catch (FileNotFoundException e) {
-                FindbugsPlugin.getDefault().logException(e, "XML file not found: " + xmlFileName);
             } catch (DocumentException e) {
                 FindbugsPlugin.getDefault().logException(e, "Invalid XML file: " + xmlFileName);
             } catch (IOException e) {
                 FindbugsPlugin.getDefault().logException(e, "Error loading SpotBugs results xml file: " + xmlFileName);
-            } finally {
-                IO.closeQuietly(input);
             }
         }
     }

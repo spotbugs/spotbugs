@@ -73,7 +73,11 @@ public class Filter {
          */
         public static final long MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000L;
 
-        Pattern classPattern, bugPattern, callsPattern;
+        Pattern classPattern;
+
+        Pattern bugPattern;
+
+        Pattern callsPattern;
 
         public boolean notSpecified = false;
 
@@ -582,7 +586,7 @@ public class Filter {
                 try {
                     ExcludingHashesBugReporter.addToExcludedInstanceHashes(excludedInstanceHashes, argument);
                 } catch (DocumentException e) {
-                    throw new IllegalArgumentException("Error processing include file: " + argument, e);
+                    throw new IllegalArgumentException("Error processing excludeBugs file: " + argument, e);
                 }
             } else if ("-include".equals(option)) {
                 try {
@@ -594,7 +598,7 @@ public class Filter {
                 try {
                     excludeFilter.add(new edu.umd.cs.findbugs.filter.Filter(argument));
                 } catch (FilterException e) {
-                    throw new IllegalArgumentException("Error processing include file: " + argument, e);
+                    throw new IllegalArgumentException("Error processing exclude file: " + argument, e);
                 }
             } else if ("-hashes".equals(option)) {
                 hashesFromFile = new HashSet<>();

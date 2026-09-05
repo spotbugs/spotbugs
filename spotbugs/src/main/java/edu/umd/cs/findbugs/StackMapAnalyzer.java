@@ -110,16 +110,13 @@ public class StackMapAnalyzer {
     static List<Item> getInitialLocals(MethodDescriptor descriptor) {
         List<Item> locals = new ArrayList<>();
         Type[] argTypes = Type.getArgumentTypes(descriptor.getSignature());
-        int reg = 0;
         if (!descriptor.isStatic()) {
             Item it = Item.typeOnly("L" + descriptor.getSlashedClassName() + ";");
             locals.add(it);
-            reg += it.getSize();
         }
         for (Type argType : argTypes) {
             Item it = Item.typeOnly(argType.getSignature());
             locals.add(it);
-            reg += it.getSize();
             if (it.usesTwoSlots()) {
                 locals.add(null);
             }
@@ -231,13 +228,12 @@ public class StackMapAnalyzer {
             return Item.typeOnly("J");
         case Const.ITEM_Bogus:
         case Const.ITEM_NewObject:
+        case Const.ITEM_InitObject:
             return Item.typeOnly("Ljava/lang/Object;");
         case Const.ITEM_Null:
             Item it = new Item();
             it.setSpecialKind(Item.TYPE_ONLY);
             return it;
-        case Const.ITEM_InitObject:
-            return Item.typeOnly("Ljava/lang/Object;");
         case Const.ITEM_Object:
             int index = t.getIndex();
             ConstantClass c = (ConstantClass) t.getConstantPool().getConstant(index);

@@ -3,7 +3,7 @@ import java.util.Comparator;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class UncallableMethodOfAnonymousClass {
-    private final static Comparator COMPARATOR = new Comparator() {
+    private static final Comparator COMPARATOR = new Comparator() {
         @Override
         public int compare(Object o1, Object o2) {
             int result = o1.hashCode() - o2.hashCode();

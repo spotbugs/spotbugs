@@ -1,9 +1,8 @@
 package edu.umd.cs.findbugs.detect;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import org.junit.jupiter.api.condition.DisabledOnJre;
-import org.junit.jupiter.api.condition.JRE;
 
 class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     @Test
@@ -78,6 +77,22 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
         assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD");
         assertNoBugType("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE");
         assertNoBugType("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED");
+    }
+
+    @Test
+    void cloneableSingletonWithoutCloneMethodTest() {
+        // See https://github.com/spotbugs/spotbugs/issues/3727
+        Assertions.assertDoesNotThrow(() -> {
+            performAnalysis("singletons/CloneableSingletonWithoutCloneMethod.class");
+            assertBugTypeCount("SING_SINGLETON_IMPLEMENTS_CLONEABLE", 1);
+            assertBugInClass("SING_SINGLETON_IMPLEMENTS_CLONEABLE", "CloneableSingletonWithoutCloneMethod");
+
+            assertNoBugType("SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR");
+            assertNoBugType("SING_SINGLETON_INDIRECTLY_IMPLEMENTS_CLONEABLE");
+            assertNoBugType("SING_SINGLETON_IMPLEMENTS_CLONE_METHOD");
+            assertNoBugType("SING_SINGLETON_IMPLEMENTS_SERIALIZABLE");
+            assertNoBugType("SING_SINGLETON_GETTER_NOT_SYNCHRONIZED");
+        });
     }
 
     @Test
@@ -281,7 +296,6 @@ class MultipleInstantiationsOfSingletonsTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre({ JRE.JAVA_8, JRE.JAVA_11 })
     void recordNotSingletonTest() {
         performAnalysis("../java17/Issue2981.class");
         assertNoBugs();

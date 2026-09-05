@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.sql.ResultSet;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifier;
 import javax.annotation.meta.TypeQualifierNickname;
 import javax.annotation.meta.When;

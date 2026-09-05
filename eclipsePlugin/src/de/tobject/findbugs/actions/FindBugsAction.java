@@ -172,26 +172,23 @@ public class FindBugsAction implements IObjectActionDelegate {
         if (targetPart == null) {
             return;
         }
-        ISelectionProvider selProvider = (ISelectionProvider) targetPart.getAdapter(ISelectionProvider.class);
+        ISelectionProvider selProvider = targetPart.getAdapter(ISelectionProvider.class);
         if (!(selProvider instanceof TreeViewer)) {
             return;
         }
         final TreeViewer viewer = (TreeViewer) selProvider;
-        Display.getDefault().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                if (viewer.getControl().isDisposed()) {
-                    return;
-                }
-                for (WorkItem workItem : resources) {
-                    if (workItem.getMarkerTarget() instanceof IProject) {
-                        // this element has to be refreshed manually, because
-                        // there is no one real
-                        // resource associated with it => no resource change
-                        // notification after
-                        // creating a marker...
-                        viewer.refresh(workItem.getCorespondingJavaElement(), true);
-                    }
+        Display.getDefault().asyncExec(() -> {
+            if (viewer.getControl().isDisposed()) {
+                return;
+            }
+            for (WorkItem workItem : resources) {
+                if (workItem.getMarkerTarget() instanceof IProject) {
+                    // this element has to be refreshed manually, because
+                    // there is no one real
+                    // resource associated with it => no resource change
+                    // notification after
+                    // creating a marker...
+                    viewer.refresh(workItem.getCorespondingJavaElement(), true);
                 }
             }
         });
@@ -287,20 +284,17 @@ public class FindBugsAction implements IObjectActionDelegate {
                 return;
             }
 
-            Display.getDefault().asyncExec(new Runnable() {
-                @Override
-                public void run() {
-                    if (isFindBugsPerspectiveActive(targetPart)) {
-                        return;
-                    }
-                    final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
-                    final boolean ask = store.getBoolean(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH);
-                    if (ask && !dialogAlreadyShown) {
-                        dialogAlreadyShown = true;
-                        askUserToSwitch(targetPart, allMarkers.length);
-                    } else if (store.getBoolean(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS)) {
-                        switchPerspective(targetPart);
-                    }
+            Display.getDefault().asyncExec(() -> {
+                if (FindBugsAction.isFindBugsPerspectiveActive(targetPart)) {
+                    return;
+                }
+                final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
+                final boolean ask = store.getBoolean(FindBugsConstants.ASK_ABOUT_PERSPECTIVE_SWITCH);
+                if (ask && !FindBugsAction.dialogAlreadyShown) {
+                    FindBugsAction.dialogAlreadyShown = true;
+                    FindBugsAction.askUserToSwitch(targetPart, allMarkers.length);
+                } else if (store.getBoolean(FindBugsConstants.SWITCH_PERSPECTIVE_AFTER_ANALYSIS)) {
+                    FindBugsAction.switchPerspective(targetPart);
                 }
             });
         }

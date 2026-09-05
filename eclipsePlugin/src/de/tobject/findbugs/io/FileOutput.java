@@ -39,12 +39,12 @@ public interface FileOutput {
      *            the OutputStream for the file
      * @throws IOException
      */
-    public void writeFile(OutputStream os) throws IOException;
+    void writeFile(OutputStream os) throws IOException;
 
     /**
      * Get a description of the task. E.g., "writing saved XML bug data".
      *
      * @return description of the task
      */
-    public String getTaskDescription();
+    String getTaskDescription();
 }

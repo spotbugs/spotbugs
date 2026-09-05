@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs.workflow;
 
-import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -71,7 +72,7 @@ public class MineBugHistory {
     static class Version {
         long sequence;
 
-        int tuple[] = new int[TUPLE_SIZE];
+        int[] tuple = new int[TUPLE_SIZE];
 
         Version(long sequence) {
             this.sequence = sequence;
@@ -216,9 +217,7 @@ public class MineBugHistory {
             }
 
             int paddingNeeded = WIDTH - b.length() % WIDTH;
-            if (paddingNeeded > 0) {
-                b.append("                                                     ".substring(0, paddingNeeded));
-            }
+            b.append(" ".repeat(paddingNeeded));
         }
         int errors = bugCollection.getErrors().size();
         if (errors > 0) {
@@ -377,7 +376,7 @@ public class MineBugHistory {
             out.print("\"");
             out.println(">");
 
-            String attributeName[] = new String[TUPLE_SIZE];
+            String[] attributeName = new String[TUPLE_SIZE];
             attributeName[0] = "added";
             attributeName[1] = "newCode";
             attributeName[2] = "fixed";
@@ -474,7 +473,7 @@ public class MineBugHistory {
 
         try {
             if (argCount < args.length) {
-                out = UTF8.printStream(new FileOutputStream(args[argCount++]), true);
+                out = UTF8.printStream(Files.newOutputStream(Path.of(args[argCount++])), true);
             }
             mineBugHistory.dump(out);
         } finally {

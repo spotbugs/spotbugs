@@ -276,15 +276,12 @@ public class JAIFParser {
                 where++;
                 break;
             case 't':
+            case 'f':
                 buf.append('\t');
                 where++;
                 break;
             case 'n':
                 buf.append('\n');
-                where++;
-                break;
-            case 'f':
-                buf.append('\t');
                 where++;
                 break;
             case 'r':

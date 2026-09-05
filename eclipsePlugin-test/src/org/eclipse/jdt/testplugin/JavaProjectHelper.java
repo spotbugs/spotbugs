@@ -11,11 +11,11 @@
 package org.eclipse.jdt.testplugin;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.zip.ZipFile;
@@ -381,7 +381,7 @@ public class JavaProjectHelper {
             IPath sourceAttachRoot) throws IOException, CoreException {
         IProject project = jproject.getProject();
         IFile newFile = project.getFile(jarPath.lastSegment());
-        try (InputStream inputStream = new FileInputStream(jarPath.toFile())) {
+        try (InputStream inputStream = Files.newInputStream(jarPath.toFile().toPath())) {
             newFile.create(inputStream, true, null);
         }
         return addLibrary(jproject, newFile.getFullPath(), sourceAttachPath, sourceAttachRoot);

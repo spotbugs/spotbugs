@@ -62,7 +62,7 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
             Object topValue = top.getConstant();
             if (topValue instanceof String) {
                 String replacementString = (String) topValue;
-                if ("x".equals(replacementString.toLowerCase()) || "-".equals(replacementString) || "*".equals(replacementString)
+                if ("x".equalsIgnoreCase(replacementString) || "-".equals(replacementString) || "*".equals(replacementString)
                         || " ".equals(replacementString) || "\\*".equals(replacementString)) {
                     return;
                 }
@@ -148,11 +148,7 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
             sawRegExPattern(1);
             singleDotPatternWouldBeSilly(1, false);
         } else if (seen == Const.INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
-                && "matches".equals(getNameConstantOperand())) {
-            sawRegExPattern(0);
-            singleDotPatternWouldBeSilly(0, false);
-        } else if (seen == Const.INVOKEVIRTUAL && "java/lang/String".equals(getClassConstantOperand())
-                && "split".equals(getNameConstantOperand())) {
+                && ("matches".equals(getNameConstantOperand()) || "split".equals(getNameConstantOperand()))) {
             sawRegExPattern(0);
             singleDotPatternWouldBeSilly(0, false);
         }
@@ -166,7 +162,7 @@ public class BadSyntaxForRegularExpression extends OpcodeStackDetector {
         if (b.length() > 0) {
             b.append(" | ");
         }
-        b.append("Pattern." + name);
+        b.append("Pattern.").append(name);
 
     }
 

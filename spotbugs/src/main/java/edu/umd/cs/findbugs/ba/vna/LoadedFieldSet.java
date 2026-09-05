@@ -42,7 +42,8 @@ public class LoadedFieldSet {
      * Count number of times a field is loaded and/or stored in the method.
      */
     public static class LoadStoreCount {
-        int loadCount, storeCount;
+        int loadCount;
+        int storeCount;
 
         /** Get the number of times the field is loaded. */
         public int getLoadCount() {

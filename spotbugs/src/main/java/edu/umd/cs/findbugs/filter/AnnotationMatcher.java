@@ -18,14 +18,14 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import edu.umd.cs.findbugs.BugAnnotation;
+import edu.umd.cs.findbugs.PackageMemberAnnotation;
 import java.io.IOException;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -46,20 +46,19 @@ public class AnnotationMatcher implements Matcher {
 
     @Override
     public boolean match(BugInstance bugInstance) {
-        // Match on the pure filename first
-        ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
-        if (primaryClassAnnotation == null) {
-            return false;
+        for (BugAnnotation bugAnnotation : bugInstance.getAnnotations()) {
+            if (!(bugAnnotation instanceof PackageMemberAnnotation)) {
+                continue;
+            }
+            PackageMemberAnnotation pma = (PackageMemberAnnotation) bugAnnotation;
+            for (String javaAnnotationName : pma.getJavaAnnotationNames()) {
+                if (annotationName.match(javaAnnotationName)) {
+                    LOG.debug("Matched {} in {} with {}", javaAnnotationName, pma.getClassName(), annotationName);
+                    return true;
+                }
+            }
         }
-        String bugClassName = primaryClassAnnotation.getSourceFileName();
-        List<String> javaAnnotationNames = primaryClassAnnotation.getJavaAnnotationNames();
-        boolean matchesAny = false;
-        for (String javaAnnotationName : javaAnnotationNames) {
-            boolean result = annotationName.match(javaAnnotationName);
-            LOG.debug("Matching {} in {} with {}, result = {}", javaAnnotationName, bugClassName, annotationName, result);
-            matchesAny = matchesAny || result;
-        }
-        return matchesAny;
+        return false;
     }
 
     @Override

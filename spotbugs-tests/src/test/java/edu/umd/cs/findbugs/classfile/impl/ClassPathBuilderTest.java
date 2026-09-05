@@ -4,10 +4,11 @@ import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.test.SpotBugsExtension;
 import edu.umd.cs.findbugs.test.SpotBugsRunner;
+
+import java.nio.file.Path;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import java.nio.file.Paths;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -20,7 +21,7 @@ class ClassPathBuilderTest {
         BugCollection results = spotbugs.performAnalysis(engine -> {
             engine.setScanNestedArchives(false);
             engine.setNoClassOk(true);
-        }, Paths.get("../spotbugsTestCases/archives/nestedArchive.jar"));
+        }, Path.of("../spotbugsTestCases/archives/nestedArchive.jar"));
         AppVersion appInformation = results.getCurrentAppVersion();
         assertThat(appInformation.getNumClasses(), equalTo(0));
     }
@@ -28,7 +29,7 @@ class ClassPathBuilderTest {
     @Test
     void nestedTraversalEnabled(SpotBugsRunner spotbugs) {
         BugCollection results = spotbugs.performAnalysis(engine -> engine.setScanNestedArchives(true),
-                Paths.get("../spotbugsTestCases/archives/nestedArchive.jar"));
+                Path.of("../spotbugsTestCases/archives/nestedArchive.jar"));
         AppVersion appInformation = results.getCurrentAppVersion();
         assertThat(appInformation.getNumClasses(), equalTo(5));
     }

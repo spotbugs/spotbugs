@@ -1,6 +1,10 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 
+# treat jks/gpg as binary
+*.jks binary
+*.gpg binary
+
 # Custom for Visual Studio
 *.cs     diff=csharp
 *.sln    merge=union

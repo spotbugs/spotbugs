@@ -19,9 +19,9 @@
 package de.tobject.findbugs.actions;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
@@ -96,21 +96,11 @@ public class OpenXMLResultsAction extends FindBugsAction {
             return null;
         }
 
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(file);
+        try (InputStream stream = Files.newInputStream(file.toPath())) {
             return Platform.getContentTypeManager().findContentTypeFor(stream, file.getName());
         } catch (IOException e) {
             FindbugsPlugin.getDefault().logException(e, "'Open xml' operation failed");
             return null;
-        } finally {
-            try {
-                if (stream != null) {
-                    stream.close();
-                }
-            } catch (IOException e) {
-                FindbugsPlugin.getDefault().logException(e, "'Open xml' operation failed");
-            }
         }
     }
 

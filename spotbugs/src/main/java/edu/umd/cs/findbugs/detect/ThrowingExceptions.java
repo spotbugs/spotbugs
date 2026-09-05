@@ -134,7 +134,7 @@ public class ThrowingExceptions extends OpcodeStackDetector {
                         .filter(m -> method.getName().equals(m.getName()) && signatureMatches(method, m))
                         .findAny();
                 if (superMethod.isPresent()) {
-                    throwsEx = Arrays.asList(superMethod.get().getExceptionTable().getExceptionNames()).contains(exception);
+                    throwsEx = doesThrowException(superMethod.get(), exception);
                 } else {
                     throwsEx = parentThrows(ancestor, method, exception);
                 }
@@ -145,7 +145,7 @@ public class ThrowingExceptions extends OpcodeStackDetector {
                         .filter(m -> method.getName().equals(m.getName()) && signatureMatches(method, m))
                         .findAny();
                 if (superMethod.isPresent()) {
-                    throwsEx |= Arrays.asList(superMethod.get().getExceptionTable().getExceptionNames()).contains(exception);
+                    throwsEx |= doesThrowException(superMethod.get(), exception);
                 } else {
                     throwsEx |= parentThrows(intf, method, exception);
                 }
@@ -154,6 +154,11 @@ public class ThrowingExceptions extends OpcodeStackDetector {
             AnalysisContext.reportMissingClass(e);
         }
         return throwsEx;
+    }
+
+    private boolean doesThrowException(Method m, @DottedClassName String exception) {
+        ExceptionTable exceptionTable = m.getExceptionTable();
+        return exceptionTable != null && Arrays.asList(exceptionTable.getExceptionNames()).contains(exception);
     }
 
     private boolean signatureMatches(Method child, Method parent) {

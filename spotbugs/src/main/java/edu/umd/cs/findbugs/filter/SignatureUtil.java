@@ -39,7 +39,8 @@ public class SignatureUtil {
             return null;
         }
 
-        String pString, rString;
+        String pString;
+        String rString;
         if (params == null) {
             pString = ".*";
         } else {

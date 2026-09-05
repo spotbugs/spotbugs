@@ -144,11 +144,6 @@ public class FindSelfComparison2 implements Detector {
             case ISUB:
                 checkForSelfOperation(classContext, location, valueNumberDataflow, "COMPUTATION", method, methodGen, sourceFile);
                 break;
-            case FCMPG:
-            case DCMPG:
-            case DCMPL:
-            case FCMPL:
-                break;
             case LCMP:
             case IF_ACMPEQ:
             case IF_ACMPNE:
@@ -160,6 +155,10 @@ public class FindSelfComparison2 implements Detector {
             case IF_ICMPGE:
                 checkForSelfOperation(classContext, location, valueNumberDataflow, "COMPARISON", method, methodGen, sourceFile);
                 break;
+            case FCMPG:
+            case DCMPG:
+            case DCMPL:
+            case FCMPL:
             default:
                 break;
             }

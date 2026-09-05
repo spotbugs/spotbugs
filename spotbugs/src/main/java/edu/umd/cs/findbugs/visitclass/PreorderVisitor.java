@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationDefault;
@@ -333,10 +334,7 @@ public class PreorderVisitor extends BetterVisitor {
         if (!visitingMethod) {
             throw new IllegalStateException("Not visiting a method");
         }
-        return method.isStatic()
-                && "main".equals(getMethodName())
-                && "([Ljava/lang/String;)V".equals(getMethodSig());
-
+        return MemberUtils.isMainMethod(method);
     }
 
     // Extra classes (i.e. leaves in this context)
@@ -740,18 +738,6 @@ public class PreorderVisitor extends BetterVisitor {
             fullyQualifiedFieldName = getDottedClassName() + "." + getFieldName() + " : " + getFieldSig();
         }
         return fullyQualifiedFieldName;
-    }
-
-    /** If currently visiting a field, get the field's dot-formatted signature */
-    @Deprecated
-    public String getDottedFieldSig() {
-        if (!visitingField) {
-            throw new IllegalStateException("getDottedFieldSig called while not visiting field");
-        }
-        if (dottedFieldSig == null) {
-            dottedFieldSig = ClassName.toDottedClassName(fieldSig);
-        }
-        return dottedFieldSig;
     }
 
     @Override

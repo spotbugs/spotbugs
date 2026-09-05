@@ -21,10 +21,10 @@ package edu.umd.cs.findbugs.ba;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Files;
 
 /**
  * Data source for source files which are stored in the filesystem.
@@ -40,7 +40,7 @@ public class FileSourceFileDataSource implements SourceFileDataSource {
 
     @Override
     public InputStream open() throws IOException {
-        return new BufferedInputStream(new FileInputStream(fileName));
+        return new BufferedInputStream(Files.newInputStream(java.nio.file.Path.of(fileName)));
     }
 
     @Override

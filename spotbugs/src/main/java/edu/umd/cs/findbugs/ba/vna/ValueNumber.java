@@ -98,17 +98,6 @@ public class ValueNumber implements Comparable<ValueNumber> {
 
     public static final int CONSTANT_VALUE = 16;
 
-    /**
-     * Constructor.
-     *
-     * @param number
-     *            the value number
-     */
-    private ValueNumber(int number) {
-        this.number = number;
-        this.flags = 0;
-    }
-
     private ValueNumber(int number, int flags) {
         this.number = number;
         this.flags = flags;

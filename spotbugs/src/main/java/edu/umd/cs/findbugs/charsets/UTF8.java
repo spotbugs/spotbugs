@@ -22,8 +22,6 @@ package edu.umd.cs.findbugs.charsets;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,9 +30,10 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.annotation.WillCloseWhenClosed;
 
@@ -43,21 +42,12 @@ import javax.annotation.WillCloseWhenClosed;
  */
 public class UTF8 {
 
-    /**
-     *
-     */
-    private static final String UTF_8 = StandardCharsets.UTF_8.name();
-
     public static PrintStream printStream(OutputStream out) {
         return printStream(out, false);
     }
 
     public static PrintStream printStream(OutputStream out, boolean autoflush) {
-        try {
-            return new PrintStream(out, autoflush, UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            throw new AssertionError("UTF-8 not supported");
-        }
+        return new PrintStream(out, autoflush, StandardCharsets.UTF_8);
     }
 
     public static Writer writer(OutputStream out) {
@@ -65,7 +55,7 @@ public class UTF8 {
     }
 
     public static Writer fileWriter(File fileName) throws IOException {
-        return new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8);
+        return new OutputStreamWriter(Files.newOutputStream(fileName.toPath()), StandardCharsets.UTF_8);
     }
 
     public static BufferedWriter bufferedWriter(File fileName) throws IOException {
@@ -86,7 +76,7 @@ public class UTF8 {
     }
 
     public static Writer fileWriter(String fileName) throws IOException {
-        return new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8);
+        return new OutputStreamWriter(Files.newOutputStream(Path.of(fileName)), StandardCharsets.UTF_8);
     }
 
     public static BufferedWriter bufferedWriter(String fileName) throws IOException {
@@ -94,11 +84,11 @@ public class UTF8 {
     }
 
     public static Reader fileReader(String fileName) throws IOException {
-        return reader(new FileInputStream(fileName));
+        return reader(Files.newInputStream(Path.of(fileName)));
     }
 
     public static Reader fileReader(File fileName) throws IOException {
-        return reader(new FileInputStream(fileName));
+        return reader(Files.newInputStream(fileName.toPath()));
     }
 
     public static PrintWriter printWriter(String fileName) throws IOException {

@@ -196,7 +196,8 @@ public class JdtUtils {
         public int compare(IType o1, IType o2) {
             IType m1 = o1;
             IType m2 = o2;
-            int idx1, idx2;
+            int idx1;
+            int idx2;
             try {
                 ISourceRange sr1 = m1.getSourceRange();
                 ISourceRange sr2 = m2.getSourceRange();

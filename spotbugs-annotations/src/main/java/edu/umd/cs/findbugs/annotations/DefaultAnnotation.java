@@ -26,7 +26,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
 /**
  * Indicates that all members of the class or package should be annotated with
  * the default value of the supplied annotation class.
@@ -40,15 +39,11 @@ import java.lang.annotation.Target;
  *
  * @author William Pugh
  */
-
 @Documented
 @Target({ ElementType.TYPE, ElementType.PACKAGE })
 @Retention(RetentionPolicy.CLASS)
 public @interface DefaultAnnotation {
     Class<? extends Annotation>[] value();
-
-    @Deprecated
-    Priority priority() default Priority.MEDIUM;
 
     Confidence confidence() default Confidence.MEDIUM;
 }

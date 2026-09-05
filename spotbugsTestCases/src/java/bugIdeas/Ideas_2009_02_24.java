@@ -8,7 +8,7 @@ public class Ideas_2009_02_24 {
 
     public static final int ZERO = 0;
 
-    final static List<String> NAMES = Arrays.asList(new String[] { "John", "Bill", "Sue", "Sarah" });
+    static final List<String> NAMES = Arrays.asList(new String[] { "John", "Bill", "Sue", "Sarah" });
 
     public static void main(String args[]) {
         falsePositive();

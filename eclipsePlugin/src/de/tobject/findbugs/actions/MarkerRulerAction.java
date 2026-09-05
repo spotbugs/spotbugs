@@ -19,6 +19,7 @@
 package de.tobject.findbugs.actions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.CheckForNull;
 
@@ -68,7 +69,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
     private ITextEditor editor;
 
     /** Contains the markers of the currently selected line in the ruler margin. */
-    private final ArrayList<IMarker> markers;
+    private final List<IMarker> markers;
 
     /**
      * The action sent to this delegate. Enable and disable it based upon
@@ -105,7 +106,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
             if (textEditor instanceof ITextEditorExtension) {
                 ((ITextEditorExtension) textEditor).addRulerContextMenuListener(this);
             }
-            ruler = (IVerticalRulerInfo) textEditor.getAdapter(IVerticalRulerInfo.class);
+            ruler = textEditor.getAdapter(IVerticalRulerInfo.class);
             if (ruler != null) {
                 control = ruler.getControl();
                 if (control != null && !control.isDisposed()) {
@@ -137,7 +138,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 
     /**
      * Fills markers field with all of the FindBugs markers associated with the
-     * current line in the text editor's ruler marign.
+     * current line in the text editor's ruler margin.
      */
     protected void obtainFindBugsMarkers() {
         // Delete old markers
@@ -147,7 +148,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
         }
 
         // Obtain all markers in the editor
-        IResource resource = (IResource) editor.getEditorInput().getAdapter(IFile.class);
+        IResource resource = editor.getEditorInput().getAdapter(IFile.class);
         if (resource == null) {
             return;
         }

@@ -46,14 +46,9 @@ public abstract class FindBugsJob extends Job {
 
         // see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=298795
         // we must run this stupid code in the UI thread
-        Display.getDefault().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                PlatformUI.getWorkbench().getProgressService().registerIconForFamily(
-                        FindbugsPlugin.getDefault().getImageDescriptor("runFindbugs.png"),
-                        FindbugsPlugin.class);
-            }
-        });
+        Display.getDefault().asyncExec(() -> PlatformUI.getWorkbench().getProgressService().registerIconForFamily(
+                FindbugsPlugin.getDefault().getImageDescriptor("runFindbugs.png"),
+                FindbugsPlugin.class));
     }
 
     private final IResource resource;
@@ -139,8 +134,12 @@ public abstract class FindBugsJob extends Job {
             }
 
             runWithProgress(monitor);
-        } catch (OperationCanceledException | InterruptedException e) {
+        } catch (OperationCanceledException e) {
             // Do nothing when operation cancelled.
+            return Status.CANCEL_STATUS;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            // Preserve interrupt status and cancel operation.
             return Status.CANCEL_STATUS;
         } catch (CoreException ex) {
             if (DEBUG) {

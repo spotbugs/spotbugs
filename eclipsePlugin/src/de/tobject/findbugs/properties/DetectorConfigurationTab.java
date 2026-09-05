@@ -29,12 +29,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
-import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -102,7 +100,8 @@ public class DetectorConfigurationTab extends Composite {
         @Override
         public int compare(DetectorFactory factory1, DetectorFactory factory2) {
             int result = 0;
-            String s1, s2;
+            String s1;
+            String s2;
             switch (getSortColumnId()) {
             case BUG_CODES:
                 s1 = tab.getBugsAbbreviation(factory1);
@@ -441,12 +440,11 @@ public class DetectorConfigurationTab extends Composite {
         // remove all valid html tags
         detailHTML = detailHTML.replaceAll("<[a-zA-Z]+>", "");
         detailHTML = detailHTML.replaceAll("</[a-zA-Z]+>", "");
-        // convert some of the entities which are used in current FB
-        // messages.xml
-        detailHTML = detailHTML.replaceAll("&nbsp;", "");
-        detailHTML = detailHTML.replaceAll("&lt;", "<");
-        detailHTML = detailHTML.replaceAll("&gt;", ">");
-        detailHTML = detailHTML.replaceAll("&amp;", "&");
+        // convert some of the entities which are used in current FB messages.xml
+        detailHTML = detailHTML.replace("&nbsp;", "");
+        detailHTML = detailHTML.replace("&lt;", "<");
+        detailHTML = detailHTML.replace("&gt;", ">");
+        detailHTML = detailHTML.replace("&amp;", "&");
         return detailHTML.trim();
     }
 
@@ -551,13 +549,7 @@ public class DetectorConfigurationTab extends Composite {
 
         int tableStyle = SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.SINGLE | SWT.FULL_SELECTION | SWT.CHECK;
         availableFactoriesTableViewer = CheckboxTableViewer.newCheckList(parent, tableStyle);
-        availableFactoriesTableViewer.addCheckStateListener(new ICheckStateListener() {
-
-            @Override
-            public void checkStateChanged(CheckStateChangedEvent event) {
-                syncUserPreferencesWithTable();
-            }
-        });
+        availableFactoriesTableViewer.addCheckStateListener(event -> syncUserPreferencesWithTable());
 
         int currentColumnIdx = 0;
         Table factoriesTable = availableFactoriesTableViewer.getTable();

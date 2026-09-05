@@ -22,9 +22,13 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
 
+import edu.umd.cs.findbugs.detect.UselessSuppressionDetector;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -32,6 +36,8 @@ public class SuppressionMatcher implements Matcher {
     private final Map<ClassAnnotation, Collection<WarningSuppressor>> suppressedWarnings = new HashMap<>();
 
     private final Map<String, Collection<WarningSuppressor>> suppressedPackageWarnings = new HashMap<>();
+
+    private final Set<WarningSuppressor> matched = new HashSet<>();
 
     int count = 0;
 
@@ -55,13 +61,20 @@ public class SuppressionMatcher implements Matcher {
 
     @Override
     public boolean match(BugInstance b) {
-        ClassAnnotation clazz = b.getPrimaryClass().getTopLevelClass();
-        Collection<WarningSuppressor> c = suppressedWarnings.get(clazz);
-        if (c != null) {
-            for (WarningSuppressor w : c) {
-                if (w.match(b)) {
-                    count++;
-                    return true;
+        ClassAnnotation primaryClazz = b.getPrimaryClass();
+        if (primaryClazz != null) {
+            ClassAnnotation clazz = b.getPrimaryClass().getTopLevelClass();
+            Collection<WarningSuppressor> c = suppressedWarnings.get(clazz);
+            if (c != null) {
+                for (WarningSuppressor w : c) {
+                    if (w.match(b)) {
+                        count++;
+                        matched.add(w);
+                        // Also mark the alternate suppressors as matched, see: NoteSuppressedWarnings
+                        matched.addAll(w.getAlternateSuppressors());
+
+                        return true;
+                    }
                 }
             }
         }
@@ -69,11 +82,20 @@ public class SuppressionMatcher implements Matcher {
             for (WarningSuppressor w : c2) {
                 if (w.match(b)) {
                     count++;
+                    matched.add(w);
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    public void validateSuppressionUsage(BugReporter bugReporter, UselessSuppressionDetector detector) {
+        Stream.concat(suppressedWarnings.values().stream(), suppressedPackageWarnings.values().stream())
+                .flatMap(Collection::stream)
+                .filter(w -> w.isUselessSuppressionReportable() && !matched.contains(w))
+                .map(w -> w.buildUselessSuppressionBugInstance(detector))
+                .forEach(bugReporter::reportBug);
     }
 
     @Override

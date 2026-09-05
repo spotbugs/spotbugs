@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.bcel.Const;
@@ -41,7 +40,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 public class InefficientIndexOf extends OpcodeStackDetector {
     private final BugReporter bugReporter;
 
-    private static final List<MethodDescriptor> methods = Arrays.asList(
+    private static final List<MethodDescriptor> methods = List.of(
             new MethodDescriptor("java/lang/String", "indexOf", "(Ljava/lang/String;)I"),
             new MethodDescriptor("java/lang/String", "lastIndexOf", "(Ljava/lang/String;)I"),
             new MethodDescriptor("java/lang/String", "indexOf", "(Ljava/lang/String;I)I"),

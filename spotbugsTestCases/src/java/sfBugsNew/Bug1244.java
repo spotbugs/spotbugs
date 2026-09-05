@@ -30,7 +30,7 @@ public class Bug1244 {
         return true;
     }
 
-   static public class Wrong {
+   public static class Wrong {
         private final int a;
 
         public Wrong(int a) {

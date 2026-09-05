@@ -21,8 +21,8 @@ package edu.umd.cs.findbugs.classfile.impl;
 
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 import java.util.zip.ZipEntry;
@@ -78,7 +78,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
                 throw ioException;
             }
             int magicBytes;
-            try (DataInputStream in = new DataInputStream(new FileInputStream(file))) {
+            try (DataInputStream in = new DataInputStream(Files.newInputStream(file.toPath()))) {
                 magicBytes = in.readInt();
             } catch (IOException e3) {
                 throw new IOException(String.format("Unable read first 4 bytes of zip file %s of %d bytes", file, file.length()));
