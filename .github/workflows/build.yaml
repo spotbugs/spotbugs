@@ -28,12 +28,13 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set up JDK ${{ matrix.java }}
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6
         with:
-          java-version: ${{ matrix.java }}
-          distribution: 'temurin'
           cache: gradle
-      - uses: gradle/actions/wrapper-validation@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
+          distribution: 'temurin'
+          java-version: ${{ matrix.java }}
+          verify-signature: ${{ matrix.java != '17.0.1+12' }}
+      - uses: gradle/actions/wrapper-validation@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
       - name: Cache Eclipse
         id: cache-eclipse
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
