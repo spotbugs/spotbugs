@@ -6,6 +6,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2026-??-??
 ### Fixed
+- Fix `MS_EXPOSE_BUF` and `EI_EXPOSE_BUF` false negative when returning `Buffer.array()` ([#4235](https://github.com/spotbugs/spotbugs/pull/4235))
+
+## 4.10.4 - 2026-08-19
+### Fixed
 - Fix `NN_NAKED_NOTIFY` false negatives when a field read is stored in a local variable before `notify()` or `notifyAll()` ([#3884](https://github.com/spotbugs/spotbugs/issues/3884))
 - Fix `ASE_ASSERTION_WITH_SIDE_EFFECT` and `ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD` false positives in every method analysed after a method that reads `$assertionsDisabled` without throwing an `AssertionError` ([#3483](https://github.com/spotbugs/spotbugs/issues/3483))
 - Fix `INT_BAD_COMPARISON_WITH_SIGNED_BYTE` false positive for meaningful comparisons of a signed byte with `127` (`b < 127`, `b >= 127`) ([#4201](https://github.com/spotbugs/spotbugs/pull/4201))

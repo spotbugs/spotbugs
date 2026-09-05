@@ -49,7 +49,7 @@ String computeVersion(String baseVersion) {
   }
 }
 
-version = computeVersion(version)
+version = computeVersion(project.version.toString())
 
 sourceSets {
   main {
@@ -430,7 +430,7 @@ TaskProvider<Copy> siteDailyXml = tasks.register('siteDailyXml', Copy) {
 
 // sign all .jar file under specified dir
 ext.signJar = { File dir ->
-  String keystorepass = project.hasProperty('keystorepass') ? keystorepass : ''
+  String keystorepass = providers.gradleProperty('keystorepass').getOrElse('')
   if (keystorepass.isEmpty()) {
     logger.lifecycle('to sign eclipse plugins, set "keystorepass" project property')
     return
