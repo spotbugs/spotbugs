@@ -5,6 +5,9 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2026-??-??
+### Changed
+- `@SuppressFBWarnings` annotation on a method or a constructor now suppresses warnings reported in their lambdas too ([#724](https://github.com/spotbugs/spotbugs/issues/724))
+
 ### Fixed
 - Fix `UR_UNINIT_READ` false negative for compound assignment to a field (e.g. `m_iType |= e`) ([#4233](https://github.com/spotbugs/spotbugs/pull/4233))
 - Fix `NP_BOOLEAN_RETURN_NULL` false negative when `null` is returned via a local variable ([#4234](https://github.com/spotbugs/spotbugs/pull/4234))
@@ -19,9 +22,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix missing class report for `java.util.Collections$EmptyNavigableSet` and `java.util.Collections$EmptyNavigableMap` when the result of `Collections.emptySortedSet()`, `emptyNavigableSet()`, `emptySortedMap()` or `emptyNavigableMap()` is stored ([#4244](https://github.com/spotbugs/spotbugs/pull/4244))
 - Fix `URF_UNREAD_FIELD` false negative for unread instance fields declared in enums ([#4246](https://github.com/spotbugs/spotbugs/issues/4246))
 - Stop publishing global dependency-management constraints to consumer POMs. ([#4223](https://github.com/spotbugs/spotbugs/pull/4223))
-
-### Changed
-- `@SuppressFBWarnings` annotation on a method or a constructor now suppresses warnings reported in their lambdas too ([#724](https://github.com/spotbugs/spotbugs/issues/724))
 
 ## 4.10.3 - 2026-07-12
 ### Fixed
