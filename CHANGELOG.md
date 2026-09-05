@@ -6,10 +6,18 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2026-??-??
 ### Fixed
+- Fix `NP_BOOLEAN_RETURN_NULL` false negative when `null` is returned via a local variable ([#4234](https://github.com/spotbugs/spotbugs/pull/4234))
+- Fix `MS_EXPOSE_BUF` and `EI_EXPOSE_BUF` false negative when returning `Buffer.array()` ([#4235](https://github.com/spotbugs/spotbugs/pull/4235))
+
+## 4.10.4 - 2026-08-19
+### Fixed
+- Fix `NN_NAKED_NOTIFY` false negatives when a field read is stored in a local variable before `notify()` or `notifyAll()` ([#3884](https://github.com/spotbugs/spotbugs/issues/3884))
 - Fix `ASE_ASSERTION_WITH_SIDE_EFFECT` and `ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD` false positives in every method analysed after a method that reads `$assertionsDisabled` without throwing an `AssertionError` ([#3483](https://github.com/spotbugs/spotbugs/issues/3483))
 - Fix `INT_BAD_COMPARISON_WITH_SIGNED_BYTE` false positive for meaningful comparisons of a signed byte with `127` (`b < 127`, `b >= 127`) ([#4201](https://github.com/spotbugs/spotbugs/pull/4201))
-- Fix `NP_BOOLEAN_RETURN_NULL` false negative when `null` is returned via a local variable ([#4234](https://github.com/spotbugs/spotbugs/pull/4234))
+- Fix `EI_EXPOSE_REP` false negative for public getters in anonymous classes ([#4237](https://github.com/spotbugs/spotbugs/pull/4237))
 - Fix missing class report for `java.util.Collections$EmptyNavigableSet` and `java.util.Collections$EmptyNavigableMap` when the result of `Collections.emptySortedSet()`, `emptyNavigableSet()`, `emptySortedMap()` or `emptyNavigableMap()` is stored ([#4244](https://github.com/spotbugs/spotbugs/pull/4244))
+- Fix `URF_UNREAD_FIELD` false negative for unread instance fields declared in enums ([#4246](https://github.com/spotbugs/spotbugs/issues/4246))
+- Stop publishing global dependency-management constraints to consumer POMs. ([#4223](https://github.com/spotbugs/spotbugs/pull/4223))
 
 ## 4.10.3 - 2026-07-12
 ### Fixed

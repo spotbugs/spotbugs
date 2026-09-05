@@ -226,7 +226,8 @@ public class UnreadFields extends OpcodeStackDetector {
             data.fieldsOfSerializableOrNativeClassed.addAll(data.myFields);
             data.fieldsOfNativeClasses.addAll(data.myFields);
         }
-        if (isSerializable) {
+        if (isSerializable && !obj.isEnum()) {
+            // Enums are serializable, but only their name is serialized, not instance fields.
             data.fieldsOfSerializableOrNativeClassed.addAll(data.myFields);
         }
         if (sawSelfCallInConstructor) {
