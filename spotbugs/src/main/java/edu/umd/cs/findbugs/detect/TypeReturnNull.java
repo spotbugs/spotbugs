@@ -73,7 +73,11 @@ public abstract class TypeReturnNull extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == Const.ARETURN && getPrevOpcode(1) == Const.ACONST_NULL) {
+        // Use the OpcodeStack nullness flag rather than matching the exact
+        // ACONST_NULL; ARETURN opcode pair, so that a null stored in a local
+        // variable before being returned (ACONST_NULL; ASTORE n; ALOAD n;
+        // ARETURN) is also reported. See issue #4037.
+        if (seen == Const.ARETURN && getStack().getStackItem(0).isNull()) {
             accumulateBug();
         }
     }
