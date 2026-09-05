@@ -1010,21 +1010,17 @@ public class DumbMethods extends OpcodeStackDetector {
                     Object constant1 = item1.getConstant();
                     if (item0.getSpecialKind() == OpcodeStack.Item.SIGNED_BYTE && constant1 instanceof Number) {
                         int v1 = ((Number) constant1).intValue();
-                        if (v1 <= -129 || v1 >= 128 || v1 == 127 && !(seen2 == Const.IF_ICMPEQ || seen2 == Const.IF_ICMPNE)) {
+                        // For 127, only report x <= 127 (always true) and x > 127 (never true);
+                        // x < 127 and x >= 127 are meaningful comparisons of a signed byte.
+                        if (v1 <= -129 || v1 >= 128 || (v1 == 127 && (seen2 == Const.IF_ICMPGE || seen2 == Const.IF_ICMPLT))) {
                             int priority = HIGH_PRIORITY;
                             if (v1 == 127) {
                                 switch (seen2) {
-                                case Const.IF_ICMPGT: // 127 > x
-                                    priority = LOW_PRIORITY;
-                                    break;
                                 case Const.IF_ICMPGE: // 127 >= x : always true
                                     priority = NORMAL_PRIORITY;
                                     break;
                                 case Const.IF_ICMPLT: // 127 < x : never true
                                     priority = NORMAL_PRIORITY;
-                                    break;
-                                case Const.IF_ICMPLE: // 127 <= x
-                                    priority = LOW_PRIORITY;
                                     break;
                                 }
                             } else if (v1 == 128) {

@@ -735,7 +735,7 @@ public class SortedBugCollection implements BugCollection {
                 xmlOutput.writeText(error.getExceptionMessage());
                 xmlOutput.closeTag(ERROR_EXCEPTION_ELEMENT_NAME);
 
-                String stackTrace[] = error.getStackTrace();
+                String[] stackTrace = error.getStackTrace();
                 if (stackTrace != null) {
                     for (String aStackTrace : stackTrace) {
                         xmlOutput.openTag(ERROR_STACK_TRACE_ELEMENT_NAME);
@@ -1063,17 +1063,6 @@ public class SortedBugCollection implements BugCollection {
     @Override
     public ProjectStats getProjectStats() {
         return projectStats;
-    }
-
-    @Override
-    @Deprecated
-    public BugInstance lookupFromUniqueId(String uniqueId) {
-        for (BugInstance bug : bugSet) {
-            if (bug.getInstanceHash().equals(uniqueId)) {
-                return bug;
-            }
-        }
-        return null;
     }
 
     /** Returns whether this bug collection contains results from multiple analysis runs,

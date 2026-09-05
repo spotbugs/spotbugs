@@ -245,7 +245,7 @@ public abstract class FindBugs {
      * @param factory
      *            the DetectorFactory
      * @param rankThreshold
-     *            TODO
+     *            the rank threshold
      * @return true if the DetectorFactory should be enabled, false otherwise
      */
     public static boolean isDetectorEnabled(IFindBugsEngine findBugs, DetectorFactory factory, int rankThreshold) {
@@ -391,6 +391,7 @@ public abstract class FindBugs {
         } catch (InterruptedException e) {
             assert false; // should not occur
             checkExitCodeFail(commandLine, e);
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         } catch (RuntimeException | IOException e) {
             checkExitCodeFail(commandLine, e);
@@ -445,7 +446,7 @@ public abstract class FindBugs {
      * Show the overall FindBugs command synopsis.
      */
     public static void showSynopsis() {
-        LOG.warning("Usage: findbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
+        LOG.warning("Usage: spotbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
     }
 
     /**

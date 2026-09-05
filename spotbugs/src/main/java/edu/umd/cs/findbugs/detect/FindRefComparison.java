@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;

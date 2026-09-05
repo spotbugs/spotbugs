@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Field;
@@ -225,31 +225,6 @@ public class XFactory {
 
         return false;
 
-    }
-
-    /**
-     * @deprecated This method does not work as expected. Will be removed in 5.x release.
-     */
-    @Deprecated
-    public boolean nameAndSignatureIsCalled(XMethod m) {
-        return calledMethodSignatures.contains(getDetailedSignature(m));
-    }
-
-    private static String getDetailedSignature(XMethod m2) {
-        return m2.getName() + m2.getSignature() + m2.isStatic();
-    }
-
-    @Deprecated
-    public boolean isInterned(XMethod m) {
-        return m.isResolved();
-    }
-
-    /**
-     * @see DescriptorFactory#canonicalizeString(String)
-     */
-    @Deprecated
-    public static String canonicalizeString(String s) {
-        return s;
     }
 
     /**

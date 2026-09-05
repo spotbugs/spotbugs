@@ -877,7 +877,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     public static IPreferenceStore getPluginPreferences(@CheckForNull IProject project) {
         if (project == null || !isProjectSettingsEnabled(project)) {
             // read workspace (user) settings from instance area
-            return new ScopedPreferenceStore(new InstanceScope(), FindbugsPlugin.PLUGIN_ID);
+            return new ScopedPreferenceStore(InstanceScope.INSTANCE, FindbugsPlugin.PLUGIN_ID);
         }
 
         // use project settings
@@ -1102,13 +1102,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      * @return the ImageDescriptor instance.
      */
     public ImageDescriptor getImageDescriptor(String id) {
-        ImageDescriptor imageDescriptor = imageDescriptors.get(id);
-        if (imageDescriptor == null) {
-            String pluginId = getDefault().getBundle().getSymbolicName();
-            imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(pluginId, ICON_PATH + id);
-            imageDescriptors.put(id, imageDescriptor);
-        }
-        return imageDescriptor;
+        return imageDescriptors.computeIfAbsent(id,
+                key -> AbstractUIPlugin.imageDescriptorFromPlugin(getDefault().getBundle().getSymbolicName(), ICON_PATH + key));
     }
 
     public static Set<BugPattern> getKnownPatterns() {

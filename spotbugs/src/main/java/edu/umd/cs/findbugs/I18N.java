@@ -23,7 +23,7 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 
 /**
@@ -57,22 +57,6 @@ public class I18N {
      */
     public static I18N instance() {
         return theInstance;
-    }
-
-    /**
-     * Get a message string. This is a format pattern for describing an entire
-     * bug instance in a single line.
-     *
-     * @param key
-     *            which message to retrieve
-     */
-    @Deprecated
-    public @Nonnull String getMessage(String key) {
-        BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(key);
-        if (bugPattern == null) {
-            return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
-        }
-        return bugPattern.getAbbrev() + ": " + bugPattern.getLongDescription();
     }
 
     /**

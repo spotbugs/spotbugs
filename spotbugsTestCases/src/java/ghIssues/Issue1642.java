@@ -1,6 +1,6 @@
 package ghIssues;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 public class Issue1642 {
 

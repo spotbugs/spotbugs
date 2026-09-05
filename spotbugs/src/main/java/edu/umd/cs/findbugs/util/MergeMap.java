@@ -89,7 +89,7 @@ public abstract class MergeMap<K, V> {
         return map.entrySet();
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         MergeMap<String, Integer> m = new MaxMap<>();
 

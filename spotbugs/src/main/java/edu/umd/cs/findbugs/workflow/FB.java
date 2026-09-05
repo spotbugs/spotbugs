@@ -28,19 +28,17 @@ import edu.umd.cs.findbugs.Plugin;
  */
 public class FB {
 
-    public static void main(String args[]) throws Throwable {
+    public static void main(String[] args) throws Throwable {
 
         String cmd;
-        String a[];
+        String[] a;
         if (args.length == 0) {
             cmd = "help";
             a = new String[0];
         } else {
             cmd = args[0];
             a = new String[args.length - 1];
-            for (int i = 1; i < args.length; i++) {
-                a[i - 1] = args[i];
-            }
+            System.arraycopy(args, 1, a, 0, args.length - 1);
         }
 
         DetectorFactoryCollection.instance();

@@ -26,7 +26,6 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.DetectorFactory;
 
@@ -131,40 +130,6 @@ public class AnalysisPass {
         for (Iterator<DetectorFactory> j = iterator(); j.hasNext();) {
             detectorList[count++] = j.next().createDetector2(bugReporter);
         }
-        return detectorList;
-    }
-
-    /**
-     * Instantiate all of the detectors in this pass as objects implementing the
-     * BCEL-only Detector interface. Detectors that do not support this
-     * interface will not be created. Therefore, new code should use the
-     * instantiateDetector2sInPass() method, which can support all detectors.
-     *
-     * @param bugReporter
-     *            the BugReporter
-     * @return array of Detectors
-     * @deprecated call instantiateDetector2sInPass() instead
-     */
-    @Deprecated
-    public Detector[] instantiateDetectorsInPass(BugReporter bugReporter) {
-        int count;
-
-        count = 0;
-        for (DetectorFactory factory : orderedFactoryList) {
-            if (factory.isDetectorClassSubtypeOf(Detector.class)) {
-                count++;
-            }
-        }
-
-        Detector[] detectorList = new Detector[count];
-
-        count = 0;
-        for (DetectorFactory factory : orderedFactoryList) {
-            if (factory.isDetectorClassSubtypeOf(Detector.class)) {
-                detectorList[count++] = factory.create(bugReporter);
-            }
-        }
-
         return detectorList;
     }
 }

@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -48,8 +48,8 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
     public SynchronizationOnSharedBuiltinConstant(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
         badSignatures = new HashSet<>();
-        badSignatures.addAll(Arrays.asList(new String[] { "Ljava/lang/Boolean;", "Ljava/lang/Double;", "Ljava/lang/Float;",
-            "Ljava/lang/Byte;", "Ljava/lang/Character;", "Ljava/lang/Short;", "Ljava/lang/Integer;", "Ljava/lang/Long;" }));
+        badSignatures.addAll(List.of("Ljava/lang/Boolean;", "Ljava/lang/Double;", "Ljava/lang/Float;",
+                "Ljava/lang/Byte;", "Ljava/lang/Character;", "Ljava/lang/Short;", "Ljava/lang/Integer;", "Ljava/lang/Long;"));
     }
 
     private static boolean newlyConstructedObject(OpcodeStack.Item item) {

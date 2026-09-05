@@ -117,11 +117,10 @@ public enum FlowValue {
         case ALWAYS:
             return FlowValue.ALWAYS;
         case MAYBE:
+        case UNKNOWN:
             return FlowValue.UNKNOWN;
         case NEVER:
             return FlowValue.NEVER;
-        case UNKNOWN:
-            return FlowValue.UNKNOWN;
         default:
             throw new IllegalStateException();
         }

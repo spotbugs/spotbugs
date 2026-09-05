@@ -273,23 +273,6 @@ public abstract class DismantleBytecode extends AnnotationVisitor {
         return dottedClassConstantOperand;
     }
 
-    /**
-     * If the current opcode has a reference constant operand, get its string
-     * representation
-     */
-    @Deprecated
-    @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ")
-    public String getRefConstantOperand() {
-        if (refConstantOperand == NOT_AVAILABLE) {
-            throw new IllegalStateException("getRefConstantOperand called but value not available");
-        }
-        if (refConstantOperand == null) {
-            refConstantOperand = getDottedClassConstantOperand() + "." + nameConstantOperand + " : " +
-                    ClassName.toDottedClassName(sigConstantOperand);
-        }
-        return refConstantOperand;
-    }
-
     /** If the current opcode has a reference constant operand, get its name */
     @SuppressFBWarnings("ES_COMPARING_STRINGS_WITH_EQ")
     public String getNameConstantOperand() {
@@ -419,6 +402,54 @@ public abstract class DismantleBytecode extends AnnotationVisitor {
         return prevOpcode[pos];
     }
 
+    private boolean isNullComparison(int seen) {
+        if (seen != Const.IF_ACMPEQ && seen != Const.IF_ACMPNE) {
+            return false;
+        }
+        for (int offset = 1; offset <= 4; offset++) {
+            int prev = getPrevOpcode(offset);
+            if (prev == Const.ACONST_NULL) {
+                return true;
+            }
+            if (!isReferenceLoad(prev)) {
+                break;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Map a Yoda-style reference comparison against {@code null} onto the
+     * equivalent {@code ifnull}/{@code ifnonnull} opcode, so that callers can
+     * treat both spellings of a null check uniformly. Any other opcode is
+     * returned unchanged.
+     *
+     * @see #isNullComparison(int)
+     */
+    public int normalizeNullComparison(int seen) {
+        if (isNullComparison(seen)) {
+            // null == field : IF_ACMPEQ branches when the field IS null  -> IFNULL
+            // null != field : IF_ACMPNE branches when it is NOT null      -> IFNONNULL
+            return seen == Const.IF_ACMPEQ ? Const.IFNULL : Const.IFNONNULL;
+        }
+        return seen;
+    }
+
+    private static boolean isReferenceLoad(int opcode) {
+        switch (opcode) {
+        case Const.ALOAD:
+        case Const.ALOAD_0:
+        case Const.ALOAD_1:
+        case Const.ALOAD_2:
+        case Const.ALOAD_3:
+        case Const.GETFIELD:
+        case Const.GETSTATIC:
+            return true;
+        default:
+            return false;
+        }
+    }
+
     public boolean isWideOpcode() {
         return opcodeIsWide;
     }
@@ -444,6 +475,19 @@ public abstract class DismantleBytecode extends AnnotationVisitor {
      */
     public static boolean isSwitch(int opcode) {
         return opcode == Const.LOOKUPSWITCH || opcode == Const.TABLESWITCH;
+    }
+
+    /**
+     * Return whether or not given opcode is an IF instruction.
+     *
+     * @param opcode
+     *            the opcode
+     * @return true if instruction is an IF, false if not
+     */
+    public static boolean isIf(int opcode) {
+        return (opcode >= Const.IFEQ && opcode <= Const.IF_ACMPNE)
+                || opcode == Const.IFNULL
+                || opcode == Const.IFNONNULL;
     }
 
     @SuppressFBWarnings("EI")

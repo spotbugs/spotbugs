@@ -305,7 +305,7 @@ public class Subtypes2 {
         assert classDescriptorToVertexMap.get(classDescriptor) == null;
 
         if (DEBUG) {
-            System.out.println("Adding " + classDescriptor.toDottedClassName() + " to inheritance graph");
+            System.out.println("Adding " + classDescriptor.getDottedClassName() + " to inheritance graph");
         }
 
         graph.addVertex(vertex);
@@ -766,8 +766,7 @@ public class Subtypes2 {
         if (lastCommonInBackwardsSearch == null) {
             firstCommonSupertype = Type.OBJECT;
         } else {
-            firstCommonSupertype = ObjectTypeFactory.getInstance(lastCommonInBackwardsSearch.getClassDescriptor()
-                    .toDottedClassName());
+            firstCommonSupertype = ObjectTypeFactory.getInstance(lastCommonInBackwardsSearch.getClassDescriptor().getDottedClassName());
         }
         if (firstCommonSupertype.equals(Type.OBJECT)) {
             // see if we can't do better
@@ -776,12 +775,12 @@ public class Subtypes2 {
             aSuperTypes.remove(objDesc);
             for (ClassDescriptor c : aSuperTypes) {
                 if (c.getPackageName().equals(aDesc.getPackageName()) || c.getPackageName().equals(bDesc.getPackageName())) {
-                    return ObjectTypeFactory.getInstance(c.toDottedClassName());
+                    return ObjectTypeFactory.getInstance(c.getDottedClassName());
                 }
             }
 
             if (!aSuperTypes.isEmpty()) {
-                return ObjectTypeFactory.getInstance(aSuperTypes.iterator().next().toDottedClassName());
+                return ObjectTypeFactory.getInstance(aSuperTypes.iterator().next().getDottedClassName());
             }
         }
 
@@ -1228,7 +1227,7 @@ public class Subtypes2 {
     // ClassNotFoundException
     {
         if (DEBUG_QUERIES) {
-            System.out.println("Computing supertypes for " + classDescriptor.toDottedClassName());
+            System.out.println("Computing supertypes for " + classDescriptor.getDottedClassName());
         }
 
         // Try to fully resolve the class and its superclasses/superinterfaces.
@@ -1247,11 +1246,11 @@ public class Subtypes2 {
             supertypeSet.addSupertype(vertex.getClassDescriptor());
             if (vertex.isResolved()) {
                 if (DEBUG_QUERIES) {
-                    System.out.println("  Adding supertype " + vertex.getClassDescriptor().toDottedClassName());
+                    System.out.println("  Adding supertype " + vertex.getClassDescriptor().getDottedClassName());
                 }
             } else {
                 if (DEBUG_QUERIES) {
-                    System.out.println("  Encountered unresolved class " + vertex.getClassDescriptor().toDottedClassName()
+                    System.out.println("  Encountered unresolved class " + vertex.getClassDescriptor().getDottedClassName()
                             + " in supertype query");
                 }
                 supertypeSet.setEncounteredMissingClasses(true);
@@ -1379,8 +1378,8 @@ public class Subtypes2 {
 
         if (graph.lookupEdge(vertex, superclassVertex) == null) {
             if (DEBUG) {
-                System.out.println("  Add edge " + vertex.getClassDescriptor().toDottedClassName() + " -> "
-                        + superclassDescriptor.toDottedClassName());
+                System.out.println("  Add edge " + vertex.getClassDescriptor().getDottedClassName() + " -> "
+                        + superclassDescriptor.getDottedClassName());
             }
             graph.createEdge(vertex, superclassVertex);
         }

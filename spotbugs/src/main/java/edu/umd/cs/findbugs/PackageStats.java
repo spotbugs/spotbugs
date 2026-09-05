@@ -28,7 +28,7 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -223,13 +223,8 @@ public class PackageStats extends BugCounts implements XMLWriteable {
 
 
     private ClassStats getClassStats(String name, String sourceFile) {
-        ClassStats result = packageMembers.get(name);
-        if (result == null) {
-            result = new ClassStats(name, sourceFile);
-            packageMembers.put(name, result);
-            numClasses = packageMembers.size();
-        }
-
+        ClassStats result = packageMembers.computeIfAbsent(name, k -> new ClassStats(k, sourceFile));
+        numClasses = packageMembers.size();
         return result;
     }
 

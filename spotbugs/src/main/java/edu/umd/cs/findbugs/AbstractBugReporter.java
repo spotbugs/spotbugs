@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import org.dom4j.DocumentException;
@@ -267,7 +267,7 @@ public abstract class AbstractBugReporter implements BugReporter {
             return false;
         }
 
-        if ("".equals(message)) {
+        if (message.isEmpty()) {
             // Subtypes2 throws ClassNotFoundExceptions with no message in
             // some cases. Ignore them (the missing classes will already
             // have been reported).

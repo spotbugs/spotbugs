@@ -18,8 +18,10 @@
 package edu.umd.cs.findbugs.detect;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugPcMap;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.StringAnnotation;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -30,7 +32,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class DateFormatStringChecker extends OpcodeStackDetector {
-    private final BugReporter bugReporter;
+    private final BugPcMap bugPcMap;
 
     /**
      * Contains special flags that can trigger check (triggers); property of the rule
@@ -80,11 +82,17 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
     }
 
     public DateFormatStringChecker(BugReporter bugReporter) {
-        this.bugReporter = bugReporter;
+        this.bugPcMap = new BugPcMap(bugReporter);
     }
 
     @Override
     public void sawOpcode(int seen) {
+        if (seen == Const.PUTSTATIC || seen == Const.PUTFIELD) {
+            bugPcMap.addFieldAnnotation(this);
+
+            return;
+        }
+
         if (!(seen == Const.INVOKESPECIAL || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESTATIC
                 || seen == Const.INVOKEINTERFACE) || stack.getStackDepth() == 0) {
             return;
@@ -124,12 +132,19 @@ public class DateFormatStringChecker extends OpcodeStackDetector {
 
         String dateFormatString = (String) stack.getStackItem(idx).getConstant();
         if (dateFormatString != null && runDateFormatRuleVerify(dateFormatString)) {
-            bugReporter.reportBug(new BugInstance(this, "FS_BAD_DATE_FORMAT_FLAG_COMBO", NORMAL_PRIORITY)
+            bugPcMap.accumulateBug(new BugInstance(this, "FS_BAD_DATE_FORMAT_FLAG_COMBO", NORMAL_PRIORITY)
                     .addClassAndMethod(this)
                     .addCalledMethod(this)
                     .addString(dateFormatString).describe(StringAnnotation.FORMAT_STRING_ROLE)
-                    .addSourceLine(this));
+                    .addSourceLine(this), this);
         }
+    }
+
+    @Override
+    public void visitAfter(Code obj) {
+        super.visitAfter(obj);
+
+        bugPcMap.reportAccumulatedBugs();
     }
 
     /**

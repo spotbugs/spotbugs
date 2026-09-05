@@ -115,8 +115,8 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
         @Override
         public ClassInfo build() {
             AnalysisContext context = AnalysisContext.currentAnalysisContext();
-            FieldInfo fields[];
-            MethodInfo methods[];
+            FieldInfo[] fields;
+            MethodInfo[] methods;
             if (fieldInfoList.isEmpty()) {
                 fields = FieldInfo.EMPTY_ARRAY;
             } else {
@@ -389,7 +389,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
     @Override
     public String getPackageName() {
-        String dottedClassName = getClassDescriptor().toDottedClassName();
+        String dottedClassName = getClassDescriptor().getDottedClassName();
         int lastDot = dottedClassName.lastIndexOf('.');
         if (lastDot < 0) {
             return "";
