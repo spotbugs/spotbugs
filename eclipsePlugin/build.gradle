@@ -1,7 +1,7 @@
 import static groovy.io.FileType.FILES
 
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Files
+import java.nio.file.Path
 import org.ajoberstar.grgit.Grgit
 import org.gradle.plugins.ide.eclipse.model.Classpath
 import org.gradle.plugins.ide.eclipse.model.ClasspathEntry
@@ -442,7 +442,7 @@ ext.signJar = { File dir ->
     return
   } else {
     logger.lifecycle('Signing of Eclipse plugins is disabled now, see https://github.com/spotbugs/spotbugs/issues/3406')
-    return;
+    return
   }
 
   dir.traverse(type: FILES, nameFilter: ~/.*\.jar$/) { File jarFile ->
