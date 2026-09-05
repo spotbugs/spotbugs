@@ -1,5 +1,4 @@
 import java.io.BufferedInputStream
-import java.io.BufferedInputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -34,6 +33,10 @@ version = '4.10.5-SNAPSHOT'
 
 apply from: "${rootDir}/gradle/java.gradle"
 apply from: "${rootDir}/gradle/jacoco.gradle"
+
+// Apply Spotless to the root project so Gradle build scripts, including those
+// under spotbugsTestCases, are formatted. Subprojects apply it separately below
+// to format their Java sources; spotbugsTestCases intentionally skips that.
 apply from: "${rootDir}/gradle/spotless.gradle"
 
 subprojects {
@@ -41,6 +44,7 @@ subprojects {
   apply from: "${rootDir}/gradle/eclipse.gradle"
   apply from: "${rootDir}/gradle/idea.gradle"
   apply from: "${rootDir}/gradle/test.gradle"
+
   if (!project.name.equals('spotbugsTestCases')) {
     apply from: "${rootDir}/gradle/spotless.gradle"
   }
@@ -64,9 +68,9 @@ subprojects {
 
     // Explicitly skip the test case modules you don't want to enforce rules on
     if (project.name == 'eclipsePlugin-junit' || project.name == 'eclipsePlugin-test'
-    || project.name == 'spotbugsTestCases' || project.name == 'spotbugs-tests'
-    || project.name == 'test-harness' || project.name == 'test-harness-core'
-    || project.name == 'test-harness-jupiter') {
+        || project.name == 'spotbugsTestCases' || project.name == 'spotbugs-tests'
+        || project.name == 'test-harness' || project.name == 'test-harness-core'
+        || project.name == 'test-harness-jupiter') {
       return
     }
 
