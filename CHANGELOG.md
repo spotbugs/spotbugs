@@ -8,7 +8,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Fixed
 - Fix `MS_EXPOSE_BUF` and `EI_EXPOSE_BUF` false negative when returning `Buffer.array()` ([#4235](https://github.com/spotbugs/spotbugs/pull/4235))
 
-## Unreleased - 2026-09-04
 ### Added
 - Add automatic completion of class names in GUI class filter ([#749](https://github.com/spotbugs/spotbugs/issues/749))
 
