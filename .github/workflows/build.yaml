@@ -57,9 +57,8 @@ jobs:
           $escapedPwd = $pwd.Path -replace '\\', '\\'
           [System.IO.File]::WriteAllLines("$pwd\\eclipsePlugin\\local.properties", "eclipseRoot.dir=$escapedPwd\\eclipse")
           $ini = ".\eclipse\eclipse.ini"
-          $lines = Get-Content $ini
-          $lines | Where-Object { $_ -ne "-Djava.security.manager=allow" } |
-            Set-Content $ini
+          $lines = [System.IO.File]::ReadAllLines($ini)
+          [System.IO.File]::WriteAllLines($ini, ($lines | Where-Object { $_ -ne "-Djava.security.manager=allow" }))
         shell: powershell
       - name: Download Eclipse on Mac
         if: matrix.os == 'macos-latest'
