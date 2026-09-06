@@ -6,6 +6,7 @@ import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
 import org.gradle.api.publish.PublishingExtension
@@ -78,70 +79,58 @@ subprojects {
       group = 'verification'
       description = 'Enforces that production dependency binaries are fully compatible with Java 11 (Major version <= 55)'
 
-      Provider<NamedDomainObjectSet> runtimeConfigs = provider {
-        configurations.matching {
-          it.name.endsWith('RuntimeClasspath') && it.canBeResolved
-        }
-      }
+      Provider<Configuration> runtimeClasspath = configurations.named('runtimeClasspath')
 
-      inputs.files(runtimeConfigs)
+      inputs.files(runtimeClasspath)
 
       doLast {
         int maxAllowedMajorVersion = 55 // Java 11
         Map<String, List<String>> illegalDependencies = [:]
 
-        NamedDomainObjectSet<Configuration> configsToScan = runtimeConfigs.get()
+        Configuration config = runtimeClasspath.get()
 
-        configsToScan.each { config ->
-          config.resolvedConfiguration.resolvedArtifacts.each { artifact ->
-            File file = artifact.file
-            String artifactId = artifact.moduleVersion.id.toString()
+        config.resolvedConfiguration.resolvedArtifacts.each { ResolvedArtifact artifact ->
+          File file = artifact.file
 
-            // SKIPS TEST-ONLY UTILITIES AND TEST FRAMEWORKS
-            if (artifactId.contains("org.junit")) {
-              return
-            }
+          if (file.name.endsWith('.jar') && file.exists()) {
+            file.withInputStream { inputStream ->
+              BufferedInputStream bufferedStream = new BufferedInputStream(inputStream)
+              ZipInputStream zip = new ZipInputStream(bufferedStream)
+              ZipEntry entry = zip.nextEntry
 
-            if (file.name.endsWith('.jar') && file.exists()) {
-              file.withInputStream { inputStream ->
-                BufferedInputStream bufferedStream = new BufferedInputStream(inputStream)
-                ZipInputStream zip = new ZipInputStream(bufferedStream)
-                ZipEntry entry = zip.nextEntry
+              while (entry != null) {
+                if (entry.name.endsWith('.class')) {
 
-                while (entry != null) {
-                  if (entry.name.endsWith('.class')) {
+                  // Skip module-info and Multi-Release multi-version class folders
+                  if (entry.name.endsWith('module-info.class') || entry.name.startsWith('META-INF/versions/')) {
+                    entry = zip.nextEntry
+                    continue
+                  }
 
-                    // Skip module-info and Multi-Release multi-version class folders
-                    if (entry.name.endsWith('module-info.class') || entry.name.startsWith('META-INF/versions/')) {
-                      entry = zip.nextEntry
-                      continue
-                    }
+                  int byte1 = zip.read()
+                  int byte2 = zip.read()
+                  int byte3 = zip.read()
+                  int byte4 = zip.read()
 
-                    int byte1 = zip.read()
-                    int byte2 = zip.read()
-                    int byte3 = zip.read()
-                    int byte4 = zip.read()
+                  long magic = ((long) (byte1 << 24 | byte2 << 16 | byte3 << 8 | byte4)) & 0xFFFFFFFFL
 
-                    long magic = ((long) (byte1 << 24 | byte2 << 16 | byte3 << 8 | byte4)) & 0xFFFFFFFFL
+                  if (magic == 0xCAFEBABE) {
+                    int minor = (zip.read() << 8) | zip.read()
+                    int major = (zip.read() << 8) | zip.read()
 
-                    if (magic == 0xCAFEBABE) {
-                      int minor = (zip.read() << 8) | zip.read()
-                      int major = (zip.read() << 8) | zip.read()
+                    if (major> maxAllowedMajorVersion) {
+                      String id = "${artifact.moduleVersion.id} (${file.name})"
+                      String details = "      - ${entry.name} (Compiled for Java ${major - 44} / Major: ${major})"
 
-                      if (major> maxAllowedMajorVersion) {
-                        String id = "${artifact.moduleVersion.id} (${file.name})"
-                        String details = "      - ${entry.name} (Compiled for Java ${major - 44} / Major: ${major})"
-
-                        if (!illegalDependencies.containsKey(id)) {
-                          illegalDependencies[id] = []
-                        }
-                        illegalDependencies[id] << details
-                        break
+                      if (!illegalDependencies.containsKey(id)) {
+                        illegalDependencies[id] = []
                       }
+                      illegalDependencies[id] << details
+                      break
                     }
                   }
-                  entry = zip.nextEntry
                 }
+                entry = zip.nextEntry
               }
             }
           }
