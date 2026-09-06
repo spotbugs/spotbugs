@@ -228,13 +228,12 @@ public class StackMapAnalyzer {
             return Item.typeOnly("J");
         case Const.ITEM_Bogus:
         case Const.ITEM_NewObject:
+        case Const.ITEM_InitObject:
             return Item.typeOnly("Ljava/lang/Object;");
         case Const.ITEM_Null:
             Item it = new Item();
             it.setSpecialKind(Item.TYPE_ONLY);
             return it;
-        case Const.ITEM_InitObject:
-            return Item.typeOnly("Ljava/lang/Object;");
         case Const.ITEM_Object:
             int index = t.getIndex();
             ConstantClass c = (ConstantClass) t.getConstantPool().getConstant(index);

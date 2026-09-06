@@ -227,7 +227,7 @@ public abstract class CommandLine {
                 continue;
             }
 
-            if (ignoreBlankLines && "".equals(line)) {
+            if (ignoreBlankLines && line.isEmpty()) {
                 continue;
             }
             if (line.length() >= 2 && line.charAt(0) == '"' && line.charAt(line.length() - 1) == '"') {

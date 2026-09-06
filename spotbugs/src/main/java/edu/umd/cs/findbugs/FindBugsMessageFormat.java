@@ -81,7 +81,7 @@ public class FindBugsMessageFormat {
                 break;
             }
 
-            result.append(pat.substring(0, subst));
+            result.append(pat, 0, subst);
             pat = pat.substring(subst + 1);
 
             int end = pat.indexOf('}');
@@ -109,9 +109,9 @@ public class FindBugsMessageFormat {
 
             // System.out.println("fn: " + fieldNum);
             if (fieldNum < 0) {
-                result.append("?<?" + fieldNum + "/" + args.length + "???");
+                result.append("?<?").append(fieldNum).append("/").append(args.length).append("???");
             } else if (fieldNum >= args.length) {
-                result.append("?>?" + fieldNum + "/" + args.length + "???");
+                result.append("?>?").append(fieldNum).append("/").append(args.length).append("???");
             } else {
                 BugAnnotation field = args[fieldNum];
                 String formatted = "";

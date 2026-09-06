@@ -678,6 +678,7 @@ public class NullDerefAndRedundantComparisonFinder {
                     if (e.getCatchType() == 0 && e.getStartPC() != e.getHandlerPC() && e.getEndPC() <= pc
                             && pc <= e.getEndPC() + 5) {
                         reportIt = false;
+                        break;
                     }
                 }
             }

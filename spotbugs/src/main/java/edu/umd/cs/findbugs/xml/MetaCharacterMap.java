@@ -52,7 +52,7 @@ public class MetaCharacterMap {
      */
     public void addMeta(char meta, String replacement) {
         metaCharacterSet.set(meta);
-        replacementMap.put(new String(new char[] { meta }), replacement);
+        replacementMap.put(String.valueOf(meta), replacement);
     }
 
     /**

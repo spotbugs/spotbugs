@@ -431,7 +431,6 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         case ALWAYS:
             return NullnessAnnotation.NONNULL;
         case MAYBE:
-            return NullnessAnnotation.CHECK_FOR_NULL;
         case NEVER:
             return NullnessAnnotation.CHECK_FOR_NULL;
         case UNKNOWN:

@@ -65,7 +65,7 @@ public class Binding {
         StringBuilder buf = new StringBuilder();
         buf.append(varName);
         buf.append('=');
-        buf.append(variable.toString());
+        buf.append(variable);
         return buf.toString();
     }
 }

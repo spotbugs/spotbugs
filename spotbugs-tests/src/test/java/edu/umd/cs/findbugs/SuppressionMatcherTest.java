@@ -66,11 +66,72 @@ class SuppressionMatcherTest {
         // given
         MethodAnnotation method = new MethodAnnotation(CLASS_NAME, "test", "bool test()", false);
         BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 1).addClass(CLASS_NAME).addMethod(method);
-        matcher.addSuppressor(new MethodWarningSuppressor("UUF_UNUSED_FIELD", SuppressMatchType.DEFAULT, CLASS_ANNOTATION, method, true, true));
+        matcher.addSuppressor(new MethodWarningSuppressor("UUF_UNUSED_FIELD", SuppressMatchType.DEFAULT, CLASS_ANNOTATION,
+                method, Collections.emptySet(), true, true));
         // when
         boolean matched = matcher.match(bug);
         // then
         assertThat("Should match the bug", matched, is(true));
+    }
+
+    @Test
+    void shouldMatchMethodLevelSuppressorForLambdaOfMethod() {
+        // given
+        MethodAnnotation method = new MethodAnnotation(CLASS_NAME, "test", "()V", false);
+        MethodAnnotation lambda = new MethodAnnotation(CLASS_NAME, "lambda$test$0", "()V", true);
+        BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 1).addClass(CLASS_NAME).addMethod(lambda);
+        matcher.addSuppressor(new MethodWarningSuppressor("UUF_UNUSED_FIELD", SuppressMatchType.DEFAULT, CLASS_ANNOTATION,
+                method, Collections.singleton(lambda), true, true));
+        // when
+        boolean matched = matcher.match(bug);
+        // then
+        assertThat("Should match the bug", matched, is(true));
+    }
+
+    @Test
+    void shouldNotMatchMethodLevelSuppressorForLambdaOfOtherMethod() {
+        // given
+        MethodAnnotation method = new MethodAnnotation(CLASS_NAME, "test", "()V", false);
+        MethodAnnotation ownLambda = new MethodAnnotation(CLASS_NAME, "lambda$test$0", "()V", true);
+        MethodAnnotation otherLambda = new MethodAnnotation(CLASS_NAME, "lambda$other$0", "()V", true);
+        BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 1).addClass(CLASS_NAME).addMethod(otherLambda);
+        matcher.addSuppressor(new MethodWarningSuppressor("UUF_UNUSED_FIELD", SuppressMatchType.DEFAULT, CLASS_ANNOTATION,
+                method, Collections.singleton(ownLambda), true, true));
+        // when
+        boolean matched = matcher.match(bug);
+        // then
+        assertThat("Should not match the bug", matched, is(false));
+    }
+
+    @Test
+    void shouldNotMatchMethodLevelSuppressorForLambdaOfOverload() {
+        // given
+        MethodAnnotation method = new MethodAnnotation(CLASS_NAME, "test", "(I)V", false);
+        MethodAnnotation ownLambda = new MethodAnnotation(CLASS_NAME, "lambda$test$0", "()V", true);
+        MethodAnnotation overloadLambda = new MethodAnnotation(CLASS_NAME, "lambda$test$1", "()V", true);
+        BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 1).addClass(CLASS_NAME).addMethod(overloadLambda);
+        matcher.addSuppressor(new MethodWarningSuppressor("UUF_UNUSED_FIELD", SuppressMatchType.DEFAULT, CLASS_ANNOTATION,
+                method, Collections.singleton(ownLambda), true, true));
+        // when
+        boolean matched = matcher.match(bug);
+        // then
+        assertThat("Should not match the bug", matched, is(false));
+    }
+
+    @Test
+    void shouldNotMatchMethodLevelSuppressorForLambdaOfSameNamedMethodInInnerClass() {
+        // given
+        String innerClassName = CLASS_NAME + "$Inner";
+        MethodAnnotation method = new MethodAnnotation(CLASS_NAME, "test", "()V", false);
+        MethodAnnotation ownLambda = new MethodAnnotation(CLASS_NAME, "lambda$test$0", "()V", true);
+        MethodAnnotation innerClassLambda = new MethodAnnotation(innerClassName, "lambda$test$0", "()V", true);
+        BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 1).addClass(innerClassName).addMethod(innerClassLambda);
+        matcher.addSuppressor(new MethodWarningSuppressor("UUF_UNUSED_FIELD", SuppressMatchType.DEFAULT, CLASS_ANNOTATION,
+                method, Collections.singleton(ownLambda), true, true));
+        // when
+        boolean matched = matcher.match(bug);
+        // then
+        assertThat("Should not match the bug", matched, is(false));
     }
 
     @Test
@@ -175,6 +236,7 @@ class SuppressionMatcherTest {
         MethodWarningSuppressor suppressor = new MethodWarningSuppressor("XYZ",
                 SuppressMatchType.DEFAULT, new ClassAnnotation("java.lang.String"),
                 new MethodAnnotation("java.lang.String", "test", "()Ljava/lang/Object;)", false),
+                Collections.emptySet(),
                 true,
                 true);
 

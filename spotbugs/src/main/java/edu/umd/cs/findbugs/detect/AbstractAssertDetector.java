@@ -19,6 +19,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -41,6 +42,12 @@ public abstract class AbstractAssertDetector extends OpcodeStackDetector {
      * Implement this method in a concrete detector
      */
     protected abstract void detect(int seen);
+
+    @Override
+    public void visit(Method obj) {
+        inAssert = false;
+        super.visit(obj);
+    }
 
     /**
      * Searches for assertion opening, and closing points.
