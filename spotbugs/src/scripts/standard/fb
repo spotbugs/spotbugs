@@ -22,7 +22,6 @@ fb_mainclass="edu.umd.cs.findbugs.workflow.FB"
 user_jvmargs=''
 ea_arg=''
 debug_arg=''
-conservespace_arg=''
 workhard_arg=''
 user_props=''
 
@@ -54,10 +53,6 @@ while [ $# -gt 0 ]; do
 
 	-debug)
 		debug_arg="-Dfindbugs.debug=true"
-		;;
-
-	-conserveSpace)
-		conservespace_arg="-Dfindbugs.conserveSpace=true"
 		;;
 
 	-property)
@@ -93,7 +88,7 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
-fb_jvmargs="$user_jvmargs $debug_arg $conservespace_arg $workhard_arg $user_props $ea_arg"
+fb_jvmargs="$user_jvmargs $debug_arg $workhard_arg $user_props $ea_arg"
 if [ $maxheap ]; then
   fb_maxheap="-Xmx${maxheap}m"
 fi
