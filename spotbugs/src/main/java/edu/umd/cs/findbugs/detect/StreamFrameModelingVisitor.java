@@ -100,6 +100,27 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
     }
 
     @Override
+    public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
+        // Subclasses may override append to return a different writer, even when
+        // the receiver's declared type is PrintWriter.
+        if ("java.io.PrintWriter".equals(stream.getResourceClass()) && ins.getOpcode() == Const.INVOKEVIRTUAL) {
+            InvokeInstruction inv = (InvokeInstruction) ins;
+            if ("java.io.PrintWriter".equals(inv.getClassName(cpg)) && "append".equals(inv.getMethodName(cpg))) {
+                String signature = inv.getSignature(cpg);
+                if ("(C)Ljava/io/PrintWriter;".equals(signature)
+                        || "(Ljava/lang/CharSequence;)Ljava/io/PrintWriter;".equals(signature)
+                        || "(Ljava/lang/CharSequence;II)Ljava/io/PrintWriter;".equals(signature)) {
+                    ResourceValueFrame frame = getFrame();
+                    ResourceValue receiver = frame.getValue(frame.getNumSlots() - numWordsConsumed);
+                    modelInstruction(ins, numWordsConsumed, numWordsProduced, receiver);
+                    return;
+                }
+            }
+        }
+        super.modelNormalInstruction(ins, numWordsConsumed, numWordsProduced);
+    }
+
+    @Override
     protected boolean instanceEscapes(InvokeInstruction inv, int instanceArgNum) {
         ConstantPoolGen cpg = getCPG();
         String className = inv.getClassName(cpg);

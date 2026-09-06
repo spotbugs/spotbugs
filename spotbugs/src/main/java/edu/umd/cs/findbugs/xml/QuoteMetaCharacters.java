@@ -66,7 +66,7 @@ public abstract class QuoteMetaCharacters {
                 emitLiteral(map.getReplacement(text.substring(meta, meta + 1)));
                 pos = meta + 1;
             } else {
-                emitLiteral(text.substring(pos, text.length()));
+                emitLiteral(text.substring(pos));
                 pos = text.length();
             }
         } while (pos < text.length());

@@ -70,7 +70,8 @@ public class UnsafeDetector extends OpcodeStackDetector {
                     new BugInstance(this, "UNS_UNSAFE_CALL", HIGH_PRIORITY)
                             .addClassAndMethod(this)
                             .addSourceLine(this, getPC())
-                            .addCalledMethod(this);
+                            .addCalledMethod(this)
+                            .addClass(getClassConstantOperand());
             bugReporter.reportBug(bug);
         }
     }

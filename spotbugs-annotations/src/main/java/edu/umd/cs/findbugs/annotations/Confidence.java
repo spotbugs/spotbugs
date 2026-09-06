@@ -23,10 +23,10 @@ package edu.umd.cs.findbugs.annotations;
  * Describes the confidence with which FindBugs reports a bug instance.
  */
 public enum Confidence {
-    HIGH(1 /* Priorities.HIGH_PRIORITY */),
-    MEDIUM(2 /* Priorities.NORMAL_PRIORITY */ ),
-    LOW(3 /* Priorities.LOW_PRIORITY */),
-    IGNORE(5 /*Priorities.IGNORE_PRIORITY */);
+    HIGH(1/* Priorities.HIGH_PRIORITY */),
+    MEDIUM(2/* Priorities.NORMAL_PRIORITY */),
+    LOW(3/* Priorities.LOW_PRIORITY */),
+    IGNORE(5/*Priorities.IGNORE_PRIORITY */);
 
     private final int confidenceValue;
 
