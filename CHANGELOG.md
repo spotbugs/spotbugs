@@ -9,6 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - `@SuppressFBWarnings` annotation on a method or a constructor now suppresses warnings reported in their lambdas too ([#724](https://github.com/spotbugs/spotbugs/issues/724))
 
 ### Fixed
+- Fix `SA_LOCAL_SELF_ASSIGNMENT` false positive in methods with `++`/`--` inside a switch nested in a try-catch block ([#3929](https://github.com/spotbugs/spotbugs/issues/3929))
 - Fix `OS_OPEN_STREAM` false positive when the result of `PrintWriter.append()` is reassigned before closing the writer ([#4274](https://github.com/spotbugs/spotbugs/issues/4274))
 - Fix `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` false negative when lazy init uses a ternary assignment instead of an `if` statement ([#4154](https://github.com/spotbugs/spotbugs/issues/4154))
 - Fix `UR_UNINIT_READ` false negative for compound assignment to a field (e.g. `m_iType |= e`) ([#4233](https://github.com/spotbugs/spotbugs/pull/4233))
@@ -78,7 +79,6 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - New detector `FindIncreasedAccessibilityOfMethods` for new bug type `IAOM_DO_NOT_INCREASE_METHOD_ACCESSIBILITY`. This detector reports a bug if a class increases the accessibility of overridden or hidden methods. (See [SEI CERT rule MET04-J](https://wiki.sei.cmu.edu/confluence/display/java/MET04-J.+Do+not+increase+the+accessibility+of+overridden+or+hidden+methods))
 
 ### Fixed
-- Fix `SA_LOCAL_SELF_ASSIGNMENT` false positive in methods with `++`/`--` inside a switch nested in a try-catch block ([#3929](https://github.com/spotbugs/spotbugs/issues/3929))
 - Fix `DM_STRING_TOSTRING` false negative when `toString()` is chained before a method call (e.g., `s.toString().toLowerCase()`); multiple occurrences in the same method are now all reported ([#3966](https://github.com/spotbugs/spotbugs/issues/3966))
 - Stop exposing JUnit BOM as a transitive dependency to consumers ([#3908](https://github.com/spotbugs/spotbugs/issues/3908))
 - Fix incorrect bug counts and sizes when unioning reports ([#3721](https://github.com/spotbugs/spotbugs/issues/3721))
