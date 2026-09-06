@@ -47,6 +47,8 @@ jobs:
           curl --continue-at - --create-dirs --location 'https://archive.eclipse.org/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-linux-gtk-x86_64.tar.gz' --output eclipse-sdk/eclipse.tar.gz
           tar xzf eclipse-sdk/eclipse.tar.gz eclipse
           echo "eclipseRoot.dir=$(pwd)/eclipse" | tee eclipsePlugin/local.properties
+          grep -q '^-Djava\.security\.manager=allow$' ./eclipse/eclipse.ini
+          sed -i '/^-Djava\.security\.manager=allow$/d' ./eclipse/eclipse.ini
       - name: Download Eclipse on Windows
         if: matrix.os == 'windows-latest'
         run: |
@@ -55,6 +57,13 @@ jobs:
           Expand-Archive "eclipse-sdk/eclipse.zip" -DestinationPath "." -Force
           $escapedPwd = $pwd.Path -replace '\\', '\\'
           [System.IO.File]::WriteAllLines("$pwd\\eclipsePlugin\\local.properties", "eclipseRoot.dir=$escapedPwd\\eclipse")
+          $ini = ".\eclipse\eclipse.ini"
+          $lines = Get-Content $ini
+          if (-not ($lines -contains "-Djava.security.manager=allow")) {
+            throw "Expected Java Security Manager option was not found in $ini"
+          }
+          $lines | Where-Object { $_ -ne "-Djava.security.manager=allow" } |
+            Set-Content $ini
         shell: powershell
       - name: Download Eclipse on Mac
         if: matrix.os == 'macos-latest'
@@ -65,6 +74,8 @@ jobs:
           cp -r /Volumes/Eclipse/Eclipse.app /Applications/
           hdiutil detach /Volumes/Eclipse
           echo "eclipseRoot.dir=/Applications/Eclipse.app" | tee eclipsePlugin/local.properties
+          grep -q '^-Djava\.security\.manager=allow$' /Applications/Eclipse.app/Contents/Eclipse/eclipse.ini
+          sed -i '' '/^-Djava\.security\.manager=allow$/d' /Applications/Eclipse.app/Contents/Eclipse/eclipse.ini
       # Disable gpg decryption of certificate for time being until we get new keys established
       #- name: Pre-build setup
       #  if: github.repository_owner == 'spotbugs'
