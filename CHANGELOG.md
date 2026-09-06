@@ -9,6 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - `@SuppressFBWarnings` annotation on a method or a constructor now suppresses warnings reported in their lambdas too ([#724](https://github.com/spotbugs/spotbugs/issues/724))
 
 ### Fixed
+- Fix `NN_NAKED_NOTIFY` false positive when guarded state is updated before the synchronized block that calls `notify`/`notifyAll` ([#3786](https://github.com/spotbugs/spotbugs/issues/3786))
 - Fix `OS_OPEN_STREAM` false positive when the result of `PrintWriter.append()` is reassigned before closing the writer ([#4274](https://github.com/spotbugs/spotbugs/issues/4274))
 - Fix `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` false negative when lazy init uses a ternary assignment instead of an `if` statement ([#4154](https://github.com/spotbugs/spotbugs/issues/4154))
 - Fix `UR_UNINIT_READ` false negative for compound assignment to a field (e.g. `m_iType |= e`) ([#4233](https://github.com/spotbugs/spotbugs/pull/4233))
