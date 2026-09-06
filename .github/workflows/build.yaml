@@ -56,6 +56,7 @@ jobs:
           Expand-Archive "eclipse-sdk/eclipse.zip" -DestinationPath "." -Force
           $escapedPwd = $pwd.Path -replace '\\', '\\'
           [System.IO.File]::WriteAllLines("$pwd\\eclipsePlugin\\local.properties", "eclipseRoot.dir=$escapedPwd\\eclipse")
+          $ini = ".\eclipse\eclipse.ini"
           $lines = Get-Content $ini
           $lines | Where-Object { $_ -ne "-Djava.security.manager=allow" } |
             Set-Content $ini
