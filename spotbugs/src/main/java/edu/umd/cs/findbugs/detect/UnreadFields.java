@@ -31,6 +31,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
@@ -79,13 +81,16 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
+import edu.umd.cs.findbugs.detect.ReflectiveAccessTracker.AccessType;
+import edu.umd.cs.findbugs.detect.ReflectiveInvocation.Kind;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.util.Bag;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
@@ -319,9 +324,16 @@ public class UnreadFields extends OpcodeStackDetector {
 
     private int previousPreviousOpcode;
 
+    private final ReflectiveAccessTracker reflectiveAccessTracker = new ReflectiveAccessTracker();
+
+    // A reflective accessor under construction. It's created when the handle is obtained and then completed when
+    // the handle gets assigned to a field. It carries the PC at which that assignment is expected, so there is a
+    // single piece of in-flight state, reset for every visited method by both visit(Code) and visit(Method).
+    private ReflectiveFieldAccessor inFlightRFAccessor;
+
     @Override
     public void visit(Code obj) {
-
+        inFlightRFAccessor = null;
         count_aload_1 = 0;
         previousOpcode = -1;
         previousPreviousOpcode = -1;
@@ -347,6 +359,7 @@ public class UnreadFields extends OpcodeStackDetector {
         if (Const.CONSTRUCTOR_NAME.equals(getMethodName()) && (obj.isPublic() || obj.isProtected())) {
             publicOrProtectedConstructor = true;
         }
+        inFlightRFAccessor = null;
         pendingGetField = null;
         saState = 0;
         super.visit(obj);
@@ -418,17 +431,29 @@ public class UnreadFields extends OpcodeStackDetector {
             saState = 0;
         }
 
+        // Check whether this static field assignment occurs immediately after the instantiation of a reflective accessor.
+        // If so, register this accessor with the Tracker so that all accesses performed through it can be monitored.
+        // Only accessors kept in a static field are tracked; handles stored into an instance field or held in a local
+        // variable are out of scope.
+        if (seen == Const.PUTSTATIC && inFlightRFAccessor != null
+                && inFlightRFAccessor.expectedAssignmentPC() == getPC()) {
+            inFlightRFAccessor.setAccessorField(XFactory.createReferencedXField(this));
+            reflectiveAccessTracker.newAccessorDeclared(inFlightRFAccessor);
+            inFlightRFAccessor = null;
+        }
+
+        // ---- Mark instantiations of new reflective accessors ----
+
         if (seen == Const.INVOKESTATIC && "java/util/concurrent/atomic/AtomicReferenceFieldUpdater".equals(getClassConstantOperand())
                 && "newUpdater".equals(getNameConstantOperand())) {
             String fieldName = (String) stack.getStackItem(0).getConstant();
             String fieldSignature = (String) stack.getStackItem(1).getConstant();
             String fieldClass = (String) stack.getStackItem(2).getConstant();
             if (fieldName != null && fieldSignature != null && fieldClass != null) {
-                XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, ClassName.toSignature(fieldSignature),
-                        false);
-                data.reflectiveFields.add(f);
+                XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, ClassName.toSignature(fieldSignature), false);
+                inFlightRFAccessor = new ReflectiveFieldAccessor(f, AccessType.BOTH,
+                        SourceLineAnnotation.fromVisitedInstruction(this), getNextPC());
             }
-
         }
         if (seen == Const.INVOKESTATIC && "java/util/concurrent/atomic/AtomicIntegerFieldUpdater".equals(getClassConstantOperand())
                 && "newUpdater".equals(getNameConstantOperand())) {
@@ -436,7 +461,8 @@ public class UnreadFields extends OpcodeStackDetector {
             String fieldClass = (String) stack.getStackItem(1).getConstant();
             if (fieldName != null && fieldClass != null) {
                 XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, "I", false);
-                data.reflectiveFields.add(f);
+                inFlightRFAccessor = new ReflectiveFieldAccessor(f, AccessType.BOTH,
+                        SourceLineAnnotation.fromVisitedInstruction(this), getNextPC());
             }
 
         }
@@ -446,9 +472,52 @@ public class UnreadFields extends OpcodeStackDetector {
             String fieldClass = (String) stack.getStackItem(1).getConstant();
             if (fieldName != null && fieldClass != null) {
                 XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, "J", false);
-                data.reflectiveFields.add(f);
+                inFlightRFAccessor = new ReflectiveFieldAccessor(f, AccessType.BOTH,
+                        SourceLineAnnotation.fromVisitedInstruction(this), getNextPC());
             }
+        }
 
+        if (seen == Const.INVOKEVIRTUAL && "java/lang/invoke/MethodHandles$Lookup".equals(getClassConstantOperand())) {
+            String methodName = getNameConstantOperand();
+            if (("findGetter".equals(methodName) || "findSetter".equals(methodName))
+                    && getSigConstantOperand().endsWith("Ljava/lang/invoke/MethodHandle;")) {
+                String fieldSignature = resolveFieldSignature(stack.getStackItem(0));
+                String fieldName = (String) stack.getStackItem(1).getConstant();
+                String fieldClass = (String) stack.getStackItem(2).getConstant();
+                if (fieldName != null && fieldSignature != null && fieldClass != null) {
+                    XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, fieldSignature, false);
+                    inFlightRFAccessor = new ReflectiveFieldAccessor(f,
+                            methodName.equals("findGetter") ? AccessType.GETTER : AccessType.SETTER,
+                            SourceLineAnnotation.fromVisitedInstruction(this), getNextPC());
+                }
+            }
+            if ("findVarHandle".equals(methodName) && getSigConstantOperand().endsWith("Ljava/lang/invoke/VarHandle;")) {
+                String fieldSignature = resolveFieldSignature(stack.getStackItem(0));
+                String fieldName = (String) stack.getStackItem(1).getConstant();
+                String fieldClass = (String) stack.getStackItem(2).getConstant();
+                if (fieldName != null && fieldSignature != null && fieldClass != null) {
+                    XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, fieldSignature, false);
+                    inFlightRFAccessor = new ReflectiveFieldAccessor(f, AccessType.BOTH,
+                            SourceLineAnnotation.fromVisitedInstruction(this), getNextPC());
+                }
+            }
+        }
+
+        // ---- Register invocations of reflective accessors ----
+
+        if (seen == Const.INVOKEVIRTUAL
+                && ("java/util/concurrent/atomic/AtomicReferenceFieldUpdater".equals(getClassConstantOperand())
+                        || "java/util/concurrent/atomic/AtomicLongFieldUpdater".equals(getClassConstantOperand())
+                        || "java/util/concurrent/atomic/AtomicIntegerFieldUpdater".equals(getClassConstantOperand()))) {
+            registerReflectiveInvocation(Kind.ATOMIC_UPDATER);
+        }
+
+        if (seen == Const.INVOKEVIRTUAL && "java/lang/invoke/MethodHandle".equals(getClassConstantOperand())) {
+            registerReflectiveInvocation(Kind.METHOD_HANDLE);
+        }
+
+        if (seen == Const.INVOKEVIRTUAL && "java/lang/invoke/VarHandle".equals(getClassConstantOperand())) {
+            registerReflectiveInvocation(Kind.VAR_HANDLE);
         }
 
         if (seen == Const.GETSTATIC) {
@@ -780,6 +849,57 @@ public class UnreadFields extends OpcodeStackDetector {
         previousOpcode = seen;
     }
 
+    private @CheckForNull String resolveFieldSignature(final Item fieldStackItem) {
+        XField xField = fieldStackItem.getXField();
+        if (xField != null) {
+            // Primitive field is already resolved. Get signature from it.
+            return ClassName.getPrimitiveType(xField.getFieldDescriptor().getSlashedClassName());
+        }
+        Object constant = fieldStackItem.getConstant();
+        if (!(constant instanceof String)) {
+            return null;
+        }
+        String classNameOrSignature = (String) constant;
+        if (classNameOrSignature.isEmpty()) {
+            return null;
+        }
+        // Class constants for primitive and array types are already encoded as JVM descriptors.
+        if (classNameOrSignature.startsWith("[") || ClassName.isValidBaseTypeFieldDescriptor(classNameOrSignature)) {
+            return classNameOrSignature;
+        }
+        // Object field
+        return ClassName.toSignature(classNameOrSignature);
+    }
+
+    /**
+     * Registers an invocation of the reflective accessor the invoked method is called on, if that method is a
+     * recognized field-accessing call for the given accessor kind.
+     */
+    private void registerReflectiveInvocation(final Kind kind) {
+        String invocation = getNameConstantOperand();
+        int argumentCount = getNumberArguments(getSigConstantOperand());
+        if (stack.getStackDepth() <= argumentCount) {
+            // The modelled stack is shallower than the call requires, so nothing can be attributed reliably.
+            if (DEBUG) {
+                System.out.printf("Incomplete stack for invoked %s.%s%n", getClassConstantOperand(), invocation);
+            }
+            return;
+        }
+        XField accessorField = stack.getItemMethodInvokedOn(this).getXField();
+        if (accessorField == null) {
+            if (DEBUG) {
+                System.out.printf("Could not find XField for invoked %s.%s%n", getClassConstantOperand(), invocation);
+            }
+            return;
+        }
+        ReflectiveInvocation reflectiveInvocation = ReflectiveInvocation.create(kind, accessorField, invocation);
+        if (reflectiveInvocation != null) {
+            reflectiveAccessTracker.registerReflectiveInvocation(reflectiveInvocation);
+        } else if (DEBUG) {
+            System.out.printf("Unresolved invocation of: %s.%s", getClassConstantOperand(), invocation);
+        }
+    }
+
     /**
      *
      * @return true if the method is considered to be an initializer method. Fields might be initialized outside of a constructor,
@@ -821,6 +941,7 @@ public class UnreadFields extends OpcodeStackDetector {
         for (XField f : data.writtenNonNullFields) {
             fieldNamesSet.add(f.getName());
         }
+
         if (DEBUG) {
             System.out.println("read fields:");
             for (XField f : data.readFields) {
@@ -863,6 +984,9 @@ public class UnreadFields extends OpcodeStackDetector {
                 declaredFields.add(f);
             }
         }
+
+        reportReflectivelyAccessedFields(declaredFields);
+
         // Don't report anything about ejb3Fields
         HashSet<XField> unknownAnotationAndUnwritten = new HashSet<>(data.unknownAnnotation.keySet());
         unknownAnotationAndUnwritten.removeAll(data.writtenFields);
@@ -1237,6 +1361,101 @@ public class UnreadFields extends OpcodeStackDetector {
             instance.add(data.fieldAccess.get(f));
         }
         return instance;
+    }
+
+    private void reportReflectivelyAccessedFields(final Set<XField> declaredFields) {
+        reflectiveAccessTracker.resolve();
+        reportUnusedReflectiveAccessors(declaredFields);
+        reportUnwrittenReflectiveFields();
+        reportUnreadReflectiveFields();
+        declaredFields.removeAll(reflectiveAccessTracker.getAllAccessedFields());
+    }
+
+    private void reportUnusedReflectiveAccessors(final Set<XField> declaredFields) {
+        MultiMap<XField, SourceLineAnnotation> unusedAccessorLines =
+                reflectiveAccessTracker.getUnusedAccessorDeclarationLines();
+        XFactory xFactory = AnalysisContext.currentXFactory();
+        for (XField actualField : unusedAccessorLines.keySet()) {
+            if (!actualField.isResolved()) {
+                continue;
+            }
+            declaredFields.remove(actualField);
+            for (SourceLineAnnotation line : unusedAccessorLines.get(actualField)) {
+                int priority = NORMAL_PRIORITY;
+                if (xFactory.isReflectiveClass(actualField.getClassDescriptor())) {
+                    priority++;
+                }
+                String bugType = (actualField.isPublic() || actualField.isProtected())
+                        ? "UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD"
+                        : "UUF_UNUSED_FIELD";
+                BugInstance bug = new BugInstance(this, bugType, priority)
+                        .addClass(actualField.getClassName()).addField(actualField);
+                if (line != null) {
+                    bug.addSourceLine(line);
+                }
+                bugReporter.reportBug(bug.lowerPriorityIfDeprecated());
+            }
+        }
+    }
+
+    private void reportUnwrittenReflectiveFields() {
+        XFactory xFactory = AnalysisContext.currentXFactory();
+        for (Map.Entry<XField, SourceLineAnnotation> entry : reflectiveAccessTracker.getFieldsNeverWritten().entrySet()) {
+            XField f = entry.getKey();
+            if (!f.isResolved()) {
+                continue;
+            }
+            int priority = NORMAL_PRIORITY;
+            if (xFactory.isReflectiveClass(f.getClassDescriptor())) {
+                priority++;
+            }
+            String fieldSignature = f.getSignature();
+            if (!(fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '[')) {
+                priority++;
+            }
+            String pattern = (f.isProtected() || f.isPublic())
+                    ? "UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"
+                    : "UWF_UNWRITTEN_FIELD";
+            BugInstance bug = new BugInstance(this, pattern, priority)
+                    .addClass(f.getClassName()).addField(f);
+            SourceLineAnnotation line = entry.getValue();
+            if (line != null) {
+                bug.addSourceLine(line);
+            }
+            bugReporter.reportBug(bug);
+        }
+    }
+
+    private void reportUnreadReflectiveFields() {
+        XFactory xFactory = AnalysisContext.currentXFactory();
+        for (Map.Entry<XField, SourceLineAnnotation> entry : reflectiveAccessTracker.getFieldsNeverRead().entrySet()) {
+            XField f = entry.getKey();
+            if (!f.isResolved()
+                    || containsSpecialAnnotation(f.getAnnotations())
+                    || f.getName().toLowerCase().contains("guardian")) {
+                continue;
+            }
+            int priority = NORMAL_PRIORITY;
+            if (xFactory.isReflectiveClass(f.getClassDescriptor())) {
+                priority++;
+            }
+            if (f.isStatic()) {
+                priority++;
+            }
+            if (f.isFinal()) {
+                priority++;
+            }
+            String pattern = (f.isPublic() || f.isProtected())
+                    ? "URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"
+                    : "URF_UNREAD_FIELD";
+            BugInstance bug = new BugInstance(this, pattern, priority)
+                    .addClass(f.getClassName()).addField(f);
+            SourceLineAnnotation line = entry.getValue();
+            if (line != null) {
+                bug.addSourceLine(line);
+            }
+            bugReporter.reportBug(bug);
+        }
     }
 
     /**
