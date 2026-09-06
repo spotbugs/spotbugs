@@ -14,6 +14,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `UR_UNINIT_READ` false negative for compound assignment to a field (e.g. `m_iType |= e`) ([#4233](https://github.com/spotbugs/spotbugs/pull/4233))
 - Fix `NP_BOOLEAN_RETURN_NULL` false negative when `null` is returned via a local variable ([#4234](https://github.com/spotbugs/spotbugs/pull/4234))
 - Fix `MS_EXPOSE_BUF` and `EI_EXPOSE_BUF` false negative when returning `Buffer.array()` ([#4235](https://github.com/spotbugs/spotbugs/pull/4235))
+- Fix `OBL_UNSATISFIED_OBLIGATION` false negatives for unclosed `CallableStatement`s returned by `Connection.prepareCall` ([#4148](https://github.com/spotbugs/spotbugs/issues/4148))
 - Fix `LI_LAZY_INIT_STATIC` false negative when field is lazily initialized using a method call ([#4276](https://github.com/spotbugs/spotbugs/issues/4276))
 
 ## 4.10.4 - 2026-08-19
