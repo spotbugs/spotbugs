@@ -1,26 +1,18 @@
 import java.io.BufferedInputStream
-import java.io.BufferedInputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-import org.gradle.crypto.checksum.Checksum
 import org.gradle.api.NamedDomainObjectSet
-import org.gradle.api.Task;
+import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.tasks.TaskProvider;
-import org.gradle.api.file.RegularFile;
-import org.gradle.api.provider.Provider;
-import org.gradle.api.Project;
-import org.gradle.api.publish.PublishingExtension;
-import org.gradle.api.publish.maven.MavenArtifact;
-import org.gradle.api.tasks.util.PatternFilterable;
-
-buildscript {
-  repositories {
-    gradlePluginPortal()
-    mavenCentral()
-  }
-}
+import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.Provider
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenArtifact
+import org.gradle.api.tasks.TaskProvider
+import org.gradle.api.tasks.util.PatternFilterable
+import org.gradle.crypto.checksum.Checksum
 
 plugins {
   id 'org.sonarqube' version '7.5.0.8588'
@@ -35,11 +27,17 @@ version = '4.10.5-SNAPSHOT'
 apply from: "${rootDir}/gradle/java.gradle"
 apply from: "${rootDir}/gradle/jacoco.gradle"
 
+// Apply Spotless to the root project so Gradle build scripts, including those
+// under spotbugsTestCases, are formatted. Subprojects apply it separately below
+// to format their Java sources; spotbugsTestCases intentionally skips that.
+apply from: "${rootDir}/gradle/spotless.gradle"
+
 subprojects {
   apply from: "${rootDir}/gradle/java.gradle"
   apply from: "${rootDir}/gradle/eclipse.gradle"
   apply from: "${rootDir}/gradle/idea.gradle"
   apply from: "${rootDir}/gradle/test.gradle"
+
   if (!project.name.equals('spotbugsTestCases')) {
     apply from: "${rootDir}/gradle/spotless.gradle"
   }
@@ -62,10 +60,17 @@ subprojects {
   plugins.withType(JavaPlugin) {
 
     // Explicitly skip the test case modules you don't want to enforce rules on
-    if (project.name == 'eclipsePlugin-junit' || project.name == 'eclipsePlugin-test'
-        || project.name == 'spotbugsTestCases' || project.name == 'spotbugs-tests'
-        || project.name == 'test-harness' || project.name == 'test-harness-core'
-        || project.name == 'test-harness-jupiter') {
+    Set<String> excludedProjects = [
+      'eclipsePlugin-junit',
+      'eclipsePlugin-test',
+      'spotbugsTestCases',
+      'spotbugs-tests',
+      'test-harness',
+      'test-harness-core',
+      'test-harness-jupiter'
+    ]
+
+    if (project.name in excludedProjects) {
       return
     }
 
@@ -74,7 +79,9 @@ subprojects {
       description = 'Enforces that production dependency binaries are fully compatible with Java 11 (Major version <= 55)'
 
       Provider<NamedDomainObjectSet> runtimeConfigs = provider {
-        configurations.matching { it.name.endsWith('RuntimeClasspath') && it.canBeResolved }
+        configurations.matching {
+          it.name.endsWith('RuntimeClasspath') && it.canBeResolved
+        }
       }
 
       inputs.files(runtimeConfigs)
@@ -121,7 +128,7 @@ subprojects {
                       int minor = (zip.read() << 8) | zip.read()
                       int major = (zip.read() << 8) | zip.read()
 
-                      if (major > maxAllowedMajorVersion) {
+                      if (major> maxAllowedMajorVersion) {
                         String id = "${artifact.moduleVersion.id} (${file.name})"
                         String details = "      - ${entry.name} (Compiled for Java ${major - 44} / Major: ${major})"
 
@@ -129,7 +136,7 @@ subprojects {
                           illegalDependencies[id] = []
                         }
                         illegalDependencies[id] << details
-                        break 
+                        break
                       }
                     }
                   }
@@ -149,7 +156,9 @@ subprojects {
 
           illegalDependencies.each { dependencyId, classes ->
             errorMsg.append("\n  * Found Banned Dependency: ${dependencyId}\n")
-            classes.each { errorMsg.append("${it}\n") }
+            classes.each {
+              errorMsg.append("${it}\n")
+            }
           }
 
           errorMsg.append("\nUse './gradlew :${project.name}:dependencies' to locate the dependency tree paths.\n")
@@ -206,7 +215,9 @@ createChecksums.configure { Checksum checksumTask ->
         }
       }
       return []
-    }.flatten().findAll { File file -> file != null && file.exists() }
+    }.flatten().findAll { File file ->
+      file != null && file.exists()
+    }
   }
   if (publishTask != null) {
     checksumTask.dependsOn publishTask
@@ -252,7 +263,9 @@ createReleaseBody.configure { Task releaseTask ->
 """
     fileTree(layout.buildDirectory.dir('checksums')).matching { PatternFilterable pattern ->
       pattern.include '*.sha256'
-    }.sort { File a, File b -> a.name <=> b.name }.forEach { File checksumFile ->
+    }.sort { File a, File b ->
+      a.name <=> b.name
+    }.forEach { File checksumFile ->
       String name = checksumFile.name.replace('.sha256', '')
       String hash = checksumFile.text.trim()
       outputFile.get().asFile << "| ${name} | ${hash} |\n"
