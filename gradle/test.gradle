@@ -13,7 +13,8 @@ tasks.withType(Test) {
   }
   doFirst {
     jvmArgs += [
-      '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+      '--add-opens',
+      'java.base/java.lang=ALL-UNNAMED',
       "-javaagent:${configurations.mockitoAgent.asPath}"
     ]
   }

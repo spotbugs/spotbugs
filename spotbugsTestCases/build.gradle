@@ -8,7 +8,11 @@ plugins {
 sourceSets {
   main {
     java {
-      srcDirs = ['src/java', 'src/fakeAnnotations', 'src/fakeLibraries']
+      srcDirs = [
+        'src/java',
+        'src/fakeAnnotations',
+        'src/fakeLibraries'
+      ]
     }
     groovy {
       srcDirs = ['src/groovy']
@@ -53,7 +57,7 @@ tasks.register('exportClasspath') {
   ConfigurationContainer configurations = project.configurations
   doLast {
     dependenciesFile.delete()
-    dependenciesFile.getParentFile().mkdirs();
+    dependenciesFile.getParentFile().mkdirs()
 
     configurations.getByName('runtimeClasspath').resolvedConfiguration.resolvedArtifacts.each { ResolvedArtifact artifact ->
       dependenciesFile << artifact.file
@@ -61,7 +65,7 @@ tasks.register('exportClasspath') {
     }
   }
   doLast {
-      logger.lifecycle("Exported classpath to: ${dependenciesFile}")
+    logger.lifecycle("Exported classpath to: ${dependenciesFile}")
   }
 }
 
