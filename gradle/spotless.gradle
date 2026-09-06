@@ -9,6 +9,7 @@ spotless {
   }
   groovyGradle {
     target '**/*.gradle'
+    targetExclude 'lib/**', '.libs/**'
     greclipse().configProperties("""
       org.eclipse.jdt.core.formatter.alignment_for_logical_operator=48
       org.eclipse.jdt.core.formatter.tabulation.char=space
