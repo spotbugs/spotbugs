@@ -10,6 +10,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 - Fix `OS_OPEN_STREAM` false positive when the result of `PrintWriter.append()` is reassigned before closing the writer ([#4274](https://github.com/spotbugs/spotbugs/issues/4274))
+- Fix `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` false negative when lazy init uses a ternary assignment instead of an `if` statement ([#4154](https://github.com/spotbugs/spotbugs/issues/4154))
 - Fix `UR_UNINIT_READ` false negative for compound assignment to a field (e.g. `m_iType |= e`) ([#4233](https://github.com/spotbugs/spotbugs/pull/4233))
 - Fix `NP_BOOLEAN_RETURN_NULL` false negative when `null` is returned via a local variable ([#4234](https://github.com/spotbugs/spotbugs/pull/4234))
 - Fix `MS_EXPOSE_BUF` and `EI_EXPOSE_BUF` false negative when returning `Buffer.array()` ([#4235](https://github.com/spotbugs/spotbugs/pull/4235))
