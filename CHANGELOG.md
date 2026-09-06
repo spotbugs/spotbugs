@@ -15,6 +15,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `MS_EXPOSE_BUF` and `EI_EXPOSE_BUF` false negative when returning `Buffer.array()` ([#4235](https://github.com/spotbugs/spotbugs/pull/4235))
 - Fix `LI_LAZY_INIT_STATIC` false negative when field is lazily initialized using a method call ([#4276](https://github.com/spotbugs/spotbugs/issues/4276))
 
+### Added
+- Add automatic completion of class names in GUI class filter ([#749](https://github.com/spotbugs/spotbugs/issues/749))
+
 ## 4.10.4 - 2026-08-19
 ### Fixed
 - Fix `NN_NAKED_NOTIFY` false negatives when a field read is stored in a local variable before `notify()` or `notifyAll()` ([#3884](https://github.com/spotbugs/spotbugs/issues/3884))
