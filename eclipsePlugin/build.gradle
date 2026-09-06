@@ -279,9 +279,9 @@ TaskProvider<Task> testPluginJar = tasks.register('testPluginJar') {
   String jarFile = "${resolvedBuildDir}/site/eclipse/plugins/${eclipsePluginId}_${project.version}.jar"
   inputs.file jarFile
   doLast {
-    File spotbugsJar = zipTree(jarFile)
-        .matching { include 'lib/spotbugs.jar' }
-        .singleFile
+    File spotbugsJar = zipTree(jarFile).matching {
+      include 'lib/spotbugs.jar'
+    }.singleFile
     if (!spotbugsJar.exists()) {
       throw new TaskInstantiationException('Eclipse plugin does not contain spotbugs.jar')
     } else {
