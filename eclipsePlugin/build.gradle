@@ -216,7 +216,7 @@ eclipse.classpath.file {
     classpath.entries.removeAll { ClasspathEntry entry ->
       entry.kind == 'lib'
     }
-    copyLibsForEclipse
+
     Set<File> libFiles = fileTree(dir: 'lib').files
     libFiles.forEach { File file ->
       File rel = projectDir.toPath().relativize(file.toPath()).toFile()
