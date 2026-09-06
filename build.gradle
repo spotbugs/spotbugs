@@ -14,13 +14,6 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.crypto.checksum.Checksum
 
-buildscript {
-  repositories {
-    gradlePluginPortal()
-    mavenCentral()
-  }
-}
-
 plugins {
   id 'org.sonarqube' version '7.5.0.8588'
   id 'org.gradle.crypto.checksum' version '1.4.0'
