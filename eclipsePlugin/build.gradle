@@ -65,12 +65,15 @@ sourceSets {
 }
 
 File findEclipseExecutable() {
-  if (!file("${projectDir}/local.properties").exists()) {
+  Path localProperties = projectDir.toPath().resolve('local.properties')
+  if (!Files.exists(localProperties)) {
     return null
   }
 
   Properties localProps = new Properties()
-  localProps.load(Files.newInputStream(Path.of("${projectDir}/local.properties")))
+  Files.newInputStream(localProperties).withCloseable { InputStream input ->
+    localProps.load(input)
+  }
   File eclipseRootDir = new File(localProps.getProperty('eclipseRoot.dir'))
   // Eclipse 4.5+ uses a different directory layout under macOS. Try to detect this first.
   String os = System.getProperty('os.name').toLowerCase(Locale.ROOT)
@@ -134,7 +137,7 @@ TaskProvider<Copy> copyLibsForEclipse = tasks.register('copyLibsForEclipse', Cop
 File resolvedBuildDir = project.layout.buildDirectory.asFile.get()
 
 TaskProvider<Exec> distSrcZip = tasks.register('distSrcZip', Exec) {
-  String out = "${resolvedBuildDir}/distributions/${eclipsePluginId}_${project.version}-source.zip"
+  File out = resolvedBuildDir.toPath().resolve('distributions').resolve("${eclipsePluginId}_${project.version}-source.zip").toFile()
   outputs.file out
   commandLine 'git', 'archive', '-o', out, 'HEAD'
 }
@@ -155,7 +158,7 @@ TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
       attributes 'Bundle-SymbolicName': "${eclipsePluginId}; singleton:=true",
       'Bundle-Version': version,
       'Bundle-ClassPath': '.,spotbugs-plugin.jar,' + libFiles.collect { File file ->
-        projectDir.toPath().relativize(file.toPath()).toString().replace('\\', '/')
+        relativizePath(file)
       }.join(',')
     }
 
@@ -164,7 +167,7 @@ TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
       attributes 'Bundle-SymbolicName': "${eclipsePluginId}; singleton:=true",
       'Bundle-Version': version,
       'Bundle-ClassPath': 'spotbugs-plugin.jar,' + libFiles.collect { File file ->
-        projectDir.toPath().relativize(file.toPath()).toString().replace('\\', '/')
+        relativizePath(file)
       }.join(',')
     }
     // write manifests
@@ -172,15 +175,23 @@ TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
     distManifestSpec.writeTo("${projectDir}/META-INF/MANIFEST-DIST.MF")
 
     // write build.properties
-    File propsTemplate = file("${projectDir}/build-template.properties")
+    Path propsTemplate = projectDir.toPath().resolve('build-template.properties')
     Properties props = new Properties()
-    props.load(propsTemplate.newDataInputStream())
+    Files.newInputStream(propsTemplate).withCloseable { InputStream input ->
+      props.load(input)
+    }
     props.setProperty('bin.includes', props.getProperty('bin.includes') + ',' +
         libFiles.collect { File file ->
-          projectDir.toPath().relativize(file.toPath()).toString().replace('\\', '/')
+          relativizePath(file)
         }.join(','))
-    props.store(file('build.properties').newWriter(), null)
+    Files.newBufferedWriter(projectDir.toPath().resolve('build.properties')).withCloseable { Writer writer ->
+      props.store(writer, null)
+    }
   }
+}
+
+String relativizePath(File file) {
+  return projectDir.toPath().relativize(file.toPath()).toString().replace('\\', '/')
 }
 
 tasks.named('compileJava').configure {
@@ -189,7 +200,7 @@ tasks.named('compileJava').configure {
 
 // create manifest when importing to eclipse
 tasks.named('eclipse').configure {
-  dependsOn copyLibsForEclipse, updateManifest
+  dependsOn updateManifest
 }
 
 class FileRef implements FileReference {
@@ -276,7 +287,7 @@ TaskProvider<Zip> distZip = tasks.register('distZip', Zip) {
 }
 
 TaskProvider<Task> testPluginJar = tasks.register('testPluginJar') {
-  String jarFile = "${resolvedBuildDir}/site/eclipse/plugins/${eclipsePluginId}_${project.version}.jar"
+  File jarFile = resolvedBuildDir.toPath().resolve("site/eclipse/plugins/${eclipsePluginId}_${project.version}.jar").toFile()
   inputs.file jarFile
   doLast {
     File spotbugsJar = zipTree(jarFile).matching {
@@ -454,7 +465,7 @@ ext.signJar = { File dir ->
   }
 
   dir.traverse(type: FILES, nameFilter: ~/.*\.jar$/) { File jarFile ->
-    String relativePath = rootDir.toPath().relativize(jarFile.toPath())
+    String relativePath = rootDir.toPath().relativize(jarFile.toPath()).toString()
     logger.lifecycle("signing ${relativePath}")
     ant.signjar(
         destDir: jarFile.parentFile,
