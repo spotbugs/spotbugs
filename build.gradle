@@ -60,7 +60,7 @@ subprojects {
   plugins.withType(JavaPlugin) {
 
     // Explicitly skip the test case modules you don't want to enforce rules on
-    if (project.name in [
+    Set<String> excludedProjects = [
       'eclipsePlugin-junit',
       'eclipsePlugin-test',
       'spotbugsTestCases',
@@ -68,7 +68,9 @@ subprojects {
       'test-harness',
       'test-harness-core',
       'test-harness-jupiter'
-    ]) {
+    ]
+
+    if (project.name in excludedProjects) {
       return
     }
 
