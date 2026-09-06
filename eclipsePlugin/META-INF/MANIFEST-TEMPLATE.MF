@@ -112,3 +112,4 @@ Export-Package: de.tobject.findbugs,
  org.objectweb.asm.tree,
  org.objectweb.asm.tree.analysis,
  org.objectweb.asm.util
+Import-Package: jakarta.annotation;resolution:=optional

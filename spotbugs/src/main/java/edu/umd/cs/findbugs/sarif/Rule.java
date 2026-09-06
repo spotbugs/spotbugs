@@ -103,7 +103,7 @@ final class Rule {
         String name = weaknessCatalog.getName();
         String version = weaknessCatalog.getVersion();
         UUID guidOfCweTaxonomy = GUIDCalculator.fromString(name + version);
-        UUID guidOfCweTaxon = GUIDCalculator.fromNamespaceAndString(guidOfCweTaxonomy, cweId.toString());
+        UUID guidOfCweTaxon = GUIDCalculator.fromNamespaceAndString(guidOfCweTaxonomy, cweId);
 
         JsonObject cweRelationship = new JsonObject();
 

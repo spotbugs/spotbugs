@@ -321,7 +321,10 @@ public abstract class AbstractFindBugsTask extends Task {
         if (!jvm.isEmpty()) {
             findbugsEngine.setJvm(jvm);
         }
-        findbugsEngine.setTimeout(timeout);
+
+        if (timeout > 0) {
+            findbugsEngine.setTimeout(timeout);
+        }
 
         if (debug) {
             jvmargs = jvmargs + " -Dfindbugs.debug=true";

@@ -141,7 +141,7 @@ public abstract class PropertyDatabase<KeyType extends FieldOrMethodDescriptor, 
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
-                if ("".equals(line)) {
+                if (line.isEmpty()) {
                     continue;
                 }
                 int bar = line.indexOf('|');

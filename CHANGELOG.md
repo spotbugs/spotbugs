@@ -4,7 +4,54 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - 2025-??-??
+## Unreleased - 2026-??-??
+### Changed
+- `@SuppressFBWarnings` annotation on a method or a constructor now suppresses warnings reported in their lambdas too ([#724](https://github.com/spotbugs/spotbugs/issues/724))
+
+### Fixed
+- Fix `OS_OPEN_STREAM` false positive when the result of `PrintWriter.append()` is reassigned before closing the writer ([#4274](https://github.com/spotbugs/spotbugs/issues/4274))
+- Fix `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` false negative when lazy init uses a ternary assignment instead of an `if` statement ([#4154](https://github.com/spotbugs/spotbugs/issues/4154))
+- Fix `UR_UNINIT_READ` false negative for compound assignment to a field (e.g. `m_iType |= e`) ([#4233](https://github.com/spotbugs/spotbugs/pull/4233))
+- Fix `NP_BOOLEAN_RETURN_NULL` false negative when `null` is returned via a local variable ([#4234](https://github.com/spotbugs/spotbugs/pull/4234))
+- Fix `MS_EXPOSE_BUF` and `EI_EXPOSE_BUF` false negative when returning `Buffer.array()` ([#4235](https://github.com/spotbugs/spotbugs/pull/4235))
+- Fix `LI_LAZY_INIT_STATIC` false negative when field is lazily initialized using a method call ([#4276](https://github.com/spotbugs/spotbugs/issues/4276))
+
+## 4.10.4 - 2026-08-19
+### Fixed
+- Fix `NN_NAKED_NOTIFY` false negatives when a field read is stored in a local variable before `notify()` or `notifyAll()` ([#3884](https://github.com/spotbugs/spotbugs/issues/3884))
+- Fix `ASE_ASSERTION_WITH_SIDE_EFFECT` and `ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD` false positives in every method analysed after a method that reads `$assertionsDisabled` without throwing an `AssertionError` ([#3483](https://github.com/spotbugs/spotbugs/issues/3483))
+- Fix `INT_BAD_COMPARISON_WITH_SIGNED_BYTE` false positive for meaningful comparisons of a signed byte with `127` (`b < 127`, `b >= 127`) ([#4201](https://github.com/spotbugs/spotbugs/pull/4201))
+- Fix `EI_EXPOSE_REP` false negative for public getters in anonymous classes ([#4237](https://github.com/spotbugs/spotbugs/pull/4237))
+- Fix missing class report for `java.util.Collections$EmptyNavigableSet` and `java.util.Collections$EmptyNavigableMap` when the result of `Collections.emptySortedSet()`, `emptyNavigableSet()`, `emptySortedMap()` or `emptyNavigableMap()` is stored ([#4244](https://github.com/spotbugs/spotbugs/pull/4244))
+- Fix `URF_UNREAD_FIELD` false negative for unread instance fields declared in enums ([#4246](https://github.com/spotbugs/spotbugs/issues/4246))
+- Stop publishing global dependency-management constraints to consumer POMs. ([#4223](https://github.com/spotbugs/spotbugs/pull/4223))
+
+## 4.10.3 - 2026-07-12
+### Fixed
+- Fix `LI_LAZY_INIT_STATIC` false negative when the null guard is written in yoda-style (`null == field`) ([#4144](https://github.com/spotbugs/spotbugs/pull/4144))
+- Fix `DC_DOUBLECHECK`, `NP_SYNC_AND_NULL_CHECK_FIELD` and `SP_SPIN_ON_FIELD` false negatives when the null guard is written in yoda-style (`null == field`) ([#4144](https://github.com/spotbugs/spotbugs/pull/4144))
+- Fix message for `UNS_UNSAFE_CALL` bug pattern
+- Restore CLI plugin loading by fixing DetectorFactoryCollection bootstrap ordering ([#4191](https://github.com/spotbugs/spotbugs/pull/4191))
+- Fix `UWF_NULL_FIELD` false negative for fields initialized with cast null values ([#4034](https://github.com/spotbugs/spotbugs/issues/4034))
+- Fix `UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS` false positive for methods reached only through method references ([#4059](https://github.com/spotbugs/spotbugs/pull/4059))
+
+### Changed
+- Ant `FindBugsViewerTask`: use default look and feel by default. ([#4165](https://github.com/spotbugs/spotbugs/pull/4165))
+
+### Refactor
+- Ant `FindBugsViewerTask`: extend `AbstractFindBugsTask` to reduce duplicate code. ([#4165](https://github.com/spotbugs/spotbugs/pull/4165))
+
+## 4.10.2 - 2026-06-09
+### Build
+- Add release protection to ensure version released matches the tag and that snapshot has been removed. ([#4156](https://github.com/spotbugs/spotbugs/pull/4156))
+- Drop binary incompatible Saxon-HE back to 12.9 to keep java 11 compatibility. ([#4159](https://github.com/spotbugs/spotbugs/pull/4159))
+- Add binary check to the gradle build to ensure compatibility remains. ([#4159](https://github.com/spotbugs/spotbugs/pull/4159))
+
+## 4.10.1 - 2026-06-08
+### Build
+- 4.10.0 was not released due to a release process error (artifacts were built from a -SNAPSHOT version). 4.10.1 is the corrected release and contains the intended 4.10.0 contents.
+
+## 4.10.0 - 2026-06-07
 ### Refactor
 - Move internal usage of 'javax.annotation.Nonnull' to 'jakarta.annotation.NonNull'. ([#3858](https://github.com/spotbugs/spotbugs/pull/3858))
 - Move internal usage of 'javax.annotation.Nullable' to 'jakarta.annotation.Nullable'. ([#3861](https://github.com/spotbugs/spotbugs/pull/3861))
@@ -13,6 +60,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Reuse DismantleBytecode.isIf introduced in ([#3869](https://github.com/spotbugs/spotbugs/pull/3869))
 
 ### Added
+- Add partial support for `org.jspecify.annotations.Nullable`, `org.jspecify.annotations.NonNull`, `org.jspecify.annotations.NullUnmarked` and `org.jspecify.annotations.NullMarked` annotations. These are aliased to the closest existing SpotBugs nullness annotations. This is not a complete implementation of the JSpecify spec; scope-level semantics of `@NullMarked` and `@NullUnmarked` are not yet supported. ([#3996](https://github.com/spotbugs/spotbugs/pull/3996))
 - Recognize `jakarta.annotation.Nonnull` and `jakarta.annotation.Nullable` ([#3780](https://github.com/spotbugs/spotbugs/pull/3780))
 - Detect use of `sun.misc.Unsafe` and `jdk.internal.misc.Unsafe` ([#3804](https://github.com/spotbugs/spotbugs/pull/3804))
 - New bug type is introduced: `NCR_NOT_PROPERLY_CHECKED_READ`. Improper validation of the return value from the read() method in InputStream and Reader classes may result in an array not being fully filled. ([#3766](https://github.com/spotbugs/spotbugs/pull/3766))
@@ -46,9 +94,12 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `FS_BAD_DATE_FORMAT_FLAG_COMBO` not suppressed by field-level annotation ([#3838](https://github.com/spotbugs/spotbugs/issues/3838))
 - Fix `SF_SWITCH_FALLTHROUGH` false positives ([#3767](https://github.com/spotbugs/spotbugs/issues/3767))
 - Recognize well-known exception-throwing utility methods when looking for exceptions thrown from constructors ([#3821](https://github.com/spotbugs/spotbugs/issues/3821))
+- Fix `RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE` false negative when non-null value is on the left side of null comparison ([#3920](https://github.com/spotbugs/spotbugs/issues/3920))
 - Fix `IM_BAD_CHECK_FOR_ODD` false negative when using Yoda-style comparison (`1 == i % 2`) ([#3886](https://github.com/spotbugs/spotbugs/issues/3886))
 - Fix `PluginLoader.close()` to continue closing all `URLClassLoader`s when one close operation fails, suppressing subsequent `IOException`s. ([#3958](https://github.com/spotbugs/spotbugs/pull/3958))
 - Fix broken `bugDescriptions.html#TYPE` links by restoring legacy bug type anchors in generated docs ([#2113](https://github.com/spotbugs/spotbugs/issues/2113))
+- Fix `EI_EXPOSE_REP` false negative in package-private classes that expose mutable state through methods overriding a public super-type ([#4027](https://github.com/spotbugs/spotbugs/pull/4027))
+- Fix errors in the 4.40 Eclipse in SpotBugs plugin project ([#4052](https://github.com/spotbugs/spotbugs/issues/4052))
 
 ### Removed
 - Removed old deprecated methods: 
