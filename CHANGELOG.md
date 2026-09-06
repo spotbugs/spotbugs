@@ -5,6 +5,9 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2026-??-??
+### Changed
+- `@SuppressFBWarnings` annotation on a method or a constructor now suppresses warnings reported in their lambdas too ([#724](https://github.com/spotbugs/spotbugs/issues/724))
+
 ### Fixed
 - Fix `OS_OPEN_STREAM` false positive when the result of `PrintWriter.append()` is reassigned before closing the writer ([#4274](https://github.com/spotbugs/spotbugs/issues/4274))
 - Fix `UR_UNINIT_READ` false negative for compound assignment to a field (e.g. `m_iType |= e`) ([#4233](https://github.com/spotbugs/spotbugs/pull/4233))
