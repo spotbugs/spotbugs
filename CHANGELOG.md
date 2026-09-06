@@ -6,6 +6,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2026-??-??
 ### Fixed
+- Fix `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE` false negative for non-atomic read-modify-write in inner classes accessing enclosing shared fields ([#4236](https://github.com/spotbugs/spotbugs/pull/4236))
 - Fix `OS_OPEN_STREAM` false positive when the result of `PrintWriter.append()` is reassigned before closing the writer ([#4274](https://github.com/spotbugs/spotbugs/issues/4274))
 - Fix `UR_UNINIT_READ` false negative for compound assignment to a field (e.g. `m_iType |= e`) ([#4233](https://github.com/spotbugs/spotbugs/pull/4233))
 - Fix `NP_BOOLEAN_RETURN_NULL` false negative when `null` is returned via a local variable ([#4234](https://github.com/spotbugs/spotbugs/pull/4234))

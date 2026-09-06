@@ -29,6 +29,9 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.LockDataflow;
 import edu.umd.cs.findbugs.ba.LockSet;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Field;
@@ -57,6 +60,56 @@ public class MultiThreadedCodeIdentifierUtils {
 
     public static boolean isPartOfMultiThreadedCode(ClassContext classContext) {
         JavaClass javaClass = classContext.getJavaClass();
+        if (isDirectlyPartOfMultiThreadedCode(javaClass, classContext)) {
+            return true;
+        }
+
+        // A non-static inner class shares the multi-threaded context of its
+        // enclosing class (for example an inner class declared in a Thread or
+        // Runnable subtype). The inheritance flows only through non-static
+        // inner-class links: a static nested class has no enclosing instance,
+        // so it does not inherit the enclosing context and the walk stops at a
+        // static-nesting boundary.
+        if (!hasEnclosingInstanceReference(javaClass)) {
+            return false;
+        }
+        try {
+            AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
+            ClassDescriptor enclosing = classContext.getXClass().getImmediateEnclosingClass();
+            while (enclosing != null) {
+                JavaClass enclosingJavaClass = Global.getAnalysisCache().getClassAnalysis(JavaClass.class, enclosing);
+                if (isDirectlyPartOfMultiThreadedCode(enclosingJavaClass, analysisContext.getClassContext(enclosingJavaClass))) {
+                    return true;
+                }
+                if (!hasEnclosingInstanceReference(enclosingJavaClass)) {
+                    break;
+                }
+                enclosing = enclosing.getXClass().getImmediateEnclosingClass();
+            }
+        } catch (CheckedAnalysisException e) {
+            AnalysisContext.logError("Error while looking up enclosing class for multi-threaded-code check", e);
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns whether {@code javaClass} is a non-static inner class that holds a
+     * reference to an enclosing instance. The compiler emits a synthetic
+     * {@code this$0} (or {@code this$1}, ...) field for that reference; static
+     * nested classes and top-level classes have no such field, so they do not
+     * share an enclosing instance's thread context.
+     */
+    private static boolean hasEnclosingInstanceReference(JavaClass javaClass) {
+        for (Field field : javaClass.getFields()) {
+            if (field.isSynthetic() && field.getName().startsWith("this$")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isDirectlyPartOfMultiThreadedCode(JavaClass javaClass, ClassContext classContext) {
         if (Subtypes2.instanceOf(javaClass, JAVA_LANG_RUNNABLE) ||
                 Stream.of(javaClass.getFields()).anyMatch(MultiThreadedCodeIdentifierUtils::isFieldIndicatingMultiThreadedContainer)) {
             return true;
