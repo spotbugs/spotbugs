@@ -9,7 +9,16 @@ spotless {
   }
   groovyGradle {
     target '**/*.gradle'
-    greclipse()
+    greclipse().configProperties("""
+      org.eclipse.jdt.core.formatter.alignment_for_logical_operator=48
+      org.eclipse.jdt.core.formatter.tabulation.char=space
+      org.eclipse.jdt.core.formatter.tabulation.size=2
+      org.eclipse.jdt.core.formatter.indentation.size=2
+      groovy.formatter.multiline.indentation=2
+      groovy.formatter.line.maxlength=120
+      groovy.formatter.longListLength=30
+      groovy.formatter.remove.unnecessary.semicolons=true
+    """)
     leadingTabsToSpaces(2)
     trimTrailingWhitespace()
     endWithNewline()
