@@ -105,5 +105,13 @@ public class Feature323 {
         return TEST_STRING.charAt(TEST_STRING.length());
     }
 
+    @NoWarning("RANGE_ARRAY_INDEX")
+    public void unreachableArrayIndex(Object value) {
+        // The condition is always false; the array access is in dead code and must not be reported.
+        if (value == null && value != null) {
+            int[] array = new int[1];
+            array[2] = 1;
+        }
+    }
 
 }

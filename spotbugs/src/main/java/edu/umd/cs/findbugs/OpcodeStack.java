@@ -1470,18 +1470,28 @@ public class OpcodeStack {
                 push(new Item("I"));
                 break;
 
-            case Const.IFNONNULL:
-            case Const.IFNULL:
-                // {
-                // Item topItem = pop();
-                // if (seen == IFNONNULL && topItem.isNull())
-                // break;
-                // seenTransferOfControl = true;
-                // addJumpValue(dbc.getPC(), dbc.getBranchTarget());
-                //
-                // break;
-                // }
-
+            case Const.IFNONNULL: {
+                seenTransferOfControl = true;
+                Item topItem = pop();
+                addJumpValue(dbc.getPC(), dbc.getBranchTarget());
+                // On fall-through the tested value is null; propagate that to the local variable
+                // so that a subsequent IFNULL on the same variable can detect the dead fall-through.
+                int reg = topItem.registerNumber;
+                if (reg >= 0 && reg < lvValues.size()) {
+                    lvValues.set(reg, Item.nullItem(topItem.getSignature()));
+                }
+                break;
+            }
+            case Const.IFNULL: {
+                seenTransferOfControl = true;
+                Item topItem = pop();
+                addJumpValue(dbc.getPC(), dbc.getBranchTarget());
+                // If the item is definitely null the jump always happens; the fall-through is dead code.
+                if (topItem.isNull()) {
+                    setTop(true);
+                }
+                break;
+            }
             case Const.IFEQ:
             case Const.IFNE:
             case Const.IFLT:
