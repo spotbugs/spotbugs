@@ -209,9 +209,11 @@ public class PDEClassPathGenerator {
     private static void addImportedBundles(BundleDescription bd, Set<BundleDescription> bundles) {
         for (ExportPackageDescription imported : bd.getResolvedImports()) {
             BundleDescription exporter = imported.getExporter();
-            if (exporter != null
-                    && !Objects.equals(bd.getLocation(), exporter.getLocation())) {
-                bundles.add(exporter);
+            if (exporter == null || Objects.equals(bd.getLocation(), exporter.getLocation())) {
+                continue;
+            }
+            if (bundles.add(exporter)) {
+                addDependentBundles(exporter, bundles);
             }
         }
     }
