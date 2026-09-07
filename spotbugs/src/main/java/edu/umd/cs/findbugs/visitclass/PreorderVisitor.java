@@ -323,6 +323,7 @@ public class PreorderVisitor extends BetterVisitor {
             for (Attribute attribute : attributes) {
                 attribute.accept(this);
             }
+            visitAfter(method);
         } finally {
             visitingMethod = false;
             this.method = null;
@@ -395,7 +396,6 @@ public class PreorderVisitor extends BetterVisitor {
                     didInCallOrder = true;
                     for (Method m : classContext.getMethodsInCallOrder()) {
                         doVisitMethod(m);
-                        visitAfter(m);
                     }
 
                 } catch (CheckedAnalysisException e) {
@@ -405,7 +405,6 @@ public class PreorderVisitor extends BetterVisitor {
             if (!didInCallOrder) {
                 for (Method m : getMethodVisitOrder(obj)) {
                     doVisitMethod(m);
-                    visitAfter(m);
                 }
             }
             for (Attribute attribute : attributes) {
