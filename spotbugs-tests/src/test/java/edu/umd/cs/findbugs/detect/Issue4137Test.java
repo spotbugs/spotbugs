@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 
 class Issue4137Test extends AbstractIntegrationTest {
     private static final String OPS_BUG = "AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE";
+    private static final String BIT64_BUG = "AT_NONATOMIC_64BIT_PRIMITIVE";
+    private static final String STALE_WRITE_BUG = "AT_STALE_THREAD_WRITE_OF_PRIMITIVE";
 
     @Test
     void testInnerClassRmwOfEnclosingSharedFieldIsReported() {
@@ -24,5 +26,9 @@ class Issue4137Test extends AbstractIntegrationTest {
         // be reported. The count stays at 2; without the static-nesting guard
         // StaticNested.toggle3 would be reported too, raising it to 3.
         assertBugTypeCount(OPS_BUG, 2);
+        // The corpus only exercises the non-atomic RMW shape on int fields, so
+        // the detector's other two bug types must not be reported on it.
+        assertBugTypeCount(BIT64_BUG, 0);
+        assertBugTypeCount(STALE_WRITE_BUG, 0);
     }
 }
