@@ -19,7 +19,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `LI_LAZY_INIT_STATIC` false negative when field is lazily initialized using a method call ([#4276](https://github.com/spotbugs/spotbugs/issues/4276))
 
 ### Refactor
-- Replace deprecated/internal PDE APIs in classpath generation ([#xxxx](https://github.com/spotbugs/spotbugs/issues/xxxx))
+- Replace deprecated/internal PDE APIs in classpath generation ([#4297](https://github.com/spotbugs/spotbugs/issues/4297))
 
 ## 4.10.4 - 2026-08-19
 ### Fixed
