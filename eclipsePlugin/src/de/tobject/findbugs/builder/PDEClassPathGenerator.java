@@ -155,7 +155,11 @@ public class PDEClassPathGenerator {
                 continue;
             }
 
-            IPath location = new Path(model.getInstallLocation()).append(library.getName());
+            String installLocation = model.getInstallLocation();
+            if (installLocation == null) {
+                continue;
+            }
+            IPath location = new Path(installLocation).append(library.getName());
             String locationStr = location.toOSString();
             if (pdeClassPath.contains(locationStr)) {
                 continue;
