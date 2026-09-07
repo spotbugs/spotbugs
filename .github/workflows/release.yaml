@@ -13,8 +13,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  eclipse-version: 4.24
-  eclipse-date: 202206070700
+  eclipse-version: 4.33
+  eclipse-date: 202409030240
 
 jobs:
   build:
@@ -65,7 +65,7 @@ jobs:
       - uses: gradle/actions/wrapper-validation@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
       - name: Download Eclipse
         run: |
-          curl --continue-at - --create-dirs --location 'https://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-linux-gtk-x86_64.tar.gz&mirror_id=1' --output eclipse-sdk/eclipse.tar.gz
+          curl --continue-at - --create-dirs --location 'https://archive.eclipse.org/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-linux-gtk-x86_64.tar.gz' --output eclipse-sdk/eclipse.tar.gz
           tar xzf eclipse-sdk/eclipse.tar.gz eclipse
           echo "eclipseRoot.dir=$(pwd)/eclipse" | tee eclipsePlugin/local.properties
       - name: Build on tag

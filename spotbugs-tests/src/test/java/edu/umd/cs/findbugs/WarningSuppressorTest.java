@@ -35,6 +35,32 @@ class WarningSuppressorTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void methodSuppressionAppliesToInnerLambdas() {
+        performAnalysis("ghIssues/Issue724.class");
+
+        assertNoBugType("US_USELESS_SUPPRESSION_ON_METHOD");
+
+        assertBugTypeCount("NP_ALWAYS_NULL", 4);
+        assertBugTypeCount("NP_LOAD_OF_KNOWN_NULL_VALUE", 4);
+
+        assertBugAtLine("NP_ALWAYS_NULL", 52);
+        assertBugAtLine("NP_LOAD_OF_KNOWN_NULL_VALUE", 52);
+
+        assertBugAtLine("NP_ALWAYS_NULL", 87);
+        assertBugAtLine("NP_LOAD_OF_KNOWN_NULL_VALUE", 87);
+
+        assertBugAtLine("NP_ALWAYS_NULL", 94);
+        assertBugAtLine("NP_LOAD_OF_KNOWN_NULL_VALUE", 94);
+
+        assertBugTypeCount("DMI_INVOKING_TOSTRING_ON_ARRAY", 1);
+        assertBugAtLine("DMI_INVOKING_TOSTRING_ON_ARRAY", 21);
+
+        assertBugAtLine("NP_ALWAYS_NULL", 27);
+        assertBugAtLine("NP_LOAD_OF_KNOWN_NULL_VALUE", 27);
+        assertBugAtField("US_USELESS_SUPPRESSION_ON_FIELD", "ghIssues.Issue724", "unsupportedSuppressedStaticFieldInitializer");
+    }
+
+    @Test
     void customSuppressAnnotationMethodTest() {
         performAnalysis("suppress/custom/CustomSuppressedBugs.class", "suppress/custom/SuppressFBWarnings.class");
 
