@@ -39,10 +39,10 @@ import org.eclipse.jdt.internal.launching.JREContainer;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.osgi.service.resolver.BundleDescription;
 import org.eclipse.osgi.service.resolver.ExportPackageDescription;
+import org.eclipse.pde.core.plugin.IPluginLibrary;
 import org.eclipse.pde.core.plugin.IPluginModelBase;
 import org.eclipse.pde.core.plugin.PluginRegistry;
 import org.eclipse.pde.core.plugin.VersionMatchRule;
-import org.eclipse.pde.internal.core.ClasspathUtilCore;
 
 import de.tobject.findbugs.FindbugsPlugin;
 
@@ -150,17 +150,12 @@ public class PDEClassPathGenerator {
         if (model == null) {
             return;
         }
-        ArrayList<IClasspathEntry> classpathEntries = new ArrayList<>();
-        ClasspathUtilCore.addLibraries(model, classpathEntries);
-
-        for (IClasspathEntry cpe : classpathEntries) {
-            IPath location = null;
-            if (cpe.getEntryKind() != IClasspathEntry.CPE_SOURCE) {
-                location = cpe.getPath();
-            }
-            if (location == null) {
+        for (IPluginLibrary library : model.getPluginBase().getLibraries()) {
+            if (!IPluginLibrary.CODE.equals(library.getType())) {
                 continue;
             }
+
+            IPath location = new Path(model.getInstallLocation()).append(library.getName());
             String locationStr = location.toOSString();
             if (pdeClassPath.contains(locationStr)) {
                 continue;
