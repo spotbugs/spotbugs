@@ -18,6 +18,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `OBL_UNSATISFIED_OBLIGATION` false negatives for unclosed `CallableStatement`s returned by `Connection.prepareCall` ([#4148](https://github.com/spotbugs/spotbugs/issues/4148))
 - Fix `LI_LAZY_INIT_STATIC` false negative when field is lazily initialized using a method call ([#4276](https://github.com/spotbugs/spotbugs/issues/4276))
 
+### Refactor
+- Replace deprecated/internal PDE APIs in classpath generation ([#xxxx](https://github.com/spotbugs/spotbugs/issues/xxxx))
+
 ## 4.10.4 - 2026-08-19
 ### Fixed
 - Fix `NN_NAKED_NOTIFY` false negatives when a field read is stored in a local variable before `notify()` or `notifyAll()` ([#3884](https://github.com/spotbugs/spotbugs/issues/3884))
