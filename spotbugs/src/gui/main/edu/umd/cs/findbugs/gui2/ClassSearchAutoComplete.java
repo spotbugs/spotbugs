@@ -1,6 +1,5 @@
 /*
- * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2006-2026, University of Maryland
+ * SpotBugs - Find Bugs in Java programs
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -54,7 +53,8 @@ import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
- * Provides auto-completion functionality for the class name search filter in the GUI.
+ * Provides auto-completion functionality for the class name search filter in
+ * the GUI.
  * Displays matching class names and simple names dynamically as the user types.
  */
 public class ClassSearchAutoComplete {
@@ -76,7 +76,7 @@ public class ClassSearchAutoComplete {
     /**
      * Creates and attaches auto-completion support to the given text field.
      *
-     * @param textField the search text field
+     * @param textField         the search text field
      * @param candidateSupplier supplier providing available candidate class names
      */
     public ClassSearchAutoComplete(JTextField textField, Supplier<Collection<String>> candidateSupplier) {
@@ -100,7 +100,8 @@ public class ClassSearchAutoComplete {
     }
 
     /**
-     * Attaches auto-completion support configured with the MainFrame's bug collection.
+     * Attaches auto-completion support configured with the MainFrame's bug
+     * collection.
      *
      * @param textField the search text field
      * @param mainFrame the main frame instance
@@ -111,7 +112,8 @@ public class ClassSearchAutoComplete {
     }
 
     /**
-     * Extracts all unique class names (full qualified and simple names) from the bug collection.
+     * Extracts all unique class names (full qualified and simple names) from the
+     * bug collection.
      *
      * @param mainFrame the main frame instance
      * @return set of available class names
@@ -312,10 +314,11 @@ public class ClassSearchAutoComplete {
     }
 
     /**
-     * Finds the start and end indices of the token surrounding the given caret position.
+     * Finds the start and end indices of the token surrounding the given caret
+     * position.
      * Tokens are separated by whitespace, comma, or colon.
      *
-     * @param text the entire input string
+     * @param text     the entire input string
      * @param caretPos current caret position
      * @return an int array of size 2 containing [startIndex, endIndex]
      */
@@ -345,9 +348,9 @@ public class ClassSearchAutoComplete {
     /**
      * Replaces the substring from start to end with the given replacement string.
      *
-     * @param text original text
-     * @param start start index
-     * @param end end index
+     * @param text        original text
+     * @param start       start index
+     * @param end         end index
      * @param replacement replacement string
      * @return updated string
      */
@@ -362,9 +365,10 @@ public class ClassSearchAutoComplete {
 
     /**
      * Computes suggestions for the given token from the candidate collection.
-     * Suggestions are prioritized: prefix matches &gt; substring matches &gt; fuzzy matches.
+     * Suggestions are prioritized: prefix matches &gt; substring matches &gt; fuzzy
+     * matches.
      *
-     * @param token current query token
+     * @param token      current query token
      * @param candidates available class name candidates
      * @param maxResults maximum number of suggestions to return
      * @return ordered list of suggestions
