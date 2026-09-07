@@ -191,7 +191,7 @@ public class PDEClassPathGenerator {
         addImportedBundles(bd, bundles);
 
         for (BundleDescription fragment : bd.getFragments()) {
-            if (fragment.isResolved()) {
+            if (fragment.isResolved() && bundles.add(fragment)) {
                 addDependentBundles(fragment.getResolvedRequires(), bundles);
                 addImportedBundles(fragment, bundles);
             }
@@ -210,9 +210,8 @@ public class PDEClassPathGenerator {
         for (ExportPackageDescription imported : bd.getResolvedImports()) {
             BundleDescription exporter = imported.getExporter();
             if (exporter != null
-                    && !Objects.equals(bd.getLocation(), exporter.getLocation())
-                    && bundles.add(exporter)) {
-                addDependentBundles(exporter, bundles);
+                    && !Objects.equals(bd.getLocation(), exporter.getLocation())) {
+                bundles.add(exporter);
             }
         }
     }
