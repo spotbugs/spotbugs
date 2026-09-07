@@ -321,5 +321,7 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
         }
         bugAccumulator.reportAccumulatedBugs();
         pendingBugs.clear();
+        readFieldsByMethods.clear();
+        nonSyncedMethodCallsByCallingMethods.clear();
     }
 }
