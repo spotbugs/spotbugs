@@ -18,26 +18,38 @@
 
 package edu.umd.cs.findbugs.util;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Queue;
+import java.util.Set;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.BootstrapMethod;
 import org.apache.bcel.classfile.BootstrapMethods;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantInterfaceMethodref;
+import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantMethodHandle;
 import org.apache.bcel.classfile.ConstantMethodref;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ClassGenException;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
 
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
@@ -47,6 +59,8 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author Ádám Balogh
  */
 public class BootstrapMethodsUtil {
+
+    private static final String LAMBDA_METHOD_PREFIX = "lambda$";
 
     /**
      * Returns the methods invoked by handle arguments of a bootstrap method from a Java class.
@@ -137,5 +151,57 @@ public class BootstrapMethodsUtil {
             return metOpt;
         }
         return Optional.empty();
+    }
+
+    /**
+     * Returns the lambda methods belonging to the given method (including nested ones).
+     *
+     * @param cls    the java class containing the method
+     * @param method the method whose lambdas to find
+     * @return the lambda methods if found, an empty set otherwise
+     */
+    public static Set<MethodAnnotation> getLambdasOwnedBy(JavaClass cls, Method method) {
+        Set<MethodAnnotation> foundLambdas = new HashSet<>();
+        Queue<Method> methodsToCheck = new ArrayDeque<>();
+        methodsToCheck.add(method);
+        while (!methodsToCheck.isEmpty()) {
+            for (MethodAnnotation lambda : getDirectlyReferencedLambdas(cls, methodsToCheck.remove())) {
+                if (foundLambdas.add(lambda)) {
+                    Arrays.stream(cls.getMethods())
+                            .filter(m -> m.getName().equals(lambda.getMethodName()) && m.getSignature().equals(lambda.getMethodSignature()))
+                            .forEach(methodsToCheck::add);
+                }
+            }
+        }
+        return foundLambdas;
+    }
+
+    private static List<MethodAnnotation> getDirectlyReferencedLambdas(JavaClass cls, Method method) {
+        Code code = method.getCode();
+        if (code == null) {
+            return Collections.emptyList();
+        }
+        InstructionList instructions;
+        try {
+            instructions = new InstructionList(code.getCode());
+        } catch (ClassGenException e) {
+            return Collections.emptyList();
+        }
+        String slashedClassName = ClassName.toSlashedClassName(cls.getClassName());
+        ConstantPool cp = cls.getConstantPool();
+        List<MethodAnnotation> lambdas = new ArrayList<>();
+        for (InstructionHandle handle : instructions) {
+            Instruction instruction = handle.getInstruction();
+            if (!(instruction instanceof INVOKEDYNAMIC)) {
+                continue;
+            }
+            ConstantInvokeDynamic constDyn = cp.getConstant(((INVOKEDYNAMIC) instruction).getIndex());
+            for (MethodDescriptor target : getInvokedMethodTargets(cls, constDyn.getBootstrapMethodAttrIndex(), cp)) {
+                if (slashedClassName.equals(target.getSlashedClassName()) && target.getName().startsWith(LAMBDA_METHOD_PREFIX)) {
+                    lambdas.add(MethodAnnotation.fromMethodDescriptor(target));
+                }
+            }
+        }
+        return lambdas;
     }
 }
