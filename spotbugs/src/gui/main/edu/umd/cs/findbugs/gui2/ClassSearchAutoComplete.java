@@ -217,35 +217,35 @@ public class ClassSearchAutoComplete {
         }
 
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_DOWN:
-                int nextIndex = suggestionList.getSelectedIndex() + 1;
-                if (nextIndex < listModel.getSize()) {
-                    suggestionList.setSelectedIndex(nextIndex);
-                    suggestionList.ensureIndexIsVisible(nextIndex);
-                }
+        case KeyEvent.VK_DOWN:
+            int nextIndex = suggestionList.getSelectedIndex() + 1;
+            if (nextIndex < listModel.getSize()) {
+                suggestionList.setSelectedIndex(nextIndex);
+                suggestionList.ensureIndexIsVisible(nextIndex);
+            }
+            e.consume();
+            break;
+        case KeyEvent.VK_UP:
+            int prevIndex = suggestionList.getSelectedIndex() - 1;
+            if (prevIndex >= 0) {
+                suggestionList.setSelectedIndex(prevIndex);
+                suggestionList.ensureIndexIsVisible(prevIndex);
+            }
+            e.consume();
+            break;
+        case KeyEvent.VK_ENTER:
+        case KeyEvent.VK_TAB:
+            if (suggestionList.getSelectedIndex() != -1) {
+                applySelectedSuggestion();
                 e.consume();
-                break;
-            case KeyEvent.VK_UP:
-                int prevIndex = suggestionList.getSelectedIndex() - 1;
-                if (prevIndex >= 0) {
-                    suggestionList.setSelectedIndex(prevIndex);
-                    suggestionList.ensureIndexIsVisible(prevIndex);
-                }
-                e.consume();
-                break;
-            case KeyEvent.VK_ENTER:
-            case KeyEvent.VK_TAB:
-                if (suggestionList.getSelectedIndex() != -1) {
-                    applySelectedSuggestion();
-                    e.consume();
-                }
-                break;
-            case KeyEvent.VK_ESCAPE:
-                hidePopup();
-                e.consume();
-                break;
-            default:
-                break;
+            }
+            break;
+        case KeyEvent.VK_ESCAPE:
+            hidePopup();
+            e.consume();
+            break;
+        default:
+            break;
         }
     }
 
