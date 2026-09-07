@@ -54,6 +54,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix handling of JSpecify type-use annotations in `CheckRelaxingNullnessAnnotation` ([#4389](https://github.com/spotbugs/spotbugs/pull/4389))
 - Stop reporting missing java.applet at java 26 or higher ([#4390](https://github.com/spotbugs/spotbugs/pull/4390))
 
+### Refactor
+- Replace deprecated/internal PDE APIs in classpath generation ([#xxxx](https://github.com/spotbugs/spotbugs/issues/xxxx))
+
 ## 4.10.4 - 2026-08-19
 ### Fixed
 - Fix `NN_NAKED_NOTIFY` false negatives when a field read is stored in a local variable before `notify()` or `notifyAll()` ([#3884](https://github.com/spotbugs/spotbugs/issues/3884))
