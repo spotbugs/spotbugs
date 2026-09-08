@@ -302,9 +302,9 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
             buf.append("[basicBlock=");
             buf.append(getBasicBlock().getLabel());
             if (next != null) {
-                buf.append(", next=" + next);
+                buf.append(", next=").append(next);
             } else if (getBasicBlock().isExceptionThrower()) {
-                buf.append(", check for" + getBasicBlock().getExceptionThrower());
+                buf.append(", check for").append(getBasicBlock().getExceptionThrower());
             } else {
                 buf.append(", end");
             }

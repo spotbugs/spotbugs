@@ -26,9 +26,7 @@ import java.util.Map;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
-import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -118,13 +116,10 @@ public class GroupSelectionDialog extends SelectionDialog {
         checkList.setInput(allowedGroups);
         checkList.setCheckedElements(preSelectedGroups.toArray());
 
-        checkList.addCheckStateListener(new ICheckStateListener() {
-            @Override
-            public void checkStateChanged(CheckStateChangedEvent event) {
-                boolean checked = event.getChecked();
-                GroupType element = (GroupType) event.getElement();
-                selectionMap.put(element, Boolean.valueOf(checked));
-            }
+        checkList.addCheckStateListener(event -> {
+            boolean checked = event.getChecked();
+            GroupType element = (GroupType) event.getElement();
+            selectionMap.put(element, Boolean.valueOf(checked));
         });
 
         table.addSelectionListener(new SelectionAdapter() {

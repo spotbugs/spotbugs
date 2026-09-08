@@ -60,6 +60,9 @@ public class SynchronizeAndNullCheckField extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         // System.out.println(getPC() + " " + Const.getOpcodeName(seen) + " " +
         // currState);
+
+        seen = normalizeNullComparison(seen);
+
         switch (currState) {
         case 0:
             if (seen == Const.GETFIELD || seen == Const.GETSTATIC) {
@@ -92,7 +95,7 @@ public class SynchronizeAndNullCheckField extends BytecodeScanningDetector {
             if (seen == Const.GETFIELD || seen == Const.GETSTATIC) {
                 gottenField = FieldAnnotation.fromReferencedField(this);
                 currState = 5;
-            } else {
+            } else if (seen != Const.ACONST_NULL) {
                 currState = 0;
             }
             break;

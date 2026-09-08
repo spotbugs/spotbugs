@@ -154,9 +154,9 @@ public class PatternElementMatch {
     public String toString() {
         StringBuilder buf = new StringBuilder();
         PatternElementMatch cur = this;
-        buf.append(cur.patternElement.toString());
+        buf.append(cur.patternElement);
         buf.append(", ");
-        buf.append(cur.matchedInstruction.toString());
+        buf.append(cur.matchedInstruction);
         buf.append(", ");
         buf.append(cur.matchCount);
         return buf.toString();

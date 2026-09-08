@@ -129,6 +129,10 @@ public class BugAccumulator {
             BugInstance conflictingBug = hashes.get(hash);
             if (conflictingBug != null) {
                 if (conflictingBug.getPriority() <= priority) {
+                    Data existingData = map.get(conflictingBug);
+                    if (existingData != null) {
+                        existingData.allSource.add(sourceLine);
+                    }
                     return;
                 }
                 map.remove(conflictingBug);

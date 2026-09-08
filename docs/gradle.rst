@@ -25,7 +25,7 @@ This plugin does not generate tasks so you can configure from scratch.
 Configure Gradle Plugin
 -----------------------
 
-This plugin uses the Extension to configure. Please check the document for `SpotBugsExtension <https://spotbugs-gradle-plugin.netlify.app/com/github/spotbugs/snom/SpotBugsExtension.html>`_.
+This plugin uses the Extension to configure. Please check the document for `SpotBugsExtension <https://spotbugs-gradle-plugin.netlify.app/spotbugs-gradle-plugin/com.github.spotbugs.snom/-spot-bugs-extension/>`_.
 
 For instance, to specify the version of SpotBugs, you can configure like below:
 

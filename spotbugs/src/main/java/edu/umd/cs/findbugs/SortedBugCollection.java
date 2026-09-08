@@ -735,7 +735,7 @@ public class SortedBugCollection implements BugCollection {
                 xmlOutput.writeText(error.getExceptionMessage());
                 xmlOutput.closeTag(ERROR_EXCEPTION_ELEMENT_NAME);
 
-                String stackTrace[] = error.getStackTrace();
+                String[] stackTrace = error.getStackTrace();
                 if (stackTrace != null) {
                     for (String aStackTrace : stackTrace) {
                         xmlOutput.openTag(ERROR_STACK_TRACE_ELEMENT_NAME);

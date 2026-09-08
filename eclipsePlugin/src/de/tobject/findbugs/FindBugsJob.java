@@ -134,8 +134,12 @@ public abstract class FindBugsJob extends Job {
             }
 
             runWithProgress(monitor);
-        } catch (OperationCanceledException | InterruptedException e) {
+        } catch (OperationCanceledException e) {
             // Do nothing when operation cancelled.
+            return Status.CANCEL_STATUS;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            // Preserve interrupt status and cancel operation.
             return Status.CANCEL_STATUS;
         } catch (CoreException ex) {
             if (DEBUG) {

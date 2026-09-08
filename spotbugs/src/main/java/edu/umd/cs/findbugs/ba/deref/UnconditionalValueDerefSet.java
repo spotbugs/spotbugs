@@ -380,7 +380,7 @@ public class UnconditionalValueDerefSet {
                 } else {
                     buf.append(',');
                 }
-                buf.append("(" + location.getBasicBlock().getLabel() + ":" + location.getHandle().getPosition() + ")");
+                buf.append("(").append(location.getBasicBlock().getLabel()).append(":").append(location.getHandle().getPosition()).append(")");
             }
             buf.append('}');
         }

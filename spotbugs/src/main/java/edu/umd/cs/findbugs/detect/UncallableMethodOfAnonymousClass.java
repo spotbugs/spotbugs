@@ -210,7 +210,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                 if (Values.DOTTED_JAVA_LANG_OBJECT.equals(superclassName)) {
 
                     try {
-                        JavaClass interfaces[] = getThisClass().getInterfaces();
+                        JavaClass[] interfaces = getThisClass().getInterfaces();
                         if (interfaces.length == 1) {
                             superclassName = interfaces[0].getClassName();
                             role = ClassAnnotation.IMPLEMENTED_INTERFACE_ROLE;

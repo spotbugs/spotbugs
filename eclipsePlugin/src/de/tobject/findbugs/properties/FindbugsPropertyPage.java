@@ -39,9 +39,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.preference.IPreferencePage;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -301,12 +299,9 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 
         String effortLevel = currentUserPreferences.getEffort();
         effortViewer.setSelection(new StructuredSelection(Effort.getEffort(effortLevel)), true);
-        effortViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                Effort placeHolder = (Effort) ((IStructuredSelection) event.getSelection()).getFirstElement();
-                currentUserPreferences.setEffort(placeHolder.getEffortLevel());
-            }
+        effortViewer.addSelectionChangedListener(event -> {
+            Effort placeHolder = (Effort) ((IStructuredSelection) event.getSelection()).getFirstElement();
+            currentUserPreferences.setEffort(placeHolder.getEffortLevel());
         });
         effortLabel.setToolTipText("Set SpotBugs analysis effort (minimal is faster but less precise)");
         effortViewer.getCombo().setToolTipText("Set SpotBugs analysis effort (minimal is faster but less precise)");

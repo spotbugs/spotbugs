@@ -251,7 +251,7 @@ public class SignatureConverter {
         result.append(className);
         result.append('.');
         result.append(methodName);
-        result.append(args.toString());
+        result.append(args);
 
         return result.toString();
     }

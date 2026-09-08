@@ -152,14 +152,23 @@ class Location {
                 return location;
             }
 
-            try {
-                String path = bugAnnotation.format("full", classAnnotation);
-                String pathWithoutLine = path.contains(":") ? path.split(":")[0] : path;
-                return Optional.of(new ArtifactLocation(new URI(pathWithoutLine), null));
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
+            if (!bugAnnotation.isSourceFileKnown()) {
                 return Optional.empty();
             }
+
+            try {
+                String path = bugAnnotation.format("full", classAnnotation);
+                String pathWithoutLine = removeLineSuffix(path);
+                return Optional.of(new ArtifactLocation(new URI(pathWithoutLine), null));
+            } catch (URISyntaxException ignored) {
+                // Omit invalid physical locations; logical locations remain available.
+                return Optional.empty();
+            }
+        }
+
+        private static String removeLineSuffix(String path) {
+            int lineSuffixIndex = path.indexOf(":[");
+            return lineSuffixIndex >= 0 ? path.substring(0, lineSuffixIndex) : path;
         }
 
         static Optional<ArtifactLocation> fromStackTraceElement(StackTraceElement element, SourceFinder sourceFinder, Map<URI, String> baseToId) {
