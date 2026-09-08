@@ -114,4 +114,24 @@ public class Feature323 {
         }
     }
 
+    // IFNONNULL null-propagation side: the body of a live "if (value == null)" block is still reachable;
+    // IFNONNULL must not set top, only update the local variable's null state.
+    @ExpectWarning("RANGE_ARRAY_INDEX")
+    public void reachableArrayIndexInNullCheckBody(Object value) {
+        if (value == null) {
+            int[] array = new int[1];
+            array[2] = 1;
+        }
+    }
+
+    // IFNULL dead-fall-through side: when the tested item is already known null the fall-through is dead.
+    @NoWarning("RANGE_ARRAY_INDEX")
+    public void unreachableArrayIndexExplicitNull() {
+        Object value = null;
+        if (value != null) {
+            int[] array = new int[1];
+            array[2] = 1;
+        }
+    }
+
 }
