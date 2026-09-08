@@ -67,11 +67,13 @@ public class PrintClass {
         }
     }
 
-    static boolean code = false, constants = false;
+    static boolean code = false;
+
+    static boolean constants = false;
 
     static boolean superClasses = false;
 
-    public static void main(String argv[]) throws IOException {
+    public static void main(String[] argv) throws IOException {
         String[] file_name = new String[argv.length];
         int files = 0;
         String zip_file = null;

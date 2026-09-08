@@ -6,7 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -28,12 +28,27 @@ class UnreadFieldsTest {
      */
     @Test
     void bugInstanceShouldContainLineNumber(SpotBugsRunner spotbugs) {
-        BugCollection bugCollection = spotbugs.performAnalysis(Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/Issue1368.class"));
+        BugCollection bugCollection = spotbugs.performAnalysis(Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/Issue1368.class"));
         Optional<BugInstance> reportedBug = bugCollection.getCollection().stream()
                 .filter(bug -> "UWF_NULL_FIELD".equals(bug.getBugPattern().getType()))
                 .findAny();
         assertTrue(reportedBug.isPresent());
         assertThat(reportedBug.get().getPrimarySourceLineAnnotation().getStartLine(), is(not(-1)));
+    }
+
+    @Test
+    void shouldReportNullFieldWithCastNullAssignment(SpotBugsRunner spotbugs) {
+        BugCollection bugCollection = spotbugs.performAnalysis(
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/Issue4034.class"));
+
+        Optional<BugInstance> reportedBug = bugCollection.getCollection()
+                .stream()
+                .filter(bug -> "UWF_NULL_FIELD".equals(bug.getBugPattern().getType()))
+                .findAny();
+
+        assertTrue(
+                reportedBug.isPresent(),
+                "Expected UWF_NULL_FIELD for cast null field assignment");
     }
 
     /**
@@ -43,7 +58,7 @@ class UnreadFieldsTest {
      */
     @Test
     void unreadFieldInReflectiveClass(SpotBugsRunner spotbugs) {
-        BugCollection bugCollection = spotbugs.performAnalysis(Paths.get("../spotbugsTestCases/build/classes/java/main/ghIssues/Issue2325.class"));
+        BugCollection bugCollection = spotbugs.performAnalysis(Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/Issue2325.class"));
 
         Optional<BugInstance> reportedBug = bugCollection.getCollection().stream()
                 .filter(bug -> "UUF_UNUSED_FIELD".equals(bug.getBugPattern().getType())).findAny();

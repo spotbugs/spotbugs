@@ -32,7 +32,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.FieldSummary;
@@ -466,7 +466,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
                 } else {
                     buf.append(',');
                 }
-                buf.append(key + "=" + valueToString(value));
+                buf.append(key).append("=").append(valueToString(value));
             }
 
             buf.append(" #");

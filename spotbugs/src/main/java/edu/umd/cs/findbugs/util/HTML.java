@@ -77,11 +77,7 @@ public class HTML {
                 indent();
             } else if ("pre".equals(name)) {
                 inPre = false;
-            } else if ("ul".equals(name)) {
-                super.decrIndent();
-                writeLineSeparator();
-                indent();
-            } else if ("li".equals(name)) {
+            } else if ("ul".equals(name) || "li".equals(name)) {
                 super.decrIndent();
                 writeLineSeparator();
                 indent();
@@ -110,14 +106,14 @@ public class HTML {
                 contentStr = contentStr.replaceAll("\\s+", " ");
 
                 if (startingParagraph) {
-                    while (contentStr.length() > 0 && contentStr.charAt(0) == ' ') {
+                    while (!contentStr.isEmpty() && contentStr.charAt(0) == ' ') {
                         contentStr = contentStr.substring(1);
                     }
                 }
 
                 startingParagraph = false;
             }
-            if (contentStr.length() > 0) {
+            if (!contentStr.isEmpty()) {
 
                 setCanWrapLines(!inPre);
                 write(contentStr);

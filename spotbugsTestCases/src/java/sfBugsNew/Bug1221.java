@@ -28,8 +28,9 @@ public class Bug1221 {
             ps.setString(1, ipAddr);
             ps.executeUpdate();
         } finally {
-            if (ps != null)
+            if (ps != null) {
                 ps.close();
+            }
             conn.close();
 
         }
@@ -43,7 +44,6 @@ public class Bug1221 {
         } finally {
             ps.close();
             conn.close();
-
         }
     }
 

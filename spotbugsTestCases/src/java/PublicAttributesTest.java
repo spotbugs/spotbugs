@@ -20,7 +20,7 @@ public class PublicAttributesTest {
     public final Map<Integer, String> hm = new HashMap<Integer, String>();
 
     // Mutable static fields are already detected by MS. No PA warning expected.
-    public final static Map<Integer, String> SHM = new HashMap<Integer, String>();
+    public static final Map<Integer, String> SHM = new HashMap<Integer, String>();
 
     // This field is not written, but only read. No PA warning expected.
     public final Set<String> hs = new HashSet<String>();

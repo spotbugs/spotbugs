@@ -14,7 +14,6 @@ public class Bug1192 {
 
     }
 
-
     @NoWarning("BC_IMPOSSIBLE_INSTANCEOF")
     void check() {
         try {

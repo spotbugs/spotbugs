@@ -55,7 +55,7 @@ public class JavaSourceDocument {
 
     static Font sourceFont = new Font("Monospaced", Font.PLAIN, (int) Driver.getFontSize());
 
-    final static Color HIGHLIGHT_COLOR = new Color(1f, 1f, .3f);
+    static final Color HIGHLIGHT_COLOR = new Color(1f, 1f, .3f);
 
     TabSet TAB_SET;
     static {

@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs;
 import java.net.URI;
 import java.util.Optional;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.util.HTML;
 
@@ -53,8 +53,6 @@ public class BugPattern implements Comparable<BugPattern> {
     private final String url;
 
     final int cweid;
-
-    int priorityAdjustment;
 
     private boolean deprecated;
 
@@ -129,14 +127,6 @@ public class BugPattern implements Comparable<BugPattern> {
      */
     public String getCategory() {
         return category;
-    }
-
-    public int getPriorityAdjustment() {
-        return priorityAdjustment;
-    }
-
-    public void adjustPriority(int change) {
-        priorityAdjustment += change;
     }
 
     public String getCategoryAbbrev() {

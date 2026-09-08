@@ -36,7 +36,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.console.IOConsoleOutputStream;
@@ -74,37 +73,31 @@ public class FindBugs2Eclipse extends FindBugs2 {
 
     private final Reporter reporter;
 
-    private static IResourceChangeListener resourceListener = new IResourceChangeListener() {
-        @Override
-        public void resourceChanged(IResourceChangeEvent event) {
-            if (event.getSource() instanceof IProject) {
-                cleanClassClache((IProject) event.getSource());
-            } else if (event.getResource() instanceof IProject) {
-                cleanClassClache((IProject) event.getResource());
-            } else if (event.getDelta() != null) {
-                final Set<IProject> affectedProjects = new HashSet<>();
-                final IResourceDelta delta = event.getDelta();
-                try {
-                    delta.accept(new IResourceDeltaVisitor() {
-                        @Override
-                        public boolean visit(IResourceDelta d1) throws CoreException {
-                            if (d1 == delta || d1.getFlags() == 0 || d1.getFlags() == IResourceDelta.MARKERS) {
-                                return true;
-                            }
-                            IResource resource = d1.getResource();
-                            if (resource instanceof IProject) {
-                                affectedProjects.add((IProject) resource);
-                                return false;
-                            }
-                            return true;
-                        }
-                    });
-                } catch (CoreException e) {
-                    FindbugsPlugin.getDefault().logException(e, "Error traversing resource delta");
-                }
-                for (IProject iProject : affectedProjects) {
-                    cleanClassClache(iProject);
-                }
+    private static IResourceChangeListener resourceListener = event -> {
+        if (event.getSource() instanceof IProject) {
+            FindBugs2Eclipse.cleanClassClache((IProject) event.getSource());
+        } else if (event.getResource() instanceof IProject) {
+            FindBugs2Eclipse.cleanClassClache((IProject) event.getResource());
+        } else if (event.getDelta() != null) {
+            final Set<IProject> affectedProjects = new HashSet<>();
+            final IResourceDelta delta = event.getDelta();
+            try {
+                delta.accept(d1 -> {
+                    if (d1 == delta || d1.getFlags() == 0 || d1.getFlags() == IResourceDelta.MARKERS) {
+                        return true;
+                    }
+                    IResource resource = d1.getResource();
+                    if (resource instanceof IProject) {
+                        affectedProjects.add((IProject) resource);
+                        return false;
+                    }
+                    return true;
+                });
+            } catch (CoreException e) {
+                FindbugsPlugin.getDefault().logException(e, "Error traversing resource delta");
+            }
+            for (IProject iProject : affectedProjects) {
+                FindBugs2Eclipse.cleanClassClache(iProject);
             }
         }
     };

@@ -28,8 +28,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;

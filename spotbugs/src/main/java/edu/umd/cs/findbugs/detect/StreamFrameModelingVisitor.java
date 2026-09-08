@@ -57,7 +57,8 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
         final Instruction ins = handle.getInstruction();
         final ResourceValueFrame frame = getFrame();
 
-        int status = -1;
+        ResourceValueFrame.State status = ResourceValueFrame.State.NONEXISTENT;
+        boolean updated = false;
         boolean created = false;
 
         // Is a resource created, opened, or closed by this instruction?
@@ -65,34 +66,58 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
         if (handle == creationPoint.getHandle() && basicBlock == creationPoint.getBasicBlock()) {
             // Resource creation
             if (stream.isOpenOnCreation()) {
-                status = ResourceValueFrame.OPEN;
+                status = ResourceValueFrame.State.OPEN;
                 stream.setOpenLocation(location);
                 resourceTracker.addStreamOpenLocation(location, stream);
             } else {
-                status = ResourceValueFrame.CREATED;
+                status = ResourceValueFrame.State.CREATED;
             }
+            updated = true;
             created = true;
         } else if (resourceTracker.isResourceOpen(basicBlock, handle, cpg, stream, frame)) {
             // Resource opened
-            status = ResourceValueFrame.OPEN;
+            status = ResourceValueFrame.State.OPEN;
+            updated = true;
             stream.setOpenLocation(location);
             resourceTracker.addStreamOpenLocation(location, stream);
         } else if (resourceTracker.isResourceClose(basicBlock, handle, cpg, stream, frame)) {
             // Resource closed
-            status = ResourceValueFrame.CLOSED;
+            status = ResourceValueFrame.State.CLOSED;
+            updated = true;
         }
 
         // Model use of instance values in frame slots
         analyzeInstruction(ins);
 
         // If needed, update frame status
-        if (status != -1) {
+        if (updated) {
             frame.setStatus(status);
             if (created) {
                 frame.setValue(frame.getNumSlots() - 1, ResourceValue.instance());
             }
         }
 
+    }
+
+    @Override
+    public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
+        // Subclasses may override append to return a different writer, even when
+        // the receiver's declared type is PrintWriter.
+        if ("java.io.PrintWriter".equals(stream.getResourceClass()) && ins.getOpcode() == Const.INVOKEVIRTUAL) {
+            InvokeInstruction inv = (InvokeInstruction) ins;
+            if ("java.io.PrintWriter".equals(inv.getClassName(cpg)) && "append".equals(inv.getMethodName(cpg))) {
+                String signature = inv.getSignature(cpg);
+                if ("(C)Ljava/io/PrintWriter;".equals(signature)
+                        || "(Ljava/lang/CharSequence;)Ljava/io/PrintWriter;".equals(signature)
+                        || "(Ljava/lang/CharSequence;II)Ljava/io/PrintWriter;".equals(signature)) {
+                    ResourceValueFrame frame = getFrame();
+                    ResourceValue receiver = frame.getValue(frame.getNumSlots() - numWordsConsumed);
+                    modelInstruction(ins, numWordsConsumed, numWordsProduced, receiver);
+                    return;
+                }
+            }
+        }
+        super.modelNormalInstruction(ins, numWordsConsumed, numWordsProduced);
     }
 
     @Override

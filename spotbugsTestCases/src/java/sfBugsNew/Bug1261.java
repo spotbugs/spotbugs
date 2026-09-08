@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.jar.Manifest;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 

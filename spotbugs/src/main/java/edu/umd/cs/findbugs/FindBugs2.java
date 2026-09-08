@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,7 +42,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.dom4j.DocumentException;
 import org.slf4j.Logger;
@@ -84,6 +85,7 @@ import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.TopologicalSort;
 import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
 
 /**
@@ -178,7 +180,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
 
         String hostApp = System.getProperty(PROP_FINDBUGS_HOST_APP);
         String hostAppVersion = null;
-        if (hostApp == null || hostApp.trim().length() <= 0) {
+        if (hostApp == null || hostApp.trim().isEmpty()) {
             hostApp = "FindBugs TextUI";
             hostAppVersion = System.getProperty(PROP_FINDBUGS_HOST_APP_VERSION);
         }
@@ -291,7 +293,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
 
                 if (executionPlan.isActive(NoteSuppressedWarnings.class)) {
                     SuppressionMatcher m = AnalysisContext.currentAnalysisContext().getSuppressionMatcher();
-                    bugReporter = new FilterBugReporter(bugReporter, m, false);
+                    bugReporter = new SuppressionMatcherBugReporter(bugReporter, m);
                 }
 
                 if (appClassList.isEmpty()) {
@@ -662,12 +664,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                 try {
                     IAnalysisEngineRegistrar engineRegistrar = engineRegistrarClass.newInstance();
                     engineRegistrar.registerAnalysisEngines(analysisCache);
-                } catch (InstantiationException e) {
-                    IOException ioe = new IOException("Could not create analysis engine registrar for plugin "
-                            + plugin.getPluginId());
-                    ioe.initCause(e);
-                    throw ioe;
-                } catch (IllegalAccessException e) {
+                } catch (InstantiationException | IllegalAccessException e) {
                     IOException ioe = new IOException("Could not create analysis engine registrar for plugin "
                             + plugin.getPluginId());
                     ioe.initCause(e);
@@ -863,8 +860,8 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
     }
 
     public List<ClassDescriptor> sortByCallGraph(Collection<ClassDescriptor> classList, OutEdges<ClassDescriptor> outEdges) {
-        List<ClassDescriptor> evaluationOrder = edu.umd.cs.findbugs.util.TopologicalSort.sortByCallGraph(classList, outEdges);
-        edu.umd.cs.findbugs.util.TopologicalSort.countBadEdges(evaluationOrder, outEdges);
+        List<ClassDescriptor> evaluationOrder = TopologicalSort.sortByCallGraph(classList, outEdges);
+        TopologicalSort.countBadEdges(evaluationOrder, outEdges);
         return evaluationOrder;
 
     }
@@ -898,7 +895,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
         // If needed, load SourceInfoMap
         if (sourceInfoFileName != null) {
             SourceInfoMap sourceInfoMap = analysisContext.getSourceInfoMap();
-            sourceInfoMap.read(new FileInputStream(sourceInfoFileName));
+            sourceInfoMap.read(Files.newInputStream(Path.of(sourceInfoFileName)));
         }
     }
 
@@ -945,7 +942,11 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
             @Override
             public void enable(DetectorFactory factory) {
                 forcedEnabled.add(factory);
-                factory.setEnabledButNonReporting(true);
+            }
+
+            @Override
+            public boolean wasForciblyEnabled(DetectorFactory factory) {
+                return forcedEnabled.contains(factory);
             }
 
         };
@@ -980,6 +981,11 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
     private void analyzeApplication() throws InterruptedException {
         int passCount = 0;
         Profiler profiler = bugReporter.getProjectStats().getProfiler();
+        PriorityAdjuster priorityAdjuster = bugReporter.getPriorityAdjuster();
+        if (priorityAdjuster != null) {
+            priorityAdjuster.setFactoryChooser(executionPlan.getFactoryChooser());
+        }
+
         profiler.start(this.getClass());
         AnalysisContext.currentXFactory().canonicalizeAll();
         try {
@@ -1000,10 +1006,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                     XClass info = Global.getAnalysisCache().getClassAnalysis(XClass.class, desc);
                     factory.intern(info);
                 } catch (CheckedAnalysisException e) {
-                    AnalysisContext.logError("Couldn't get class info for " + desc, e);
-                    badClasses.add(desc);
-                } catch (RuntimeException e) {
-                    AnalysisContext.logError("Couldn't get class info for " + desc, e);
+                    AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(desc, e);
                     badClasses.add(desc);
                 }
             }
@@ -1197,7 +1200,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
      */
     private void logRecoverableException(ClassDescriptor classDescriptor, Detector2 detector, Throwable e) {
         bugReporter.logError(
-                "Exception analyzing " + classDescriptor.toDottedClassName() + " using detector "
+                "Exception analyzing " + classDescriptor.getDottedClassName() + " using detector "
                         + detector.getDetectorClassName(), e);
     }
 

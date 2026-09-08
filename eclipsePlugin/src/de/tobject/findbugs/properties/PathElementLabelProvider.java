@@ -1,6 +1,6 @@
 package de.tobject.findbugs.properties;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.viewers.IColorProvider;

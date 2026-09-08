@@ -1,7 +1,7 @@
 package publicIdentifiers;
 
 public class GoodPublicIdentifiersFieldNames {
-    private final static String myStringValue = "String";
+    private static final String myStringValue = "String";
     public Integer myIntValue = 8;
 
     public void myMethod() {

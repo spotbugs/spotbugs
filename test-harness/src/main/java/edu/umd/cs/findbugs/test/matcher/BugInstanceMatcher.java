@@ -33,6 +33,12 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.Confidence;
 
+/**
+ * Matcher for {@link BugInstance} that allows to match on various criteria such as bug type, class name, method name,
+ * field name, variable name, line number, confidence and JSP file.
+ * <p>
+ * This matcher is useful for unit tests that need to verify the presence of specific bugs in the code.
+ */
 public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
 
     private static final Pattern ANON_FUNCTION_SCALA_PATTERN = Pattern.compile("\\$\\$anonfun\\$([^\\$]+)\\$");
@@ -109,8 +115,8 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
                 String fullName = classAnn.getClassName();
                 int startDot = fullName.lastIndexOf(".") + 1;
                 int endDollar = fullName.indexOf('$');
-                String simpleName = fullName.substring(startDot != -1 ? startDot : 0, endDollar != -1 ? endDollar : fullName.length());
-                String simpleNameInner = fullName.substring(startDot != -1 ? startDot : 0, fullName.length());
+                String simpleName = fullName.substring(startDot, endDollar != -1 ? endDollar : fullName.length());
+                String simpleNameInner = fullName.substring(startDot);
                 criteriaMatches &= fullName.equals(className) || simpleName.equals(className) || simpleNameInner.equals(className);
             }
             if (methodName != null) {
@@ -160,7 +166,7 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
             }
             if (jspFile != null) {
                 ClassAnnotation classAnn = extractBugAnnotation(bugInstance, ClassAnnotation.class);
-                String fullName = classAnn.getClassName().replaceAll("\\.", "/").replaceAll("_005f", "_").replaceAll("_jsp", ".jsp");
+                String fullName = classAnn.getClassName().replace(".", "/").replace("_005f", "_").replace("_jsp", ".jsp");
                 //String simpleName = fullName.substring(fullName.lastIndexOf("/") + 1);
                 criteriaMatches &= fullName.endsWith(jspFile);
             }
@@ -173,6 +179,7 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
                 for (Integer potentialMatch : multipleChoicesLine) {
                     if (srcAnn.getStartLine() - 1 <= potentialMatch && potentialMatch <= srcAnn.getEndLine() + 1) {
                         found = true;
+                        break;
                     }
                 }
                 //if(!found) {
@@ -213,7 +220,7 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
             description.appendText("variableName=").appendValue(variableName).appendText(",");
         }
         if (lineNumber != null) {
-            description.appendText("lineNumber=").appendValue(lineNumber);
+            description.appendText("lineNumber=").appendValue(lineNumber).appendText(",");
         }
         if (confidence != null) {
             description.appendText("confidence=").appendValue(confidence);
@@ -254,7 +261,7 @@ public class BugInstanceMatcher extends BaseMatcher<BugInstance> {
             }
             if (lineNumber != null || !hasCriteria) {
                 SourceLineAnnotation srcAnn = extractBugAnnotation(bugInstance, SourceLineAnnotation.class);
-                description.appendText("lineNumber=").appendValue(srcAnn);
+                description.appendText("lineNumber=").appendValue(srcAnn).appendText(",");
             }
             if (confidence != null || !hasCriteria) {
                 description.appendText("confidence=").appendValue(bugInstance.getPriority());

@@ -5,7 +5,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
 /**
- * @since ?
+ * The Class CountMatcher.
  *
  * @param <T>
  *            matcher item type
@@ -16,6 +16,17 @@ public final class CountMatcher<T> extends TypeSafeMatcher<Iterable<T>> {
     private final int maxCount;
     private final Matcher<T> matcher;
 
+    /**
+     * Creates a matcher for {@link Iterable}s that only matches if at least {@code minCount} and at most
+     * {@code maxCount} items match the specified {@code matcher}.
+     *
+     * @param minCount
+     *            How many times the {@code matcher} must match at least (inclusive).
+     * @param maxCount
+     *            How many times the {@code matcher} must match at most (inclusive).
+     * @param matcher
+     *            A non-{@code null} matcher that must match at least {@code minCount} and at most {@code maxCount} times.
+     */
     public CountMatcher(int minCount, int maxCount, Matcher<T> matcher) {
         this.minCount = minCount;
         this.maxCount = maxCount;

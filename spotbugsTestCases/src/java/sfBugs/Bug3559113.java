@@ -59,7 +59,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 /**
 * This class centralizes the parsing of the URL parameters from the search for the
 * &amp;requiredfields= and the &amp;newrequiredfields= parameters.

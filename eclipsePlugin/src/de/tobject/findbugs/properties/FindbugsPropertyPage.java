@@ -25,8 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
@@ -39,9 +39,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.preference.IPreferencePage;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -160,7 +158,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
         // in our case this is a Java Project (IJavaProject).
         IAdaptable resource = getElement();
         if (resource != null) {
-            project = (IProject) resource.getAdapter(IProject.class);
+            project = resource.getAdapter(IProject.class);
         }
 
         initPreferencesStore(project);
@@ -180,7 +178,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
     }
 
     private void initPreferencesStore(IProject currProject) {
-        workspaceStore = new ScopedPreferenceStore(new InstanceScope(), FindbugsPlugin.PLUGIN_ID);
+        workspaceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, FindbugsPlugin.PLUGIN_ID);
         if (currProject != null) {
             projectStore = new ScopedPreferenceStore(new ProjectScope(currProject), FindbugsPlugin.PLUGIN_ID);
             projectPropsInitiallyEnabled = FindbugsPlugin.isProjectSettingsEnabled(currProject);
@@ -301,12 +299,9 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
 
         String effortLevel = currentUserPreferences.getEffort();
         effortViewer.setSelection(new StructuredSelection(Effort.getEffort(effortLevel)), true);
-        effortViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                Effort placeHolder = (Effort) ((IStructuredSelection) event.getSelection()).getFirstElement();
-                currentUserPreferences.setEffort(placeHolder.getEffortLevel());
-            }
+        effortViewer.addSelectionChangedListener(event -> {
+            Effort placeHolder = (Effort) ((IStructuredSelection) event.getSelection()).getFirstElement();
+            currentUserPreferences.setEffort(placeHolder.getEffortLevel());
         });
         effortLabel.setToolTipText("Set SpotBugs analysis effort (minimal is faster but less precise)");
         effortViewer.getCombo().setToolTipText("Set SpotBugs analysis effort (minimal is faster but less precise)");

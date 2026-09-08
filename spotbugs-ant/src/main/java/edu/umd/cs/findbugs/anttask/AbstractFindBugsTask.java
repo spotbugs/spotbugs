@@ -318,10 +318,13 @@ public abstract class AbstractFindBugsTask extends Task {
         findbugsEngine.setProject(getProject());
         findbugsEngine.setTaskName(getTaskName());
         findbugsEngine.setFork(true);
-        if (jvm.length() > 0) {
+        if (!jvm.isEmpty()) {
             findbugsEngine.setJvm(jvm);
         }
-        findbugsEngine.setTimeout(timeout);
+
+        if (timeout > 0) {
+            findbugsEngine.setTimeout(timeout);
+        }
 
         if (debug) {
             jvmargs = jvmargs + " -Dfindbugs.debug=true";

@@ -92,7 +92,6 @@ import edu.umd.cs.findbugs.ExitCodes;
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  * @author Michael Tamm <a href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
  * @author Scott Wolk
- * @version $Revision: 1.56 $
  *
  * @since Ant 1.5
  *
@@ -711,7 +710,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
      *            name of output file
      */
     public void setOutputFile(String outputFileName) {
-        if (outputFileName != null && outputFileName.length() > 0) {
+        if (outputFileName != null && !outputFileName.isEmpty()) {
             this.outputFileName = outputFileName;
         }
     }

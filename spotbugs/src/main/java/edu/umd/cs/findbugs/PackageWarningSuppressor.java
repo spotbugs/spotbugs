@@ -1,14 +1,25 @@
 package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.annotations.SuppressMatchType;
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
+import edu.umd.cs.findbugs.detect.UselessSuppressionDetector;
 
 public class PackageWarningSuppressor extends WarningSuppressor {
 
+    private static final String BUG_TYPE = "US_USELESS_SUPPRESSION_ON_PACKAGE";
+
     String packageName;
 
-    public PackageWarningSuppressor(String bugPattern, SuppressMatchType matchType, String packageName) {
+    /**
+     * Indicates whether this package was "user generated" as defined in {@link MemberUtils#isUserGenerated(edu.umd.cs.findbugs.ba.XClass)}
+     * When a package is not user generated we are not interested in reporting warnings, in particular we do not want to report US_USELESS_SUPPRESSION_ON_PACKAGE
+     */
+    private final boolean userGeneratedPackage;
+
+    public PackageWarningSuppressor(String bugPattern, SuppressMatchType matchType, String packageName, boolean userGeneratedPackage) {
         super(bugPattern, matchType);
         this.packageName = packageName;
+        this.userGeneratedPackage = userGeneratedPackage;
     }
 
     public String getPackageName() {
@@ -30,5 +41,17 @@ public class PackageWarningSuppressor extends WarningSuppressor {
         String className = primaryClassAnnotation.getClassName();
 
         return className.startsWith(packageName);
+    }
+
+    @Override
+    public BugInstance buildUselessSuppressionBugInstance(UselessSuppressionDetector detector) {
+        return new BugInstance(detector, BUG_TYPE, PRIORITY)
+                .addClass(packageName)
+                .addString(adjustBugPatternForMessage());
+    }
+
+    @Override
+    public boolean isUselessSuppressionReportable() {
+        return userGeneratedPackage;
     }
 }

@@ -26,8 +26,6 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.window.IShellProvider;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchPart;
@@ -83,12 +81,7 @@ public class OpenPropertiesAction implements IObjectActionDelegate {
                 if (element instanceof BugGroup) {
                     final BugGroup group = (BugGroup) element;
                     if (group.getType() == GroupType.Project) {
-                        PropertyDialogAction paction = new PropertyDialogAction(new IShellProvider() {
-                            @Override
-                            public Shell getShell() {
-                                return null;
-                            }
-                        }, new ISelectionProvider() {
+                        PropertyDialogAction paction = new PropertyDialogAction(() -> null, new ISelectionProvider() {
                             @Override
                             public void addSelectionChangedListener(ISelectionChangedListener listener) {
                                 // noop

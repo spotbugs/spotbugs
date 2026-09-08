@@ -234,6 +234,13 @@ public class DefaultNullnessAnnotations {
                 "(Ljava/lang/Object;)Ljava/util/concurrent/CompletableFuture;", true, 0, NullnessAnnotation.NULLABLE);
         database.addMethodParameterAnnotation("java.util.concurrent.CompletableFuture", "completedStage",
                 "(Ljava/lang/Object;)Ljava/util/concurrent/CompletionStage;", true, 0, NullnessAnnotation.NULLABLE);
+        database.addMethodParameterAnnotation("java.util.concurrent.CompletableFuture", "completeOnTimeout",
+                "(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Ljava/util/concurrent/CompletableFuture;", false, 0,
+                NullnessAnnotation.NULLABLE);
+        database.addMethodParameterAnnotation("java.util.concurrent.CompletableFuture", "getNow",
+                "(Ljava/lang/Object;)Ljava/lang/Object;", false, 0, NullnessAnnotation.NULLABLE);
+        database.addMethodParameterAnnotation("java.util.concurrent.CompletableFuture", "obtrudeValue",
+                "(Ljava/lang/Object;)V", false, 0, NullnessAnnotation.NULLABLE);
 
         database.addMethodParameterAnnotation("java.util.concurrent.ExecutionException", "<init>", "(Ljava/lang/String;)V",
                 false, 0, NullnessAnnotation.CHECK_FOR_NULL);

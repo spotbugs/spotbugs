@@ -23,8 +23,6 @@ import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,6 +31,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -106,7 +106,8 @@ public class SortedBugCollection implements BugCollection {
 
     private boolean applySuppressions;
 
-    long timeStartedLoading, timeFinishedLoading;
+    long timeStartedLoading;
+    long timeFinishedLoading;
 
     String dataSource = "";
 
@@ -333,10 +334,7 @@ public class SortedBugCollection implements BugCollection {
             checkInputStream(in);
             Reader reader = Util.getReader(in);
             doReadXML(reader, base);
-        } catch (RuntimeException e) {
-            in.close();
-            throw e;
-        } catch (IOException e) {
+        } catch (RuntimeException | IOException e) {
             in.close();
             throw e;
         }
@@ -404,7 +402,7 @@ public class SortedBugCollection implements BugCollection {
      */
     @Override
     public void writeXML(String fileName) throws IOException {
-        OutputStream out = new FileOutputStream(fileName);
+        OutputStream out = Files.newOutputStream(Path.of(fileName));
         if (fileName.endsWith(".gz")) {
             out = new GZIPOutputStream(out);
         }
@@ -418,7 +416,7 @@ public class SortedBugCollection implements BugCollection {
      *            the file to write to
      */
     public void writeXML(File file) throws IOException {
-        OutputStream out = new FileOutputStream(file);
+        OutputStream out = Files.newOutputStream(file.toPath());
         if (file.getName().endsWith(".gz")) {
             out = new GZIPOutputStream(out);
         }
@@ -533,7 +531,7 @@ public class SortedBugCollection implements BugCollection {
                     }
 
                 }
-                if (commonBase != null && commonBase.length() > 0) {
+                if (commonBase != null && !commonBase.isEmpty()) {
                     if (commonBase.indexOf("/./") > 0) {
                         commonBase = commonBase.substring(0, commonBase.indexOf("/."));
                     }
@@ -737,7 +735,7 @@ public class SortedBugCollection implements BugCollection {
                 xmlOutput.writeText(error.getExceptionMessage());
                 xmlOutput.closeTag(ERROR_EXCEPTION_ELEMENT_NAME);
 
-                String stackTrace[] = error.getStackTrace();
+                String[] stackTrace = error.getStackTrace();
                 if (stackTrace != null) {
                     for (String aStackTrace : stackTrace) {
                         xmlOutput.openTag(ERROR_STACK_TRACE_ELEMENT_NAME);
@@ -955,10 +953,11 @@ public class SortedBugCollection implements BugCollection {
         }
 
         invalidateHashes();
-        if (!bugInstance.isDead()) {
+        boolean added = bugSet.add(bugInstance);
+        if (added && !bugInstance.isDead()) {
             projectStats.addBug(bugInstance);
         }
-        return bugSet.add(bugInstance);
+        return added;
     }
 
     private void invalidateHashes() {
@@ -1010,7 +1009,7 @@ public class SortedBugCollection implements BugCollection {
 
     @Override
     public void addMissingClass(String className) {
-        if (className == null || className.length() == 0) {
+        if (className == null || className.isEmpty()) {
             return;
         }
         if (className.startsWith("[")) {
@@ -1064,17 +1063,6 @@ public class SortedBugCollection implements BugCollection {
     @Override
     public ProjectStats getProjectStats() {
         return projectStats;
-    }
-
-    @Override
-    @Deprecated
-    public BugInstance lookupFromUniqueId(String uniqueId) {
-        for (BugInstance bug : bugSet) {
-            if (bug.getInstanceHash().equals(uniqueId)) {
-                return bug;
-            }
-        }
-        return null;
     }
 
     /** Returns whether this bug collection contains results from multiple analysis runs,
@@ -1255,7 +1243,7 @@ public class SortedBugCollection implements BugCollection {
         if (length > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("File " + f + " is too big at " + length + " bytes");
         }
-        InputStream in = new FileInputStream(f);
+        InputStream in = Files.newInputStream(f.toPath());
         return wrapGzip(progressMonitoredInputStream(in, (int) length, msg), f);
     }
 

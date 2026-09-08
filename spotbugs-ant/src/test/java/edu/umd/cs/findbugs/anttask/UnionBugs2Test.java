@@ -56,8 +56,6 @@ class UnionBugs2Test {
             while ((next = reader.readLine()) != null) {
                 compiledXmlFiles.add(next);
             }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

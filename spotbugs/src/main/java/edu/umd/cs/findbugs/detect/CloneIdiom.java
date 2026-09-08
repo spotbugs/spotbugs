@@ -48,7 +48,9 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 
     private final ClassDescriptor cloneDescriptor = DescriptorFactory.createClassDescriptor(java.lang.Cloneable.class);
 
-    boolean isCloneable, hasCloneMethod;
+    boolean isCloneable;
+
+    boolean hasCloneMethod;
 
     boolean cloneIsDeprecated;
 
@@ -148,17 +150,12 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
         if (cloneOnlyThrowsException) {
             return;
         }
-        if (implementsCloneableDirectly && !hasCloneMethod) {
-            if (!referencesCloneMethod) {
-                bugReporter.reportBug(new BugInstance(this, "CN_IDIOM", NORMAL_PRIORITY).addClass(this));
-            }
+        if (implementsCloneableDirectly && !hasCloneMethod && !referencesCloneMethod) {
+            bugReporter.reportBug(new BugInstance(this, "CN_IDIOM", NORMAL_PRIORITY).addClass(this));
         }
 
         if (hasCloneMethod && isCloneable && !invokesSuperClone && !isFinal && obj.isPublic()) {
-            int priority = LOW_PRIORITY;
-            if (obj.isPublic() || obj.isProtected()) {
-                priority = NORMAL_PRIORITY;
-            }
+            int priority = NORMAL_PRIORITY;
             try {
                 Subtypes2 subtypes2 = AnalysisContext.currentAnalysisContext().getSubtypes2();
                 Set<ClassDescriptor> directSubtypes = subtypes2.getDirectSubtypes(getClassDescriptor());

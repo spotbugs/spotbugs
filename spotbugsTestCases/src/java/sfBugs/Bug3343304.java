@@ -10,8 +10,8 @@ public final class Bug3343304 {
         new FindBugs().getResult();
     }
 
-    static private abstract class Abstract {
-        abstract protected void parseLine();
+    private static abstract class Abstract {
+        protected abstract void parseLine();
 
         public void getResult() {
             parseLine();
@@ -21,7 +21,7 @@ public final class Bug3343304 {
         }
     }
 
-    static private final class FindBugs extends Abstract {
+    private static final class FindBugs extends Abstract {
         private @CheckForNull
         Map<Integer, String> metrics = null;
 

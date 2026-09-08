@@ -8,6 +8,12 @@ import java.io.IOException;
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/2710">GitHub issue</a>
  */
 public class ConstructorThrowNegativeTest18 {
+    private static boolean verify() throws IOException {
+        // Returns true if data entered is valid, else throws an Exception
+        // Assume that the attacker just enters invalid data, so this method always throws the exception
+        throw new IOException("Invalid data!");
+    }
+
     public ConstructorThrowNegativeTest18() throws IOException {
         this(verify());
     }
@@ -15,11 +21,5 @@ public class ConstructorThrowNegativeTest18 {
     private ConstructorThrowNegativeTest18(boolean secure) {
         // secure is always true
         // Constructor without any checks
-    }
-
-    private static boolean verify() throws IOException {
-        // Returns true if data entered is valid, else throws an Exception
-        // Assume that the attacker just enters invalid data, so this method always throws the exception
-        throw new IOException("Invalid data!");
     }
 }

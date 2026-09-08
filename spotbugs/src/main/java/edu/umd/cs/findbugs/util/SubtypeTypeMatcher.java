@@ -56,7 +56,7 @@ public class SubtypeTypeMatcher implements TypeMatcher {
      *            whether or not candidate Types are subtypes of the class
      */
     public SubtypeTypeMatcher(ClassDescriptor classDescriptor) {
-        this(BCELUtil.getObjectTypeInstance(classDescriptor.toDottedClassName()));
+        this(BCELUtil.getObjectTypeInstance(classDescriptor.getDottedClassName()));
     }
 
     @Override

@@ -1,8 +1,6 @@
 package edu.umd.cs.findbugs.ba;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnJre;
-import org.junit.jupiter.api.condition.JRE;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 
@@ -18,7 +16,6 @@ class Issue1338Test extends AbstractIntegrationTest {
      * Test that calling a method call when initializing a try-with-resource variable doesn't result in redundant nullcheck of nonnull value.
      */
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testMethodCallInTryWithResource() {
         performAnalysis(CLASS_LIST);
         assertNoBugType("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE");

@@ -18,10 +18,10 @@
 package edu.umd.cs.findbugs.workflow;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.zip.DeflaterOutputStream;
@@ -90,7 +90,7 @@ public class CopyBuggySource {
     File src;
     SrcKind kind;
     ZipOutputStream zOut;
-    byte buf[] = new byte[4096];
+    byte[] buf = new byte[4096];
     Project project;
     SourceFinder sourceFinder;
     HashSet<String> copied = new HashSet<>();
@@ -112,10 +112,10 @@ public class CopyBuggySource {
         case DIR:
             break;
         case ZIP:
-            zOut = new ZipOutputStream(new FileOutputStream(src));
+            zOut = new ZipOutputStream(Files.newOutputStream(src.toPath()));
             break;
         case Z0P_GZ:
-            zOut = new ZipOutputStream(new DeflaterOutputStream(new FileOutputStream(src)));
+            zOut = new ZipOutputStream(new DeflaterOutputStream(Files.newOutputStream(src.toPath())));
             zOut.setLevel(0);
             break;
         }
@@ -224,7 +224,7 @@ public class CopyBuggySource {
                 return null;
             }
 
-            return new FileOutputStream(dstFile);
+            return Files.newOutputStream(dstFile.toPath());
         } else {
             ZipEntry e = new ZipEntry(fullName);
             e.setTime(lastModifiedTime);

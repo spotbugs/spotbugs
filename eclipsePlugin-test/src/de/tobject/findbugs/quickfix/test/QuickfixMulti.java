@@ -33,7 +33,6 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.views.markers.WorkbenchMarkerResolution;
 import org.junit.jupiter.api.BeforeAll;
@@ -118,7 +117,7 @@ class QuickfixMulti extends AbstractQuickfixTest {
         checkJavaFiles(project.members());
     }
 
-    private void checkJavaFiles(IResource[] iResources) throws CoreException, IOException, JavaModelException {
+    private void checkJavaFiles(IResource[] iResources) throws CoreException, IOException {
         for (IResource resource : iResources) {
             if (resource instanceof IFile) {
                 String fileName = resource.getName();

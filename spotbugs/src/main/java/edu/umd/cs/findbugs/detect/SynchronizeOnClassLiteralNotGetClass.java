@@ -59,7 +59,9 @@ public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
      */
     int state = 0;
 
-    boolean seenPutStatic, seenGetStatic;
+    boolean seenPutStatic;
+
+    boolean seenGetStatic;
 
     BugInstance pendingBug;
 

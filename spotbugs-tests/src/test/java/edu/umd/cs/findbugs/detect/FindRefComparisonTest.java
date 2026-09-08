@@ -1,20 +1,26 @@
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.config.UserPreferences;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.DetectorFactory;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.Confidence;
 
+import java.util.Map;
+
 class FindRefComparisonTest extends AbstractIntegrationTest {
+
+    @BeforeEach
+    void beforeEach() {
+        userPreferences = UserPreferences.createDefaultUserPreferences();
+    }
 
     @AfterAll
     static void tearDown() {
         SystemProperties.removeProperty("findbugs.refcomp.reportAll");
-        setPriorityAdjustment(0); // reset priority
     }
 
     private void performAnalysisForRefComp() {
@@ -26,7 +32,6 @@ class FindRefComparisonTest extends AbstractIntegrationTest {
     void testComparisonsNotEnabled() {
         // When there is no priority adjustment, and we enable ref comparison for
         // all, we only get an integer ref comparison bug.
-        setPriorityAdjustment(0); // reset priority
         SystemProperties.setProperty("findbugs.refcomp.reportAll", "true"); // enable ref comparison
 
         performAnalysisForRefComp();
@@ -37,7 +42,7 @@ class FindRefComparisonTest extends AbstractIntegrationTest {
     @Test
     void testComparisonsWhenPropertyUnset() {
         // When raising the priority, we get all ref comparison bugs.
-        setPriorityAdjustment(-1); // raise priority
+        setPriorityAdjustment("-1"); // raise priority
 
         SystemProperties.removeProperty("findbugs.refcomp.reportAll");
         performAnalysisForRefComp();
@@ -49,17 +54,18 @@ class FindRefComparisonTest extends AbstractIntegrationTest {
 
     @Test
     void testComparisonsWhenReportAllIsNotEnabled() {
-        setPriorityAdjustment(-1); // raise priority
+        setPriorityAdjustment("-1"); // raise priority
         SystemProperties.setProperty("findbugs.refcomp.reportAll", "false");
 
-        performAnalysis("RefComparisons.class");
+        performAnalysis("RefComparisons.class", "RefComparisons$MyEnum.class", "RefComparisons$MyClass2.class",
+                "RefComparisons$MyClass1.class", "RefComparisons$MyClass3.class");
         assertBugTypeCount("RC_REF_COMPARISON", 1);
         assertBugInMethodAtLineWithConfidence("RC_REF_COMPARISON", "RefComparisons", "integerBadComparison", 5, Confidence.HIGH);
     }
 
     @Test
     void testComparisonsWhenReportAllIsEnabled() {
-        setPriorityAdjustment(-1); // raise priority
+        setPriorityAdjustment("-1"); // raise priority
         SystemProperties.setProperty("findbugs.refcomp.reportAll", "true");
 
         performAnalysisForRefComp();
@@ -69,9 +75,8 @@ class FindRefComparisonTest extends AbstractIntegrationTest {
         assertBugInMethodAtLineWithConfidence("RC_REF_COMPARISON", "RefComparisons", "myClass2BadComparison", 21, Confidence.LOW);
     }
 
-    private static void setPriorityAdjustment(int adjustment) {
-        DetectorFactory detFactory = DetectorFactoryCollection.instance().getFactory(FindRefComparison.class.getSimpleName());
-        detFactory.setPriorityAdjustment(adjustment);
+    private void setPriorityAdjustment(String adjustment) {
+        userPreferences.setAdjustPriority(Map.of(FindRefComparison.class.getSimpleName(), adjustment));
     }
 
 }

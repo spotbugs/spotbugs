@@ -79,9 +79,7 @@ public class CheckCalls implements Detector, NonReportingDetector {
             try {
                 System.out.println("Analyzing " + SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method));
                 analyzeMethod(classContext, method);
-            } catch (CFGBuilderException e) {
-                bugReporter.logError("Error", e);
-            } catch (DataflowAnalysisException e) {
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
                 bugReporter.logError("Error", e);
             } catch (ClassNotFoundException e) {
                 bugReporter.reportMissingClass(e);

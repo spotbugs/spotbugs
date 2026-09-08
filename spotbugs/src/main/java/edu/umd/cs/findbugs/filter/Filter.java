@@ -207,8 +207,8 @@ public class Filter extends OrMatcher {
      */
     private void parse(String fileName) throws IOException, SAXException, ParserConfigurationException {
         Path path = FileSystems.getDefault().getPath(fileName);
-        InputStream fileInputStream = Files.newInputStream(path);
-        parse(fileName, fileInputStream);
+        InputStream inputStream = Files.newInputStream(path);
+        parse(fileName, inputStream);
     }
 
     /**

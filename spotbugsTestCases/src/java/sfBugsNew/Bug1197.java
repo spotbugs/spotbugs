@@ -3,6 +3,8 @@ package sfBugsNew;
 import edu.umd.cs.findbugs.annotations.DesireWarning;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
+import com.google.common.base.Objects;
+
 public class Bug1197 {
 
     @ExpectWarning("EC_UNRELATED_TYPES")
@@ -23,7 +25,7 @@ public class Bug1197 {
     public void test3() {
         Integer x = 5;
         String y = "5";
-        System.out.println(com.google.common.base.Objects.equal(x, y));
+        System.out.println(Objects.equal(x, y));
     }
 
     @ExpectWarning("EC_UNRELATED_TYPES")

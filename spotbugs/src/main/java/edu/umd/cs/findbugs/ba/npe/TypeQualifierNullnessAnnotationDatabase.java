@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba.npe;
 import javax.annotation.CheckForNull;
 import javax.annotation.meta.When;
 
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Type;
 
@@ -185,11 +186,9 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         if (tqa == null && param == 0) {
             String name = m.getName();
             String signature = m.getSignature();
-            if ("main".equals(name) && "([Ljava/lang/String;)V".equals(signature) && m.isStatic() && m.isPublic()) {
-                return true;
-            } else if (assertsFirstParameterIsNonnull(m)) {
-                return true;
-            } else if ("compareTo".equals(name) && ")Z".equals(signature.substring(signature.indexOf(';') + 1)) && !m.isStatic()) {
+            if (MemberUtils.isMainMethod(m)
+                    || assertsFirstParameterIsNonnull(m)
+                    || ("compareTo".equals(name) && ")Z".equals(signature.substring(signature.indexOf(';') + 1)) && !m.isStatic())) {
                 return true;
             }
         }
@@ -432,7 +431,6 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         case ALWAYS:
             return NullnessAnnotation.NONNULL;
         case MAYBE:
-            return NullnessAnnotation.CHECK_FOR_NULL;
         case NEVER:
             return NullnessAnnotation.CHECK_FOR_NULL;
         case UNKNOWN:

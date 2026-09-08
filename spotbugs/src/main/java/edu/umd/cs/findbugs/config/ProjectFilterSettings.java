@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.config;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -62,13 +61,11 @@ public class ProjectFilterSettings implements Cloneable {
 
     /** Map of priority level names to their numeric values. */
     @StaticConstant
-    private static Map<String, Integer> priorityNameToValueMap = new HashMap<>();
-    static {
-        priorityNameToValueMap.put(HIGH_PRIORITY, (Priorities.HIGH_PRIORITY));
-        priorityNameToValueMap.put(MEDIUM_PRIORITY, (Priorities.NORMAL_PRIORITY));
-        priorityNameToValueMap.put(LOW_PRIORITY, (Priorities.LOW_PRIORITY));
-        priorityNameToValueMap.put(EXPERIMENTAL_PRIORITY, (Priorities.EXP_PRIORITY));
-    }
+    private static final Map<String, Integer> priorityNameToValueMap = Map.of(
+            HIGH_PRIORITY, Priorities.HIGH_PRIORITY,
+            MEDIUM_PRIORITY, Priorities.NORMAL_PRIORITY,
+            LOW_PRIORITY, Priorities.LOW_PRIORITY,
+            EXPERIMENTAL_PRIORITY, Priorities.EXP_PRIORITY);
 
     /**
      * The character used for delimiting whole fields in filter settings encoded
@@ -151,7 +148,7 @@ public class ProjectFilterSettings implements Cloneable {
     public static ProjectFilterSettings fromEncodedString(String s) {
         ProjectFilterSettings result = new ProjectFilterSettings();
 
-        if (s.length() > 0) {
+        if (!s.isEmpty()) {
             int bar = s.indexOf(FIELD_DELIMITER);
             String minPriority;
             if (bar >= 0) {
@@ -167,7 +164,7 @@ public class ProjectFilterSettings implements Cloneable {
             result.setMinPriority(minPriority);
         }
 
-        if (s.length() > 0) {
+        if (!s.isEmpty()) {
             int bar = s.indexOf(FIELD_DELIMITER);
             String categories;
             if (bar >= 0) {
@@ -187,7 +184,7 @@ public class ProjectFilterSettings implements Cloneable {
             }
         }
 
-        if (s.length() > 0) {
+        if (!s.isEmpty()) {
             int bar = s.indexOf(FIELD_DELIMITER);
             String displayFalseWarnings;
             if (bar >= 0) {
@@ -197,10 +194,10 @@ public class ProjectFilterSettings implements Cloneable {
                 displayFalseWarnings = s;
                 s = "";
             }
-            result.setDisplayFalseWarnings(Boolean.valueOf(displayFalseWarnings).booleanValue());
+            result.setDisplayFalseWarnings(Boolean.parseBoolean(displayFalseWarnings));
         }
 
-        if (s.length() > 0) {
+        if (!s.isEmpty()) {
             int bar = s.indexOf(FIELD_DELIMITER);
             String minRankStr;
             if (bar >= 0) {
@@ -235,7 +232,7 @@ public class ProjectFilterSettings implements Cloneable {
      */
     public static void hiddenFromEncodedString(ProjectFilterSettings result, String s) {
 
-        if (s.length() > 0) {
+        if (!s.isEmpty()) {
             int bar = s.indexOf(FIELD_DELIMITER);
             String categories;
             if (bar >= 0) {
@@ -282,7 +279,7 @@ public class ProjectFilterSettings implements Cloneable {
         }
 
         if (!displayFalseWarnings) {
-            boolean isFalseWarning = !Boolean.valueOf(bugInstance.getProperty(BugProperty.IS_BUG, "true")).booleanValue();
+            boolean isFalseWarning = !Boolean.parseBoolean(bugInstance.getProperty(BugProperty.IS_BUG, "true"));
             if (isFalseWarning) {
                 return false;
             }

@@ -50,7 +50,7 @@ public class SplitCamelCaseIdentifier {
         String s = ident;
         Set<String> result = new HashSet<>();
 
-        while (s.length() > 0) {
+        while (!s.isEmpty()) {
             StringBuilder buf = new StringBuilder();
 
             char first = s.charAt(0);

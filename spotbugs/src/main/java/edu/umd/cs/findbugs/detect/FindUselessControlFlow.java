@@ -19,9 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.BitSet;
-
-import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
@@ -52,26 +49,6 @@ import edu.umd.cs.findbugs.StatelessDetector;
  * @author David Hovemeyer
  */
 public class FindUselessControlFlow extends BytecodeScanningDetector implements StatelessDetector {
-    private static final BitSet ifInstructionSet = new BitSet();
-
-    static {
-        ifInstructionSet.set(Const.IF_ACMPEQ);
-        ifInstructionSet.set(Const.IF_ACMPNE);
-        ifInstructionSet.set(Const.IF_ICMPEQ);
-        ifInstructionSet.set(Const.IF_ICMPNE);
-        ifInstructionSet.set(Const.IF_ICMPLT);
-        ifInstructionSet.set(Const.IF_ICMPLE);
-        ifInstructionSet.set(Const.IF_ICMPGT);
-        ifInstructionSet.set(Const.IF_ICMPGE);
-        ifInstructionSet.set(Const.IFEQ);
-        ifInstructionSet.set(Const.IFNE);
-        ifInstructionSet.set(Const.IFLT);
-        ifInstructionSet.set(Const.IFLE);
-        ifInstructionSet.set(Const.IFGT);
-        ifInstructionSet.set(Const.IFGE);
-        ifInstructionSet.set(Const.IFNULL);
-        ifInstructionSet.set(Const.IFNONNULL);
-    }
 
     private final BugAccumulator bugAccumulator;
 
@@ -87,29 +64,27 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
 
     @Override
     public void sawOpcode(int seen) {
-        if (ifInstructionSet.get(seen)) {
-            if (getBranchTarget() == getBranchFallThrough()) {
-                int priority = NORMAL_PRIORITY;
+        if (isIf(seen) && getBranchTarget() == getBranchFallThrough()) {
+            int priority = NORMAL_PRIORITY;
 
-                LineNumberTable lineNumbers = getCode().getLineNumberTable();
-                if (lineNumbers != null) {
-                    int branchLineNumber = lineNumbers.getSourceLine(getPC());
-                    int targetLineNumber = lineNumbers.getSourceLine(getBranchFallThrough());
-                    int nextLine = getNextSourceLine(lineNumbers, branchLineNumber);
+            LineNumberTable lineNumbers = getCode().getLineNumberTable();
+            if (lineNumbers != null) {
+                int branchLineNumber = lineNumbers.getSourceLine(getPC());
+                int targetLineNumber = lineNumbers.getSourceLine(getBranchFallThrough());
+                int nextLine = getNextSourceLine(lineNumbers, branchLineNumber);
 
-                    if (branchLineNumber + 1 == targetLineNumber || branchLineNumber == targetLineNumber
-                            && nextLine == branchLineNumber + 1) {
-                        priority = HIGH_PRIORITY;
-                    } else if (branchLineNumber + 2 < Math.max(targetLineNumber, nextLine)) {
-                        priority = LOW_PRIORITY;
-                    }
-                } else {
+                if (branchLineNumber + 1 == targetLineNumber || branchLineNumber == targetLineNumber
+                        && nextLine == branchLineNumber + 1) {
+                    priority = HIGH_PRIORITY;
+                } else if (branchLineNumber + 2 < Math.max(targetLineNumber, nextLine)) {
                     priority = LOW_PRIORITY;
                 }
-                bugAccumulator.accumulateBug(new BugInstance(this,
-                        priority == HIGH_PRIORITY ? "UCF_USELESS_CONTROL_FLOW_NEXT_LINE" : "UCF_USELESS_CONTROL_FLOW", priority)
-                        .addClassAndMethod(this), this);
+            } else {
+                priority = LOW_PRIORITY;
             }
+            bugAccumulator.accumulateBug(new BugInstance(this,
+                    priority == HIGH_PRIORITY ? "UCF_USELESS_CONTROL_FLOW_NEXT_LINE" : "UCF_USELESS_CONTROL_FLOW", priority)
+                    .addClassAndMethod(this), this);
         }
     }
 

@@ -47,6 +47,8 @@ public abstract class TextUIBugReporter extends AbstractBugReporter implements C
 
     private boolean applySuppressions = false;
 
+    private String outputTarget;
+
     static final String OTHER_CATEGORY_ABBREV = "X";
 
     protected PrintWriter outputStream = UTF8.printWriter(System.out, true);
@@ -189,7 +191,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter implements C
      *            one line of the error report
      */
     protected void emitLine(String line) {
-        line = line.replaceAll("\t", "  ");
+        line = line.replace("\t", "  ");
         System.err.println(line);
     }
 
@@ -239,6 +241,19 @@ public abstract class TextUIBugReporter extends AbstractBugReporter implements C
             }
         }
     }
+
+    public String getOutputTarget() {
+        return this.outputTarget;
+    }
+
+    public void setOutputTarget(String key) {
+        this.outputTarget = key;
+    }
+
+    public boolean isDuplicateOf(TextUIBugReporter other) {
+        return outputTarget != null && outputTarget.equals(other.outputTarget);
+    }
+
 
     public boolean isApplySuppressions() {
         return applySuppressions;

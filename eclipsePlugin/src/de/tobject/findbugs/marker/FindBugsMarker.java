@@ -20,7 +20,7 @@
 
 package de.tobject.findbugs.marker;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.eclipse.jdt.core.IJavaElement;
 

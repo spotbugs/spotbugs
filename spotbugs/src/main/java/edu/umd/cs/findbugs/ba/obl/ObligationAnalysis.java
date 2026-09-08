@@ -401,10 +401,9 @@ public class ObligationAnalysis extends ForwardDataflowAnalysis<StateSet> {
             for (Iterator<State> i = inputFact.stateIterator(); i.hasNext();) {
                 State state = i.next();
                 Path path = state.getPath();
-                if (path.getLength() > 0) {
-                    if (path.getBlockIdAt(path.getLength() - 1) != edge.getSource().getLabel()) {
-                        throw new IllegalStateException("on edge " + edge + ": state " + state + " missing source label in path");
-                    }
+                if (path.getLength() > 0
+                        && path.getBlockIdAt(path.getLength() - 1) != edge.getSource().getLabel()) {
+                    throw new IllegalStateException("on edge " + edge + ": state " + state + " missing source label in path");
                 }
             }
         }

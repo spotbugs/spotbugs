@@ -20,10 +20,9 @@
 package edu.umd.cs.findbugs.anttask;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -146,11 +145,7 @@ public class UnionBugs extends Task {
      * @throws IOException
      */
     private static void copyFile(File in, File out) throws IOException {
-        try (FileInputStream inStream = new FileInputStream(in);
-                FileOutputStream outStream = new FileOutputStream(out);) {
-            FileChannel inChannel = inStream.getChannel();
-            inChannel.transferTo(0, inChannel.size(), outStream.getChannel());
-        }
+        Files.copy(in.toPath(), out.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
 }

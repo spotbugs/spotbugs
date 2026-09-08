@@ -30,7 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -209,24 +209,24 @@ public final class MarkerUtil {
 
         int startLine = DONT_KNOW_LINE;
 
-        // only update if we don't already tried it
-        if (primaryLine != DONT_KNOW_LINE) {
-            // XXX "first line of a file" is too simplistic. What if we have inner types?
-            if (primaryLine <= 1 && type instanceof IType) {
-                IType iType = (IType) type;
-                try {
-                    startLine = getLineStart(iType);
-                    if (startLine > 0) {
-                        if (Reporter.DEBUG) {
-                            System.out.println("4. Fixed start line to: " + startLine + " on " + type.getElementName());
-                        }
+        // only update if we didn't already try it
+        if (primaryLine != DONT_KNOW_LINE
+                // XXX "first line of a file" is too simplistic. What if we have inner types?
+                && primaryLine <= 1 && type instanceof IType) {
+            IType iType = (IType) type;
+            try {
+                startLine = getLineStart(iType);
+                if (startLine > 0) {
+                    if (Reporter.DEBUG) {
+                        System.out.println("4. Fixed start line to: " + startLine + " on " + type.getElementName());
                     }
-                } catch (JavaModelException e1) {
-                    FindbugsPlugin.getDefault().logException(e1, "Could not find source line for Java type " + type
-                            + "for SpotBugs warning: " + bug);
                 }
+            } catch (JavaModelException e1) {
+                FindbugsPlugin.getDefault().logException(e1, "Could not find source line for Java type " + type
+                        + "for SpotBugs warning: " + bug);
             }
         }
+
 
         if (primaryLine <= 0 && startLine <= 0) {
             // We have to provide line number, otherwise editor wouldn't show it
@@ -287,7 +287,7 @@ public final class MarkerUtil {
         Matcher m = fullName.matcher(qualifiedClassName);
         IType type;
         String innerName = null;
-        if (m.matches() && m.group(2).length() > 0) {
+        if (m.matches() && !m.group(2).isEmpty()) {
 
             String outerQualifiedClassName = m.group(1).replace('$', '.');
             innerName = m.group(2).substring(1);
@@ -305,16 +305,11 @@ public final class MarkerUtil {
             // second argument is required to find also secondary types
             type = project.findType(qualifiedClassName.replace('$', '.'), (IProgressMonitor) null);
 
-            // for inner classes, some detectors does not properly report source
-            // lines:
-            // instead of reporting the first line of inner class, they report
-            // first line of parent class
-            // in this case we will try to fix this here and point to the right
-            // start line
-            if (type != null && type.isMember()) {
-                if (!hasLineInfo(primarySourceLineAnnotation)) {
-                    completeInnerClassInfo(qualifiedClassName, type.getElementName(), type, bug);
-                }
+            // for inner classes, some detectors does not properly report source lines:
+            // instead of reporting the first line of inner class, they report first line of parent class
+            // in this case we will try to fix this here and point to the right start line
+            if (type != null && type.isMember() && !hasLineInfo(primarySourceLineAnnotation)) {
+                completeInnerClassInfo(qualifiedClassName, type.getElementName(), type, bug);
             }
         }
 
@@ -396,7 +391,7 @@ public final class MarkerUtil {
         int lineNbr = findChildSourceLine(type, innerName, bug);
         if (lineNbr > 0) {
             String sourceFileStr = getSourceFileHint(type, qualifiedClassName);
-            if (sourceFileStr != null && sourceFileStr.length() > 0) {
+            if (sourceFileStr != null && !sourceFileStr.isEmpty()) {
                 bug.addSourceLine(new SourceLineAnnotation(qualifiedClassName, sourceFileStr, lineNbr, lineNbr, 0, 0));
                 if (Reporter.DEBUG) {
                     System.out.println("1. Fixed start line to: " + lineNbr + " on " + qualifiedClassName + "$" + innerName);
@@ -503,10 +498,8 @@ public final class MarkerUtil {
 
     private static int findInnerClassSourceLine(IJavaElement type, String name) throws JavaModelException {
         String elemName = type.getElementName();
-        if (name.equals(elemName)) {
-            if (type instanceof IType) {
-                return getLineStart((IType) type);
-            }
+        if (name.equals(elemName) && (type instanceof IType)) {
+            return getLineStart((IType) type);
         }
         if (type instanceof IParent) {
             IJavaElement[] children = ((IParent) type).getChildren();
@@ -679,12 +672,8 @@ public final class MarkerUtil {
                 }
                 String stringId = (String) elementId;
                 if (!recursive) {
-                    if (stringId.equals(id)) {
-                        // exact match
-                        markers.add(marker);
-                    } else if (isDirectChild(id, stringId)) {
-                        // direct child: class in the package, but not in the
-                        // sub-package
+                    if (stringId.equals(id) || isDirectChild(id, stringId)) {
+                        // exact match or direct child: class in the package, but not in the sub-package
                         markers.add(marker);
                     }
                 } else if (stringId.startsWith(id)) {
@@ -695,7 +684,6 @@ public final class MarkerUtil {
                 if (errorCode != IResourceStatus.MARKER_NOT_FOUND && errorCode != IResourceStatus.RESOURCE_NOT_FOUND) {
                     FindbugsPlugin.getDefault().logException(e, "Marker does not contain valid java element id");
                 }
-                continue;
             }
         }
         return markers;
@@ -875,9 +863,9 @@ public final class MarkerUtil {
             markers.addAll(new WorkItem((IJavaElement) obj).getMarkers(true));
         } else if (obj instanceof IAdaptable) {
             IAdaptable adapter = (IAdaptable) obj;
-            IMarker marker = (IMarker) adapter.getAdapter(IMarker.class);
+            IMarker marker = adapter.getAdapter(IMarker.class);
             if (marker == null) {
-                IResource resource = (IResource) adapter.getAdapter(IResource.class);
+                IResource resource = adapter.getAdapter(IResource.class);
                 if (resource == null) {
                     return markers;
                 }
@@ -906,7 +894,7 @@ public final class MarkerUtil {
         if (resource != null) {
             allMarkers = getMarkers(resource, IResource.DEPTH_ZERO);
         } else {
-            IClassFile classFile = (IClassFile) editor.getEditorInput().getAdapter(IClassFile.class);
+            IClassFile classFile = editor.getEditorInput().getAdapter(IClassFile.class);
             if (!(classFile instanceof IOrdinaryClassFile)) {
                 return null;
             }
@@ -964,7 +952,7 @@ public final class MarkerUtil {
             return null;
         } else if (next instanceof IAdaptable) {
             IAdaptable adapter = (IAdaptable) next;
-            IMarker marker = (IMarker) adapter.getAdapter(IMarker.class);
+            IMarker marker = adapter.getAdapter(IMarker.class);
             if (!isFindBugsMarker(marker)) {
                 return null;
             }
@@ -1016,11 +1004,9 @@ public final class MarkerUtil {
      */
     @Nonnull
     public static IMarker[] getMarkers(IResource fileOrFolder, int depth) {
-        if (fileOrFolder.getType() == IResource.PROJECT) {
-            if (!fileOrFolder.isAccessible()) {
-                // user just closed the project decorator is working on, avoid exception here
-                return EMPTY;
-            }
+        if (fileOrFolder.getType() == IResource.PROJECT && !fileOrFolder.isAccessible()) {
+            // user just closed the project decorator is working on, avoid exception here
+            return EMPTY;
         }
         try {
             return fileOrFolder.findMarkers(FindBugsMarker.NAME, true, depth);

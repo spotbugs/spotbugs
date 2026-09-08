@@ -19,7 +19,7 @@
 
 package de.tobject.findbugs.actions;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.jobs.Job;
@@ -59,7 +59,7 @@ public class ClearMarkersEditorAction implements IEditorActionDelegate {
     public final void run(final IAction action) {
         if (currentEditor != null) {
             IFile file = ((FileEditorInput) (currentEditor.getEditorInput())).getFile();
-            Job job = new ClearMarkersJob(file, Arrays.asList(new WorkItem[] { new WorkItem(file) }));
+            Job job = new ClearMarkersJob(file, List.of(new WorkItem(file)));
             job.setUser(true);
             job.setPriority(Job.INTERACTIVE);
             IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) currentEditor.getEditorSite().getService(

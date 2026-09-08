@@ -20,10 +20,11 @@
 package edu.umd.cs.findbugs;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +39,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.swing.JOptionPane;
 
 import edu.umd.cs.findbugs.util.ClassPathUtil;
@@ -54,8 +55,12 @@ import edu.umd.cs.findbugs.util.ClassPathUtil;
 public class DetectorFactoryCollection {
 
     private static final Logger LOGGER = Logger.getLogger(DetectorFactoryCollection.class.getName());
+
+    private static final Pattern SPOTBUGS_JAR_PATTERN = Pattern.compile("spotbugs\\.jar$");
+
+    private static final Pattern EDU_UMD_CLASSFILE_PATTERN = Pattern.compile("(.*)/.*?/edu/umd.*");
+
     private static final boolean DEBUG_JAWS = SystemProperties.getBoolean("findbugs.jaws.debug");
-    //    private static final boolean DEBUG = Boolean.getBoolean("dfc.debug");
 
     private static DetectorFactoryCollection theInstance;
     private static final Object lock = new Object();
@@ -73,7 +78,12 @@ public class DetectorFactoryCollection {
     final Map<String, Plugin> globalOptionsSetter = new HashMap<>();
 
     public DetectorFactoryCollection() {
-        this(true, false, Plugin.getAllPlugins(), new ArrayList<>());
+        this(true, false, initializePluginsForDefaultConstructor(), new ArrayList<>());
+    }
+
+    private static Collection<Plugin> initializePluginsForDefaultConstructor() {
+        PluginLoader.getCorePluginLoader();
+        return Plugin.getAllPlugins();
     }
 
     public DetectorFactoryCollection(Plugin onlyPlugin) {
@@ -300,35 +310,29 @@ public class DetectorFactoryCollection {
      * @return inferred ${spotbugs.home}, or null if we can't figure it out
      */
     private static String inferSpotBugsHome() {
-        Pattern[] findbugsJarNames = { Pattern.compile("spotbugs\\.jar$"), };
-
-        for (Pattern jarNamePattern : findbugsJarNames) {
-            String findbugsJarCodeBase = ClassPathUtil.findCodeBaseInClassPath(jarNamePattern,
-                    SystemProperties.getProperty("java.class.path"));
-            if (findbugsJarCodeBase != null) {
-                File findbugsJar = new File(findbugsJarCodeBase);
-                File libDir = findbugsJar.getParentFile();
-                if (libDir != null && "lib".equals(libDir.getName())) {
-                    String fbHome = libDir.getParent();
-                    FindBugs.setHome(fbHome);
-                    return fbHome;
-                }
+        String findbugsJarCodeBase = ClassPathUtil.findCodeBaseInClassPath(SPOTBUGS_JAR_PATTERN,
+                SystemProperties.getProperty("java.class.path"));
+        if (findbugsJarCodeBase != null) {
+            File findbugsJar = new File(findbugsJarCodeBase);
+            File libDir = findbugsJar.getParentFile();
+            if (libDir != null && "lib".equals(libDir.getName())) {
+                String fbHome = libDir.getParent();
+                FindBugs.setHome(fbHome);
+                return fbHome;
             }
         }
-        String classFilePath = FindBugs.class.getName().replaceAll("\\.", "/") + ".class";
+
+        String classFilePath = FindBugs.class.getName().replace('.', '/') + ".class";
         URL resource = FindBugs.class.getClassLoader().getResource(classFilePath);
         if (resource != null && "file".equals(resource.getProtocol())) {
-            try {
-                String classfile = URLDecoder.decode(resource.getPath(), Charset.defaultCharset().name());
-                Matcher m = Pattern.compile("(.*)/.*?/edu/umd.*").matcher(classfile);
-                if (m.matches()) {
-                    String home = m.group(1);
-                    if (new File(home + "/etc/findbugs.xml").exists()) {
-                        FindBugs.setHome(home);
-                        return home;
-                    }
+            String classfile = URLDecoder.decode(resource.getPath(), Charset.defaultCharset());
+            Matcher m = EDU_UMD_CLASSFILE_PATTERN.matcher(classfile);
+            if (m.matches()) {
+                String home = m.group(1);
+                if (Files.exists(Path.of(home, "etc", "findbugs.xml"))) {
+                    FindBugs.setHome(home);
+                    return home;
                 }
-            } catch (UnsupportedEncodingException e) {
             }
         }
         return null;

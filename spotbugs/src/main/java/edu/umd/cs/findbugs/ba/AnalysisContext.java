@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
@@ -276,7 +276,7 @@ public class AnalysisContext implements AutoCloseable {
     }
 
     private static boolean skipReportingMissingClass(@CheckForNull @DottedClassName String missing) {
-        return missing == null || missing.length() == 0 || missing.charAt(0) == '[' || missing.endsWith("package-info");
+        return missing == null || missing.isEmpty() || missing.charAt(0) == '[' || missing.endsWith("package-info");
     }
 
     private static @CheckForNull RepositoryLookupFailureCallback getCurrentLookupFailureCallback() {
@@ -397,9 +397,9 @@ public class AnalysisContext implements AutoCloseable {
     }
 
     public void logAnError(String msg) {
-        RepositoryLookupFailureCallback lookupFailureCallback = getLookupFailureCallback();
-        if (lookupFailureCallback != null) {
-            lookupFailureCallback.logError(msg);
+        RepositoryLookupFailureCallback failureCallback = getLookupFailureCallback();
+        if (failureCallback != null) {
+            failureCallback.logError(msg);
         }
     }
 
@@ -521,7 +521,7 @@ public class AnalysisContext implements AutoCloseable {
      *             if the class can't be found
      */
     public JavaClass lookupClass(@Nonnull ClassDescriptor classDescriptor) throws ClassNotFoundException {
-        return lookupClass(classDescriptor.toDottedClassName());
+        return lookupClass(classDescriptor.getDottedClassName());
     }
 
     /**
@@ -538,8 +538,7 @@ public class AnalysisContext implements AutoCloseable {
      * @throws ClassNotFoundException
      */
     public static JavaClass lookupSystemClass(@Nonnull String className) throws ClassNotFoundException {
-        // TODO: eventually we should move to our own thread-safe repository
-        // implementation
+        // TODO: eventually we should move to our own thread-safe repository implementation
         requireNonNull(className, "className is null");
         if (originalRepository == null) {
             throw new IllegalStateException("originalRepository is null");
@@ -947,7 +946,7 @@ public class AnalysisContext implements AutoCloseable {
      */
     public JavaClass lookupClass(@Nonnull @DottedClassName String className) throws ClassNotFoundException {
         try {
-            if (className.length() == 0) {
+            if (className.isEmpty()) {
                 throw new IllegalArgumentException("Class name is empty");
             }
             if (!ClassName.isValidClassName(className)) {

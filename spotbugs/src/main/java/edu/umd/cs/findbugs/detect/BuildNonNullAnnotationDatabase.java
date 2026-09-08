@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.CheckForNull;
@@ -57,14 +56,11 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
     //    private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
 
     @StaticConstant
-    private static final Map<String, AnnotationDatabase.Target> defaultKind = new HashMap<>();
-    static {
-        defaultKind.put("", AnnotationDatabase.Target.ANY);
-        defaultKind.put("ForParameters", AnnotationDatabase.Target.PARAMETER);
-        defaultKind.put("ForMethods", AnnotationDatabase.Target.METHOD);
-        defaultKind.put("ForFields", AnnotationDatabase.Target.FIELD);
-
-    }
+    private static final Map<String, AnnotationDatabase.Target> defaultKind = Map.of(
+            "", AnnotationDatabase.Target.ANY,
+            "ForParameters", AnnotationDatabase.Target.PARAMETER,
+            "ForMethods", AnnotationDatabase.Target.METHOD,
+            "ForFields", AnnotationDatabase.Target.FIELD);
 
     private final NullnessAnnotationDatabase database;
 

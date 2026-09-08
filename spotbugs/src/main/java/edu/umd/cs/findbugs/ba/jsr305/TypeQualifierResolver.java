@@ -58,6 +58,7 @@ public class TypeQualifierResolver {
         DescriptorFactory.createClassDescriptor("edu/umd/cs/findbugs/annotations/NonNull"),
         DescriptorFactory.createClassDescriptor("android/support/annotation/NonNull"),
         DescriptorFactory.createClassDescriptor("androidx/annotation/NonNull"),
+        DescriptorFactory.createClassDescriptor("jakarta/annotation/Nonnull"),
         DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/NotNull"),
         DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNull"),
         eclipseNonNullByDefault,
@@ -65,19 +66,24 @@ public class TypeQualifierResolver {
         DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/compatqual/NonNullDecl"),
         DescriptorFactory.createClassDescriptor("org/netbeans/api/annotations/common/NonNull"),
         DescriptorFactory.createClassDescriptor("lombok/NonNull"),
+        DescriptorFactory.createClassDescriptor("org/jspecify/annotations/NonNull"),
+        DescriptorFactory.createClassDescriptor("org/jspecify/annotations/NullMarked"),
     };
 
     private static final ClassDescriptor[] NULLABLE_CLASS_DESCRIPTORS = new ClassDescriptor[] {
-        DescriptorFactory.createClassDescriptor("edu/umd/cs/findbugs/annotations/Nullable"),
+        // intentionally ignored, semantics is different to other Nullable annotations, see <a href="https://github.com/spotbugs/spotbugs/issues/3243">#3243</a>
+        // DescriptorFactory.createClassDescriptor("edu/umd/cs/findbugs/annotations/Nullable"),
         DescriptorFactory.createClassDescriptor("android/support/annotation/Nullable"),
         DescriptorFactory.createClassDescriptor("androidx/annotation/Nullable"),
         DescriptorFactory.createClassDescriptor("com/google/common/base/Nullable"),
+        DescriptorFactory.createClassDescriptor("jakarta/annotation/Nullable"),
         DescriptorFactory.createClassDescriptor("org/apache/avro/reflect/Nullable"),
         DescriptorFactory.createClassDescriptor("org/jetbrains/annotations/Nullable"),
         DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/Nullable"),
         DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/qual/Nullable"),
         DescriptorFactory.createClassDescriptor("org/checkerframework/checker/nullness/compatqual/NullableDecl"),
         DescriptorFactory.createClassDescriptor("org/netbeans/api/annotations/common/NullAllowed"),
+        DescriptorFactory.createClassDescriptor("org/jspecify/annotations/Nullable"),
     };
 
     /**

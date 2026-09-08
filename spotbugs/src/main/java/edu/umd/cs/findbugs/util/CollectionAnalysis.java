@@ -18,11 +18,10 @@
 
 package edu.umd.cs.findbugs.util;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.ba.ClassMember;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * Utility class for analyzing collections.
@@ -42,10 +41,21 @@ public final class CollectionAnalysis {
      * @return {@code true} if the class member is a synchronized collection, {@code false} otherwise
      */
     public static boolean isSynchronizedCollection(ClassMember classMember) {
-        Set<String> interestingCollectionMethodNames = new HashSet<>(Arrays.asList(
+        return isSynchronizedCollection(classMember.getClassName(), classMember.getName());
+    }
+
+    /**
+     * Checks if a method is a synchronized collection creating one.
+     *
+     * @param className name of the class containing the method
+     * @param methodName the name of the method
+     * @return {@code true} if it's a synchronized collection creating method, {@code false} otherwise
+     */
+    public static boolean isSynchronizedCollection(@DottedClassName String className, String methodName) {
+        final Set<String> interestingCollectionMethodNames = Set.of(
                 "synchronizedCollection", "synchronizedSet", "synchronizedSortedSet",
                 "synchronizedNavigableSet", "synchronizedList", "synchronizedMap",
-                "synchronizedSortedMap", "synchronizedNavigableMap"));
-        return "java.util.Collections".equals(classMember.getClassName()) && interestingCollectionMethodNames.contains(classMember.getName());
+                "synchronizedSortedMap", "synchronizedNavigableMap");
+        return "java.util.Collections".equals(className) && interestingCollectionMethodNames.contains(methodName);
     }
 }

@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
-import java.util.stream.Collectors;
 
 import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
@@ -302,7 +301,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
         String givenPackageName = primaryClass.getPackageName();
         String thisPackageName = this.getPackageName();
         if (thisPackageName.equals(givenPackageName)) {
-            if (thisPackageName.length() == 0) {
+            if (thisPackageName.isEmpty()) {
                 return fieldName;
             } else {
                 return className.substring(thisPackageName.length() + 1) + "." + fieldName;
@@ -399,7 +398,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 
         if (!getJavaAnnotationNames().isEmpty()) {
             attributeList.addAttribute("classAnnotationNames",
-                    getJavaAnnotationNames().stream().collect(Collectors.joining(",")));
+                    String.join(",", getJavaAnnotationNames()));
         }
 
         xmlOutput.openTag(ELEMENT_NAME, attributeList);

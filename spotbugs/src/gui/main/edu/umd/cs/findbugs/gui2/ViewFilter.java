@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugRanker;
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
@@ -144,15 +143,6 @@ public class ViewFilter {
 
     public boolean showIgnoringPackagePrefixes(BugInstance b) {
         return rank.show(mf, b) && priority.show(mf, b);
-    }
-
-    /**
-     * @deprecated Use {@link ClassName#matchedPrefixes(String[],String)}
-     *             instead
-     */
-    @Deprecated
-    public static boolean matchedPrefixes(String[] classSearchStrings, @DottedClassName String className) {
-        return ClassName.matchedPrefixes(classSearchStrings, className);
     }
 
     public boolean show(BugInstance b) {

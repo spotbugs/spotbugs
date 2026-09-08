@@ -72,16 +72,6 @@ public class TestDataflowAnalysis<Fact, AnalysisType extends DataflowAnalysis<Fa
     /*
      * (non-Javadoc)
      *
-     * @see edu.umd.cs.findbugs.Detector2#getDetectorClassName()
-     */
-    @Override
-    public String getDetectorClassName() {
-        return getClass().getName();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
      * @see
      * edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile
      * .ClassDescriptor)

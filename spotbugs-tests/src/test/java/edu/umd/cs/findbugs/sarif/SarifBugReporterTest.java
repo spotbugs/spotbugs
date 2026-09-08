@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs.sarif;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.Matchers.not;
@@ -8,11 +9,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -34,10 +38,10 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.Plugin;
-import edu.umd.cs.findbugs.PluginException;
 import edu.umd.cs.findbugs.PluginLoader;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceFinder;
@@ -137,7 +141,7 @@ class SarifBugReporterTest {
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
 
         // when
-        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10).addClass("the/target/Class"));
+        reporter.reportBug(new BugInstance(bugPattern.getType(), 0).addInt(10).addClass("the/target/Class"));
         reporter.finish();
 
         // then
@@ -175,7 +179,7 @@ class SarifBugReporterTest {
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
 
         // when
-        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10).addClass("the/target/Class"));
+        reporter.reportBug(new BugInstance(bugPattern.getType(), 0).addInt(10).addClass("the/target/Class"));
         reporter.finish();
 
         // then
@@ -290,7 +294,7 @@ class SarifBugReporterTest {
                 "longDescription", "detailText", "https://example.com/help.html", 0);
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
 
-        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10).addClass("the/target/Class"));
+        reporter.reportBug(new BugInstance(bugPattern.getType(), 0).addInt(10).addClass("the/target/Class"));
         reporter.finish();
 
         String json = writer.toString();
@@ -308,7 +312,7 @@ class SarifBugReporterTest {
     }
 
     @Test
-    void testExtensions() throws PluginException {
+    void testExtensions() {
         PluginLoader pluginLoader = DetectorFactoryCollection.instance().getCorePlugin().getPluginLoader();
         Plugin plugin = new Plugin("pluginId", "version", null, pluginLoader, true, false);
         DetectorFactoryCollection dfc = new DetectorFactoryCollection(plugin);
@@ -343,7 +347,7 @@ class SarifBugReporterTest {
                 "longDescription", "detailText", "https://example.com/help.html", 0);
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
 
-        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10).addClass("SampleClass"));
+        reporter.reportBug(new BugInstance(bugPattern.getType(), 0).addInt(10).addClass("SampleClass"));
         reporter.finish();
 
         String json = writer.toString();
@@ -379,7 +383,7 @@ class SarifBugReporterTest {
                 "longDescription", "detailText", "https://example.com/help.html", cweid);
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
 
-        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10)
+        reporter.reportBug(new BugInstance(bugPattern.getType(), 0).addInt(10)
                 .addClass("SampleClass"));
         reporter.finish();
 
@@ -449,7 +453,7 @@ class SarifBugReporterTest {
                 "longDescription", "detailText", "https://example.com/help.html", 0);
         DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
 
-        reporter.reportBug(new BugInstance(bugPattern.getType(), bugPattern.getPriorityAdjustment()).addInt(10).addClass("the/target/Class"));
+        reporter.reportBug(new BugInstance(bugPattern.getType(), 0).addInt(10).addClass("the/target/Class"));
         reporter.finish();
 
         String json = writer.toString();
@@ -460,6 +464,64 @@ class SarifBugReporterTest {
         assertThat(invocation.get("exitCode").getAsInt(), is(1));
         assertThat(invocation.get("exitCodeDescription").getAsString(), is("BUGS FOUND"));
         assertThat(invocation.get("executionSuccessful").getAsBoolean(), is(true));
+    }
+
+    @Test
+    void testUnknownSourceFileDoesNotWriteStackTraceToStderr() {
+        BugPattern bugPattern = new BugPattern("TYPE", "abbrev", "category", false, "shortDescription",
+                "longDescription", "detailText", "https://example.com/help.html", 0);
+        DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
+
+        ByteArrayOutputStream stderr = new ByteArrayOutputStream();
+        PrintStream originalErr = System.err;
+        try {
+            System.setErr(new PrintStream(stderr, true, StandardCharsets.UTF_8));
+            reporter.reportBug(new BugInstance(bugPattern.getType(), 0)
+                    .addClass("org.hsqldb.lib.SampleClass")
+                    .addSourceLine(new SourceLineAnnotation("org.hsqldb.lib.SampleClass",
+                            SourceLineAnnotation.UNKNOWN_SOURCE_FILE, 1, 1, 0, 0)));
+            reporter.finish();
+        } finally {
+            System.setErr(originalErr);
+        }
+
+        String stderrOutput = stderr.toString(StandardCharsets.UTF_8);
+        assertThat(stderrOutput, not(containsString("URISyntaxException")));
+        assertThat(stderrOutput, not(containsString("Location$ArtifactLocation")));
+
+        String json = writer.toString();
+        JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
+        JsonObject result = jsonObject.getAsJsonArray("runs").get(0).getAsJsonObject()
+                .getAsJsonArray("results").get(0).getAsJsonObject();
+        JsonObject location = result.getAsJsonArray("locations").get(0).getAsJsonObject();
+
+        assertFalse(location.has("physicalLocation"));
+        assertThat(location.getAsJsonArray("logicalLocations").get(0).getAsJsonObject()
+                .get("fullyQualifiedName").getAsString(), is("org.hsqldb.lib.SampleClass"));
+    }
+
+    @Test
+    void testKnownSourceFileWithoutSourceBaseUsesFullFormattedPathWithoutLineSuffix() {
+        BugPattern bugPattern = new BugPattern("TYPE", "abbrev", "category", false, "shortDescription",
+                "longDescription", "detailText", "https://example.com/help.html", 0);
+        DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
+
+        reporter.reportBug(new BugInstance(bugPattern.getType(), 0)
+                .addClass("org.hsqldb.lib.SampleClass", "SampleClass.java")
+                .addSourceLine(new SourceLineAnnotation("org.hsqldb.lib.SampleClass",
+                        "SampleClass.java", 1, 1, 0, 0)));
+        reporter.finish();
+
+        String json = writer.toString();
+        JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
+        JsonObject artifactLocation = jsonObject.getAsJsonArray("runs").get(0).getAsJsonObject()
+                .getAsJsonArray("results").get(0).getAsJsonObject()
+                .getAsJsonArray("locations").get(0).getAsJsonObject()
+                .getAsJsonObject("physicalLocation")
+                .getAsJsonObject("artifactLocation");
+
+        assertThat(artifactLocation.get("uri").getAsString(), is("org/hsqldb/lib/SampleClass.java"));
+        assertFalse(artifactLocation.has("uriBaseId"));
     }
 
     Optional<String> takeFirstKey(JsonObject object) {

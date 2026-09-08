@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -77,12 +76,12 @@ public class CommandLineUiCallback implements IGuiCallback {
     }
 
     private int parseAnswer(String answer) {
-        if (null == answer || answer.length() == 0) {
+        if (null == answer || answer.isEmpty()) {
             System.out.println("You entered an empty string");
 
             return -1;
         }
-        char option = answer.toLowerCase(Locale.ENGLISH).charAt(0);
+        char option = Character.toLowerCase(answer.charAt(0));
         switch (option) {
         case 'o':
             return JOptionPane.OK_OPTION;

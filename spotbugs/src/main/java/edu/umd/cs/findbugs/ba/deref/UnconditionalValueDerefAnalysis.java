@@ -97,9 +97,9 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
     public static final boolean DEBUG_CHECK_CALLS = SystemProperties.getBoolean("fnd.derefs.checkcalls.debug");
 
-    private static final int NULLCHECK1[] = { Opcodes.DUP, Opcodes.INVOKESPECIAL, Opcodes.ATHROW };
+    private static final int[] NULLCHECK1 = { Opcodes.DUP, Opcodes.INVOKESPECIAL, Opcodes.ATHROW };
 
-    private static final int NULLCHECK2[] = { Opcodes.DUP, Opcodes.LDC, Opcodes.INVOKESPECIAL, Opcodes.ATHROW };
+    private static final int[] NULLCHECK2 = { Opcodes.DUP, Opcodes.LDC, Opcodes.INVOKESPECIAL, Opcodes.ATHROW };
 
     private final CFG cfg;
 

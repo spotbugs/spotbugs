@@ -19,19 +19,21 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import edu.umd.cs.findbugs.BugAccumulator;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 
-import edu.umd.cs.findbugs.BugAccumulator;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import java.util.Set;
 
-public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implements StatelessDetector {
+public class ReadReturnShouldBeChecked extends OpcodeStackDetector implements StatelessDetector {
 
     boolean sawRead = false;
 
@@ -49,6 +51,18 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 
     private String lastCallClass = null, lastCallMethod = null, lastCallSig = null;
 
+    private boolean readProcessed = false;
+
+    private OpcodeStack.Item itemToBeCompared;
+
+    private static final Set<Short> comparisonOpcodes = Set.of(
+            Const.IF_ICMPEQ, Const.IF_ICMPNE,
+            Const.IF_ICMPLT, Const.IF_ICMPGE,
+            Const.IF_ICMPGT, Const.IF_ICMPLE,
+            Const.FCMPL, Const.FCMPG,
+            Const.DCMPL, Const.DCMPG,
+            Const.LCMP);
+
     public ReadReturnShouldBeChecked(BugReporter bugReporter) {
         this.accumulator = new BugAccumulator(bugReporter);
     }
@@ -58,6 +72,8 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
         sawAvailable = 0;
         sawRead = false;
         sawSkip = false;
+        readProcessed = false;
+        itemToBeCompared = null;
         super.visit(obj);
         accumulator.reportAccumulatedBugs();
     }
@@ -97,6 +113,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 
     @Override
     public void sawOpcode(int seen) {
+        readProcessed = false;
 
         if (seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE) {
             lastCallClass = getDottedClassConstantOperand();
@@ -123,6 +140,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
             sawRead = true;
             recentCallToAvailable = sawAvailable > 0;
             locationOfCall = getPC();
+            readProcessed = true;
             return;
         }
         if ((seen == Const.INVOKEVIRTUAL || seen == Const.INVOKEINTERFACE)
@@ -158,7 +176,61 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
                                         .fromVisitedInstruction(getClassContext(), this, locationOfCall));
             }
         }
+
+        if (sawRead && (seen == Const.I2F || seen == Const.I2D || seen == Const.I2L)) {
+            readProcessed = true;
+        }
+
+        if (comparisonOpcodes.contains((short) seen) && stack.getStackDepth() > 1) {
+            OpcodeStack.Item rightItem = stack.getStackItem(0);
+            OpcodeStack.Item leftItem = stack.getStackItem(1);
+            Object value = null;
+            if (leftItem.equals(itemToBeCompared)) {
+                value = rightItem.getConstant();
+            } else if (rightItem.equals(itemToBeCompared)) {
+                value = leftItem.getConstant();
+            }
+
+            reportIfMinusOneValue(value);
+        }
+
+        //The return value of the read() is copied into a variable
+        if (seen == Const.DUP && itemToBeCompared != null) {
+            itemToBeCompared = null;
+        }
+
         sawRead = false;
         sawSkip = false;
+    }
+
+    @Override
+    public void afterOpcode(int seen) {
+        super.afterOpcode(seen);
+
+        if (readProcessed) {
+            itemToBeCompared = stack.getStackDepth() > 0 ? stack.getStackItem(0) : null;
+        }
+    }
+
+    private void reportIfMinusOneValue(Object value) {
+        boolean isMinusOne = false;
+
+        if (value instanceof Integer) {
+            isMinusOne = (Integer) value == -1;
+        } else if (value instanceof Float) {
+            isMinusOne = (Float) value == -1.0f;
+        } else if (value instanceof Double) {
+            isMinusOne = (Double) value == -1.0d;
+        } else if (value instanceof Long) {
+            isMinusOne = (Long) value == -1L;
+        }
+
+        if (isMinusOne) {
+            accumulator.accumulateBug(
+                    new BugInstance(this, "NCR_NOT_PROPERLY_CHECKED_READ", recentCallToAvailable ? LOW_PRIORITY : NORMAL_PRIORITY)
+                            .addClassAndMethod(this)
+                            .addCalledMethod(lastCallClass, lastCallMethod, lastCallSig, false),
+                    SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, locationOfCall));
+        }
     }
 }

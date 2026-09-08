@@ -374,9 +374,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
                 }
             }
             return match;
-        } catch (DataflowAnalysisException e) {
-            AnalysisContext.logError("", e);
-        } catch (CFGBuilderException e) {
+        } catch (DataflowAnalysisException | CFGBuilderException e) {
             AnalysisContext.logError("", e);
         }
         return null;

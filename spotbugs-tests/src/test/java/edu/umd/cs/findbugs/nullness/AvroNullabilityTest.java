@@ -5,10 +5,11 @@ import edu.umd.cs.findbugs.test.SpotBugsExtension;
 import edu.umd.cs.findbugs.test.SpotBugsRunner;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
 import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
+
+import java.nio.file.Path;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import java.nio.file.Paths;
 
 import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -25,14 +26,16 @@ class AvroNullabilityTest {
     @Test
     void checkedAvroNullableReturn_isOk(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
-                Paths.get("../spotbugsTestCases/build/classes/java/main/CheckedAvroNullableReturn.class"));
+                Path.of("../spotbugsTestCases/build/classes/java/main/CheckedAvroNullableReturn.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/org/apache/avro/reflect/Nullable.class"));
         assertThat(bugCollection, emptyIterable());
     }
 
     @Test
     void uncheckedAvroNullableReturn_isDetected(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
-                Paths.get("../spotbugsTestCases/build/classes/java/main/UncheckedAvroNullableReturn.class"));
+                Path.of("../spotbugsTestCases/build/classes/java/main/UncheckedAvroNullableReturn.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/org/apache/avro/reflect/Nullable.class"));
 
         assertThat(bugCollection, containsExactly(1, bug()));
     }

@@ -35,7 +35,7 @@ import java.lang.annotation.Target;
  * overriding method.
  *
  * @see edu.umd.cs.findbugs.annotations.When
- **/
+ */
 @Documented
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.CLASS)

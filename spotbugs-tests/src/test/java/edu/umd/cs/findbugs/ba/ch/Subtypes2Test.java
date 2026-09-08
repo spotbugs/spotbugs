@@ -94,7 +94,7 @@ class Subtypes2Test extends FindBugsTestCase {
     ObjectType typeParameterString;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         typeSerializable = ObjectTypeFactory.getInstance("java.io.Serializable");
         typeClonable = ObjectTypeFactory.getInstance("java.lang.Cloneable");
         typeObject = ObjectTypeFactory.getInstance(Values.DOTTED_JAVA_LANG_OBJECT);

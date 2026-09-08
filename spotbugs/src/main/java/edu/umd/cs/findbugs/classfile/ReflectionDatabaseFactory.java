@@ -73,7 +73,7 @@ public class ReflectionDatabaseFactory<E> implements IDatabaseFactory<E> {
     private E createUsingStaticCreateMethod() throws CheckedAnalysisException {
         Method createMethod;
         try {
-            createMethod = databaseClass.getMethod("create", new Class[0]);
+            createMethod = databaseClass.getMethod("create");
         } catch (NoSuchMethodException e) {
             return null;
         }
@@ -87,10 +87,8 @@ public class ReflectionDatabaseFactory<E> implements IDatabaseFactory<E> {
         }
 
         try {
-            return databaseClass.cast(createMethod.invoke(null, new Object[0]));
-        } catch (InvocationTargetException e) {
-            throw new CheckedAnalysisException("Could not create " + databaseClass.getName(), e);
-        } catch (IllegalAccessException e) {
+            return databaseClass.cast(createMethod.invoke(null));
+        } catch (InvocationTargetException | IllegalAccessException e) {
             throw new CheckedAnalysisException("Could not create " + databaseClass.getName(), e);
         }
     }
@@ -104,18 +102,14 @@ public class ReflectionDatabaseFactory<E> implements IDatabaseFactory<E> {
     private E createUsingConstructor() throws CheckedAnalysisException {
         Constructor<E> constructor;
         try {
-            constructor = databaseClass.getConstructor(new Class[0]);
+            constructor = databaseClass.getConstructor();
         } catch (NoSuchMethodException e) {
             return null;
         }
 
         try {
-            return constructor.newInstance(new Object[0]);
-        } catch (InstantiationException e) {
-            throw new CheckedAnalysisException("Could not create " + databaseClass.getName(), e);
-        } catch (IllegalAccessException e) {
-            throw new CheckedAnalysisException("Could not create " + databaseClass.getName(), e);
-        } catch (InvocationTargetException e) {
+            return constructor.newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new CheckedAnalysisException("Could not create " + databaseClass.getName(), e);
         }
     }

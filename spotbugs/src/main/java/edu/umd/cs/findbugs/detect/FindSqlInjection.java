@@ -228,25 +228,18 @@ public class FindSqlInjection implements Detector {
         }
         Method[] methodList = javaClass.getMethods();
 
-        for (Method method : methodList) {
-            MethodGen methodGen = classContext.getMethodGen(method);
+        for (Method m : methodList) {
+            MethodGen methodGen = classContext.getMethodGen(m);
             if (methodGen == null) {
                 continue;
             }
 
             try {
-                analyzeMethod(classContext, method);
-            } catch (DataflowAnalysisException e) {
+                analyzeMethod(classContext, m);
+
+            } catch (DataflowAnalysisException | CFGBuilderException | RuntimeException e) {
                 bugReporter.logError(
-                        "FindSqlInjection caught exception while analyzing " + classContext.getFullyQualifiedMethodName(method),
-                        e);
-            } catch (CFGBuilderException e) {
-                bugReporter.logError(
-                        "FindSqlInjection caught exception while analyzing " + classContext.getFullyQualifiedMethodName(method),
-                        e);
-            } catch (RuntimeException e) {
-                bugReporter.logError(
-                        "FindSqlInjection caught exception while analyzing " + classContext.getFullyQualifiedMethodName(method),
+                        "FindSqlInjection caught exception while analyzing " + classContext.getFullyQualifiedMethodName(m),
                         e);
             }
         }

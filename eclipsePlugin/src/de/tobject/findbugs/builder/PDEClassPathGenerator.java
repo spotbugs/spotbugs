@@ -58,7 +58,7 @@ public class PDEClassPathGenerator {
      * @return never null (may be empty array)
      */
     public static String[] computeClassPath(IJavaProject javaProject) {
-        Collection<String> classPath = Collections.EMPTY_SET;
+        Collection<String> classPath = Collections.emptySet();
         try {
             // first try to check and resolve plugin project. It can fail if
             // there is no

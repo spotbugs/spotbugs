@@ -47,7 +47,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
     @Override
     public void observeClass(ClassDescriptor classDescriptor) {
         try {
-            JavaClass javaClass = AnalysisContext.currentAnalysisContext().lookupClass(classDescriptor.toDottedClassName());
+            JavaClass javaClass = AnalysisContext.currentAnalysisContext().lookupClass(classDescriptor.getDottedClassName());
             String sourceFileName = fileNameFor(javaClass.getPackageName(), javaClass.getSourceFileName());
             sourceFileNameCache.put(javaClass.getClassName(), sourceFileName);
         } catch (ClassNotFoundException e) {
@@ -81,7 +81,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
         try {
             fullPath = sourceFinder.findSourceFile(pkgName, line.getSourceFile()).getFullFileName();
         } catch (IOException e) {
-            if ("".equals(pkgName)) {
+            if (pkgName.isEmpty()) {
                 fullPath = line.getSourceFile();
             } else {
                 fullPath = ClassName.toSlashedClassName(pkgName) + "/" + line.getSourceFile();

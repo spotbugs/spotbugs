@@ -72,9 +72,7 @@ public class FindSleepWithLockHeld implements Detector {
 
             try {
                 analyzeMethod(classContext, method);
-            } catch (CFGBuilderException e) {
-                bugReporter.logError("FindSleepWithLockHeld caught exception", e);
-            } catch (DataflowAnalysisException e) {
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
                 bugReporter.logError("FindSleepWithLockHeld caught exception", e);
             }
         }

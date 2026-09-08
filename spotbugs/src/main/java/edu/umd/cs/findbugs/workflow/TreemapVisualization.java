@@ -43,7 +43,7 @@ public class TreemapVisualization {
 
     public void addInteriorPackages(String packageName) {
         String p = superpackage(packageName);
-        if (p.length() > 0) {
+        if (!p.isEmpty()) {
             interiorPackages.add(p);
             addInteriorPackages(p);
         }
@@ -63,10 +63,10 @@ public class TreemapVisualization {
 
     public void cleanCode(String packageName, int loc, int classes) {
         String superpackage = superpackage(packageName);
-        if (buggyPackages.contains(superpackage) || interiorPackages.contains(superpackage) || superpackage.length() == 0) {
+        if (buggyPackages.contains(superpackage) || interiorPackages.contains(superpackage) || superpackage.isEmpty()) {
             goodCodeCount.add(packageName, classes);
             goodCodeSize.add(packageName, loc);
-            if (superpackage.length() > 0) {
+            if (!superpackage.isEmpty()) {
                 interiorPackages.add(superpackage);
             }
 

@@ -182,7 +182,7 @@ public class FindReturnRefNegativeTest {
             String s = hm.get(1);
         }
     }
-
+    
     private CharBuffer charBuf;
     private char[] charArray;
 

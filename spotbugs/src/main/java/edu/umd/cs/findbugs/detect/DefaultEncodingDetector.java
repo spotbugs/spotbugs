@@ -150,6 +150,11 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
 
     @Override
     public boolean shouldVisit(JavaClass obj) {
+        // Since Java 18/JEP 400 the default encoding is specified to be UTF-8
+        if (obj.getMajor() >= Const.MAJOR_18) {
+            return false;
+        }
+
         Set<ClassDescriptor> called = getXClass().getCalledClassDescriptors();
         for (ClassDescriptor c : defaultEncodingAnnotationDatabase.classes) {
             if (called.contains(c)) {

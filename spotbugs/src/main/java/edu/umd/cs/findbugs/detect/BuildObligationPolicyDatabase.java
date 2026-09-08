@@ -282,11 +282,6 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
         }
     }
 
-    @Override
-    public String getDetectorClassName() {
-        return this.getClass().getName();
-    }
-
     private void addBuiltInPolicies() {
 
         // Add the database entries describing methods that add and delete
@@ -331,6 +326,9 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
                 ObligationPolicyDatabaseActionType.ADD, ObligationPolicyDatabaseEntryType.STRONG, statement));
         database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Connection")),
                 new ExactStringMatcher("prepareStatement"), new RegexStringMatcher("^.*\\)Ljava/sql/PreparedStatement;$"), false,
+                ObligationPolicyDatabaseActionType.ADD, ObligationPolicyDatabaseEntryType.STRONG, statement));
+        database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Connection")),
+                new ExactStringMatcher("prepareCall"), new RegexStringMatcher("^.*\\)Ljava/sql/CallableStatement;$"), false,
                 ObligationPolicyDatabaseActionType.ADD, ObligationPolicyDatabaseEntryType.STRONG, statement));
         database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Statement")),
                 new ExactStringMatcher("executeQuery"), new RegexStringMatcher("^.*\\)Ljava/sql/ResultSet;$"), false,
@@ -438,7 +436,7 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
             // Is this class a resource type?
             if (xclass.getAnnotation(cleanupObligation) != null) {
                 // Add it as an obligation type
-                database.getFactory().addObligation(xclass.getClassDescriptor().toDottedClassName());
+                database.getFactory().addObligation(xclass.getClassDescriptor().getDottedClassName());
             }
         }
 

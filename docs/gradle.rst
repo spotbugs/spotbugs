@@ -25,7 +25,7 @@ This plugin does not generate tasks so you can configure from scratch.
 Configure Gradle Plugin
 -----------------------
 
-This plugin uses the Extension to configure. Please check the document for `SpotBugsExtension <https://spotbugs-gradle-plugin.netlify.app/com/github/spotbugs/snom/SpotBugsExtension.html>`_.
+This plugin uses the Extension to configure. Please check the document for `SpotBugsExtension <https://spotbugs-gradle-plugin.netlify.app/spotbugs-gradle-plugin/com.github.spotbugs.snom/-spot-bugs-extension/>`_.
 
 For instance, to specify the version of SpotBugs, you can configure like below:
 
@@ -35,12 +35,12 @@ For instance, to specify the version of SpotBugs, you can configure like below:
 Introduce SpotBugs Plugin
 -------------------------
 
-To introduce SpotBugs Plugin, please declare dependency in ``dependencies`` like below:
+To introduce SpotBugs Plugin, declare dependency in ``dependencies`` like below:
 
 .. code-block:: groovy
 
   dependencies {
-    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0'
+    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.14.0'
   }
 
 Other usage

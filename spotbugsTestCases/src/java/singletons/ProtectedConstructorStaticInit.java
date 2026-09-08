@@ -4,7 +4,7 @@ class ProtectedConstructorStaticInit {
     protected ProtectedConstructorStaticInit() {
         
     }
-   
+
     public static synchronized ProtectedConstructorStaticInit getInstance() {
       return instance;
     }

@@ -19,25 +19,38 @@
 
 package edu.umd.cs.findbugs;
 
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.meta.When;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationEntry;
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -49,6 +62,8 @@ import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.ba.AccessMethodDatabase;
+import edu.umd.cs.findbugs.ba.AccessMethodDatabase.AccessMethodLocation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -157,7 +172,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      */
     private static boolean adjustExperimental;
 
-    private static Set<String> missingBugTypes = Collections.synchronizedSet(new HashSet<String>());
+    private static final Set<String> missingBugTypes = Collections.synchronizedSet(new HashSet<>());
 
     public static class NoSuchBugPattern extends IllegalArgumentException {
         private static final long serialVersionUID = 1L;
@@ -190,8 +205,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
                 String msg = "Can't find definition of bug type " + type;
                 AnalysisContext.logError(msg, new NoSuchBugPattern(type));
             }
-        } else {
-            this.priority += p.getPriorityAdjustment();
         }
         if (adjustExperimental && isExperimental()) {
             this.priority = Priorities.EXP_PRIORITY;
@@ -202,12 +215,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     public static DateFormat firstSeenXMLFormat() {
         return new SimpleDateFormat("M/d/yy h:mm a", Locale.ENGLISH);
     }
-
-    /*
-    private boolean isFakeBugType(String type) {
-        return "MISSING".equals(type) || "FOUND".equals(type);
-    }
-     */
 
     private void boundPriority() {
         priority = boundedPriority(priority);
@@ -220,9 +227,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             dup = (BugInstance) super.clone();
 
             // Do deep copying of mutable objects
-            for (int i = 0; i < dup.annotationList.size(); ++i) {
-                dup.annotationList.set(i, (BugAnnotation) dup.annotationList.get(i).clone());
-            }
+            dup.annotationList.replaceAll(bugAnnotation -> (BugAnnotation) bugAnnotation.clone());
             dup.propertyListHead = dup.propertyListTail = null;
             for (Iterator<BugProperty> i = propertyIterator(); i.hasNext();) {
                 dup.addProperty((BugProperty) i.next().clone());
@@ -248,29 +253,22 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     public BugInstance(Detector detector, String type, int priority) {
         this(type, priority);
         if (detector != null) {
-            // Adjust priority if required
             String detectorName = detector.getClass().getName();
-            adjustForDetector(detectorName);
+            rememberDetectorFactory(detectorName);
         }
 
+    }
+
+    @Deprecated(forRemoval = true)
+    public void adjustForDetector(String detectorName) {
+        rememberDetectorFactory(detectorName);
     }
 
     /**
      * @param detectorName
      */
-    public void adjustForDetector(String detectorName) {
-        DetectorFactory factory = DetectorFactoryCollection.instance().getFactoryByClassName(detectorName);
-        detectorFactory = factory;
-        if (factory != null) {
-            this.priority += factory.getPriorityAdjustment();
-            boundPriority();
-            BugPattern bugPattern = getBugPattern();
-            if (SystemProperties.ASSERTIONS_ENABLED && !"EXPERIMENTAL".equals(bugPattern.getCategory())
-                    && !factory.getReportedBugPatterns().contains(bugPattern)) {
-                AnalysisContext.logError(factory.getShortName() + " doesn't note that it reports "
-                        + bugPattern + " in category " + bugPattern.getCategory());
-            }
-        }
+    public void rememberDetectorFactory(String detectorName) {
+        detectorFactory = DetectorFactoryCollection.instance().getFactoryByClassName(detectorName);
     }
 
     /**
@@ -288,9 +286,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         this(type, priority);
 
         if (detector != null) {
-            // Adjust priority if required
             String detectorName = detector.getDetectorClassName();
-            adjustForDetector(detectorName);
+            rememberDetectorFactory(detectorName);
         }
 
     }
@@ -398,7 +395,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         priority = boundedPriority(p);
     }
 
-    private int boundedPriority(int p) {
+    public static int boundedPriority(int p) {
         return Math.max(Priorities.HIGH_PRIORITY, Math.min(Priorities.IGNORE_PRIORITY, p));
     }
 
@@ -540,7 +537,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
                 + " must contain at least one class, method, or field annotation");
     }
 
-    public Collection<? extends SourceLineAnnotation> getAnotherInstanceSourceLineAnnotations() {
+    public Collection<SourceLineAnnotation> getAnotherInstanceSourceLineAnnotations() {
         // Highest priority: return the first top level source line annotation
         Collection<SourceLineAnnotation> result = new ArrayList<>();
         for (BugAnnotation annotation : annotationList) {
@@ -595,7 +592,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Get an Iterator over all bug annotations.
      */
-    public List<? extends BugAnnotation> getAnnotations() {
+    public List<BugAnnotation> getAnnotations() {
         return annotationList;
     }
 
@@ -849,12 +846,31 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      */
     @Nonnull
     public BugInstance addClassAndMethod(PreorderVisitor visitor) {
-        addClass(visitor);
         XMethod m = visitor.getXMethod();
+        if (m.isAccessMethod()) {
+            // An issue was found in an access method (in the outer class), locate the inner class' method location
+            AccessMethodDatabase database = Global.getAnalysisCache().getDatabase(AccessMethodDatabase.class);
+
+            List<AccessMethodLocation> locations = database.getAccessMethodLocations(visitor.getMethodDescriptor());
+            if (!locations.isEmpty()) {
+                for (AccessMethodLocation location : locations) {
+                    MethodAnnotation methodAnnotation = MethodAnnotation.fromMethodDescriptor(location.getCallerMethod());
+
+                    addClass(location.getCallerMethod().getClassDescriptor());
+                    addMethod(methodAnnotation);
+                    addSourceLinesForMethod(methodAnnotation, location.getSourceLineAnnotation());
+                }
+
+                return this;
+            }
+        }
+
+        addClass(visitor);
         addMethod(visitor);
         if (!MemberUtils.isUserGenerated(m)) {
             foundInAutogeneratedMethod();
         }
+
         return this;
     }
 
@@ -1044,10 +1060,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      *
      * <p>
      * For information on type descriptors, <br>
-     * see http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.
-     * html#14152 <br>
-     * or http://www.murrayc.com/learning/java/java_classfileformat.shtml#
-     * TypeDescriptors
+     * see <a href="https://www.murrayc.com/permalink/1998/03/13/the-java-class-file-format/#TypeDescriptors">TypeDescriptors</a>.
      *
      * @param typeDescriptor
      *            a jvm type descriptor, such as "[I"
@@ -1133,17 +1146,17 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a field annotation.
      *
      * @param className
-     *            name of the class containing the field
+     *            the dotted name of the class containing the field
      * @param fieldName
      *            the name of the field
      * @param fieldSig
      *            type signature of the field
      * @param isStatic
-     *            whether or not the field is static
+     *            whether the field is static
      * @return this object
      */
     @Nonnull
-    public BugInstance addField(String className, String fieldName, String fieldSig, boolean isStatic) {
+    public BugInstance addField(@DottedClassName String className, String fieldName, String fieldSig, boolean isStatic) {
         addField(new FieldAnnotation(className, fieldName, fieldSig, isStatic));
         return this;
     }
@@ -1152,7 +1165,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * Add a field annotation.
      *
      * @param className
-     *            name of the class containing the field
+     *            the dotted name of the class containing the field
      * @param fieldName
      *            the name of the field
      * @param fieldSig
@@ -1162,7 +1175,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * @return this object
      */
     @Nonnull
-    public BugInstance addField(String className, String fieldName, String fieldSig, int accessFlags) {
+    public BugInstance addField(@DottedClassName String className, String fieldName, String fieldSig, int accessFlags) {
         addField(new FieldAnnotation(className, fieldName, fieldSig, accessFlags));
         return this;
     }
@@ -1617,11 +1630,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      */
     @Nonnull
     public BugInstance addSourceLine(BytecodeScanningDetector visitor, int pc) {
-        SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(visitor.getClassContext(),
-                visitor, pc);
-        if (sourceLineAnnotation != null) {
-            add(sourceLineAnnotation);
-        }
+        add(SourceLineAnnotation.fromVisitedInstruction(visitor.getClassContext(), visitor, pc));
         return this;
     }
 
@@ -1641,10 +1650,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      */
     @Nonnull
     public BugInstance addSourceLine(ClassContext classContext, PreorderVisitor visitor, int pc) {
-        SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, visitor, pc);
-        if (sourceLineAnnotation != null) {
-            add(sourceLineAnnotation);
-        }
+        add(SourceLineAnnotation.fromVisitedInstruction(classContext, visitor, pc));
         return this;
     }
 
@@ -1664,13 +1670,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * @return this object
      */
     @Nonnull
-    public BugInstance addSourceLine(ClassContext classContext, MethodGen methodGen, String sourceFile,
-            @Nonnull InstructionHandle handle) {
-        SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
-                sourceFile, handle);
-        if (sourceLineAnnotation != null) {
-            add(sourceLineAnnotation);
-        }
+    public BugInstance addSourceLine(ClassContext classContext, MethodGen methodGen, String sourceFile, @Nonnull InstructionHandle handle) {
+        add(SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle));
         return this;
     }
 
@@ -1698,11 +1699,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             start = end;
             end = tmp;
         }
-        SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(classContext, methodGen,
-                sourceFile, start, end);
-        if (sourceLineAnnotation != null) {
-            add(sourceLineAnnotation);
-        }
+        add(SourceLineAnnotation.fromVisitedInstructionRange(classContext, methodGen, sourceFile, start, end));
         return this;
     }
 
@@ -1739,8 +1736,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             Method method = analysisCache.getMethodAnalysis(Method.class, methodDescriptor);
             return addSourceLine(classContext, method, location);
         } catch (CheckedAnalysisException e) {
-            return addSourceLine(SourceLineAnnotation.createReallyUnknown(methodDescriptor.getClassDescriptor()
-                    .getDottedClassName()));
+            return addSourceLine(SourceLineAnnotation.createReallyUnknown(methodDescriptor.getClassDescriptor().getDottedClassName()));
         }
     }
 
@@ -1757,11 +1753,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      */
     @Nonnull
     public BugInstance addSourceLine(ClassContext classContext, Method method, InstructionHandle handle) {
-        SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, method,
-                handle.getPosition());
-        if (sourceLineAnnotation != null) {
-            add(sourceLineAnnotation);
-        }
+        add(SourceLineAnnotation.fromVisitedInstruction(classContext, method, handle.getPosition()));
         return this;
     }
 
@@ -1781,8 +1773,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      */
     @Nonnull
     public BugInstance addSourceLineRange(BytecodeScanningDetector visitor, int startPC, int endPC) {
-        SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(visitor.getClassContext(),
-                visitor, startPC, endPC);
+        SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(visitor.getClassContext(), visitor, startPC,
+                endPC);
         requireNonNull(sourceLineAnnotation);
         add(sourceLineAnnotation);
         return this;
@@ -1825,10 +1817,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      */
     @Nonnull
     public BugInstance addSourceLine(BytecodeScanningDetector visitor) {
-        SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(visitor);
-        if (sourceLineAnnotation != null) {
-            add(sourceLineAnnotation);
-        }
+        add(SourceLineAnnotation.fromVisitedInstruction(visitor));
         return this;
     }
 
@@ -1844,10 +1833,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      */
     @Nonnull
     public BugInstance addUnknownSourceLine(String className, String sourceFile) {
-        SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.createUnknown(className, sourceFile);
-        if (sourceLineAnnotation != null) {
-            add(sourceLineAnnotation);
-        }
+        add(SourceLineAnnotation.createUnknown(className, sourceFile));
         return this;
     }
 
@@ -1880,13 +1866,13 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     }
 
     String getLongDescription() {
-        return getBugPattern().getLongDescription().replaceAll("BUG_PATTERN", type);
+        return getBugPattern().getLongDescription().replace("BUG_PATTERN", type);
     }
 
     public String getAbridgedMessage() {
         BugPattern bugPattern = getBugPattern();
 
-        String pattern = getLongDescription().replaceAll(" in \\{1\\}", "");
+        String pattern = getLongDescription().replace(" in {1}", "");
         String shortPattern = bugPattern.getShortDescription();
 
         try {
@@ -1975,8 +1961,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     }
 
     public void writeXML(XMLOutput xmlOutput, BugCollection bugCollection, boolean addMessages) throws IOException {
-        XMLAttributeList attributeList = new XMLAttributeList().addAttribute("type", type).addAttribute("priority",
-                String.valueOf(priority));
+        XMLAttributeList attributeList = new XMLAttributeList().addAttribute("type", type).addAttribute("priority", String.valueOf(priority));
 
         // Always add the rank attribute.
         attributeList.addAttribute("rank", Integer.toString(getBugRank()));
@@ -1992,7 +1977,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         attributeList.addAttribute("category", pattern.getCategory());
 
         if (addMessages) {
-            // Add a uid attribute, if we have a unique id.
+            // Add an uid attribute, if we have a unique id.
 
             attributeList.addAttribute("instanceHash", getInstanceHash());
             attributeList.addAttribute("instanceOccurrenceNum", Integer.toString(getInstanceOccurrenceNum()));
@@ -2045,7 +2030,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             primaryAnnotations.put(getPrimaryField(), null);
             primaryAnnotations.put(getPrimaryMethod(), null);
         } else {
-            primaryAnnotations = Collections.<BugAnnotation, Void>emptyMap();
+            primaryAnnotations = Collections.emptyMap();
         }
 
         boolean foundSourceAnnotation = false;
@@ -2066,21 +2051,13 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             for (BugProperty prop = propertyListHead; prop != null; prop = prop.getNext()) {
                 props.add(prop);
             }
-            Collections.sort(props, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+            props.sort(Comparator.comparing(BugProperty::getName));
             for (BugProperty prop : props) {
                 prop.writeXML(xmlOutput);
             }
         }
 
         xmlOutput.closeTag(ELEMENT_NAME);
-    }
-
-    private int ageInDays(BugCollection bugCollection, long firstSeen) {
-        long age = bugCollection.getAnalysisTimestamp() - firstSeen;
-        if (age < 0) {
-            age = 0;
-        }
-        return (int) (age / 1000 / 3600 / 24);
     }
 
     /*
@@ -2113,23 +2090,47 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             ClassDescriptor classDescriptor = pma.getClassDescriptor();
             ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, classDescriptor);
             JavaClass javaClass = classContext.getJavaClass();
-            AnnotationEntry[] annotationEntries = javaClass.getAnnotationEntries();
-            // map annotation entry type to dotted class name, for example
-            // Lorg/immutables/value/Generated; -> org.immutables.value.Generated
-            List<String> javaAnnotationNames = Arrays.asList(annotationEntries).stream()
-                    .map((AnnotationEntry ae) -> ClassName.fromFieldSignatureToDottedClassName(ae.getAnnotationType()))
-                    .collect(Collectors.toList());
-            pma.setJavaAnnotationNames(javaAnnotationNames);
+            if (annotation instanceof ClassAnnotation) {
+                AnnotationEntry[] annotationEntries = javaClass.getAnnotationEntries();
+                addAnnotationNames(pma, annotationEntries);
+            } else if (annotation instanceof MethodAnnotation) {
+                MethodAnnotation ma = (MethodAnnotation) annotation;
+                for (Method method : javaClass.getMethods()) {
+                    if (method.getName().equals(ma.getMethodName()) && method.getSignature().equals(ma.getMethodSignature())) {
+                        AnnotationEntry[] annotationEntries = method.getAnnotationEntries();
+                        addAnnotationNames(pma, annotationEntries);
+                        break;
+                    }
+                }
+            } else if (annotation instanceof FieldAnnotation) {
+                FieldAnnotation fa = (FieldAnnotation) annotation;
+                for (Field field : javaClass.getFields()) {
+                    if (field.getName().equals(fa.getFieldName())) {
+                        AnnotationEntry[] annotationEntries = field.getAnnotationEntries();
+                        addAnnotationNames(pma, annotationEntries);
+                        break;
+                    }
+                }
+            }
         } catch (Exception e) {
             LOG.debug(e.getMessage(), e);
         }
+    }
+
+    private static void addAnnotationNames(PackageMemberAnnotation pma, AnnotationEntry[] annotationEntries) {
+        // map annotation entry type to dotted class name, for example
+        // Lorg/immutables/value/Generated; -> org.immutables.value.Generated
+        List<String> javaAnnotationNames = Arrays.stream(annotationEntries)
+                .map((AnnotationEntry ae) -> ClassName.fromFieldSignatureToDottedClassName(ae.getAnnotationType()))
+                .collect(Collectors.toList());
+        pma.setJavaAnnotationNames(javaAnnotationNames);
     }
 
     public BugInstance add(@Nonnull BugAnnotation annotation) {
         requireNonNull(annotation, "Missing BugAnnotation!");
 
         // The java annotations for the class were not stored before,
-        // thus we add a post-hook to lookup the java annotations for
+        // thus we add a post-hook to look up the java annotations for
         // bug annotation types that have a class descriptor. Then
         // post-analysis matcher can easily filter based on the java
         // annotations (without having to look at the bytecode again).
@@ -2197,9 +2198,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             if (result != null) {
                 return result;
             }
-        } catch (DataflowAnalysisException e) {
-            AnalysisContext.logError("Couldn't find value source", e);
-        } catch (CFGBuilderException e) {
+        } catch (DataflowAnalysisException | CFGBuilderException e) {
             AnalysisContext.logError("Couldn't find value source", e);
         }
 
@@ -2410,7 +2409,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     public void setHistory(BugInstance from) {
         long first = from.getFirstVersion();
         long last = from.getLastVersion();
-        if (first > 0 && last >= 0 && first > last) {
+        if (last >= 0 && first > last) {
 
             throw new IllegalArgumentException("from has version range " + first + "..." + last + " in " + from.getBugPattern()
                     + "\n" + from.getMessage());
@@ -2512,7 +2511,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     }
 
     public List<BugAnnotation> getAnnotationsForMessage(boolean showContext) {
-        ArrayList<BugAnnotation> result = new ArrayList<>();
+        List<BugAnnotation> result = new ArrayList<>();
 
         HashSet<BugAnnotation> primaryAnnotations = new HashSet<>();
 
@@ -2551,16 +2550,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         }
 
         for (BugAnnotation b : getAnnotations()) {
-            if (primaryAnnotations.contains(b)) {
-                continue;
+            if (!primaryAnnotations.contains(b)
+                    && !(b instanceof LocalVariableAnnotation && !((LocalVariableAnnotation) b).isNamed())
+                    && !(b instanceof SourceLineAnnotation && ((SourceLineAnnotation) b).isUnknown())) {
+                result.add(b);
             }
-            if (b instanceof LocalVariableAnnotation && !((LocalVariableAnnotation) b).isNamed()) {
-                continue;
-            }
-            if (b instanceof SourceLineAnnotation && ((SourceLineAnnotation) b).isUnknown()) {
-                continue;
-            }
-            result.add(b);
         }
         return result;
     }

@@ -60,8 +60,6 @@ public class DiscoverSourceDirectories {
 
     private String rootSourceDirectory;
 
-    private boolean scanForNestedArchives;
-
     private IErrorLogger errorLogger;
 
     private Progress progress;
@@ -178,18 +176,6 @@ public class DiscoverSourceDirectories {
      */
     public void setRootSourceDirectory(String rootSourceDirectory) {
         this.rootSourceDirectory = rootSourceDirectory;
-    }
-
-    /**
-     * Set whether or not to scan the project for nested archives (i.e., if
-     * there is a WAR or EAR file that contains jar files inside it.) Default is
-     * false.
-     *
-     * @param scanForNestedArchives
-     *            true if nested archives should be scanned, false otherwise
-     */
-    public void setScanForNestedArchives(boolean scanForNestedArchives) {
-        this.scanForNestedArchives = scanForNestedArchives;
     }
 
     /**
@@ -311,7 +297,7 @@ public class DiscoverSourceDirectories {
 
             return packageName + sourceFile;
         } catch (CheckedAnalysisException e) {
-            errorLogger.logError("Could scan class " + classDesc.toDottedClassName(), e);
+            errorLogger.logError("Could scan class " + classDesc.getDottedClassName(), e);
             throw e;
         } finally {
             progress.finishClass();
@@ -330,10 +316,8 @@ public class DiscoverSourceDirectories {
             try {
                 String fullyQualifiedSourceFileName = findFullyQualifiedSourceFileName(classPath, classDesc);
                 fullyQualifiedSourceFileNameList.add(fullyQualifiedSourceFileName);
-            } catch (IOException e) {
-                errorLogger.logError("Couldn't scan class " + classDesc.toDottedClassName(), e);
-            } catch (CheckedAnalysisException e) {
-                errorLogger.logError("Couldn't scan class " + classDesc.toDottedClassName(), e);
+            } catch (IOException | CheckedAnalysisException e) {
+                errorLogger.logError("Couldn't scan class " + classDesc.getDottedClassName(), e);
             }
         }
 
@@ -402,7 +386,7 @@ public class DiscoverSourceDirectories {
 
             @Override
             public void reportMissingClass(ClassDescriptor classDescriptor) {
-                logError("Missing class: " + classDescriptor.toDottedClassName());
+                logError("Missing class: " + classDescriptor.getDottedClassName());
             }
 
             @Override

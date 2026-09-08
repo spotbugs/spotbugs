@@ -2,10 +2,11 @@ package sfBugs;
 
 import java.rmi.RemoteException;
 
-import javax.ejb.EJBException;
-import javax.ejb.SessionContext;
+import jakarta.ejb.EJBException;
+import jakarta.ejb.SessionBean;
+import jakarta.ejb.SessionContext;
 
-public class Bug1897323 implements /* java.io.Serializable */javax.ejb.SessionBean {
+public class Bug1897323 implements /* java.io.Serializable */ SessionBean {
 
     // Threads are non-serializable
     Thread t = new Thread() {

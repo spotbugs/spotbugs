@@ -55,9 +55,9 @@ import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -82,7 +82,11 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
     private static class ExceptionCaught {
         public String exceptionClass;
 
-        public int startOffset, endOffset, sourcePC;
+        public int startOffset;
+
+        public int endOffset;
+
+        public int sourcePC;
 
         public boolean seen = false;
 
@@ -208,9 +212,7 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
             Method m = getMethod();
             bugReporter.reportSkippedAnalysis(DescriptorFactory.instance().getMethodDescriptor(getClassName(), getMethodName(),
                     getMethodSig(), m.isStatic()));
-        } catch (DataflowAnalysisException e) {
-            bugReporter.logError("Error checking for dead exception store", e);
-        } catch (CFGBuilderException e) {
+        } catch (DataflowAnalysisException | CFGBuilderException e) {
             bugReporter.logError("Error checking for dead exception store", e);
         }
     }
@@ -222,7 +224,7 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
             if (stack.getStackDepth() > 0) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 String signature = item.getSignature();
-                if (signature != null && signature.length() > 0) {
+                if (signature != null && !signature.isEmpty()) {
                     if (signature.startsWith("L")) {
                         signature = SignatureConverter.convert(signature);
                     } else {
@@ -238,9 +240,11 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
         case Const.INVOKESTATIC:
             String className = getClassConstantOperand();
             if (!className.startsWith("[")) {
+                ClassDescriptor classDescriptor = DescriptorFactory.createClassDescriptor(className);
+
                 try {
-                    XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class,
-                            DescriptorFactory.createClassDescriptor(className));
+                    XClass c = Global.getAnalysisCache().getClassAnalysis(XClass.class, classDescriptor);
+
                     XMethod m = Hierarchy2.findInvocationLeastUpperBound(c, getNameConstantOperand(), getSigConstantOperand(),
                             seen == Const.INVOKESTATIC, seen == Const.INVOKEINTERFACE);
                     if (m == null) {
@@ -252,10 +256,8 @@ public class RuntimeExceptionCapture extends OpcodeStackDetector implements Stat
                             throwList.add(new ExceptionThrown(ClassName.toDottedClassName(name), getPC()));
                         }
                     }
-                } catch (MissingClassException e) {
-                    bugReporter.reportMissingClass(e.getClassDescriptor());
                 } catch (CheckedAnalysisException e) {
-                    bugReporter.logError("Error looking up " + className, e);
+                    bugReporter.reportMissingClass(classDescriptor, e);
                 }
             }
             break;

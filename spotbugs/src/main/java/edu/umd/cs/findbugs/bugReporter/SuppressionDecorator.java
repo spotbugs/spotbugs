@@ -26,7 +26,7 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.HashSet;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -95,7 +95,7 @@ public class SuppressionDecorator extends BugReporterDecorator {
             String s;
             while ((s = in.readLine()) != null) {
                 s = s.trim();
-                if (s.length() == 0) {
+                if (s.isEmpty()) {
                     continue;
                 }
                 String packageName = s.substring(1).trim();

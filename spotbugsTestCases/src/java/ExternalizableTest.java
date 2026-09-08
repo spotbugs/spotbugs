@@ -22,7 +22,7 @@ public class ExternalizableTest implements Externalizable {
     public void writeExternal(ObjectOutput out) {
     }
 
-    static public void main(String args[]) throws Exception {
+    public static void main(String args[]) throws Exception {
         ByteArrayOutputStream pout = new ByteArrayOutputStream();
         ObjectOutputStream oout = new ObjectOutputStream(pout);
         oout.writeObject(new ExternalizableTest(42));

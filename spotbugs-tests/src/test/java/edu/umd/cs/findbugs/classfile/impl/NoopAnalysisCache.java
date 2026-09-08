@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.log.Profiler;
 import java.util.Map;
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 public class NoopAnalysisCache implements IAnalysisCache {
     @Override

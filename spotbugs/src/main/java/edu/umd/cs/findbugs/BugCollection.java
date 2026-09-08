@@ -43,9 +43,7 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     static final String ERRORS_ELEMENT_NAME = "Errors";
 
-    static final String ANALYSIS_ERROR_ELEMENT_NAME = "AnalysisError"; // 0.8.6
-    // and
-    // earlier
+    static final String ANALYSIS_ERROR_ELEMENT_NAME = "AnalysisError"; // 0.8.6 and earlier
 
     static final String ERROR_ELEMENT_NAME = "Error"; // 0.8.7 and later
 
@@ -202,19 +200,6 @@ public interface BugCollection extends Iterable<BugInstance> {
      *         BugInstance was already in the BugCollection
      */
     boolean add(BugInstance bugInstance, boolean updateActiveTime);
-
-    /**
-     * Look up a BugInstance by its unique id.
-     *
-     * @param uniqueId
-     *            the BugInstance's unique id.
-     * @return the BugInstance with the given unique id, or null if there is no
-     *         such BugInstance
-     *
-     *         This is deprecated; uniqueIDs are not persistent.
-     */
-    @Deprecated
-    BugInstance lookupFromUniqueId(String uniqueId);
 
     /**
      * Add an analysis error.

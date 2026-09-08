@@ -45,9 +45,9 @@ msgstr "必要条件"
 #: ../../introduction.rst:14
 msgid ""
 "To use SpotBugs, you need a runtime environment compatible with Java "
-"version 1.8 or later. SpotBugs is platform independent, and is known to "
+"version 11 or later. SpotBugs is platform independent, and is known to "
 "run on GNU/Linux, Windows, and MacOS X platforms."
-msgstr "SpotBugsを使うためには、Javaバージョン1.8以降のバージョンと互換性のあるランタイム環境が必要です。SpotBugsは、プラットフォームに依存せず、GNU/Linux、Windows、MacOS Xで動作することが知られています。"
+msgstr "SpotBugsを使うためには、Javaバージョン11以降のバージョンと互換性のあるランタイム環境が必要です。SpotBugsは、プラットフォームに依存せず、GNU/Linux、Windows、MacOS Xで動作することが知られています。"
 
 #: ../../introduction.rst:17
 msgid ""

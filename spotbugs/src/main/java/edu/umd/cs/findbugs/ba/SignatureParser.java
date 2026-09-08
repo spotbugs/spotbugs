@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -33,7 +33,10 @@ import org.apache.bcel.generic.InvokeInstruction;
  * A simple class to parse method signatures.
  *
  * @author David Hovemeyer
+ *
+ * @deprecated This signature parser does not support generics, use GenericSignatureParser instead.
  */
+@Deprecated
 public class SignatureParser {
     private int totalArgumentSize;
 
@@ -44,7 +47,7 @@ public class SignatureParser {
         return totalArgumentSize;
     }
 
-    private @CheckForNull int parameterOffset[];
+    private @CheckForNull int[] parameterOffset;
 
     @Nonnull
     int[] getParameterOffset() {
@@ -116,7 +119,7 @@ public class SignatureParser {
                     if (semi < 0) {
                         throw new IllegalStateException("Invalid method signature: " + signature);
                     }
-                    result.append(signature.substring(index, semi + 1));
+                    result.append(signature, index, semi + 1);
                     index = semi + 1;
                     break;
 

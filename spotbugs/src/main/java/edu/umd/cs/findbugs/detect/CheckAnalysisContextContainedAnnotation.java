@@ -102,8 +102,6 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {
-        default:
-            break;
         case Const.IF_ICMPEQ:
         case Const.IF_ICMPNE:
             OpcodeStack.Item left = stack.getStackItem(1);
@@ -113,6 +111,8 @@ public class CheckAnalysisContextContainedAnnotation extends OpcodeStackDetector
                         .addValueSource(left, this).addValueSource(right, this)
                         .addString("Just check the sign of the result of compare or compareTo, not specific values such as 1 or -1"), this);
             }
+            break;
+        default:
             break;
         }
 

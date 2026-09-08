@@ -76,7 +76,7 @@ public class FileBugHash {
 
             String packagePath = ClassName.toSlashedClassName(source.getPackageName());
             String key;
-            if (packagePath.length() == 0) {
+            if (packagePath.isEmpty()) {
                 key = source.getSourceFile();
             } else {
                 key = packagePath + "/" + source.getSourceFile();
@@ -130,7 +130,7 @@ public class FileBugHash {
         return size;
     }
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
 
         if (args.length > 1 || (args.length > 0 && "-help".equals(args[0]))) {
             System.err.println("Usage: " + FileBugHash.class.getName() + " [<infile>]");
