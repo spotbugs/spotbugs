@@ -506,6 +506,7 @@ public class DumbMethods extends OpcodeStackDetector {
         @Override
         public void initMethod(Method method) {
             freshRandomOnTos = false;
+            randomInitPC = 0;
         }
 
         @Override
@@ -536,7 +537,7 @@ public class DumbMethods extends OpcodeStackDetector {
                 int loopstart = getBranchTarget();
                 int loopend = getPC();
                 // if the Random init is before the loop, but the usage is inside
-                if (loopstart < loopend && randomInitPC < loopstart) {
+                if (loopstart < loopend && randomInitPC < loopstart && randomInitPC > 0) {
                     pcToBugInstanceMap.keySet().removeIf(pc -> pc >= loopstart && pc <= loopend);
                 }
             }
