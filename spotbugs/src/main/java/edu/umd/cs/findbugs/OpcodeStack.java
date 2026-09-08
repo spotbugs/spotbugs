@@ -1486,8 +1486,12 @@ public class OpcodeStack {
                 seenTransferOfControl = true;
                 Item topItem = pop();
                 addJumpValue(dbc.getPC(), dbc.getBranchTarget());
-                // If the item is definitely null the jump always happens; the fall-through is dead code.
-                if (topItem.isNull()) {
+                // If the item is a local variable definitely set to null (e.g. ACONST_NULL or null-propagated
+                // through IFNONNULL fall-through), the jump always happens and the fall-through is dead code.
+                // Only apply when registerNumber >= 0 (local variable); field-summary nulls (registerNumber == -1)
+                // reflect initial state and may not be null at every call site.
+                if (topItem.isNull() && topItem.registerNumber >= 0) {
+                    setReachOnlyByBranch(true);
                     setTop(true);
                 }
                 break;
