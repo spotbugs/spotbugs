@@ -32,7 +32,6 @@ import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -155,26 +154,22 @@ public class BugActionProvider extends CommonActionProvider {
         final StructuredViewer viewer = aSite.getStructuredViewer();
         final BugContentProvider provider = BugContentProvider.getProvider(site.getContentService());
 
-        filterChangeListener = new IPropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent event) {
-                if (!initDone) {
-                    return;
-                }
-                IWorkingSet oldWorkingSet = provider.getCurrentWorkingSet();
-                IWorkingSet oldWorkingSet1 = (IWorkingSet) event.getOldValue();
-                IWorkingSet newWorkingSet = (IWorkingSet) event.getNewValue();
-                if (newWorkingSet != null && (oldWorkingSet == newWorkingSet || oldWorkingSet1 == newWorkingSet)) {
-                    return;
-                }
-                if (viewer != null) {
-                    provider.setCurrentWorkingSet(newWorkingSet);
-                    if (newWorkingSet == null) {
-                        viewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
-                    } else if (oldWorkingSet != newWorkingSet) {
-                        viewer.setInput(newWorkingSet);
-                    }
+        filterChangeListener = event -> {
+            if (!initDone) {
+                return;
+            }
+            IWorkingSet oldWorkingSet = provider.getCurrentWorkingSet();
+            IWorkingSet oldWorkingSet1 = (IWorkingSet) event.getOldValue();
+            IWorkingSet newWorkingSet = (IWorkingSet) event.getNewValue();
+            if (newWorkingSet != null && (oldWorkingSet == newWorkingSet || oldWorkingSet1 == newWorkingSet)) {
+                return;
+            }
+            if (viewer != null) {
+                provider.setCurrentWorkingSet(newWorkingSet);
+                if (newWorkingSet == null) {
+                    viewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
+                } else if (oldWorkingSet != newWorkingSet) {
+                    viewer.setInput(newWorkingSet);
                 }
             }
         };

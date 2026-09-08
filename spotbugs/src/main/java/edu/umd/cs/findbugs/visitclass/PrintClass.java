@@ -73,7 +73,7 @@ public class PrintClass {
 
     static boolean superClasses = false;
 
-    public static void main(String argv[]) throws IOException {
+    public static void main(String[] argv) throws IOException {
         String[] file_name = new String[argv.length];
         int files = 0;
         String zip_file = null;

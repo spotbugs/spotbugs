@@ -55,7 +55,7 @@ public class FindInstanceLockOnSharedStaticData extends OpcodeStackDetector {
             maybeLockObject = Optional.ofNullable(lockObject.getXField());
 
             // Locking on java.lang.Class objects is appropriate, since there is only a single instance of them
-            if (!maybeLockObject.isPresent()) {
+            if (maybeLockObject.isEmpty()) {
                 try {
                     Optional<JavaClass> javaClassOfLockObject = Optional.ofNullable(lockObject.getJavaClass());
                     isLockObjectInstanceOfJavaLangClass = javaClassOfLockObject

@@ -26,9 +26,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
@@ -128,12 +126,9 @@ public class WorkspaceSettingsTab extends Composite {
 
     protected DetectorProvider createDetectorProvider(CheckboxTableViewer viewer) {
         final DetectorProvider filterProvider = new DetectorProvider(viewer, page);
-        filterProvider.addListener(new Listener() {
-            @Override
-            public void handleEvent(Event event) {
-                page.setErrorMessage(null);
-                filterProvider.refresh();
-            }
+        filterProvider.addListener(event -> {
+            page.setErrorMessage(null);
+            filterProvider.refresh();
         });
         return filterProvider;
     }

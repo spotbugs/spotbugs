@@ -22,8 +22,6 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 
@@ -40,12 +38,7 @@ public class BugByIdFilter extends ViewerFilter {
     static {
         final IPreferenceStore store = FindbugsPlugin.getDefault().getPreferenceStore();
         lastUsedFilter = FindbugsPlugin.getFilteredIds();
-        store.addPropertyChangeListener(new IPropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent event) {
-                lastUsedFilter = FindbugsPlugin.getFilteredIds();
-            }
-        });
+        store.addPropertyChangeListener(event -> lastUsedFilter = FindbugsPlugin.getFilteredIds());
     }
 
     public BugByIdFilter() {

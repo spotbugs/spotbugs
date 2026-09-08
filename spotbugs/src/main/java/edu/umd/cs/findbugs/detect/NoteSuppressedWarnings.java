@@ -58,6 +58,7 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.BootstrapMethodsUtil;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
@@ -228,6 +229,7 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements Detecto
                     matchType,
                     clazz,
                     MethodAnnotation.fromVisitedMethod(this),
+                    BootstrapMethodsUtil.getLambdasOwnedBy(getThisClass(), getMethod()),
                     MemberUtils.isUserGenerated(getXClass()),
                     MemberUtils.isUserGenerated(getMethod()) && MemberUtils.isUserGenerated(getXClass()));
 
