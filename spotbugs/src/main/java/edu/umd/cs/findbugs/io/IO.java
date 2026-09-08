@@ -76,7 +76,7 @@ public class IO {
             copy(in, byteSink);
             return byteSink.toByteArray();
         } finally {
-            close(in);
+            close((Closeable) in);
         }
     }
 
@@ -113,7 +113,7 @@ public class IO {
                 result[pos++] = (byte) nextByte;
             }
         } finally {
-            close(in);
+            close((Closeable) in);
         }
     }
 

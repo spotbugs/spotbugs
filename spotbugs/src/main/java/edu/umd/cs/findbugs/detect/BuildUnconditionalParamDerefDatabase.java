@@ -97,6 +97,7 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
         for (Type argument : method.getArgumentTypes()) {
             if (argument instanceof ReferenceType) {
                 hasReferenceParameters = true;
+                break;
             }
         }
 

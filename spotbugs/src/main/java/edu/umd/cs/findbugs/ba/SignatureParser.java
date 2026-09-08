@@ -119,7 +119,7 @@ public class SignatureParser {
                     if (semi < 0) {
                         throw new IllegalStateException("Invalid method signature: " + signature);
                     }
-                    result.append(signature.substring(index, semi + 1));
+                    result.append(signature, index, semi + 1);
                     index = semi + 1;
                     break;
 

@@ -466,7 +466,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
                 } else {
                     buf.append(',');
                 }
-                buf.append(key + "=" + valueToString(value));
+                buf.append(key).append("=").append(valueToString(value));
             }
 
             buf.append(" #");

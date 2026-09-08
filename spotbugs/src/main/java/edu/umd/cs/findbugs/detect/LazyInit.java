@@ -35,6 +35,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.ReturnInstruction;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -196,11 +197,6 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
             return;
         }
 
-        // Strings are (mostly) safe to pass by data race in 1.5
-        if ("Ljava/lang/String;".equals(signature)) {
-            return;
-        }
-
         // GUI types should not be accessed from multiple threads
 
         if (signature.charAt(0) == 'L') {
@@ -287,11 +283,14 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
                 if (ins instanceof AllocationInstruction) {
                     sawNEW = true;
                 } else if (ins instanceof InvokeInstruction) {
-                    if (ins instanceof INVOKESTATIC
-                            && ((INVOKESTATIC) ins).getMethodName(classContext.getConstantPoolGen()).startsWith("new")) {
-                        sawNEW = true;
+                    InvokeInstruction invoke = (InvokeInstruction) ins;
+                    if (invoke.getReturnType(classContext.getConstantPoolGen()) instanceof ReferenceType) {
+                        if (ins instanceof INVOKESTATIC
+                                && invoke.getMethodName(classContext.getConstantPoolGen()).startsWith("new")) {
+                            sawNEW = true;
+                        }
+                        sawINVOKE = true;
                     }
-                    sawINVOKE = true;
                 }
 
                 // Compute lock set intersection for all matched
