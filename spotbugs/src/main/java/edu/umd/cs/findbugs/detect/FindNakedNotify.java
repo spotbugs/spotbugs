@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.XField;
 
 //   2:   astore_1
 //   3:   monitorenter
@@ -44,6 +45,14 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
 
     private int notifyPC;
 
+    /**
+     * True when this method performed a visible state update after the previous
+     * synchronized region (or method entry) and before the current
+     * {@code monitorenter}. Volatile field stores and ordinary method calls count;
+     * plain non-volatile field stores do not (see {@code NakedWait}).
+     */
+    private boolean stateUpdatedBeforeSync;
+
     public FindNakedNotify(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
@@ -57,15 +66,19 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
     @Override
     public void visit(Code obj) {
         stage = synchronizedMethod ? Stage.MONITOR_ENTERED : Stage.START;
+        stateUpdatedBeforeSync = false;
         super.visit(obj);
         if (synchronizedMethod && stage == Stage.LOCK_LOADED) {
-            bugReporter.reportBug(new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY).addClassAndMethod(this)
-                    .addSourceLine(this, notifyPC));
+            reportIfNakedNotify();
         }
     }
 
     @Override
     public void sawOpcode(int seen) {
+        if (stage == Stage.START) {
+            notePossibleStateUpdate(seen);
+        }
+
         switch (stage) {
         case START:
             if (seen == Const.MONITORENTER) {
@@ -86,7 +99,8 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
                 stage = Stage.NOTIFY_CALLED;
                 notifyPC = getPC();
             } else {
-                stage = Stage.START;
+                // Non-notify work inside the region: not naked; start over for later regions.
+                abandonSyncRegion();
             }
             break;
         case NOTIFY_CALLED:
@@ -94,11 +108,10 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
             break;
         case LOCK_LOADED:
             if (seen == Const.MONITOREXIT) {
-                bugReporter.reportBug(new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY).addClassAndMethod(this)
-                        .addSourceLine(this, notifyPC));
+                reportIfNakedNotify();
                 stage = Stage.MONITOR_EXITED;
             } else {
-                stage = Stage.START;
+                abandonSyncRegion();
             }
             break;
         case MONITOR_EXITED:
@@ -107,6 +120,53 @@ public class FindNakedNotify extends BytecodeScanningDetector implements Statele
             assert false;
         }
 
+    }
+
+    /**
+     * Remember updates that can make a following notify meaningful even when they
+     * occur outside the synchronized block (issue #3786).
+     */
+    private void notePossibleStateUpdate(int seen) {
+        switch (seen) {
+        case Const.PUTFIELD:
+        case Const.PUTSTATIC:
+            XField field = getXFieldOperand();
+            if (field != null && field.isVolatile()) {
+                stateUpdatedBeforeSync = true;
+            }
+            break;
+        case Const.INVOKEVIRTUAL:
+        case Const.INVOKEINTERFACE:
+        case Const.INVOKESPECIAL:
+        case Const.INVOKESTATIC:
+            if (!isWaitOrNotifyName(getNameConstantOperand())) {
+                stateUpdatedBeforeSync = true;
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
+    private static boolean isWaitOrNotifyName(String name) {
+        return "wait".equals(name) || "notify".equals(name) || "notifyAll".equals(name);
+    }
+
+    private void reportIfNakedNotify() {
+        if (!stateUpdatedBeforeSync) {
+            bugReporter.reportBug(new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY).addClassAndMethod(this)
+                    .addSourceLine(this, notifyPC));
+        }
+        // Finished with this synchronized region; later regions are independent.
+        stateUpdatedBeforeSync = false;
+    }
+
+    private void abandonSyncRegion() {
+        // Mutation (or other non-notify work) inside the region means this notify
+        // path is not naked. Clear pre-sync state so a later pure-notify region
+        // in the same method is still reported.
+        stateUpdatedBeforeSync = false;
+        stage = Stage.START;
     }
 
     private enum Stage {
