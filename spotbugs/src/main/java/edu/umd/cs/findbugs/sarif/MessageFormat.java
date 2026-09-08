@@ -29,7 +29,7 @@ class MessageFormat {
                 break;
             }
 
-            result.append(pat.substring(0, subst));
+            result.append(pat, 0, subst);
             pat = pat.substring(subst + 1);
 
             int end = pat.indexOf('}');

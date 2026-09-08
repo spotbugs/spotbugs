@@ -55,7 +55,7 @@ public class TestDesktopIntegration extends JPanel {
         "java.compiler", "java.ext.dirs", "os.name", "os.arch", "os.version", "file.separator", "path.separator",
         "line.separator", "user.name", "user.home", "user.dir" };
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         String u = SystemProperties.getProperty("findbugs.browserTestURL", "http://findbugs.sourceforge.net/");
         url = new URL(u);
 
@@ -237,12 +237,12 @@ public class TestDesktopIntegration extends JPanel {
 
             try {
                 Class<?> serviceManagerClass = Class.forName("javax.jnlp.ServiceManager");
-                Method getServiceNamesMethod = serviceManagerClass.getMethod("getServiceNames", new Class[] {});
-                Method lookupMethod = serviceManagerClass.getMethod("lookup", new Class[] { String.class });
-                String[] serviceNames = (String[]) getServiceNamesMethod.invoke(null, new Object[] {});
+                Method getServiceNamesMethod = serviceManagerClass.getMethod("getServiceNames");
+                Method lookupMethod = serviceManagerClass.getMethod("lookup", String.class);
+                String[] serviceNames = (String[]) getServiceNamesMethod.invoke(null);
                 writer.println("JNLP service providers:");
                 for (String s : serviceNames) {
-                    Object o = lookupMethod.invoke(null, new Object[] { s });
+                    Object o = lookupMethod.invoke(null, s);
                     writer.println("  " + s + " = " + o.getClass().getName());
                 }
             } catch (Exception e) {

@@ -3,10 +3,14 @@ apply from: "${rootDir}/gradle/javadoc.gradle"
 apply from: "${rootDir}/gradle/maven.gradle"
 
 dependencies {
-  api (project(':spotbugs')) {
+  api(project(':spotbugs')) {
     transitive = true
   }
   compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+}
+
+tasks.named('compileJava', JavaCompile).configure {
+  options.release = 17
 }
 
 java {

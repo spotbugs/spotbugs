@@ -65,7 +65,7 @@ public class WriteOnceProperties extends Properties {
         System.setProperties(new WriteOnceProperties(properties));
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         dumpProperties();
         System.out.println("-----");
         makeSystemPropertiesWriteOnce();

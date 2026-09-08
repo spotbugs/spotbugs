@@ -402,6 +402,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
                 int lineNumber = table.getSourceLine(loc.getHandle().getPosition());
                 if (!linesMentionedMultipleTimes.get(lineNumber)) {
                     uniqueDereferenceLocations = true;
+                    break;
                 }
             }
         }

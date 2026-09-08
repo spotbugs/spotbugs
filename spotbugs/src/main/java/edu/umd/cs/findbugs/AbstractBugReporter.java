@@ -267,7 +267,7 @@ public abstract class AbstractBugReporter implements BugReporter {
             return false;
         }
 
-        if ("".equals(message)) {
+        if (message.isEmpty()) {
             // Subtypes2 throws ClassNotFoundExceptions with no message in
             // some cases. Ignore them (the missing classes will already
             // have been reported).

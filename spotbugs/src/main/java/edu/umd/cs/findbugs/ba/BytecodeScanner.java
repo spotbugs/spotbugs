@@ -78,7 +78,7 @@ public class BytecodeScanner {
                 | (arr[offset + 3] & 0xFF);
     }
 
-    private static final int PAD[] = { 0, 3, 2, 1 };
+    private static final int[] PAD = { 0, 3, 2, 1 };
 
     /**
      * Scan the raw bytecodes of a method.

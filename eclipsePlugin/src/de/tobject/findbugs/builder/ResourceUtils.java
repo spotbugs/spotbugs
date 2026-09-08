@@ -259,11 +259,7 @@ public class ResourceUtils {
             // non java projects: can happen only for changesets
             return;
         }
-        List<WorkItem> resources = projectsMap.get(project);
-        if (resources == null) {
-            resources = new ArrayList<>();
-            projectsMap.put(project, resources);
-        }
+        List<WorkItem> resources = projectsMap.computeIfAbsent(project, k -> new ArrayList<>());
         // do not need to check for duplicates, cause user cannot select
         // the same element twice
         if (!containsParents(resources, resource)) {

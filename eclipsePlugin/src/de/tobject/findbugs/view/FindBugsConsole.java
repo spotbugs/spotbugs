@@ -88,12 +88,7 @@ public class FindBugsConsole extends MessageConsole implements IPropertyChangeLi
 
     private void setConsoleFont() {
         if (Display.getCurrent() == null) {
-            PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-                @Override
-                public void run() {
-                    setConsoleFont();
-                }
-            });
+            PlatformUI.getWorkbench().getDisplay().asyncExec(this::setConsoleFont);
         } else {
             ITheme theme = PlatformUI.getWorkbench().getThemeManager().getCurrentTheme();
             Font font = theme.getFontRegistry().get(CONSOLE_FONT);

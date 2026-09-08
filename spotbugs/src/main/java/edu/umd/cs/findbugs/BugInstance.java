@@ -227,9 +227,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
             dup = (BugInstance) super.clone();
 
             // Do deep copying of mutable objects
-            for (int i = 0; i < dup.annotationList.size(); ++i) {
-                dup.annotationList.set(i, (BugAnnotation) dup.annotationList.get(i).clone());
-            }
+            dup.annotationList.replaceAll(bugAnnotation -> (BugAnnotation) bugAnnotation.clone());
             dup.propertyListHead = dup.propertyListTail = null;
             for (Iterator<BugProperty> i = propertyIterator(); i.hasNext();) {
                 dup.addProperty((BugProperty) i.next().clone());
@@ -2411,7 +2409,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     public void setHistory(BugInstance from) {
         long first = from.getFirstVersion();
         long last = from.getLastVersion();
-        if (first > 0 && last >= 0 && first > last) {
+        if (last >= 0 && first > last) {
 
             throw new IllegalArgumentException("from has version range " + first + "..." + last + " in " + from.getBugPattern()
                     + "\n" + from.getMessage());

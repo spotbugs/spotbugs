@@ -37,11 +37,9 @@ import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -333,12 +331,7 @@ public class ReportConfigurationTab extends Composite {
             // Every time a checkbox is clicked, rebuild the detector factory
             // table
             // to show only relevant entries
-            checkBox.addListener(SWT.Selection, new Listener() {
-                @Override
-                public void handleEvent(Event e) {
-                    syncSelectedCategories();
-                }
-            });
+            checkBox.addListener(SWT.Selection, e -> syncSelectedCategories());
             checkBox.setData(category);
             chkEnableBugCategoryList.add(checkBox);
         }
