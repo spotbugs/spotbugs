@@ -9,6 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - `@SuppressFBWarnings` annotation on a method or a constructor now suppresses warnings reported in their lambdas too ([#724](https://github.com/spotbugs/spotbugs/issues/724))
 
 ### Fixed
+- Fix `SS_SHOULD_BE_STATIC` false negative for final fields initialized in initializer blocks ([#4136](https://github.com/spotbugs/spotbugs/issues/4136))
 - Fix `NN_NAKED_NOTIFY` false positive when guarded state is updated before the synchronized block that calls `notify`/`notifyAll` ([#3786](https://github.com/spotbugs/spotbugs/issues/3786))
 - Fix `SA_LOCAL_SELF_ASSIGNMENT` false positive in methods with `++`/`--` inside a switch nested in a try-catch block ([#3929](https://github.com/spotbugs/spotbugs/issues/3929))
 - Fix `OS_OPEN_STREAM` false positive when the result of `PrintWriter.append()` is reassigned before closing the writer ([#4274](https://github.com/spotbugs/spotbugs/issues/4274))
