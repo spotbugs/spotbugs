@@ -152,9 +152,9 @@ public class AppVersion implements XMLWriteable, Cloneable {
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
-        buf.append(String.valueOf(sequence));
+        buf.append(sequence);
         buf.append(',');
-        buf.append(String.valueOf(timestamp));
+        buf.append(timestamp);
         buf.append(',');
         buf.append(releaseName);
         buf.append(',');

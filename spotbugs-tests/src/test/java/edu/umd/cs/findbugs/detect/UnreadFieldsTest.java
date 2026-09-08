@@ -36,6 +36,21 @@ class UnreadFieldsTest {
         assertThat(reportedBug.get().getPrimarySourceLineAnnotation().getStartLine(), is(not(-1)));
     }
 
+    @Test
+    void shouldReportNullFieldWithCastNullAssignment(SpotBugsRunner spotbugs) {
+        BugCollection bugCollection = spotbugs.performAnalysis(
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/Issue4034.class"));
+
+        Optional<BugInstance> reportedBug = bugCollection.getCollection()
+                .stream()
+                .filter(bug -> "UWF_NULL_FIELD".equals(bug.getBugPattern().getType()))
+                .findAny();
+
+        assertTrue(
+                reportedBug.isPresent(),
+                "Expected UWF_NULL_FIELD for cast null field assignment");
+    }
+
     /**
      * {@code URF_UNREAD_FIELD} should be reported also in reflective classes.
      *

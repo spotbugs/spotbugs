@@ -19,9 +19,15 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
+import org.apache.bcel.generic.ACONST_NULL;
+import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.GETFIELD;
+import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.IFNONNULL;
 import org.apache.bcel.generic.IFNULL;
+import org.apache.bcel.generic.IF_ACMPEQ;
+import org.apache.bcel.generic.IF_ACMPNE;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 
@@ -40,9 +46,11 @@ public class IfNull extends OneVariableInstruction implements EdgeTypes {
     public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg, ValueNumberFrame before, ValueNumberFrame after,
             BindingSet bindingSet) throws DataflowAnalysisException {
 
-        // Instruction must be IFNULL or IFNONNULL.
+        // Instruction must be IFNULL/IFNONNULL, or a reference comparison
+        // (IF_ACMPEQ/IF_ACMPNE) against the null constant. The latter is how
+        // javac compiles a Yoda-style null check such as "null == field".
         Instruction ins = handle.getInstruction();
-        if (!(ins instanceof IFNULL || ins instanceof IFNONNULL)) {
+        if (!(ins instanceof IFNULL || ins instanceof IFNONNULL || isReferenceComparisonWithNull(handle))) {
             return null;
         }
 
@@ -52,9 +60,32 @@ public class IfNull extends OneVariableInstruction implements EdgeTypes {
         return addOrCheckDefinition(ref, bindingSet);
     }
 
+    private static boolean isReferenceComparisonWithNull(InstructionHandle handle) {
+        Instruction ins = handle.getInstruction();
+        if (!(ins instanceof IF_ACMPEQ || ins instanceof IF_ACMPNE)) {
+            return false;
+        }
+        // Yoda "null == ref": skip back over the reference load to the ACONST_NULL.
+        for (InstructionHandle prev = handle.getPrev(); prev != null; prev = prev.getPrev()) {
+            Instruction prevIns = prev.getInstruction();
+            if (prevIns instanceof ACONST_NULL) {
+                return true;
+            }
+            if (!isReferenceLoad(prevIns)) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isReferenceLoad(Instruction ins) {
+        return ins instanceof ALOAD || ins instanceof GETFIELD || ins instanceof GETSTATIC;
+    }
+
     @Override
     public boolean acceptBranch(Edge edge, InstructionHandle source) {
-        boolean isIfNull = (source.getInstruction() instanceof IFNULL);
-        return edge.getType() == (isIfNull ? IFCMP_EDGE : FALL_THROUGH_EDGE);
+        Instruction ins = source.getInstruction();
+        boolean branchOnNull = (ins instanceof IFNULL) || (ins instanceof IF_ACMPEQ);
+        return edge.getType() == (branchOnNull ? IFCMP_EDGE : FALL_THROUGH_EDGE);
     }
 }

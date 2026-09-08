@@ -78,7 +78,12 @@ public class DetectorFactoryCollection {
     final Map<String, Plugin> globalOptionsSetter = new HashMap<>();
 
     public DetectorFactoryCollection() {
-        this(true, false, Plugin.getAllPlugins(), new ArrayList<>());
+        this(true, false, initializePluginsForDefaultConstructor(), new ArrayList<>());
+    }
+
+    private static Collection<Plugin> initializePluginsForDefaultConstructor() {
+        PluginLoader.getCorePluginLoader();
+        return Plugin.getAllPlugins();
     }
 
     public DetectorFactoryCollection(Plugin onlyPlugin) {

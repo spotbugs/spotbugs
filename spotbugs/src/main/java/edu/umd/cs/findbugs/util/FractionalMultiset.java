@@ -96,7 +96,7 @@ public class FractionalMultiset<K> {
 
     @SuppressFBWarnings("DMI_ENTRY_SETS_MAY_REUSE_ENTRY_OBJECTS")
     public Iterable<Map.Entry<K, Double>> entriesInIncreasingOrder() {
-        TreeSet<Map.Entry<K, Double>> result = new TreeSet<>(new DecreasingOrderEntryComparator<>());
+        TreeSet<Map.Entry<K, Double>> result = new TreeSet<>(new IncreasingOrderEntryComparator<>());
         result.addAll(map.entrySet());
         if (result.size() != map.size()) {
             throw new IllegalStateException("Map " + map.getClass().getSimpleName()

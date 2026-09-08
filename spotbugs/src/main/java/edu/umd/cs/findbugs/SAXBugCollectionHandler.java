@@ -26,7 +26,6 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
 
@@ -145,11 +144,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
         pushCompoundMatcher(filter);
     }
 
-    Pattern ignoredElement = Pattern.compile("Message|ShortMessage|LongMessage");
+    private static final Set<String> IGNORED_ELEMENTS = Set.of("Message", "ShortMessage", "LongMessage");
 
     public boolean discardedElement(String qName) {
-        return ignoredElement.matcher(qName).matches();
-
+        return IGNORED_ELEMENTS.contains(qName);
     }
 
     public String getTextContents() {
@@ -546,13 +544,13 @@ public class SAXBugCollectionHandler extends DefaultHandler {
                 }
 
                 bugAnnotation = bugAnnotationWithSourceLines = new MethodAnnotation(classname, fieldOrMethodName, signature,
-                        Boolean.valueOf(isStatic));
+                        Boolean.parseBoolean(isStatic));
 
             } else {
                 String isStatic = getRequiredAttribute(attributes, "isStatic", qName);
                 String sourceSignature = getOptionalAttribute(attributes, "sourceSignature");
                 bugAnnotation = bugAnnotationWithSourceLines = new FieldAnnotation(classname, fieldOrMethodName, signature,
-                        sourceSignature, Boolean.valueOf(isStatic));
+                        sourceSignature, Boolean.parseBoolean(isStatic));
             }
             if (classAnnotationNames != null) {
                 ((PackageMemberAnnotation) bugAnnotation)

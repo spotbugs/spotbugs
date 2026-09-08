@@ -20,7 +20,16 @@
 package edu.umd.cs.findbugs;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +40,7 @@ import org.junit.jupiter.api.Test;
 class DetectorFactoryCollectionTest {
 
     private static final String JAWS_DEBUG_PROP = "findbugs.jaws.debug";
+    private static final String TEST_PLUGIN_ID = "com.example.cli-regression-test-plugin";
 
     private final String previousJawsDebugProperty = System.getProperty(JAWS_DEBUG_PROP);
 
@@ -65,5 +75,63 @@ class DetectorFactoryCollectionTest {
         DetectorFactoryCollection dfc =
                 assertDoesNotThrow(() -> new DetectorFactoryCollection(corePlugin));
         assertNotNull(dfc);
+    }
+
+    @Test
+    void defaultConstructorLoadsInitialPluginsInFreshJvm() throws Exception {
+        Path spotBugsHome = Files.createTempDirectory("spotbugs-home");
+        try {
+            Path pluginJar = spotBugsHome.resolve("plugin").resolve("cli-regression-test-plugin.jar");
+            Files.createDirectories(pluginJar.getParent());
+            createTestPluginJar(pluginJar);
+
+            String javaBin = Path.of(System.getProperty("java.home"), "bin", "java").toString();
+            Process process = new ProcessBuilder(
+                    javaBin,
+                    "-Dfindbugs.home=" + spotBugsHome,
+                    "-cp",
+                    System.getProperty("java.class.path"),
+                    CliBootstrapVerifier.class.getName())
+                    .redirectErrorStream(true)
+                    .start();
+            String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            int exitCode = process.waitFor();
+            assertEquals(0, exitCode, "Subprocess failed with output:\n" + output);
+        } finally {
+            Files.walk(spotBugsHome)
+                    .sorted(Comparator.reverseOrder())
+                    .forEach(path -> {
+                        try {
+                            Files.deleteIfExists(path);
+                        } catch (IOException ignored) {
+                            // ignore cleanup failures in test teardown
+                        }
+                    });
+        }
+    }
+
+    private static void createTestPluginJar(Path pluginJar) throws IOException {
+        try (JarOutputStream jarOutputStream = new JarOutputStream(Files.newOutputStream(pluginJar))) {
+            writeJarEntry(jarOutputStream, "findbugs.xml", "<FindbugsPlugin pluginid=\"" + TEST_PLUGIN_ID + "\"/>");
+            writeJarEntry(jarOutputStream, "messages.xml",
+                    "<MessageCollection><Plugin><ShortDescription>CLI regression plugin</ShortDescription></Plugin></MessageCollection>");
+        }
+    }
+
+    private static void writeJarEntry(JarOutputStream jarOutputStream, String entryName, String content) throws IOException {
+        jarOutputStream.putNextEntry(new JarEntry(entryName));
+        jarOutputStream.write(content.getBytes(StandardCharsets.UTF_8));
+        jarOutputStream.closeEntry();
+    }
+
+    public static final class CliBootstrapVerifier {
+        public static void main(String[] args) {
+            DetectorFactoryCollection.resetInstance(null);
+            DetectorFactoryCollection detectorFactoryCollection = DetectorFactoryCollection.instance();
+            if (detectorFactoryCollection.getPluginById(TEST_PLUGIN_ID) == null) {
+                System.err.println("Expected initial plugin to be loaded into DetectorFactoryCollection: " + TEST_PLUGIN_ID);
+                System.exit(1);
+            }
+        }
     }
 }

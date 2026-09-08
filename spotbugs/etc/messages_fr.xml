@@ -3385,7 +3385,7 @@ Ce string utilisé dans un format contient le caractère newline (\n). Il est g�
  </BugPattern>
   <BugPattern type="UNS_UNSAFE_CALL">
     <ShortDescription>Appel à Unsafe.</ShortDescription>
-    <LongDescription>N'utilisez pas {0}. Comme l'indique le nom de cette classe, l'utilisation de ses méthodes peut causer des failles de sécurité.
+    <LongDescription>N'utilisez pas {4}. Comme l'indique le nom de cette classe, l'utilisation de ses méthodes peut causer des failles de sécurité.
     </LongDescription>
     <Details>
       <![CDATA[
