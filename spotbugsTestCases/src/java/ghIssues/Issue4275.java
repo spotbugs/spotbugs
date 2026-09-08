@@ -1,6 +1,6 @@
 package ghIssues;
 
-public class Issue4295 {
+public class Issue4275 {
 
     public void impossibleNullCondition(Object value) {
         if (value == null && value != null) {
