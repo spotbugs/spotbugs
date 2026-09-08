@@ -728,7 +728,6 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
                 } else if (tos.isDefinitelyNotNull()) {
                     return null;
                 } else if (notInstanceOfImpliesNull) {
-                if (notInstanceOfImpliesNull) {
                     // "not instanceof" branch: value must be null; "instanceof" branch: value is non-null
                     ifcmpDecision = isNotInstanceOf ? IsNullValue.pathSensitiveNullValue() : IsNullValue.pathSensitiveNonNullValue();
                     fallThroughDecision = isNotInstanceOf ? IsNullValue.pathSensitiveNonNullValue() : IsNullValue.pathSensitiveNullValue();
