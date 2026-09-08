@@ -15,4 +15,7 @@ public class InnerChildAndMoreInstanceReordered {
     public static InnerChildAndMoreInstanceReordered getUnknown() {
         return UNKNOWN;
     }
+
+    protected InnerChildAndMoreInstanceReordered() {
+    }
 }
