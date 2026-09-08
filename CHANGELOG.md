@@ -10,6 +10,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ### Fixed
 - Fix `NP_NULL_ON_SOME_PATH` false positive when `instanceof` check is always true because the value was created with `new` and its exact type is a subtype of the checked type (e.g. `Base value = new Derived(); if (value instanceof Derived) result = new Object(); result.toString()`) ([#4273](https://github.com/spotbugs/spotbugs/issues/4273))
+- Fix `NN_NAKED_NOTIFY` false positive when guarded state is updated before the synchronized block that calls `notify`/`notifyAll` ([#3786](https://github.com/spotbugs/spotbugs/issues/3786))
 - Fix `SA_LOCAL_SELF_ASSIGNMENT` false positive in methods with `++`/`--` inside a switch nested in a try-catch block ([#3929](https://github.com/spotbugs/spotbugs/issues/3929))
 - Fix `OS_OPEN_STREAM` false positive when the result of `PrintWriter.append()` is reassigned before closing the writer ([#4274](https://github.com/spotbugs/spotbugs/issues/4274))
 - Fix `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` false negative when lazy init uses a ternary assignment instead of an `if` statement ([#4154](https://github.com/spotbugs/spotbugs/issues/4154))
@@ -18,6 +19,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `MS_EXPOSE_BUF` and `EI_EXPOSE_BUF` false negative when returning `Buffer.array()` ([#4235](https://github.com/spotbugs/spotbugs/pull/4235))
 - Fix `OBL_UNSATISFIED_OBLIGATION` false negatives for unclosed `CallableStatement`s returned by `Connection.prepareCall` ([#4148](https://github.com/spotbugs/spotbugs/issues/4148))
 - Fix `LI_LAZY_INIT_STATIC` false negative when field is lazily initialized using a method call ([#4276](https://github.com/spotbugs/spotbugs/issues/4276))
+- Fix SARIF output writing source-location URI syntax exceptions to stderr when source filenames are unknown ([#1412](https://github.com/spotbugs/spotbugs/issues/1412))
+- Narrow the definition of singletons ([#2985](https://github.com/spotbugs/spotbugs/issues/2985))
+- Fix `NP_LOAD_OF_KNOWN_NULL_VALUE` false negative when null check uses `instanceof` ([#3916](https://github.com/spotbugs/spotbugs/issues/3916))
 
 ## 4.10.4 - 2026-08-19
 ### Fixed
