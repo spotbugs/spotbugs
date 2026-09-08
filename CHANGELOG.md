@@ -19,6 +19,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `OBL_UNSATISFIED_OBLIGATION` false negatives for unclosed `CallableStatement`s returned by `Connection.prepareCall` ([#4148](https://github.com/spotbugs/spotbugs/issues/4148))
 - Fix `LI_LAZY_INIT_STATIC` false negative when field is lazily initialized using a method call ([#4276](https://github.com/spotbugs/spotbugs/issues/4276))
 - Fix SARIF output writing source-location URI syntax exceptions to stderr when source filenames are unknown ([#1412](https://github.com/spotbugs/spotbugs/issues/1412))
+- Narrow the definition of singletons ([#2985](https://github.com/spotbugs/spotbugs/issues/2985))
 - Fix `NP_LOAD_OF_KNOWN_NULL_VALUE` false negative when null check uses `instanceof` ([#3916](https://github.com/spotbugs/spotbugs/issues/3916))
 
 ## 4.10.4 - 2026-08-19
