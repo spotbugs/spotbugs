@@ -9,6 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - `@SuppressFBWarnings` annotation on a method or a constructor now suppresses warnings reported in their lambdas too ([#724](https://github.com/spotbugs/spotbugs/issues/724))
 
 ### Fixed
+- Fix `NP_NULL_ON_SOME_PATH` false positive when `instanceof` check is always true because the value was created with `new` and its exact type is a subtype of the checked type (e.g. `Base value = new Derived(); if (value instanceof Derived) result = new Object(); result.toString()`) ([#4273](https://github.com/spotbugs/spotbugs/issues/4273))
 - Fix `SA_LOCAL_SELF_ASSIGNMENT` false positive in methods with `++`/`--` inside a switch nested in a try-catch block ([#3929](https://github.com/spotbugs/spotbugs/issues/3929))
 - Fix `OS_OPEN_STREAM` false positive when the result of `PrintWriter.append()` is reassigned before closing the writer ([#4274](https://github.com/spotbugs/spotbugs/issues/4274))
 - Fix `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` false negative when lazy init uses a ternary assignment instead of an `if` statement ([#4154](https://github.com/spotbugs/spotbugs/issues/4154))
