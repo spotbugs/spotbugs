@@ -1470,18 +1470,32 @@ public class OpcodeStack {
                 push(new Item("I"));
                 break;
 
-            case Const.IFNONNULL:
-            case Const.IFNULL:
-                // {
-                // Item topItem = pop();
-                // if (seen == IFNONNULL && topItem.isNull())
-                // break;
-                // seenTransferOfControl = true;
-                // addJumpValue(dbc.getPC(), dbc.getBranchTarget());
-                //
-                // break;
-                // }
-
+            case Const.IFNONNULL: {
+                seenTransferOfControl = true;
+                Item topItem = pop();
+                addJumpValue(dbc.getPC(), dbc.getBranchTarget());
+                // On fall-through the tested value is null; propagate that to the local variable
+                // so that a subsequent IFNULL on the same variable can detect the dead fall-through.
+                int reg = topItem.registerNumber;
+                if (reg >= 0 && reg < lvValues.size()) {
+                    lvValues.set(reg, Item.nullItem(topItem.getSignature()));
+                }
+                break;
+            }
+            case Const.IFNULL: {
+                seenTransferOfControl = true;
+                Item topItem = pop();
+                addJumpValue(dbc.getPC(), dbc.getBranchTarget());
+                // If the item is a local variable definitely set to null (e.g. ACONST_NULL or null-propagated
+                // through IFNONNULL fall-through), the jump always happens and the fall-through is dead code.
+                // Only apply when registerNumber >= 0 (local variable); field-summary nulls (registerNumber == -1)
+                // reflect initial state and may not be null at every call site.
+                if (topItem.isNull() && topItem.registerNumber >= 0) {
+                    setReachOnlyByBranch(true);
+                    setTop(true);
+                }
+                break;
+            }
             case Const.IFEQ:
             case Const.IFNE:
             case Const.IFLT:
