@@ -201,16 +201,21 @@ public abstract class AbstractPluginTest {
     protected static void processUiEvents(long delayInMilliseconds) {
         long start = System.currentTimeMillis();
         long sleepTime = delayInMilliseconds > 10 ? 10 : delayInMilliseconds;
+        boolean interrupted = false;
         while (true) {
             try {
                 Thread.sleep(sleepTime);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                interrupted = true;
             }
             processUiEvents();
             if (System.currentTimeMillis() - start > delayInMilliseconds) {
                 break;
             }
+        }
+
+        if (interrupted) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -392,13 +397,19 @@ public abstract class AbstractPluginTest {
      */
     protected void joinJobFamily(Object family) {
         boolean finished = false;
+        boolean interrupted = false;
         while (!finished) {
             try {
                 getJobManager().join(family, null);
                 finished = true;
             } catch (InterruptedException e) {
                 // continue waiting
+                interrupted = true;
             }
+        }
+
+        if (interrupted) {
+            Thread.currentThread().interrupt();
         }
     }
 
