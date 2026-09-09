@@ -693,8 +693,6 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
                     // ifnonnull
                     fallThroughDecision = tos;
                 }
-            } else if (tos.isDefinitelyNotNull()) {
-                return null;
             } else {
                 // Check if the static type of the value is a subtype of the instanceof check type.
                 // If so, "not instanceof" can only happen when the value is null.
@@ -719,7 +717,17 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
                 } catch (DataflowAnalysisException e) {
                     // Failed to obtain type dataflow information; fall back to conservative defaults.
                 }
-                if (notInstanceOfImpliesNull) {
+                if (tos.isDefinitelyNotNull() && notInstanceOfImpliesNull) {
+                    // Value is known non-null and its static type is a subtype of the check type,
+                    // so instanceof is always true — the "not instanceof" branch is infeasible.
+                    if (isNotInstanceOf) {
+                        fallThroughDecision = tos; // only the instanceof (fall-through) branch is reachable
+                    } else {
+                        ifcmpDecision = tos; // only the instanceof (jump) branch is reachable
+                    }
+                } else if (tos.isDefinitelyNotNull()) {
+                    return null;
+                } else if (notInstanceOfImpliesNull) {
                     // "not instanceof" branch: value must be null; "instanceof" branch: value is non-null
                     ifcmpDecision = isNotInstanceOf ? IsNullValue.pathSensitiveNullValue() : IsNullValue.pathSensitiveNonNullValue();
                     fallThroughDecision = isNotInstanceOf ? IsNullValue.pathSensitiveNonNullValue() : IsNullValue.pathSensitiveNullValue();
