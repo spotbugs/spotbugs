@@ -16,7 +16,11 @@ tasks.named('sonar').configure {
 }
 
 allprojects {
-    tasks.matching { task -> task.name == 'sonarResolver' }.configureEach {
-        dependsOn tasks.matching { task -> task.name == 'classes' }
+  tasks.matching { task ->
+    task.name == 'sonarResolver'
+  }.configureEach {
+    dependsOn tasks.matching { task ->
+      task.name == 'classes'
     }
+  }
 }
