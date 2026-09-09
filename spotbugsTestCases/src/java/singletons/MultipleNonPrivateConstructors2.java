@@ -3,7 +3,7 @@ package singletons;
 public class MultipleNonPrivateConstructors2 {
     private static MultipleNonPrivateConstructors2 instance;
 
-    public MultipleNonPrivateConstructors2(Object parameter) {
+    protected MultipleNonPrivateConstructors2(Object parameter) {
     }
 
     private MultipleNonPrivateConstructors2() {
