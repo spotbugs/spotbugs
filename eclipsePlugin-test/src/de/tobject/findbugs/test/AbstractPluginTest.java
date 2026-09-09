@@ -45,7 +45,7 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.junit.buildpath.BuildPathSupport;
+import org.eclipse.jdt.junit.JUnitCore;
 import org.eclipse.jdt.testplugin.JavaProjectHelper;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
@@ -106,7 +106,7 @@ public abstract class AbstractPluginTest {
     }
 
     protected static void addJUnitToProjectClasspath() throws JavaModelException {
-        IClasspathEntry cpe = BuildPathSupport.getJUnit4ClasspathEntry();
+        IClasspathEntry cpe = JavaCore.newContainerEntry(JUnitCore.JUNIT4_CONTAINER_PATH);
         JavaProjectHelper.addToClasspath(getJavaProject(), cpe);
     }
 
