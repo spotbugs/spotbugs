@@ -693,8 +693,6 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
                     // ifnonnull
                     fallThroughDecision = tos;
                 }
-            } else if (tos.isDefinitelyNotNull()) {
-                return null;
             } else {
                 // Check if the static type of the value is a subtype of the instanceof check type.
                 // If so, "not instanceof" can only happen when the value is null.
@@ -719,7 +717,14 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
                 } catch (DataflowAnalysisException e) {
                     // Failed to obtain type dataflow information; fall back to conservative defaults.
                 }
-                if (notInstanceOfImpliesNull) {
+                if (tos.isDefinitelyNotNull() && notInstanceOfImpliesNull) {
+                    // The value is non-null and its type is known to satisfy the instanceof check.
+                    if (isNotInstanceOf) {
+                        fallThroughDecision = tos;
+                    } else {
+                        ifcmpDecision = tos;
+                    }
+                } else if (notInstanceOfImpliesNull) {
                     // "not instanceof" branch: value must be null; "instanceof" branch: value is non-null
                     ifcmpDecision = isNotInstanceOf ? IsNullValue.pathSensitiveNullValue() : IsNullValue.pathSensitiveNonNullValue();
                     fallThroughDecision = isNotInstanceOf ? IsNullValue.pathSensitiveNonNullValue() : IsNullValue.pathSensitiveNullValue();
@@ -736,6 +741,18 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         }
 
         if (!nullComparisonInstructionSet.get(lastInSourceOpcode)) {
+            if (lastInSourceOpcode == Const.IF_ICMPEQ || lastInSourceOpcode == Const.IF_ICMPNE) {
+                ValueNumberFrame prevVnaFrame = vnaDataflow
+                        .getFactAtLocation(new Location(lastInSourceHandle, basicBlock));
+                ValueNumber tos = prevVnaFrame.getStackValue(0);
+                ValueNumber nextToTos = prevVnaFrame.getStackValue(1);
+                if (tos.equals(nextToTos)) {
+                    boolean comparisonIsTrue = lastInSourceOpcode == Const.IF_ICMPEQ;
+                    IsNullValue feasibleDecision = IsNullValue.pathSensitiveNonNullValue();
+                    return new IsNullConditionDecision(null, comparisonIsTrue ? feasibleDecision : null,
+                            comparisonIsTrue ? null : feasibleDecision);
+                }
+            }
             return null; // doesn't end in null comparison
         }
 
