@@ -28,12 +28,14 @@ import edu.umd.cs.findbugs.classfile.DescriptorFactory;
  */
 public class TestCaseDetector {
 
+    private static final ClassDescriptor JUNIT5TEST = DescriptorFactory.createClassDescriptor("org/junit/jupiter/api/Test");
+
     private static final ClassDescriptor JUNIT4TEST = DescriptorFactory.createClassDescriptor("org/junit/Test");
 
     private static final ClassDescriptor JUNIT3TESTCASE = DescriptorFactory.createClassDescriptor("junit/framework/TestCase");
 
     public static boolean likelyTestCase(XMethod m) {
-        if (m.getAnnotation(JUNIT4TEST) != null) {
+        if (m.getAnnotation(JUNIT4TEST) != null || m.getAnnotation(JUNIT5TEST) != null) {
             return true;
         }
 

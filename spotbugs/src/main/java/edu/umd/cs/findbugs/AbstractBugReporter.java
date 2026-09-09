@@ -26,10 +26,11 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import org.dom4j.DocumentException;
@@ -118,7 +119,9 @@ public abstract class AbstractBugReporter implements BugReporter {
 
     private int rankThreshold;
 
-    private boolean relaxedSet, relaxed;
+    private boolean relaxedSet;
+
+    private boolean relaxed;
 
     private int errorCount;
 
@@ -130,7 +133,9 @@ public abstract class AbstractBugReporter implements BugReporter {
 
     private final ProjectStats projectStats;
 
-    public AbstractBugReporter() {
+    private PriorityAdjuster priorityAdjuster;
+
+    protected AbstractBugReporter() {
         super();
         verbosityLevel = NORMAL;
         missingClassMessageList = new LinkedHashSet<>();
@@ -140,6 +145,8 @@ public abstract class AbstractBugReporter implements BugReporter {
         // bug 2815983: no bugs are reported anymore
         // there is no info which value should be default, so using the max
         rankThreshold = BugRanker.VISIBLE_RANK_MAX;
+        // using by default empty settings
+        priorityAdjuster = new PriorityAdjuster(Map.of());
     }
 
     @Override
@@ -161,6 +168,17 @@ public abstract class AbstractBugReporter implements BugReporter {
         this.relaxedSet = true;
     }
 
+    /**
+     * Allows to adjust priorities when bugs are reported. Bugs imported from XML
+     * (see {@link #reportBugsFromXml(InputStream, Project)} are not affected.
+     *
+     * @param priorityAdjuster the priority adjuster
+     */
+    @Override
+    public void setPriorityAdjuster(PriorityAdjuster priorityAdjuster) {
+        this.priorityAdjuster = priorityAdjuster;
+    }
+
     protected boolean isRelaxed() {
         if (!relaxedSet) {
             if (FindBugsAnalysisFeatures.isRelaxedMode()) {
@@ -179,6 +197,7 @@ public abstract class AbstractBugReporter implements BugReporter {
             doReportBug(bugInstance);
             return;
         }
+        bugInstance = priorityAdjuster != null ? priorityAdjuster.adjustPriority(bugInstance) : bugInstance;
         if (priorityThreshold == 0) {
             throw new IllegalStateException("Priority threshold not set");
         }
@@ -190,15 +209,13 @@ public abstract class AbstractBugReporter implements BugReporter {
         }
         int priority = bugInstance.getPriority();
         int bugRank = bugInstance.getBugRank();
-        if (priority <= priorityThreshold && bugRank <= rankThreshold) {
-            doReportBug(bugInstance);
+        if (priority > priorityThreshold) {
+            LOG.debug("AbstractBugReporter: Filtering due to priorityThreshold {} > {}", priority,
+                    priorityThreshold);
+        } else if (bugRank > rankThreshold) {
+            LOG.debug("AbstractBugReporter: Filtering due to rankThreshold {} > {}", bugRank, rankThreshold);
         } else {
-            if (priority <= priorityThreshold) {
-                LOG.debug("AbstractBugReporter: Filtering due to priorityThreshold {} > {}", priority,
-                        priorityThreshold);
-            } else {
-                LOG.debug("AbstractBugReporter: Filtering due to rankThreshold {} > {}", bugRank, rankThreshold);
-            }
+            doReportBug(bugInstance);
         }
     }
 
@@ -233,7 +250,7 @@ public abstract class AbstractBugReporter implements BugReporter {
         logMissingClass(getMissingClassName(ex));
     }
 
-    static final protected boolean isValidMissingClassMessage(String message) {
+    protected static final boolean isValidMissingClassMessage(String message) {
         if (message == null) {
             return false;
         }
@@ -250,7 +267,7 @@ public abstract class AbstractBugReporter implements BugReporter {
             return false;
         }
 
-        if ("".equals(message)) {
+        if (message.isEmpty()) {
             // Subtypes2 throws ClassNotFoundExceptions with no message in
             // some cases. Ignore them (the missing classes will already
             // have been reported).
@@ -279,7 +296,7 @@ public abstract class AbstractBugReporter implements BugReporter {
             return;
         }
 
-        logMissingClass(classDescriptor.toDottedClassName());
+        logMissingClass(classDescriptor.getDottedClassName());
     }
 
     /**
@@ -421,4 +438,9 @@ public abstract class AbstractBugReporter implements BugReporter {
      *            the name of the class
      */
     public abstract void reportMissingClass(String string);
+
+    @Override
+    public PriorityAdjuster getPriorityAdjuster() {
+        return priorityAdjuster;
+    }
 }

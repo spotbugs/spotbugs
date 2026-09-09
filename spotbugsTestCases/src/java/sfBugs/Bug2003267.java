@@ -17,7 +17,7 @@ public class Bug2003267 {
             target = new Works();
         }
 
-        target.bar(param); // < reports a "possible null pointer derefence" for
+        target.bar(param); // < reports a "possible null pointer dereference" for
         // < target (NP_NULL_ON_SOME_PATH): Correctly detected
     }
 

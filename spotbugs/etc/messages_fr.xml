@@ -57,6 +57,11 @@
     <!-- Details subelement needed -->
   </BugCategory>
 
+  <BugCategory category="SECURITY">
+    <Description>Sécurité</Description>
+    <Abbreviation>S</Abbreviation>
+    <Details>Une utilisation d’entrées non fiables d’une manière qui pourrait créer une vulnérabilité de sécurité exploitable à distance.</Details>
+  </BugCategory>
 
  <Detector class="edu.umd.cs.findbugs.detect.CheckImmutableAnnotation">
   <Details>
@@ -940,6 +945,14 @@ Un accesseur spécial est généré dans ce cas par la compilateur pour écrire 
 ]]>
   </Details>
  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.UnsafeDetector">
+    <Details>
+<![CDATA[
+<p>Ce détecteur cherche les appels aux classes Unsafe.</p>
+]]>
+    </Details>
+  </Detector>
+
  <BugPattern type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD">
   <ShortDescription>Certaines méthodes Swing ne doivent être invoquées qu'à partir du thread Swing</ShortDescription>
   <LongDescription>L'appel de la méthode Swing {1} doit être effectué à partir du thread Swing</LongDescription>
@@ -956,7 +969,7 @@ Un accesseur spécial est généré dans ce cas par la compilateur pour écrire 
   <LongDescription>Il y a apparemment une boucle infinie dans {1}</LongDescription>
   <Details>
 <![CDATA[
-<p>Cette boucle ne semble pas avoir un moyen de se terminer (autrement que, peut être, en déclenchant une exception).</p>
+<p>Cette boucle ne semble pas avoir un moyen de se terminer (autrement que, peut être, en déclenchant une exception). Les boucles sans condition comme <code>while (true) {...}</code> sont considerées comme intentionnelles et ne sont pas reportées comme des bugs</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1512,11 +1525,11 @@ public int hashCode() {
   </Details>
  </BugPattern>
  <BugPattern type="MS_EXPOSE_REP">
-  <ShortDescription>Une méthode statique publique risque d'exposer une représentation interne en renvoyant un tableau</ShortDescription>
+  <ShortDescription>Une méthode statique publique risque d'exposer une représentation interne en renvoyant un objet modifiable ou un tableau</ShortDescription>
   <LongDescription>La méthode statique publique {1} peut exposer une représentation interne en renvoyant {2}</LongDescription>
   <Details>
 <![CDATA[
-<p>Une méthode statique publique renvoit une référence à un tableau faisant partie de l'état statique de la classe. Tout code appelant cette méthode peut librement modifier le tableau sous-jacent. Une correction possible serait de renvoyer une copie du tableau.</p>
+<p>Une méthode statique publique renvoit une référence à un objet modifiable ou à un tableau faisant partie de l'état statique de la classe. Tout code appelant cette méthode peut librement modifier le tableau sous-jacent. Une correction possible serait de renvoyer une copie du tableau.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1539,11 +1552,11 @@ public int hashCode() {
   </Details>
  </BugPattern>
  <BugPattern type="EI_EXPOSE_STATIC_REP2">
-  <ShortDescription>Une méthode peut exposer un état interne statique en stockant un objet modifiable dans un champs statique</ShortDescription>
+  <ShortDescription>Une méthode peut exposer un état interne statique en stockant un objet modifiable dans un champ statique</ShortDescription>
   <LongDescription>La méthode {1} peut exposer un état interne statique en stockant un objet modifiable dans le champs statique {2}</LongDescription>
   <Details>
 <![CDATA[
-<p>Ce code stocke une référence à un objet modifiable externe dans un champs statique. Si des modifications non vérifiées de l'objet modifiable peuvent compromettre la sécurité ou d'autres propriétés importantes, vous devez faire autre chose. Stocker une copie de l'objet est souvent une meilleur approche.</p>
+<p>Ce code stocke une référence à un objet modifiable externe dans un champ statique. Si des modifications non vérifiées de l'objet modifiable peuvent compromettre la sécurité ou d'autres propriétés importantes, vous devez faire autre chose. Stocker une copie de l'objet est souvent une meilleur approche.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1580,15 +1593,6 @@ public int hashCode() {
   <Details>
 <![CDATA[
 <p>Attendre sur on moniteur alors que deux verrous sont détenus peut entraîner un blocage fatal (deadlock). Exécuter un <code>wait()</code> ne libère que le verrou sur l'objet accueillant le <code>wait()</code>, mais aucun autre verrou. Ce n'est pas obligatoirement un bogue, mais il vaut mieux examiner ça en détails.</p>
-]]>
-  </Details>
- </BugPattern>
- <BugPattern type="TLW_TWO_LOCK_NOTIFY" deprecated="true">
-  <ShortDescription>Notify avec deux verrous en cours</ShortDescription>
-  <LongDescription>notify() ou notifyAll*() avec deux verrous en cours dans {1}</LongDescription>
-  <Details>
-<![CDATA[
-<p>Le code appelle <code>notify()</code> ou <code>notifyAll()</code> alors que deux verrous sans en cours. Si cette notification tente de réveiller un <code>wait()</code> basé sur les mêmes verrous cela peut provoquer un inter-blocage puisque le <code>wait()</code> ne libérera qu'un des verrous et que le <code>notify()</code> ne pourra pas récupérer l'autre verrou et échouera. Si il y a aussi une alarme sur un <code>wait()</code> avec deux verrous, la probabilité d'une erreur est plutôt élevée.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1697,7 +1701,7 @@ synchronized() {}
   <LongDescription>{1} devrait être sorti de l'interface et mis en package protected</LongDescription>
   <Details>
 <![CDATA[
-<p>Un champ final static défini dans une interface référence un objet modifiable tel qu'un tableau ou une table de hachage. Cet objet pourrait être modifié par accident ou par du code sournois d'un autre paquetage. Pour résoudre cela et éviter cette vulnérabilité, le champ doit être intégré dans une classe et sa visibilité modifiée en package protected.</p>
+<p>Un champ static final défini dans une interface référence un objet modifiable tel qu'un tableau ou une table de hachage. Cet objet pourrait être modifié par accident ou par du code sournois d'un autre paquetage. Pour résoudre cela et éviter cette vulnérabilité, le champ doit être intégré dans une classe et sa visibilité modifiée en package protected.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1710,12 +1714,22 @@ synchronized() {}
 ]]>
   </Details>
  </BugPattern>
+ <BugPattern type="MS_SHOULD_BE_REFACTORED_TO_BE_FINAL">
+  <ShortDescription>Un champ n'est pas final alors qu'il devrait refactorisé pour l'être</ShortDescription>
+  <LongDescription>{1} n'est pas final mais devrait être refactorisé pour l'être</LongDescription>
+  <Details>
+<![CDATA[
+<p>Un champ <code>public static</code> ou <code>protected static</code> peut-être changé par accident ou par du code malveillant d'un autre paquetage. Le champ devrait être final pour éviter cette vulnérabilité.
+Cependant l'initialisation du champ comporte plusieurs écriture, ce qui requiererait donc un refactor.</p>
+]]>
+  </Details>
+ </BugPattern>
  <BugPattern type="MS_SHOULD_BE_FINAL">
   <ShortDescription>Un champ n'est pas final alors qu'il devrait l'être</ShortDescription>
   <LongDescription>{1} n'est pas final mais devrait l'être</LongDescription>
   <Details>
 <![CDATA[
-<p>Un champ statique modifiable peut-être changé par accident ou par du code malveillant d'un autre paquetage. Le champ devrait être final pour éviter cette vulnérabilité.</p>
+<p>Un champ <code>public static</code> ou <code>protected static</code> peut-être changé par accident ou par du code malveillant d'un autre paquetage. Le champ devrait être final pour éviter cette vulnérabilité.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1733,7 +1747,7 @@ synchronized() {}
   <LongDescription>{1} une Hashtable modifiable</LongDescription>
   <Details>
 <![CDATA[
-<p>Le champ est une référence final static à une <code>Hashtable</code> et peut-être modifié par accident ou par du code malveillant d'un autre paquetage. Ce code peut librement modifier le contenu de la <code>Hashtable</code>.</p>
+<p>Le champ est une référence static final à une <code>Hashtable</code> et peut-être modifié par accident ou par du code malveillant d'un autre paquetage. Ce code peut librement modifier le contenu de la <code>Hashtable</code>.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1742,7 +1756,7 @@ synchronized() {}
   <LongDescription>{1} est un tableau modifiable</LongDescription>
   <Details>
 <![CDATA[
-<p>Le champ est une référence final static à un tableau et peut-être modifié par accident ou par du code malveillant d'un autre paquetage. Ce code peut librement modifier le contenu du tableau.</p>
+<p>Le champ est une référence static final à un tableau et peut-être modifié par accident ou par du code malveillant d'un autre paquetage. Ce code peut librement modifier le contenu du tableau.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -2116,15 +2130,6 @@ Si c'est bien le cas, retirez la déclaration d'une valeur de retour.</p>
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" deprecated="true">
-  <ShortDescription>Lecture d'un champ non initalisé dans le constructeur</ShortDescription>
-  <LongDescription>Lecture d'un champ non initalisé dans le constructeur {1}</LongDescription>
-  <Details>
-<![CDATA[
-<p>Lecture d'un champ qui n'est jamais initialisé dans aucun constructeur, et qui sera <code>null</code> une fois l'initialisation de l'objet terminée. Ce peut être un erreur de code, ou bien la classe contenant le champ est construite de telle manière que le champ est écrit en fonction de l'appel de méthodes dans un certain ordre (un peu délicat mais pas nécessairement mauvais).</p>
-]]>
-  </Details>
- </BugPattern>
  <BugPattern type="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">
   <ShortDescription>Champ non initialisé dans le constructeur</ShortDescription>
   <LongDescription>Le champ n'est pas initialisé dans le constructeur {1}</LongDescription>
@@ -2421,20 +2426,6 @@ if (argv.length == 1);
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON" deprecated="true">
-  <ShortDescription>Comparaison redondante à null d'une valeur préalablement vérifiée</ShortDescription>
-  <LongDescription>Comparaison redondante à null d'une valeur préalablement vérifiée dans {1}</LongDescription>
-  <Details>
-<![CDATA[
-<p>Cette méthode contient une comparaison redondante d'une référence à <code>null</code>. Deux types de comparaisons redondantes sont signalés :</p>
-<ul>
-<li>les deux valeurs sont définitivement à <code>null</code></li>
-<li>une valeur est définitivement à <code>null</code> et l'autre ne pourra jamais l'être</li>
-</ul>
-<p>Cette alarme signale généralement qu'une variable connue pour être différente de <code>null</code> est comparée avec <code>null</code>. Bien que le test ne soit pas nécessaire, ce peut-être un simple cas de programmation défensive.</p>
-]]>
-  </Details>
- </BugPattern>
  <BugPattern type="UL_UNRELEASED_LOCK">
   <ShortDescription>La méthode ne libère pas un verrou dans tous les chemins d'exécution</ShortDescription>
   <LongDescription>La méthode {1} ne libère pas un verrou dans tous les chemins d'exécution</LongDescription>
@@ -2551,8 +2542,8 @@ public vida foo() {
   </Details>
  </BugPattern>
  <BugPattern type="SA_FIELD_SELF_ASSIGNMENT">
-  <ShortDescription>Auto-alimentation d'un champs</ShortDescription>
-  <LongDescription>Auto-alimentation du champs {2} dans {1}</LongDescription>
+  <ShortDescription>Auto-alimentation d'un champ</ShortDescription>
+  <LongDescription>Auto-alimentation du champ {2} dans {1}</LongDescription>
   <Details>
 <![CDATA[
 <p>Cette méthode contient un champ s'auto-alimentant; par exemple :</p>
@@ -2637,15 +2628,6 @@ public void foo() {
 <![CDATA[
 <p>Cette méthode compare une expression de la forme (a <code>|</code> C) avec D, qui est toujours inégale en raison des valeurs spécifiques des constantes C et D. Ceci peut indiquer une erreur logique ou une faute de frappe.</p>
 <p>Typiquement, ce bogue arrive quand du code essaye d'effectuer un test d'apparition d'un bit mais utilise l'opérateur OU ("<code>|</code>") au lieu de l'opérateur ET ("<code>&amp;</code>").</p>
-]]>
-  </Details>
- </BugPattern>
- <BugPattern type="LI_LAZY_INIT_INSTANCE" deprecated="true">
-  <ShortDescription>Initialisation paresseuse incorrecte d'un champ d'instance</ShortDescription>
-  <LongDescription>Initialisation paresseuse incorrecte du champ d'instance {2} dans {1}</LongDescription>
-  <Details>
-<![CDATA[
-<p>Cette méthode contient une initialisation paresseuse non synchronisée d'un champ non <code>volatile</code>. Comme le compilateur ou le processeur peuvent réordonner les instructions, les threads ne sont pas certains de voir un objet complètement initialisé, <em>si la méthode peut-être appelée par de multiples threads</em>. Vous pouvez rendre le champs <code>volatile</code> pour corriger le problème. Pour plus d'informations, cf. <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/">site Web sur le modèle mémoire de Java</a>.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -2779,15 +2761,6 @@ String s = buf.toString();
   <Details>
 <![CDATA[
 <p>Cette méthode surcharge une méthode provenant d'une classe mère qui est un <code>Adapter</code> qui implémente un <code>Listener</code> défini dans le paquetage <code>java.awt.event</code> ou <code>javax.swing.event</code>. En conséquence, cette méthode ne sera pas appelée quand l'évènement se produira.</p>
-]]>
-  </Details>
- </BugPattern>
- <BugPattern type="BRSA_BAD_RESULTSET_ACCESS" deprecated="true">
-  <ShortDescription>La méthode essaye d'accéder à un champ de ResultSet avec l'index 0</ShortDescription>
-  <LongDescription>La méthode {1} essaye au champ d'index 0 d'un ResultSet</LongDescription>
-  <Details>
-<![CDATA[
-<p>Un appel à la méthode <code>getXXX()</code> ou <code>updateXXX()</code> d'un <code>ResultSet</code> est effectué avec l'index de champ 0. Comme l'index des champs de <code>ResultSet</code> commence à 1 c'est toujours une erreur.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -3130,15 +3103,6 @@ double value2 =  x / (double) y;
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="BC_NULL_INSTANCEOF" deprecated="true">
-  <ShortDescription>Une valeur connue pour être à null est vérifiée pour savoir si elle est une instance d'un type</ShortDescription>
-  <LongDescription>Une valeur connue pour être à null est vérifiée pour savoir si elle est une instance d'un type dans {1}</LongDescription>
-  <Details>
-<![CDATA[
-<p>Ce test <code>instanceof</code> renverra systématiquement <code>false</code>, puisqu'il est garanti que la valeur testée sera à <code>null</code>. Bien que ce test soit sûr, il est probable qu'il indique une incompréhension ou une erreur de logique.</p>
-]]>
-  </Details>
- </BugPattern>
  <BugPattern type="BC_IMPOSSIBLE_INSTANCEOF">
   <ShortDescription>instanceof renverra toujours faux</ShortDescription>
   <LongDescription>instanceof renvoyant toujours faux dans {1}, puisque qu'aucun  {3} ne peut être un {4}</LongDescription>
@@ -3253,7 +3217,7 @@ double value2 =  x / (double) y;
   <LongDescription>Un test d'impaire ne fonctionnera pas avec les négatifs dans {1}</LongDescription>
   <Details>
 <![CDATA[
-<p>Le code utilise <code>x % 2 == 1</code> pour véifier si une valeur est impaire, mais cela ne fonctionera pas avec une valeur négative (Ex. : <code>(-5) % 2 == -1</code>). Si ce code doit tester si une valeur est impaire, envisagez d'utiliser <code>x & 1 == 1</code> ou <code>x % 2 != 0</code>.</p>
+<p>Le code utilise <code>x % 2 == 1</code> pour véifier si une valeur est impaire, mais cela ne fonctionera pas avec une valeur négative (Ex. : <code>(-5) % 2 == -1</code>). Si ce code doit tester si une valeur est impaire, envisagez d'utiliser <code>(x & 1) == 1</code> ou <code>x % 2 != 0</code>.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -3281,6 +3245,15 @@ double value2 =  x / (double) y;
   <Details>
 <![CDATA[
 <p>Ce code appelle <code>substring(0)</code> sur une chaine, ce qui renvoit la valeur originale.</p>
+]]>
+  </Details>
+ </BugPattern>
+ <BugPattern type="DMI_MISLEADING_SUBSTRING">
+  <ShortDescription>Appel de substring(0) qui retourne la même valeur que toString()</ShortDescription>
+  <LongDescription>{1} appelle substring(0), ce qui peut être clarifié en appelant toString()</LongDescription>
+  <Details>
+<![CDATA[
+<p>Ce code appelle <code>substring(0)</code> sur un StringBuffer ou StringBuilder, ce qui renvoit la même valeur que toString().</p>
 ]]>
   </Details>
  </BugPattern>
@@ -3391,6 +3364,43 @@ double value2 =  x / (double) y;
 ]]>
   </Details>
  </BugPattern>
+ <BugPattern type="VA_FORMAT_STRING_USES_NEWLINE">
+    <ShortDescription>Format string should use %n rather than \n</ShortDescription>
+    <LongDescription>Format string should use %n rather than \n in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+Ce string utilisé dans un format contient le caractère newline (\n). Il est généralement préférable
+ d'utiliser %n qui produira un séparateur de ligne spécifique à la plateforme.
+ 
+ Pour les blocs de texte introduits avec Java 15, utiliser <code>\</code> pour échapper les fins de ligne:
+	 
+<code>String valeur = """
+                premiere ligne%n\
+                seconde ligne%n\
+                """;</code>
+</p>
+]]>
+    </Details>
+ </BugPattern>
+  <BugPattern type="UNS_UNSAFE_CALL">
+    <ShortDescription>Appel à Unsafe.</ShortDescription>
+    <LongDescription>N'utilisez pas {4}. Comme l'indique le nom de cette classe, l'utilisation de ses méthodes peut causer des failles de sécurité.
+    </LongDescription>
+    <Details>
+      <![CDATA[
+      <p>N'utilisez ni sun.misc.Unsafe, ni
+      jdk.internal.misc.Unsafe. Comme le nom de ces classes l'indique,
+      l'utilisation de leurs méthodes peut causer des failles de
+      sécurité. Elles ont été remplacées par des API officielles
+      telles que l'API VarHandle (JDK 9) et l'API Foreign Function &
+      Memory (JDK 22). Voir la
+      <a href="https://openjdk.org/jeps/471">JEP 471</a> pour plus de
+      détails sur les alternatives plus sûres, y compris des exemples
+      de code avant et après.</p>
+      ]]>
+    </Details>
+  </BugPattern>
  <BugCode abbrev="IL">Boucle infinie</BugCode>
  <BugCode abbrev="VO">Utilisation de volatile</BugCode>
  <BugCode abbrev="UI">Héritage non sûr</BugCode>
@@ -3501,4 +3511,5 @@ double value2 =  x / (double) y;
  <BugCode abbrev="QBA">Assignation booléenne douteuse</BugCode>
  <BugCode abbrev="VR">Problème de compatibilité entre les versions</BugCode>
  <BugCode abbrev="DP">Utiliser doPrivileged</BugCode>
+ <BugCode abbrev="UNS">Appel à Unsafe</BugCode>
 </MessageCollection>

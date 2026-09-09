@@ -1,24 +1,17 @@
 package edu.umd.cs.findbugs.detect;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.junit.Assert.assertThat;
-
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 /**
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/463">GitHub issue</a>
  */
-public class Issue463Test extends AbstractIntegrationTest {
+class Issue463Test extends AbstractIntegrationTest {
+
     @Test
-    public void testAnnotatedClass() {
+    void testAnnotatedClass() {
         performAnalysis("ghIssues/Issue463.class");
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType("RV_RETURN_VALUE_IGNORED")
-                .atLine(37).build();
-        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
+        assertBugAtLine("RV_RETURN_VALUE_IGNORED", 37);
     }
 
     /**
@@ -28,10 +21,8 @@ public class Issue463Test extends AbstractIntegrationTest {
      * @see <a href="https://github.com/spotbugs/spotbugs/issues/582">Issue 582</a>
      */
     @Test
-    public void testAnnotatedPackage() {
+    void testAnnotatedPackage() {
         performAnalysis("ghIssues/issue463/Issue463.class", "ghIssues/issue463/package-info.class");
-        BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().bugType("RV_RETURN_VALUE_IGNORED")
-                .atLine(34).build();
-        assertThat(getBugCollection(), containsExactly(1, bugTypeMatcher));
+        assertBugAtLine("RV_RETURN_VALUE_IGNORED", 34);
     }
 }

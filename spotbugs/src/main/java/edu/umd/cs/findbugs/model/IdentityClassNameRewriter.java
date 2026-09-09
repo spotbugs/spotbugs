@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.model;
 import java.io.Serializable;
 
 /**
- * ClassNameRewriter that leaves classe names unchanged.
+ * ClassNameRewriter that leaves classes names unchanged.
  *
  * @author David Hovemeyer
  */

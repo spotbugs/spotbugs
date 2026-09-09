@@ -20,8 +20,8 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.bcel.Const;
@@ -120,24 +120,16 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
 
             try {
                 analyzeMethod(classContext, method);
-            } catch (DataflowAnalysisException e) {
-                bugReporter.logError("Error analyzing " + method.toString(), e);
-            } catch (CFGBuilderException e) {
+            } catch (DataflowAnalysisException | CFGBuilderException e) {
                 bugReporter.logError("Error analyzing " + method.toString(), e);
             }
         }
     }
 
-    final static boolean DEBUG = false;
+    static final boolean DEBUG = false;
 
     @edu.umd.cs.findbugs.internalAnnotations.StaticConstant
-    static HashSet<String> immutableClassNames = new HashSet<>();
-    static {
-        immutableClassNames.add("java/lang/Integer");
-        immutableClassNames.add("java/lang/Long");
-        immutableClassNames.add("java/lang/String");
-        immutableClassNames.add("java/util/Comparator");
-    }
+    static final Set<String> immutableClassNames = Set.of("java/lang/Integer", "java/lang/Long", "java/lang/String", "java/util/Comparator");
 
     private static int getPriorityForBeingMutable(Type type) {
         if (type instanceof ArrayType) {
@@ -232,7 +224,7 @@ public class DontIgnoreResultOfPutIfAbsent implements Detector {
                             && !(invoke instanceof INVOKESTATIC)) {
                         TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
                         Type objType = typeFrame.getStackValue(2);
-                        if (extendsConcurrentMap(ClassName.toDottedClassName(ClassName.fromFieldSignature(objType.getSignature())))) {
+                        if (extendsConcurrentMap(ClassName.fromFieldSignatureToDottedClassName(objType.getSignature()))) {
                             InstructionHandle next = handle.getNext();
                             boolean isIgnored = next != null && next.getInstruction() instanceof POP;
                             //                        boolean isImmediateNullTest = next != null

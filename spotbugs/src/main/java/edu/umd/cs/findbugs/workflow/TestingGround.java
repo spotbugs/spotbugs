@@ -83,8 +83,8 @@ public class TestingGround {
         ArrayList<Bag<String>> died = new ArrayList<>();
         Bag<String> allBugs = new Bag<>();
         for (int i = 0; i <= bugCollection.getSequenceNumber(); i++) {
-            live.add(new Bag<String>());
-            died.add(new Bag<String>());
+            live.add(new Bag<>());
+            died.add(new Bag<>());
         }
         for (BugInstance b : bugCollection) {
             int first = (int) b.getFirstVersion();

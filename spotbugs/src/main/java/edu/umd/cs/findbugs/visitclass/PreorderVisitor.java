@@ -24,7 +24,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationDefault;
 import org.apache.bcel.classfile.AnnotationEntry;
@@ -177,7 +180,13 @@ public class PreorderVisitor extends BetterVisitor {
     }
 
     public Set<String> getSurroundingCaughtExceptions(int pc, int maxTryBlockSize) {
-        HashSet<String> result = new HashSet<>();
+        return getSurroundingCaughtExceptionTypes(pc, maxTryBlockSize).stream()
+                .map(ex -> "C" + ex)
+                .collect(Collectors.toSet());
+    }
+
+    public Set<Integer> getSurroundingCaughtExceptionTypes(int pc, int maxTryBlockSize) {
+        HashSet<Integer> result = new HashSet<>();
         if (code == null) {
             throw new IllegalStateException("Not visiting Code");
         }
@@ -193,9 +202,9 @@ public class PreorderVisitor extends BetterVisitor {
                 if (size > thisSize) {
                     result.clear();
                     size = thisSize;
-                    result.add("C" + catchBlock.getCatchType());
+                    result.add(catchBlock.getCatchType());
                 } else if (size == thisSize) {
-                    result.add("C" + catchBlock.getCatchType());
+                    result.add(catchBlock.getCatchType());
                 }
             }
         }
@@ -325,10 +334,7 @@ public class PreorderVisitor extends BetterVisitor {
         if (!visitingMethod) {
             throw new IllegalStateException("Not visiting a method");
         }
-        return method.isStatic()
-                && "main".equals(getMethodName())
-                && "([Ljava/lang/String;)V".equals(getMethodSig());
-
+        return MemberUtils.isMainMethod(method);
     }
 
     // Extra classes (i.e. leaves in this context)
@@ -371,8 +377,8 @@ public class PreorderVisitor extends BetterVisitor {
             constantPool.accept(this);
             Field[] fields = obj.getFields();
             Attribute[] attributes = obj.getAttributes();
-            for (Field field : fields) {
-                doVisitField(field);
+            for (Field f : fields) {
+                doVisitField(f);
             }
             boolean didInCallOrder = false;
 
@@ -409,11 +415,11 @@ public class PreorderVisitor extends BetterVisitor {
         thisClass = obj;
         ConstantClass c = (ConstantClass) constantPool.getConstant(obj.getClassNameIndex());
         className = getStringFromIndex(c.getNameIndex());
-        dottedClassName = className.replace('/', '.');
+        dottedClassName = ClassName.toDottedClassName(className);
         packageName = obj.getPackageName();
         sourceFile = obj.getSourceFileName();
         dottedSuperclassName = obj.getSuperclassName();
-        superclassName = dottedSuperclassName.replace('.', '/');
+        superclassName = ClassName.toSlashedClassName(dottedSuperclassName);
 
         ClassDescriptor cDesc = DescriptorFactory.createClassDescriptor(className);
         if (!FindBugs.isNoAnalysis()) {
@@ -687,7 +693,7 @@ public class PreorderVisitor extends BetterVisitor {
             throw new IllegalStateException("getDottedMethodSig called while not visiting method");
         }
         if (dottedMethodSig == null) {
-            dottedMethodSig = getMethodSig().replace('/', '.');
+            dottedMethodSig = ClassName.toDottedClassName(getMethodSig());
         }
         return dottedMethodSig;
     }
@@ -732,18 +738,6 @@ public class PreorderVisitor extends BetterVisitor {
             fullyQualifiedFieldName = getDottedClassName() + "." + getFieldName() + " : " + getFieldSig();
         }
         return fullyQualifiedFieldName;
-    }
-
-    /** If currently visiting a field, get the field's dot-formatted signature */
-    @Deprecated
-    public String getDottedFieldSig() {
-        if (!visitingField) {
-            throw new IllegalStateException("getDottedFieldSig called while not visiting field");
-        }
-        if (dottedFieldSig == null) {
-            dottedFieldSig = fieldSig.replace('/', '.');
-        }
-        return dottedFieldSig;
     }
 
     @Override

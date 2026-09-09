@@ -25,7 +25,7 @@
 <xsl:output
 	method="xml"
 	omit-xml-declaration="yes"
-	standalone="yes"
+	standalone="omit"
          doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
          doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
 	indent="yes"
@@ -42,6 +42,7 @@
 <xsl:template match="/">
 	<html>
 	<head>
+		<meta charset="UTF-8" />
 		<title>SpotBugs Report</title>
 		<style type="text/css">
 		.tablerow0 {
@@ -205,7 +206,7 @@
 				<xsl:apply-templates select="$warningSet">
 					<xsl:sort select="@priority"/>
 					<xsl:sort select="@abbrev"/>
-					<xsl:sort select="Class/@classname"/>
+					<xsl:sort select="Class[1]/@classname"/>
 				</xsl:apply-templates>
 		    </xsl:when>
 		    <xsl:otherwise>

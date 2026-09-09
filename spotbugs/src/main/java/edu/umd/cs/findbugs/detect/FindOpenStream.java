@@ -25,8 +25,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantInterfaceMethodref;
 import org.apache.bcel.classfile.ConstantMethodref;
 import org.apache.bcel.classfile.JavaClass;
@@ -147,6 +149,14 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("javax.servlet.ServletResponse", "getOutputStream",
                 "()Ljavax/servlet/ServletOutputStream;"));
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("javax.servlet.ServletResponse", "getWriter",
+                "()Ljava/io/PrintWriter;"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("jakarta.servlet.ServletRequest", "getInputStream",
+                "()Ljakarta/servlet/ServletInputStream;"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("jakarta.servlet.ServletRequest", "getReader",
+                "()Ljava/io/BufferedReader;"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("jakarta.servlet.ServletResponse", "getOutputStream",
+                "()Ljakarta/servlet/ServletOutputStream;"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("jakarta.servlet.ServletResponse", "getWriter",
                 "()Ljava/io/PrintWriter;"));
 
         // Ignore System.{in,out,err}
@@ -293,26 +303,32 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
-        JavaClass jclass = classContext.getJavaClass();
+        ConstantPool cp = classContext.getJavaClass().getConstantPool();
 
         // Check to see if the class references any other classes
         // which could be resources we want to track.
         // If we don't find any such classes, we skip analyzing
         // the class. (Note: could do this by method.)
         boolean sawResourceClass = false;
-        for (int i = 0; i < jclass.getConstantPool().getLength(); ++i) {
-            Constant constant = jclass.getConstantPool().getConstant(i);
+        for (int i = 1; i < cp.getLength(); ++i) {
+            Constant constant = cp.getConstant(i);
+            // Quote from the JVM specification: "All eight byte constants take up two spots in the constant pool.
+            // If this is the n'th byte in the constant pool, then the next item will be numbered n+2"
+            // So the indices after CONSTANT_Double and CONSTANT_Long are null, not used and throw ClassFormatException
+            if (constant.getTag() == Const.CONSTANT_Double || constant.getTag() == Const.CONSTANT_Long) {
+                i++;
+            }
             String className = null;
             if (constant instanceof ConstantMethodref) {
                 ConstantMethodref cmr = (ConstantMethodref) constant;
 
                 int classIndex = cmr.getClassIndex();
-                className = jclass.getConstantPool().getConstantString(classIndex, Const.CONSTANT_Class);
+                className = cp.getConstantString(classIndex, Const.CONSTANT_Class);
             } else if (constant instanceof ConstantInterfaceMethodref) {
                 ConstantInterfaceMethodref cmr = (ConstantInterfaceMethodref) constant;
 
                 int classIndex = cmr.getClassIndex();
-                className = jclass.getConstantPool().getConstantString(classIndex, Const.CONSTANT_Class);
+                className = cp.getConstantString(classIndex, Const.CONSTANT_Class);
             }
 
             if (className != null) {
@@ -349,10 +365,6 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
     @Override
     public StreamResourceTracker getResourceTracker(ClassContext classContext, Method method) {
         return new StreamResourceTracker(streamFactoryList, bugReporter);
-    }
-
-    public static boolean isMainMethod(Method method) {
-        return method.isStatic() && "main".equals(method.getName()) && "([Ljava/lang/String;)V".equals(method.getSignature());
     }
 
     @Override
@@ -466,7 +478,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 
             String sourceFile = javaClass.getSourceFileName();
             String leakClass = stream.getStreamBase();
-            if (isMainMethod(method) && (leakClass.contains("InputStream") || leakClass.contains("Reader"))) {
+            if (MemberUtils.isMainMethod(method) && (leakClass.contains("InputStream") || leakClass.contains("Reader"))) {
                 return;
             }
 
@@ -488,21 +500,22 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
         }
         ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
 
-        int exitStatus = exitFrame.getStatus();
-        if (exitStatus == ResourceValueFrame.OPEN || exitStatus == ResourceValueFrame.OPEN_ON_EXCEPTION_PATH) {
+        ResourceValueFrame.State exitStatus = exitFrame.getStatus();
+        if (exitStatus == ResourceValueFrame.State.OPEN ||
+                exitStatus == ResourceValueFrame.State.OPEN_ON_EXCEPTION_PATH) {
 
             // FIXME: Stream object should be queried for the
             // priority.
 
             String bugType = stream.getBugType();
             int priority = NORMAL_PRIORITY;
-            if (exitStatus == ResourceValueFrame.OPEN_ON_EXCEPTION_PATH) {
+            if (exitStatus == ResourceValueFrame.State.OPEN_ON_EXCEPTION_PATH) {
                 bugType += "_EXCEPTION_PATH";
                 priority = LOW_PRIORITY;
             }
 
             potentialOpenStreamList.add(new PotentialOpenStream(bugType, priority, stream));
-        } else if (exitStatus == ResourceValueFrame.CLOSED) {
+        } else if (exitStatus == ResourceValueFrame.State.CLOSED) {
             // Remember that this stream was closed on all paths.
             // Later, we will mark all of the streams in its equivalence class
             // as having been closed.

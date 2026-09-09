@@ -51,9 +51,9 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
      * platform encoding.
      */
     static class DefaultEncodingAnnotation extends AnnotationEnumeration<DefaultEncodingAnnotation> {
-        public final static DefaultEncodingAnnotation DEFAULT_ENCODING = new DefaultEncodingAnnotation("DefaultEncoding", 1);
+        public static final DefaultEncodingAnnotation DEFAULT_ENCODING = new DefaultEncodingAnnotation("DefaultEncoding", 1);
 
-        private final static DefaultEncodingAnnotation[] myValues = { DEFAULT_ENCODING };
+        private static final DefaultEncodingAnnotation[] myValues = { DEFAULT_ENCODING };
 
         public static DefaultEncodingAnnotation[] values() {
             return myValues.clone();
@@ -150,6 +150,11 @@ public class DefaultEncodingDetector extends OpcodeStackDetector {
 
     @Override
     public boolean shouldVisit(JavaClass obj) {
+        // Since Java 18/JEP 400 the default encoding is specified to be UTF-8
+        if (obj.getMajor() >= Const.MAJOR_18) {
+            return false;
+        }
+
         Set<ClassDescriptor> called = getXClass().getCalledClassDescriptors();
         for (ClassDescriptor c : defaultEncodingAnnotationDatabase.classes) {
             if (called.contains(c)) {

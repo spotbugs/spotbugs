@@ -122,10 +122,14 @@ public class Util {
         }
         for (CodeException catchBlock : code.getExceptionTable()) {
             if (vmNameOfExceptionClass != null) {
-                Constant catchType = constantPool.getConstant(catchBlock.getCatchType());
-                if (catchType == null && !vmNameOfExceptionClass.isEmpty() || catchType instanceof ConstantClass
-                        && !((ConstantClass) catchType).getBytes(constantPool).equals(vmNameOfExceptionClass)) {
+                if (catchBlock.getCatchType() == 0) {
                     continue;
+                } else {
+                    Constant catchType = constantPool.getConstant(catchBlock.getCatchType());
+                    if (catchType == null && !vmNameOfExceptionClass.isEmpty() || catchType instanceof ConstantClass
+                            && !((ConstantClass) catchType).getBytes(constantPool).equals(vmNameOfExceptionClass)) {
+                        continue;
+                    }
                 }
             }
             int startPC = catchBlock.getStartPC();

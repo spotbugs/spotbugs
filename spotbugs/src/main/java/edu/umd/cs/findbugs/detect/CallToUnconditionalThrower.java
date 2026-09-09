@@ -172,11 +172,7 @@ public class CallToUnconditionalThrower extends PreorderVisitor implements Detec
             try {
 
                 analyzeMethod(classContext, method);
-            } catch (CFGBuilderException e) {
-                bugReporter.logError(
-                        "Error checking for infinite recursive loop in "
-                                + SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method), e);
-            } catch (DataflowAnalysisException e) {
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
                 bugReporter.logError(
                         "Error checking for infinite recursive loop in "
                                 + SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method), e);

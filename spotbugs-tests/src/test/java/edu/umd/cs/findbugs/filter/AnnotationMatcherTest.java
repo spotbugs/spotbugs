@@ -1,0 +1,209 @@
+/*
+ * SpotBugs - Find Bugs in Java programs
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+package edu.umd.cs.findbugs.filter;
+
+import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
+import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
+import java.util.List;
+import java.util.stream.Collectors;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.Arrays;
+
+import org.apache.tools.ant.filters.StringInputStream;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.test.SpotBugsExtension;
+import edu.umd.cs.findbugs.test.SpotBugsRunner;
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+
+@ExtendWith(SpotBugsExtension.class)
+class AnnotationMatcherTest {
+
+    private String annotationName;
+
+    @BeforeEach
+    void setUp() {
+        annotationName = "org.immutables.value.Generated";
+    }
+
+    @AfterEach
+    void tearDown() {
+        // Some other test cases fail in case the context is not correctly
+        // cleaned up here.
+        AnalysisContext.removeCurrentAnalysisContext();
+    }
+
+    @Test
+    void writeXML() throws Exception {
+        AnnotationMatcher sm = new AnnotationMatcher(annotationName);
+
+        String xmlOutput = writeXMLAndGetStringOutput(sm, false);
+        assertEquals("<Annotation name=\"" + annotationName + "\"/>", xmlOutput);
+
+        sm = new AnnotationMatcher(annotationName);
+        xmlOutput = writeXMLAndGetStringOutput(sm, true);
+        assertEquals("<Annotation name=\"" + annotationName + "\" disabled=\"true\"/>", xmlOutput);
+    }
+
+    @Test
+    void testMatchMissingPrimaryAnnotationIsFalse() throws Exception {
+        Filter filter = readFilterFromXML();
+        // no primary annotation; should not match
+        BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
+        assertFalse(filter.match(bug));
+    }
+
+    @Test
+    void testMatchMissingJavaAnnotationIsFalse() throws Exception {
+        Filter filter = readFilterFromXML();
+        // added primary class annotation; should not match b.c. missing java annotation
+        BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
+        ClassAnnotation buggyClass = new ClassAnnotation("BuggyClass", "BuggyClass.java");
+        bug.add(buggyClass);
+        assertFalse(filter.match(bug));
+    }
+
+    @Test
+    void testMatchOtherJavaAnnotationIsFalse() throws Exception {
+        Filter filter = readFilterFromXML();
+        // added primary class annotation; should not match b.c. other java annotation
+        BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
+        ClassAnnotation buggyClass = new ClassAnnotation("BuggyClass", "BuggyClass.java");
+        buggyClass.setJavaAnnotationNames(Arrays.asList("org.immutables.value.Other"));
+        bug.add(buggyClass);
+        assertFalse(filter.match(bug));
+    }
+
+    @Test
+    void testMatchJavaAnnotationIsTrue() throws Exception {
+        Filter filter = readFilterFromXML();
+        // added primary class annotation; should match b.c. has java annotation
+        BugInstance bug = new BugInstance("UUF_UNUSED_FIELD", 0);
+        ClassAnnotation buggyClass = new ClassAnnotation("AnnotatedBuggyClass", "AnnotatedBuggyClass.java");
+        buggyClass.setJavaAnnotationNames(Arrays.asList(annotationName));
+        bug.add(buggyClass);
+        assertTrue(filter.match(bug));
+    }
+
+    private Filter readFilterFromXML() throws IOException {
+        AnnotationMatcher sm = new AnnotationMatcher(annotationName);
+
+        String matcherXml = writeXMLAndGetStringOutput(sm, false);
+        String filterXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "\n<FindBugsFilter>"
+                + "\n<Match>"
+                + "\n"
+                + matcherXml
+                + "\n</Match>"
+                + "\n</FindBugsFilter>\n";
+
+        return new Filter(new StringInputStream(filterXml));
+    }
+
+    @Test
+    void testPerformAnalysis(SpotBugsRunner spotbugs) {
+        BugCollection bugCollection = spotbugs.performAnalysis(
+                Path.of("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Generated.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/org/immutables/value/Value$Immutable.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/FoobarValue.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue.class"),
+                Path.of(
+                        "../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$1.class"),
+                Path.of(
+                        "../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/ImmutableFoobarValue$Builder.class"));
+
+        AnnotationMatcher bugInstanceMatcher = new AnnotationMatcher(annotationName);
+        long numberOfMatchedBugs = bugCollection.getCollection().stream()
+                .filter(bugInstanceMatcher::match)
+                .count();
+
+        assertEquals(4, numberOfMatchedBugs);
+    }
+
+    @Test
+    void testFilteringWithAnnotationOnClassMembers(SpotBugsRunner spotbugs) {
+        BugCollection bugCollection = spotbugs.performAnalysis(
+                Path.of("../spotbugsTestCases/build/classes/java/main/org/example/GeneratedCode.class"),
+                Path.of("../spotbugsTestCases/build/classes/java/main/ghIssues/issue543/GeneratedOnClassMembers.class"));
+
+        BugInstanceMatcher[] bugsWithGeneratedAnnotation = {
+            new BugInstanceMatcherBuilder()
+                    .bugType("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
+                    .atField("a")
+                    .atLine(9)
+                    .build(),
+            new BugInstanceMatcherBuilder()
+                    .bugType("NP_TOSTRING_COULD_RETURN_NULL")
+                    .inMethod("toString")
+                    .atLine(15)
+                    .build(),
+            new BugInstanceMatcherBuilder()
+                    .bugType("ES_COMPARING_PARAMETER_STRING_WITH_EQ")
+                    .inMethod("test")
+                    .atLine(27)
+                    .build(),
+        };
+        BugInstanceMatcher bugWithoutGeneratedAnnotation = new BugInstanceMatcherBuilder()
+                .bugType("DMI_HARDCODED_ABSOLUTE_FILENAME")
+                .inMethod("test")
+                .atLine(20)
+                .build();
+
+        assertThat(bugCollection, hasItem(bugWithoutGeneratedAnnotation));
+        assertThat(bugCollection, hasItems(bugsWithGeneratedAnnotation));
+        AnnotationMatcher bugInstanceMatcher = new AnnotationMatcher("org.example.GeneratedCode");
+        List<BugInstance> unmatchedBugs = bugCollection.getCollection().stream()
+                .filter(b -> !bugInstanceMatcher.match(b))
+                .collect(Collectors.toUnmodifiableList());
+
+        assertThat(unmatchedBugs, hasItem(bugWithoutGeneratedAnnotation));
+        assertThat(unmatchedBugs, not(hasItems(bugsWithGeneratedAnnotation)));
+    }
+
+    private String writeXMLAndGetStringOutput(AnnotationMatcher matcher, boolean disabled) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        XMLOutput xmlOutput = new OutputStreamXMLOutput(outputStream);
+
+        matcher.writeXML(xmlOutput, disabled);
+        xmlOutput.finish();
+
+        return outputStream.toString(StandardCharsets.UTF_8.name()).trim();
+    }
+
+}

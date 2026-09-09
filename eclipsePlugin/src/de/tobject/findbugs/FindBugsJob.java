@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
  */
 public abstract class FindBugsJob extends Job {
 
-    private final static Semaphore analysisSem;
+    private static final Semaphore analysisSem;
 
     private static final boolean DEBUG = false;
     static {
@@ -46,14 +46,9 @@ public abstract class FindBugsJob extends Job {
 
         // see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=298795
         // we must run this stupid code in the UI thread
-        Display.getDefault().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                PlatformUI.getWorkbench().getProgressService().registerIconForFamily(
-                        FindbugsPlugin.getDefault().getImageDescriptor("runFindbugs.png"),
-                        FindbugsPlugin.class);
-            }
-        });
+        Display.getDefault().asyncExec(() -> PlatformUI.getWorkbench().getProgressService().registerIconForFamily(
+                FindbugsPlugin.getDefault().getImageDescriptor("runFindbugs.png"),
+                FindbugsPlugin.class));
     }
 
     private final IResource resource;
@@ -65,15 +60,14 @@ public abstract class FindBugsJob extends Job {
         Job[] jobs = Job.getJobManager().find(FindbugsPlugin.class);
         for (Job job2 : jobs) {
             if (job2 instanceof FindBugsJob
-                    && job.getResource().equals(((FindBugsJob) job2).getResource())) {
-                if (job2.getState() != Job.RUNNING) {
-                    job2.cancel();
-                }
+                    && job.getResource().equals(((FindBugsJob) job2).getResource())
+                    && job2.getState() != Job.RUNNING) {
+                job2.cancel();
             }
         }
     }
 
-    public FindBugsJob(String name, IResource resource) {
+    protected FindBugsJob(String name, IResource resource) {
         super(name);
         this.resource = resource;
         setRule(new MutexSchedulingRule(resource));
@@ -113,7 +107,7 @@ public abstract class FindBugsJob extends Job {
         return getName() + " failed";
     }
 
-    abstract protected void runWithProgress(IProgressMonitor monitor) throws CoreException;
+    protected abstract void runWithProgress(IProgressMonitor monitor) throws CoreException;
 
     protected boolean supportsMulticore() {
         return false;
@@ -143,13 +137,15 @@ public abstract class FindBugsJob extends Job {
         } catch (OperationCanceledException e) {
             // Do nothing when operation cancelled.
             return Status.CANCEL_STATUS;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            // Preserve interrupt status and cancel operation.
+            return Status.CANCEL_STATUS;
         } catch (CoreException ex) {
             if (DEBUG) {
                 FindbugsPlugin.getDefault().logException(ex, createErrorMessage());
             }
             return ex.getStatus();
-        } catch (InterruptedException e) {
-            return Status.CANCEL_STATUS;
         } finally {
             if (acquired) {
                 if (DEBUG) {

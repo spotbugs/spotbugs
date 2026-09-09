@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.Field;
@@ -47,6 +48,7 @@ import org.apache.bcel.generic.IndexedInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.LRETURN;
 import org.apache.bcel.generic.LSTORE;
@@ -55,8 +57,10 @@ import org.apache.bcel.generic.MULTIANEWARRAY;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NEWARRAY;
 import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Select;
 import org.apache.bcel.generic.StoreInstruction;
 import org.apache.bcel.generic.Type;
+
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -67,6 +71,7 @@ import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SwitchHandler;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -117,7 +122,7 @@ public class FindDeadLocalStores implements Detector {
         if (exclLocalsProperty != null) {
             for (String s : exclLocalsProperty.split(",")) {
                 String s2 = s.trim();
-                if (s2.length() > 0) {
+                if (!s2.isEmpty()) {
                     EXCLUDED_LOCALS.add(s2);
                 }
             }
@@ -192,9 +197,7 @@ public class FindDeadLocalStores implements Detector {
 
             try {
                 analyzeMethod(classContext, method);
-            } catch (DataflowAnalysisException e) {
-                bugReporter.logError("Error analyzing " + method.toString(), e);
-            } catch (CFGBuilderException e) {
+            } catch (DataflowAnalysisException | CFGBuilderException e) {
                 bugReporter.logError("Error analyzing " + method.toString(), e);
             }
         }
@@ -202,6 +205,10 @@ public class FindDeadLocalStores implements Detector {
 
     private void analyzeMethod(ClassContext classContext, Method method) throws DataflowAnalysisException, CFGBuilderException {
         if (BCELUtil.isSynthetic(method) || (method.getAccessFlags() & Const.ACC_BRIDGE) == Const.ACC_BRIDGE) {
+            return;
+        }
+
+        if (method.getName().startsWith("$$_hibernate_")) {
             return;
         }
 
@@ -219,6 +226,7 @@ public class FindDeadLocalStores implements Detector {
         int[] localLoadCount = new int[numLocals];
         int[] localIncrementCount = new int[numLocals];
         MethodGen methodGen = classContext.getMethodGen(method);
+        ConstantPoolGen cpg = classContext.getConstantPoolGen();
         CFG cfg = classContext.getCFG(method);
         if (cfg.isFlagSet(CFG.FOUND_INEXACT_UNCONDITIONAL_THROWERS)) {
             return;
@@ -245,6 +253,9 @@ public class FindDeadLocalStores implements Detector {
         // due to inlining of finally blocks.
         BitSet liveStoreSourceLineSet = new BitSet();
 
+        // Keep track of the switches so we can ignore the dead stores corresponding to type switches
+        SwitchHandler switchHandler = new SwitchHandler();
+
         // Scan method for
         // - dead stores
         // - stores to parameters that are dead upon entry to the method
@@ -254,8 +265,33 @@ public class FindDeadLocalStores implements Detector {
             BugInstance pendingBugReportAboutOverwrittenParameter = null;
             try {
                 WarningPropertySet<WarningProperty> propertySet = new WarningPropertySet<>();
+
+                InstructionHandle handle = location.getHandle();
+                int pc = handle.getPosition();
+
+                if (handle.getInstruction() instanceof INVOKEDYNAMIC) {
+                    INVOKEDYNAMIC invokeDynamicInstruction = (INVOKEDYNAMIC) handle.getInstruction();
+                    String invokeMethodName = invokeDynamicInstruction.getMethodName(cpg);
+                    switchHandler.sawInvokeDynamic(pc, invokeMethodName);
+
+                    continue;
+                } else if (handle.getInstruction() instanceof Select) {
+                    Select switchInstruction = (Select) handle.getInstruction();
+                    int[] indices = switchInstruction.getIndices();
+
+                    switchHandler.enterSwitch(switchInstruction.getOpcode(),
+                            pc,
+                            indices,
+                            0, // Not sure how to get the default offset from BCEL but it doesn't matter here
+                            false); // It shouldn't matter here if the switch was exhaustive or not
+                }
+
                 // Skip any instruction which is not a store
                 if (!isStore(location)) {
+                    continue;
+                }
+
+                if (switchHandler.isTypeSwitchCaseLoad(location)) {
                     continue;
                 }
 
@@ -264,8 +300,6 @@ public class FindDeadLocalStores implements Detector {
                 if (location.getBasicBlock().isExceptionHandler()) {
                     propertySet.addProperty(DeadLocalStoreProperty.EXCEPTION_HANDLER);
                 }
-                InstructionHandle handle = location.getHandle();
-                int pc = handle.getPosition();
                 IndexedInstruction ins = (IndexedInstruction) location.getHandle().getInstruction();
 
                 int local = ins.getIndex();
@@ -281,10 +315,8 @@ public class FindDeadLocalStores implements Detector {
                 LocalVariableAnnotation lvAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(method, location, ins);
 
                 String sourceFileName = javaClass.getSourceFileName();
-                if (LocalVariableAnnotation.UNKNOWN_NAME.equals(lvAnnotation.getName())) {
-                    if (sourceFileName.endsWith(".groovy")) {
-                        continue;
-                    }
+                if (LocalVariableAnnotation.UNKNOWN_NAME.equals(lvAnnotation.getName()) && sourceFileName.endsWith(".groovy")) {
+                    continue;
                 }
 
                 SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen,
@@ -369,7 +401,6 @@ public class FindDeadLocalStores implements Detector {
                         continue; // not an interesting dead store
                     } else if (prevIns instanceof GETSTATIC) {
                         GETSTATIC getStatic = (GETSTATIC) prevIns;
-                        ConstantPoolGen cpg = methodGen.getConstantPool();
                         foundDeadClassInitialization = getStatic.getFieldName(cpg).startsWith("class$")
                                 && "Ljava/lang/Class;".equals(getStatic.getSignature(cpg));
                         for (Iterator<Location> j = cfg.locationIterator(); j.hasNext();) {
@@ -380,7 +411,7 @@ public class FindDeadLocalStores implements Detector {
                                     Object value = ((LDC) instruction2).getValue(methodGen.getConstantPool());
                                     if (value instanceof String) {
                                         String n = (String) value;
-                                        if (n.length() > 0) {
+                                        if (!n.isEmpty()) {
                                             initializationOf = ClassName.toSignature(n);
                                         }
                                     }
@@ -427,12 +458,12 @@ public class FindDeadLocalStores implements Detector {
                         }
                         BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_STORE_OF_CLASS_LITERAL",
                                 Priorities.NORMAL_PRIORITY).addClassAndMethod(methodGen, sourceFileName).add(lvAnnotation)
-                                        .addType(initializationOf);
+                                .addType(initializationOf);
                         accumulator.accumulateBug(bugInstance, sourceLineAnnotation);
                         continue;
                     }
 
-                    if (prevIns instanceof LDC || prevIns instanceof ConstantPushInstruction) {
+                    if (prevIns instanceof LDC) {
                         propertySet.addProperty(DeadLocalStoreProperty.STORE_OF_CONSTANT);
                     } else if (prevIns instanceof ACONST_NULL) {
                         storeOfNull = true;
@@ -484,8 +515,7 @@ public class FindDeadLocalStores implements Detector {
                 if (ins instanceof IINC) {
                     // special handling of IINC
 
-                    if ("main".equals(method.getName()) && method.isStatic()
-                            && "([Ljava/lang/String;)V".equals(method.getSignature())) {
+                    if (MemberUtils.isMainMethod(method)) {
                         propertySet.addProperty(DeadLocalStoreProperty.DEAD_INCREMENT_IN_MAIN);
                     }
 

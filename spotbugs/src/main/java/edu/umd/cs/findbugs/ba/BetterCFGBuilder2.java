@@ -28,47 +28,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ACONST_NULL;
-import org.apache.bcel.generic.ALOAD;
-import org.apache.bcel.generic.BranchInstruction;
-import org.apache.bcel.generic.ClassGen;
-import org.apache.bcel.generic.CodeExceptionGen;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.ExceptionThrower;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.GETSTATIC;
-import org.apache.bcel.generic.GOTO;
-import org.apache.bcel.generic.GotoInstruction;
-import org.apache.bcel.generic.ICONST;
-import org.apache.bcel.generic.IFNONNULL;
-import org.apache.bcel.generic.IFNULL;
-import org.apache.bcel.generic.IF_ACMPEQ;
-import org.apache.bcel.generic.IF_ACMPNE;
-import org.apache.bcel.generic.INSTANCEOF;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.IfInstruction;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.InstructionTargeter;
-import org.apache.bcel.generic.JsrInstruction;
-import org.apache.bcel.generic.LDC;
-import org.apache.bcel.generic.MONITOREXIT;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.NEW;
-import org.apache.bcel.generic.NOP;
-import org.apache.bcel.generic.POP;
-import org.apache.bcel.generic.POP2;
-import org.apache.bcel.generic.PUTFIELD;
-import org.apache.bcel.generic.PUTSTATIC;
-import org.apache.bcel.generic.ReturnInstruction;
+import org.apache.bcel.generic.*;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.type.ExceptionSetFactory;
@@ -587,6 +554,8 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
     private final IdentityHashMap<InstructionHandle, Subroutine> jsrSubroutineMap;
 
     private final Map<FieldDescriptor, Integer> addedFields = new HashMap<>();
+
+    private final Map<MethodDescriptor, Integer> addedMethods = new HashMap<>();
     private Subroutine topLevelSubroutine;
 
     private CFG cfg;
@@ -635,6 +604,16 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
     }
 
+    private int getIndex(MethodDescriptor method) {
+        Integer i = addedMethods.get(method);
+        if (i != null) {
+            return i;
+        }
+        int index = cpg.addMethodref(method.getSlashedClassName(), method.getName(), method.getSignature());
+        addedMethods.put(method, index);
+        return index;
+    }
+
     public void optimize(InstructionList instructionList) {
         InstructionHandle head = instructionList.getStart();
 
@@ -649,6 +628,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                 if (name.startsWith("access$")) {
                     XMethod invoked = XFactory.createXMethod(is, cpg);
                     FieldDescriptor field = invoked.getAccessMethodForField();
+                    MethodDescriptor method = invoked.getAccessMethodForMethod();
                     if (field != null) {
                         boolean isSetter = signature.endsWith("V");
                         Instruction replacement;
@@ -674,6 +654,15 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                                     + methodGen.getSignature());
                          */
 
+                    } else if (method != null) {
+                        Instruction replacement;
+                        int index = getIndex(method);
+                        if (method.isStatic()) {
+                            replacement = new INVOKESTATIC(index);
+                        } else {
+                            replacement = new INVOKESPECIAL(index);
+                        }
+                        head.swapInstruction(replacement);
                     }
 
                 }
@@ -1010,6 +999,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
         if (ins instanceof PUTFIELD && !methodGen.isStatic()) {
             // Assume that PUTFIELD on this object is not PEI
             int depth = ins.consumeStack(cpg);
+
             for (InstructionHandle prev = handle.getPrev(); prev != null; prev = prev.getPrev()) {
                 Instruction prevInst = prev.getInstruction();
                 if (prevInst instanceof BranchInstruction) {
@@ -1027,11 +1017,24 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
                         return true;
                     }
                 }
-                depth = depth - prevInst.produceStack(cpg) + prevInst.consumeStack(cpg);
+                if (prevInst instanceof DUP_X2 && depth == 4) {
+                    depth = 1;
+                } else if (prevInst instanceof DUP_X1 && depth == 3) {
+                    depth = 1;
+                } else if (prevInst instanceof DUP2 && depth == 2) {
+                    // DUP2 pops 2 and pushes 4 elements so when depth is 2 we would change it to 2 - 4 + 2 = 0
+                    // This means that the instructions preceding the PUTFIELD we have encountered so far have not pushed the reference of PUTFIELD
+                    // So we reset the depth to PUTFIELD.consumeStack(cpg) which is 2
+                    depth = ins.consumeStack(cpg);
+                } else {
+                    depth = depth - prevInst.produceStack(cpg) + prevInst.consumeStack(cpg);
+                }
                 if (depth < 1) {
                     throw new CFGBuilderException("Invalid stack at " + prev + " when checking " + handle);
                 }
                 if (depth == 1) {
+                    // now we assume that the previous instruction (prevPrev) is the opcode
+                    // that pushes the reference to the target of PUTFIELD
                     InstructionHandle prevPrev = prev.getPrev();
                     if (prevPrev != null && prevPrev.getInstruction() instanceof BranchInstruction) {
                         continue;

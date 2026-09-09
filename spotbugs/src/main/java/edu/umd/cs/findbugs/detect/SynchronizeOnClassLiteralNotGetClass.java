@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Set;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
@@ -58,7 +59,9 @@ public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
      */
     int state = 0;
 
-    boolean seenPutStatic, seenGetStatic;
+    boolean seenPutStatic;
+
+    boolean seenGetStatic;
 
     BugInstance pendingBug;
 
@@ -67,13 +70,13 @@ public class SynchronizeOnClassLiteralNotGetClass extends OpcodeStackDetector {
         if (pendingBug != null) {
             if (seen == Const.PUTSTATIC) {
                 String classConstantOperand = getClassConstantOperand();
-                String thisClassName = getThisClass().getClassName().replace('.', '/');
+                String thisClassName = ClassName.toSlashedClassName(getThisClass().getClassName());
                 if (classConstantOperand.equals(thisClassName)) {
                     seenPutStatic = true;
                 }
             } else if (seen == Const.GETSTATIC) {
                 String classConstantOperand = getClassConstantOperand();
-                String thisClassName = getThisClass().getClassName().replace('.', '/');
+                String thisClassName = ClassName.toSlashedClassName(getThisClass().getClassName());
                 if (classConstantOperand.equals(thisClassName)) {
                     seenGetStatic = true;
                 }

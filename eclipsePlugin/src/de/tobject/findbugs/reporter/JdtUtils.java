@@ -2,7 +2,7 @@
  * Contributions to FindBugs
  * Copyright (C) 2009, Andrei Loskutov
  *
- * The original code was developed by Andrei Loskutov under the BSD lizense for the
+ * The original code was developed by Andrei Loskutov under the BSD license for the
  * Bytecode Outline plugin at http://andrei.gmxhome.de/bytecode/index.html
  *
  * This library is free software; you can redistribute it and/or
@@ -196,7 +196,8 @@ public class JdtUtils {
         public int compare(IType o1, IType o2) {
             IType m1 = o1;
             IType m2 = o2;
-            int idx1, idx2;
+            int idx1;
+            int idx2;
             try {
                 ISourceRange sr1 = m1.getSourceRange();
                 ISourceRange sr2 = m2.getSourceRange();
@@ -316,10 +317,8 @@ public class JdtUtils {
             if (isAnonymousType(childElem)) {
                 list.add((IType) childElem);
             }
-            if (childElem instanceof IParent) {
-                if (allowNested || !(childElem instanceof IType)) {
-                    collectAllAnonymous(list, (IParent) childElem, allowNested);
-                }
+            if (childElem instanceof IParent && (allowNested || !(childElem instanceof IType))) {
+                collectAllAnonymous(list, (IParent) childElem, allowNested);
             }
         }
     }
@@ -419,7 +418,7 @@ public class JdtUtils {
      * opposite to rule 2)
      *
      * @param javaElement
-     * @return priority - lesser mean wil be compiled later, a value > 0
+     * @return priority - lesser mean will be compiled later, a value > 0
      */
     private static int getAnonCompilePriority50(IJavaElement javaElement, IJavaElement firstAncestor, IJavaElement topAncestor) {
 

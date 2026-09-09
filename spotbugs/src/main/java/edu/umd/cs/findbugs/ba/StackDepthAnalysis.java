@@ -117,7 +117,7 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
             combined = b;
         } else if (b == TOP) {
             combined = a;
-        } else if (a == BOTTOM || b == BOTTOM || a != b) {
+        } else if (b == BOTTOM || a != b) {
             combined = BOTTOM;
         } else {
             combined = a;

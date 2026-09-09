@@ -20,15 +20,16 @@
 package edu.umd.cs.findbugs;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -166,12 +167,12 @@ public class PrintingBugReporter extends TextUIBugReporter {
         }
 
         if (argCount < args.length) {
-            reporter.setOutputStream(UTF8.printStream(new FileOutputStream(args[argCount++]), true));
+            reporter.setOutputStream(UTF8.printStream(Files.newOutputStream(Path.of(args[argCount++])), true));
         }
         boolean bugsReported = false;
         RuntimeException storedException = null;
 
-        Bag<String> lowRank = new Bag<>(new TreeMap<String, Integer>());
+        Bag<String> lowRank = new Bag<>(new TreeMap<>());
         for (BugInstance warning : bugCollection.getCollection()) {
             if (!reporter.isApplySuppressions() || !bugCollection.getProject().getSuppressionFilter().match(warning)) {
                 int rank = warning.getBugRank();
@@ -232,7 +233,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
         }
 
         if (argCount < args.length) {
-            reporter.setOutputStream(UTF8.printStream(new FileOutputStream(args[argCount++]), true));
+            reporter.setOutputStream(UTF8.printStream(Files.newOutputStream(Path.of(args[argCount++])), true));
         }
 
         reporter.finish();

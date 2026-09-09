@@ -1,9 +1,9 @@
 Here is how to build the SpotBugs Eclipse Plugin:
 
-Install Java 8
+Install Java 11
 ===============
 
-Make sure you are using Java 8 or greater (since version 3.1 SpotBugs requires Java 8).
+Make sure you are using Java 11 or greater (since version 4.9.0+ of SpotBugs requires Java 11).
 
 Install Eclipse
 ================

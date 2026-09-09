@@ -1,18 +1,9 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-ext.isReleaseVersion = !version.endsWith("SNAPSHOT") && /* for Eclipse plugin */ !version.contains("-SNAPSHOT.")
+ext.isReleaseVersion = !version.endsWith('SNAPSHOT') && /* for Eclipse plugin */ !version.contains('-SNAPSHOT.')
 
 publishing {
-  repositories {
-    maven {
-      url isReleaseVersion ? "https://oss.sonatype.org/service/local/staging/deploy/maven2/" : "https://oss.sonatype.org/content/repositories/snapshots/"
-      credentials {
-        username = project.hasProperty('ossrhUsername') ? ossrhUsername : "Unknown user"
-        password = project.hasProperty('ossrhPassword') ? ossrhPassword : "Unknown password"
-      }
-    }
-  }
   publications {
     maven(MavenPublication) {
       from components.java
@@ -58,7 +49,7 @@ publishing {
             id = 'iloveeclipse'
             name = 'Andrey Loskutov'
             email = 'loskutov@gmx.de'
-            url = 'https://plus.google.com/+AndreyLoskutov'
+            url = 'https://github.com/iloveeclipse'
             timezone = '+2'
           }
           developer {
@@ -78,14 +69,11 @@ publishing {
   }
 }
 
-def signingKey = System.getenv("SIGNING_KEY")
-def signingPassword = System.getenv("SIGNING_PASSWORD")
+String signingKey = System.getenv('SIGNING_KEY')
+String signingPassword = System.getenv('SIGNING_PASSWORD')
 
 signing {
-  if (signingKey != null &&
-          signingPassword != null &&
-          !signingKey.isEmpty() &&
-          !signingPassword.isEmpty()) {
+  if (signingKey != null && signingPassword != null && !signingKey.isEmpty() && !signingPassword.isEmpty()) {
     useInMemoryPgpKeys(signingKey, signingPassword)
     sign publishing.publications.maven
   } else {

@@ -1,5 +1,21 @@
 package edu.umd.cs.findbugs.test;
 
+import edu.umd.cs.findbugs.BugCollectionBugReporter;
+import edu.umd.cs.findbugs.BugRanker;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs2;
+import edu.umd.cs.findbugs.IFindBugsEngine;
+import edu.umd.cs.findbugs.Plugin;
+import edu.umd.cs.findbugs.PluginException;
+import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.PriorityAdjuster;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,42 +27,25 @@ import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
-
-import edu.umd.cs.findbugs.BugCollectionBugReporter;
-import edu.umd.cs.findbugs.BugRanker;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.FindBugs2;
-import edu.umd.cs.findbugs.Plugin;
-import edu.umd.cs.findbugs.PluginException;
-import edu.umd.cs.findbugs.Priorities;
-import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.annotations.CheckReturnValue;
-import edu.umd.cs.findbugs.config.UserPreferences;
-import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
 
 /**
  * <p>
  * This class runs analysis with SpotBugs. The target class files and
- * auxClasspathEntries should be specified before you invoke {@link #run(Path...)}
+ * auxClasspathEntries should be specified before you invoke {@link #run(Consumer, UserPreferences, Path...)}
  * method.
  * </p>
  *
  * @since 3.1
  */
-@ParametersAreNonnullByDefault
 public class AnalysisRunner {
     private final List<Path> auxClasspathEntries = new ArrayList<>();
 
@@ -83,7 +82,13 @@ public class AnalysisRunner {
     }
 
     @Nonnull
-    public BugCollectionBugReporter run(Path... files) {
+    public BugCollectionBugReporter run(UserPreferences userPreferences, Path... files) {
+        return this.run(engine -> {
+        }, userPreferences, files);
+    }
+
+    @Nonnull
+    public BugCollectionBugReporter run(Consumer<IFindBugsEngine> engineCustomization, UserPreferences userPreferences, Path... files) {
         DetectorFactoryCollection.resetInstance(new DetectorFactoryCollection());
 
         try (FindBugs2 engine = new FindBugs2(); Project project = createProject(files)) {
@@ -95,16 +100,22 @@ public class AnalysisRunner {
             BugCollectionBugReporter bugReporter = new BugCollectionBugReporter(project);
             bugReporter.setPriorityThreshold(Priorities.LOW_PRIORITY);
             bugReporter.setRankThreshold(BugRanker.VISIBLE_RANK_MAX);
-
+            final UserPreferences preferences = userPreferences != null ? userPreferences : UserPreferences.createDefaultUserPreferences();
+            if (preferences.getAdjustPriority() != null && !preferences.getAdjustPriority().isEmpty()) {
+                bugReporter.setPriorityAdjuster(new PriorityAdjuster(preferences.getAdjustPriority()));
+            }
             engine.setBugReporter(bugReporter);
-            final UserPreferences preferences = UserPreferences.createDefaultUserPreferences();
             preferences.getFilterSettings().clearAllCategories();
             preferences.enableAllDetectors(true);
             engine.setUserPreferences(preferences);
 
+            engineCustomization.accept(engine);
             try {
                 engine.execute();
-            } catch (final IOException | InterruptedException e) {
+            } catch (final IOException e) {
+                throw new AssertionError("Analysis failed with exception", e);
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
                 throw new AssertionError("Analysis failed with exception", e);
             }
             if (!bugReporter.getQueuedErrors().isEmpty()) {
@@ -162,7 +173,7 @@ public class AnalysisRunner {
         Path tempJar = File.createTempFile("SpotBugsAnalysisRunner", ".jar").toPath();
         try (OutputStream output = Files.newOutputStream(tempJar, StandardOpenOption.WRITE);
                 JarOutputStream jar = new JarOutputStream(output)) {
-            Path resourceRoot = Paths.get(uri).getParent();
+            Path resourceRoot = Path.of(uri).getParent();
 
             byte[] data = new byte[4 * 1024];
             Files.walkFileTree(resourceRoot, new SimpleFileVisitor<Path>() {

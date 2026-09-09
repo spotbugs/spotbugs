@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
  * why those are reported as low priority.
  *
  * All invokes of Number constructor with a constant argument are flagged as
- * high priority and invokes with unknwon value are normal priority.
+ * high priority and invokes with unknown value are normal priority.
  *
  * @author Mikko Tiihonen
  */

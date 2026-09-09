@@ -41,7 +41,9 @@ public class IncompatMask extends OpcodeStackDetector {
 
     private boolean equality;
 
-    private Number arg1, arg2;
+    private Number arg1;
+
+    private Number arg2;
 
     private Item bitresultItem;
 

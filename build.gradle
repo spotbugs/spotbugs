@@ -1,137 +1,276 @@
-buildscript {
-  repositories {
-    maven {
-      url "https://plugins.gradle.org/m2/"
-    }
-  }
-  dependencies {
-    classpath "com.diffplug.spotless:spotless-plugin-gradle:3.27.1"
+import java.io.BufferedInputStream
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 
-    classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin"
-    constraints {
-      classpath ("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.8") {
-        because 'to keep using the latest version'
-      }
-      classpath ('org.sonarsource.scanner.api:sonar-scanner-api:2.15.0.2182') {
-        because 'version 2.14 has a connection leak bug (SC-1431)'
-      }
-      classpath ('org.sonarsource.sonarqube:sonar-scanner-engine:8.3.1.34397') {
-        because 'make sure the DefaultScannerWsClient in the CLASSPATH is updated'
-      }
-    }
+import org.gradle.api.NamedDomainObjectSet
+import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.ResolvedArtifact
+import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.Provider
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenArtifact
+import org.gradle.api.tasks.TaskProvider
+import org.gradle.api.tasks.util.PatternFilterable
+import org.gradle.crypto.checksum.Checksum
 
-    classpath "gradle.plugin.org.gradle.crypto:checksum:1.2.0"
-  }
+plugins {
+  id 'org.sonarqube' version '7.5.0.8588'
+  id 'org.gradle.crypto.checksum' version '1.4.0'
+  id 'com.github.spotbugs' version '6.5.11'
+  id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
-apply plugin: "org.sonarqube"
-apply plugin: "com.diffplug.gradle.spotless"
-apply plugin: "org.gradle.crypto.checksum"
+group = 'com.github.spotbugs'
+version = '4.10.5-SNAPSHOT'
 
-version = '4.0.5-SNAPSHOT'
+apply from: "${rootDir}/gradle/java.gradle"
+apply from: "${rootDir}/gradle/jacoco.gradle"
 
-apply from: "$rootDir/gradle/java.gradle"
-apply from: "$rootDir/gradle/jacoco.gradle"
+// Apply Spotless to the root project so Gradle build scripts, including those
+// under spotbugsTestCases, are formatted. Subprojects apply it separately below
+// to format their Java sources; spotbugsTestCases intentionally skips that.
+apply from: "${rootDir}/gradle/spotless.gradle"
 
 subprojects {
-  apply from: "$rootDir/gradle/java.gradle"
-  apply from: "$rootDir/gradle/eclipse.gradle"
-  apply from: "$rootDir/gradle/idea.gradle"
-  apply from: "$rootDir/gradle/test.gradle"
-  if (!project.name.equals("spotbugsTestCases")) {
-    apply from: "$rootDir/gradle/spotless.gradle"
+  apply from: "${rootDir}/gradle/java.gradle"
+  apply from: "${rootDir}/gradle/eclipse.gradle"
+  apply from: "${rootDir}/gradle/idea.gradle"
+  apply from: "${rootDir}/gradle/test.gradle"
+
+  if (!project.name.equals('spotbugsTestCases')) {
+    apply from: "${rootDir}/gradle/spotless.gradle"
   }
 
   group = 'com.github.spotbugs'
   version = rootProject.version
+}
 
-  // Java versions
-  project.sourceCompatibility = 1.8
-  project.targetCompatibility = 1.8
-
+allprojects {
   repositories {
-    jcenter()
+    mavenCentral()
+  }
+  dependencies {
+    String junitVersion = '6.1.3'
+    testImplementation platform("org.junit:junit-bom:${junitVersion}")
   }
 }
 
-repositories {
-  jcenter()
-}
+subprojects {
+  plugins.withType(JavaPlugin) {
 
-wrapper {
-  distributionType = Wrapper.DistributionType.ALL
+    // Explicitly skip the test case modules you don't want to enforce rules on
+    Set<String> excludedProjects = [
+      'eclipsePlugin-junit',
+      'eclipsePlugin-test',
+      'spotbugsTestCases',
+      'spotbugs-tests',
+      'test-harness',
+      'test-harness-core',
+      'test-harness-jupiter'
+    ]
+
+    if (project.name in excludedProjects) {
+      return
+    }
+
+    tasks.register('checkDependencyBytecodeCompatibility') {
+      group = 'verification'
+      description = 'Enforces that production dependency binaries are fully compatible with Java 11 (Major version <= 55)'
+
+      Provider<Configuration> runtimeClasspath = configurations.named('runtimeClasspath')
+
+      inputs.files(runtimeClasspath)
+
+      doLast {
+        int maxAllowedMajorVersion = 55 // Java 11
+        Map<String, List<String>> illegalDependencies = [:]
+
+        Configuration config = runtimeClasspath.get()
+
+        config.resolvedConfiguration.resolvedArtifacts.each { ResolvedArtifact artifact ->
+          File file = artifact.file
+
+          if (file.name.endsWith('.jar') && file.exists()) {
+            file.withInputStream { inputStream ->
+              BufferedInputStream bufferedStream = new BufferedInputStream(inputStream)
+              ZipInputStream zip = new ZipInputStream(bufferedStream)
+              ZipEntry entry = zip.nextEntry
+
+              while (entry != null) {
+                if (entry.name.endsWith('.class')) {
+
+                  // Skip module-info and Multi-Release multi-version class folders
+                  if (entry.name.endsWith('module-info.class') || entry.name.startsWith('META-INF/versions/')) {
+                    entry = zip.nextEntry
+                    continue
+                  }
+
+                  int byte1 = zip.read()
+                  int byte2 = zip.read()
+                  int byte3 = zip.read()
+                  int byte4 = zip.read()
+
+                  long magic = ((long) (byte1 << 24 | byte2 << 16 | byte3 << 8 | byte4)) & 0xFFFFFFFFL
+
+                  if (magic == 0xCAFEBABE) {
+                    int minor = (zip.read() << 8) | zip.read()
+                    int major = (zip.read() << 8) | zip.read()
+
+                    if (major> maxAllowedMajorVersion) {
+                      String id = "${artifact.moduleVersion.id} (${file.name})"
+                      String details = "      - ${entry.name} (Compiled for Java ${major - 44} / Major: ${major})"
+
+                      if (!illegalDependencies.containsKey(id)) {
+                        illegalDependencies[id] = []
+                      }
+                      illegalDependencies[id] << details
+                      break
+                    }
+                  }
+                }
+                entry = zip.nextEntry
+              }
+            }
+          }
+        }
+
+        if (!illegalDependencies.isEmpty()) {
+          StringBuilder errorMsg = new StringBuilder()
+          errorMsg.append("\n================================================================================\n")
+          errorMsg.append("  Rule 'EnforceBytecodeVersion' failed for project :${project.name}\n")
+          errorMsg.append("  The following production dependencies require a JVM higher than Java 11:\n")
+          errorMsg.append("================================================================================\n")
+
+          illegalDependencies.each { dependencyId, classes ->
+            errorMsg.append("\n  * Found Banned Dependency: ${dependencyId}\n")
+            classes.each {
+              errorMsg.append("${it}\n")
+            }
+          }
+
+          errorMsg.append("\nUse './gradlew :${project.name}:dependencies' to locate the dependency tree paths.\n")
+          throw new GradleException(errorMsg.toString())
+        }
+      }
+    }
+
+    tasks.named('check') {
+      dependsOn 'checkDependencyBytecodeCompatibility'
+    }
+  }
 }
 
 // https://discuss.gradle.org/t/merge-jacoco-coverage-reports-for-multiproject-setups/12100/6
-task jacocoRootReport(type: JacocoReport) {
+tasks.register('jacocoRootReport', JacocoReport.class) {
   description = 'Merge all coverage reports before submit to SonarQube'
-  def reportTasks = project.getTasksByName("jacocoTestReport", true).minus(rootProject.jacocoTestReport)
+  Set<JacocoReport> reportTasks = project.getTasksByName('jacocoTestReport', true).minus(rootProject.jacocoTestReport)
   dependsOn reportTasks
 
   executionData.setFrom reportTasks.executionData
   sourceDirectories.setFrom reportTasks.sourceDirectories
 
   // Only enable class directories related to non-test project
-  classDirectories.setFrom files(reportTasks.classDirectories).filter {
-    !it.toString().contains("-test") && !it.toString().contains("Test") && !it.toString().contains("junit")
+  classDirectories.setFrom files(reportTasks.classDirectories).filter { File dir ->
+    !dir.toString().contains('-test') && !dir.toString().contains('Test') && !dir.toString().contains('junit')
   }
 
   reports {
     // JaCoCo SonarQube plugin needs a XML file to parse
     // https://docs.sonarqube.org/display/PLUG/JaCoCo+Plugin
-    xml.enabled = true
+    xml.required = true
   }
 }
 
-import org.gradle.crypto.checksum.Checksum
-
-def createReleaseBody = tasks.register("createReleaseBody")
-def createChecksums = tasks.register("createChecksums", Checksum)
-def publishTask = tasks.findByName("publish")
+TaskProvider<Task> createReleaseBody = tasks.register('createReleaseBody')
+TaskProvider<Checksum> createChecksums = tasks.register('createChecksums', Checksum)
+TaskProvider<Task> publishTask = tasks.findByName('publish')
 if (publishTask == null) {
-  publishTask = tasks.findByName("publishToMavenLocal")
+  publishTask = tasks.findByName('publishToMavenLocal')
 }
-def outputFile = file("$buildDir/release.md")
-def inputFile =  subprojects.collect {
-  it.hasProperty('publishing') ? it.publishing.publications.maven.artifacts : []
-}.flatten().collect {
-  it.file
-}
+Provider<RegularFile> outputFile = layout.buildDirectory.file('release.md')
 
-createChecksums.configure {
-  files = files(inputFile)
+// Defer artifact file collection to execution time for Gradle 9 compatibility
+createChecksums.configure { Checksum checksumTask ->
+  checksumTask.files.from provider {
+    subprojects.collect { Project subproject ->
+      if (subproject.hasProperty('publishing')) {
+        PublishingExtension publishing = (PublishingExtension) subproject.publishing
+        if (publishing.publications.findByName('maven')) {
+          return publishing.publications.maven.artifacts.collect { MavenArtifact artifact ->
+            return artifact.file
+          }
+        }
+      }
+      return []
+    }.flatten().findAll { File file ->
+      file != null && file.exists()
+    }
+  }
   if (publishTask != null) {
-    dependsOn publishTask
+    checksumTask.dependsOn publishTask
   }
-}
-createReleaseBody.configure {
-  inputs.files fileTree("$buildDir/checksums").matching {
-    include "*.sha256"
+  subprojects.each { Project subproject ->
+    checksumTask.dependsOn("${subproject.name}:jar")
   }
-  outputs.file outputFile
-  dependsOn createChecksums
 
+  dependsOn(':spotbugs:javadocJar')
+  dependsOn(':spotbugs:sourcesJar')
+  dependsOn(':spotbugs-annotations:javadocJar')
+  dependsOn(':spotbugs-annotations:sourcesJar')
+  dependsOn(':spotbugs-ant:javadocJar')
+  dependsOn(':spotbugs-ant:sourcesJar')
+  dependsOn(':test-harness:javadocJar')
+  dependsOn(':test-harness:sourcesJar')
+  dependsOn(':test-harness-core:javadocJar')
+  dependsOn(':test-harness-core:sourcesJar')
+  dependsOn(':test-harness-jupiter:javadocJar')
+  dependsOn(':test-harness-jupiter:sourcesJar')
+  dependsOn(':spotbugs:distZip')
+  dependsOn(':spotbugs:distTar')
+}
+createReleaseBody.configure { Task releaseTask ->
+  releaseTask.inputs.files fileTree(layout.buildDirectory.dir('checksums')).matching { PatternFilterable pattern ->
+    pattern.include '*.sha256'
+  }
+  releaseTask.outputs.file outputFile
+  releaseTask.dependsOn createChecksums
+
+  String version = project.version
   doLast {
-    outputFile.delete()
-    outputFile << """SpotBugs ${project.version}
+    File outputAsFile = outputFile.get().asFile
+    outputAsFile.delete()
+    outputAsFile << """SpotBugs ${version}
 
 ### CHANGELOG
-- https://github.com/spotbugs/spotbugs/blob/${project.version}/CHANGELOG.md
+- https://github.com/spotbugs/spotbugs/blob/${version}/CHANGELOG.md
 
 ### CHECKSUM
 | file | checksum (sha256) |
 | ---- | ----------------- |
 """
-    fileTree("$buildDir/checksums").matching {
-      include "*.sha256"
-    }.sort {
-      it.name
-    }.forEach {
-      def name = it.name.replace(".sha256", "")
-      def hash = it as String[]
-      outputFile << "| ${ name } | ${hash[0]} |\n"
+    fileTree(layout.buildDirectory.dir('checksums')).matching { PatternFilterable pattern ->
+      pattern.include '*.sha256'
+    }.sort { File a, File b ->
+      a.name <=> b.name
+    }.forEach { File checksumFile ->
+      String name = checksumFile.name.replace('.sha256', '')
+      String hash = checksumFile.text.trim()
+      outputFile.get().asFile << "| ${name} | ${hash} |\n"
     }
   }
 }
 
-apply from: "$rootDir/gradle/sonar.gradle"
+nexusPublishing {
+  repositories {
+    sonatype {
+      nexusUrl.set(uri('https://ossrh-staging-api.central.sonatype.com/service/local/'))
+      snapshotRepositoryUrl.set(uri('https://central.sonatype.com/repository/maven-snapshots/'))
+      username.set(findProperty('ossrhUsername') ?: '')
+      password.set(findProperty('ossrhPassword') ?: '')
+    }
+  }
+}
+
+apply from: "${rootDir}/gradle/sonar.gradle"

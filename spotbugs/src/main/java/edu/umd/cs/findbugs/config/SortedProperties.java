@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public final class SortedProperties extends Properties {
     /**
-     * Overriden to be able to write properties sorted by keys to the disk
+     * Overridden to be able to write properties sorted by keys to the disk
      *
      * @see java.util.Hashtable#keys()
      */
@@ -35,7 +35,7 @@ public final class SortedProperties extends Properties {
      * @return non null list which contains all given keys, sorted
      *         lexicographically. The list may be empty if given set was empty
      */
-    static public Enumeration<?> sortKeys(Set<String> keySet) {
+    public static Enumeration<?> sortKeys(Set<String> keySet) {
         List<String> sortedList = new ArrayList<>(keySet);
         Collections.sort(sortedList);
         return Collections.enumeration(sortedList);

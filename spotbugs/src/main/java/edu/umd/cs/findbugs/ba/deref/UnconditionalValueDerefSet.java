@@ -285,8 +285,7 @@ public class UnconditionalValueDerefSet {
      * @return the set of dereference Locations
      */
     public Set<Location> getDerefLocationSet(ValueNumber vn) {
-        Set<Location> derefLocationSet = derefLocationSetMap.computeIfAbsent(vn, k -> new HashSet<>());
-        return derefLocationSet;
+        return derefLocationSetMap.computeIfAbsent(vn, k -> new HashSet<>());
     }
 
     /**
@@ -381,7 +380,7 @@ public class UnconditionalValueDerefSet {
                 } else {
                     buf.append(',');
                 }
-                buf.append("(" + location.getBasicBlock().getLabel() + ":" + location.getHandle().getPosition() + ")");
+                buf.append("(").append(location.getBasicBlock().getLabel()).append(":").append(location.getHandle().getPosition()).append(")");
             }
             buf.append('}');
         }

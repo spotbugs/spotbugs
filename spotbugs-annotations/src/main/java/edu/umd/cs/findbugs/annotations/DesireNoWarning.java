@@ -26,10 +26,6 @@ public @interface DesireNoWarning {
      */
     public String value();
 
-    /** @deprecated - use confidence instead */
-    @Deprecated
-    Priority priority() default Priority.LOW;
-
     /** Want no warning at this priority or higher */
     Confidence confidence() default Confidence.LOW;
 

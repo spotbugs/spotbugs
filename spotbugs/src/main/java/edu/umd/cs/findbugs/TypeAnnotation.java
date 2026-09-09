@@ -20,6 +20,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -48,7 +49,7 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
 
     public static final String UNHASHABLE_ROLE = "TYPE_UNHASHABLE";
 
-    final private String descriptor; // jvm type descriptor, such as "[I"
+    private final String descriptor; // jvm type descriptor, such as "[I"
 
     private String roleDescription;
 
@@ -91,7 +92,7 @@ public class TypeAnnotation extends BugAnnotationWithSourceLines {
         if (descriptor.startsWith("L")) {
             AnalysisContext context = AnalysisContext.currentAnalysisContext();
             if (context != null) {
-                String className = typeDescriptor.substring(1, typeDescriptor.length() - 1).replace('/', '.');
+                String className = ClassName.fromFieldSignatureToDottedClassName(typeDescriptor);
                 this.sourceFileName = context.lookupSourceFile(className);
                 this.sourceLines = ClassAnnotation.getSourceLinesForClass(className, sourceFileName);
             } else {

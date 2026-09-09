@@ -95,10 +95,8 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
             }
 
         }
-        if (element instanceof IMarker) {
-            if (!((IMarker) element).exists()) {
-                return null;
-            }
+        if (element instanceof IMarker && !((IMarker) element).exists()) {
+            return null;
         }
         return wbProvider.getImage(element);
     }
@@ -124,8 +122,7 @@ public class BugLabelProvider implements /* IStyledLabelProvider, */ ICommonLabe
             }
             int filtered = getFilteredMarkersCount(group);
             String filterCount = filtered > 0 ? "/" + filtered + " filtered" : "";
-            String str = group.getShortDescription() + " (" + (group.getMarkersCount() - filtered) + filterCount + ")";
-            return str;
+            return group.getShortDescription() + " (" + (group.getMarkersCount() - filtered) + filterCount + ")";
         }
         if (element instanceof IMarker) {
             IMarker marker = (IMarker) element;

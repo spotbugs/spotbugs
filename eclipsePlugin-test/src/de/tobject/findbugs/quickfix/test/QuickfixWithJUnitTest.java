@@ -21,9 +21,9 @@ package de.tobject.findbugs.quickfix.test;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.CoreException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.tobject.findbugs.test.AbstractQuickfixTest;
 import de.tobject.findbugs.test.TestScenario;
@@ -33,19 +33,20 @@ import de.tobject.findbugs.test.TestScenario;
  *
  * @author Tomás Pollak
  */
-public class QuickfixWithJUnitTest extends AbstractQuickfixTest {
-    @BeforeClass
-    public static void setUpClass() throws Exception {
+class QuickfixWithJUnitTest extends AbstractQuickfixTest {
+
+    @BeforeAll
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.QUICKFIX_WITH_JUNIT);
     }
 
-    @AfterClass
-    public static void tearDownClass() throws CoreException {
+    @AfterAll
+    static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
 
     @Test
-    public void testCreateSuperCallResolution() throws CoreException, IOException {
+    void testCreateSuperCallResolution() throws CoreException, IOException {
         doTestQuickfixResolution("CreateSuperCallResolutionExample.java", "FI_MISSING_SUPER_CALL", "IJU_SETUP_NO_SUPER",
                 "IJU_TEARDOWN_NO_SUPER");
     }

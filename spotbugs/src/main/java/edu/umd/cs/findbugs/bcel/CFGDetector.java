@@ -48,16 +48,6 @@ public abstract class CFGDetector implements Detector2 {
     public void finishPass() {
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.umd.cs.findbugs.Detector2#getDetectorClassName()
-     */
-    @Override
-    public String getDetectorClassName() {
-        return getClass().getName();
-    }
-
     protected ClassContext classContext;
     protected Method method;
 
@@ -97,7 +87,7 @@ public abstract class CFGDetector implements Detector2 {
 
     /**
      * Visit the CFG (control flow graph) of a method to be analyzed. Should be
-     * overridded by subclasses.
+     * overridden by subclasses.
      *
      * @param methodDescriptor
      * @param cfg

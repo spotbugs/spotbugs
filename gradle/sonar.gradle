@@ -1,15 +1,26 @@
 apply plugin: 'org.sonarqube'
 
-sonarqube {
-    properties {
-        property 'sonar.coverage.jacoco.xmlReportPaths', jacocoRootReport.reports.xml.destination
-        property 'sonar.host.url', 'https://sonarcloud.io'
-        property 'sonar.organization', 'spotbugs'
-        property 'sonar.projectKey', 'com.github.spotbugs.spotbugs'
-        property 'sonar.projectName', 'SpotBugs'
-    }
+sonar {
+  properties {
+    property 'sonar.host.url', 'https://sonarcloud.io'
+    property 'sonar.organization', 'spotbugs'
+    property 'sonar.projectKey', 'com.github.spotbugs.spotbugs'
+    property 'sonar.projectName', 'SpotBugs'
+
+    property 'sonar.coverage.jacoco.xmlReportPaths', "${project.layout.buildDirectory.asFile.get().absolutePath}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+  }
 }
 
-tasks.sonarqube {
-    dependsOn jacocoRootReport
+tasks.named('sonar').configure {
+  dependsOn jacocoRootReport
+}
+
+allprojects {
+  tasks.matching { task ->
+    task.name == 'sonarResolver'
+  }.configureEach {
+    dependsOn tasks.matching { task ->
+      task.name == 'classes'
+    }
+  }
 }

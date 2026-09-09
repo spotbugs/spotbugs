@@ -50,7 +50,7 @@ Please depend on ``spotbugs-annotations`` instead.
 com.google.code.findbugs:annotations
 ------------------------------------
 
-Please depend on both of ``spotbugs-annotations`` and ``net.jcip:jcip-annotations:1.0`` instead.
+Please depend on both of ``spotbugs-annotations`` and ``com.github.stephenc.jcip:jcip-annotations:1.0-1`` instead.
 
 .. literalinclude:: generated/migration-annotations-maven.template.inc
     :language: xml

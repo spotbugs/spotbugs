@@ -79,7 +79,7 @@ public class NoteDirectlyRelevantTypeQualifiers extends DismantleBytecode implem
         // Find direct annotations on called methods and loaded fields
         super.visit(m);
 
-        if (applicableApplications.size() > 0) {
+        if (!applicableApplications.isEmpty()) {
             qualifiers.setDirectlyRelevantTypeQualifiers(getMethodDescriptor(), new ArrayList<>(
                     applicableApplications));
         }

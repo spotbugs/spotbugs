@@ -146,11 +146,8 @@ public class TypeQualifierValueSet {
 
     private static Set<SourceSinkInfo> getOrCreateSourceSinkInfoSet(Map<ValueNumber, Set<SourceSinkInfo>> sourceSinkInfoSetMap,
             ValueNumber vn) {
-        Set<SourceSinkInfo> sourceSinkInfoSet = sourceSinkInfoSetMap.computeIfAbsent(vn, k -> new HashSet<>(3));
-        return sourceSinkInfoSet;
+        return sourceSinkInfoSetMap.computeIfAbsent(vn, k -> new HashSet<>(3));
     }
-
-
 
     public FlowValue getValue(ValueNumber vn) {
         FlowValue result = valueMap.get(vn);

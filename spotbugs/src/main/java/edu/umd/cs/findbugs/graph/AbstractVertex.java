@@ -32,9 +32,11 @@ public class AbstractVertex<EdgeType extends AbstractEdge<EdgeType, ActualVertex
 
     private int label;
 
-    EdgeType firstIncomingEdge, lastIncomingEdge;
+    EdgeType firstIncomingEdge;
+    EdgeType lastIncomingEdge;
 
-    EdgeType firstOutgoingEdge, lastOutgoingEdge;
+    EdgeType firstOutgoingEdge;
+    EdgeType lastOutgoingEdge;
 
     @Override
     public int getLabel() {
@@ -62,13 +64,7 @@ public class AbstractVertex<EdgeType extends AbstractEdge<EdgeType, ActualVertex
 
     @Override
     public int compareTo(ActualVertexType other) {
-        if (this.getLabel() < other.getLabel()) {
-            return -1;
-        } else if (this.getLabel() > other.getLabel()) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return Integer.compare(this.getLabel(), other.getLabel());
     }
 
     void addOutgoingEdge(EdgeType edge) {
@@ -98,7 +94,8 @@ public class AbstractVertex<EdgeType extends AbstractEdge<EdgeType, ActualVertex
     }
 
     void removeIncomingEdge(EdgeType edge) {
-        EdgeType prev = null, cur = firstIncomingEdge;
+        EdgeType prev = null;
+        EdgeType cur = firstIncomingEdge;
         while (cur != null) {
             EdgeType next = cur.getNextIncomingEdge();
             if (cur.equals(edge)) {
@@ -116,7 +113,8 @@ public class AbstractVertex<EdgeType extends AbstractEdge<EdgeType, ActualVertex
     }
 
     void removeOutgoingEdge(EdgeType edge) {
-        EdgeType prev = null, cur = firstOutgoingEdge;
+        EdgeType prev = null;
+        EdgeType cur = firstOutgoingEdge;
         while (cur != null) {
             EdgeType next = cur.getNextOutgoingEdge();
             if (cur.equals(edge)) {

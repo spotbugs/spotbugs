@@ -39,29 +39,14 @@ import org.slf4j.LoggerFactory;
 public class CheckBcel {
     private static final Logger LOG = LoggerFactory.getLogger(CheckBcel.class);
 
-    /**
-     *
-     */
     private static final String ORG_APACHE_BCEL_REPOSITORY = "org.apache.bcel.Repository";
 
-    /**
-     *
-     */
     private static final String ORG_APACHE_BCEL_CLASSFILE_EMPTY_VISITOR = "org.apache.bcel.classfile.EmptyVisitor";
 
-    /**
-     *
-     */
     private static final String ORG_APACHE_BCEL_CONSTANTS = "org.apache.bcel.Constants";
 
-    /**
-     *
-     */
     private static final String ORG_APACHE_BCEL_GENERIC_TYPE = "org.apache.bcel.generic.Type";
 
-    /**
-     *
-     */
     private static final String ORG_APACHE_BCEL_GENERIC_OBJECT_TYPE = "org.apache.bcel.generic.ObjectType";
 
     /**

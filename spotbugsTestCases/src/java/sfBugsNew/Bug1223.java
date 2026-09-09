@@ -8,15 +8,17 @@ public class Bug1223 {
 
     @ExpectWarning("RCN")
     public static boolean check(Element e) {
-        if (e.getAttribute("x") == null)
+        if (e.getAttribute("x") == null) {
             return true;
+        }
         return false;
     }
 
     @ExpectWarning("RCN")
     public static boolean check2(Element e) {
-        if (e.getAttributeNS("x", "y") == null)
+        if (e.getAttributeNS("x", "y") == null) {
             return true;
+        }
         return false;
     }
 }

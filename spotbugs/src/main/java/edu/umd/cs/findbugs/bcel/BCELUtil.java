@@ -50,7 +50,7 @@ public abstract class BCELUtil {
      * @return a MethodDescriptor identifying the method
      */
     public static MethodDescriptor getMethodDescriptor(JavaClass jclass, Method method) {
-        return DescriptorFactory.instance().getMethodDescriptor(jclass.getClassName().replace('.', '/'), method.getName(),
+        return DescriptorFactory.instance().getMethodDescriptor(ClassName.toSlashedClassName(jclass.getClassName()), method.getName(),
                 method.getSignature(), method.isStatic());
     }
 

@@ -41,7 +41,7 @@ public abstract class OverriddenMethodsVisitor implements SupertypeTraversalVisi
      * @param xmethod
      *            a derived method
      */
-    public OverriddenMethodsVisitor(XMethod xmethod) {
+    protected OverriddenMethodsVisitor(XMethod xmethod) {
         assert !xmethod.isStatic();
         this.xmethod = xmethod;
     }

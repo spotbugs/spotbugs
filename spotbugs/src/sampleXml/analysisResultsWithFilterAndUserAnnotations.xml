@@ -1656,7 +1656,7 @@
       <ClassStats class="edu.umd.cs.findbugs.detect.CallToUnconditionalThrower" sourceFile="CallToUnconditionalThrower.java" interface="false" size="75" bugs="0"/>
       <ClassStats class="edu.umd.cs.findbugs.detect.CallToUnsupportedMethod" sourceFile="CallToUnsupportedMethod.java" interface="false" size="72" bugs="0"/>
       <ClassStats class="edu.umd.cs.findbugs.detect.CalledMethods" sourceFile="CalledMethods.java" interface="false" size="36" bugs="0"/>
-      <ClassStats class="edu.umd.cs.findbugs.detect.CbeckMustOverrideSuperAnnotation" sourceFile="CbeckMustOverrideSuperAnnotation.java" interface="false" size="32" bugs="0"/>
+      <ClassStats class="edu.umd.cs.findbugs.detect.OverridingMethodsMustInvokeSuperDetector" sourceFile="OverridingMethodsMustInvokeSuperDetector.java" interface="false" size="32" bugs="0"/>
       <ClassStats class="edu.umd.cs.findbugs.detect.CheckCalls" sourceFile="CheckCalls.java" interface="false" size="49" bugs="0"/>
       <ClassStats class="edu.umd.cs.findbugs.detect.CheckExpectedWarnings" sourceFile="CheckExpectedWarnings.java" interface="false" size="200" bugs="0"/>
       <ClassStats class="edu.umd.cs.findbugs.detect.CheckImmutableAnnotation" sourceFile="CheckImmutableAnnotation.java" interface="false" size="20" bugs="0"/>

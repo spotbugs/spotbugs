@@ -19,11 +19,11 @@ import java.io.IOException;
  *  r = a.MyClass.getInstance()
  * }
  * catch (IOException e) {
- *  log.warn("IO Exeption" + e.getMessage());
+ *  log.warn("IO Exception" + e.getMessage());
  *  return null;
  * }
  * catch (MyException e) {
- *  log.warn("My Exeption" + e.getMessage());
+ *  log.warn("My Exception" + e.getMessage());
  *    return null;
  * }
  *
@@ -52,10 +52,10 @@ public class FalsePositiveOnExceptionPath {
         try {
             r = getInstance(i);
         } catch (IOException e) {
-            System.out.println("IO Exeption" + e.getMessage());
+            System.out.println("IO Exception" + e.getMessage());
             return null;
         } catch (IllegalArgumentException e) {
-            System.out.println("My Exeption" + e.getMessage());
+            System.out.println("My Exception" + e.getMessage());
             return null;
         }
 

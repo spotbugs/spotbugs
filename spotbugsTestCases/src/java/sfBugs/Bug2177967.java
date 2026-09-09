@@ -31,7 +31,7 @@ public class Bug2177967 {
         // Load the properties from the file
         InputStream in = loader.getResourceAsStream(propertiesFile);
         if (in == null) {
-            throw new RuntimeException("Cound not locate " + propertiesFile);
+            throw new RuntimeException("Could not locate " + propertiesFile);
         }
         properties.load(in);
 
@@ -42,7 +42,7 @@ public class Bug2177967 {
         // Load the properties from the file
         InputStream in = new FileInputStream(propertiesFile);
         if (in == null) {
-            throw new RuntimeException("Cound not locate " + propertiesFile);
+            throw new RuntimeException("Could not locate " + propertiesFile);
         }
         properties.load(in);
 

@@ -38,20 +38,27 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import javax.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.BootstrapMethod;
+import org.apache.bcel.classfile.BootstrapMethods;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantDouble;
+import org.apache.bcel.classfile.ConstantDynamic;
 import org.apache.bcel.classfile.ConstantFloat;
 import org.apache.bcel.classfile.ConstantInteger;
+import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantLong;
+import org.apache.bcel.classfile.ConstantNameAndType;
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
@@ -60,6 +67,7 @@ import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
+import org.apache.commons.lang3.tuple.Pair;
 
 import edu.umd.cs.findbugs.OpcodeStack.Item.SpecialKind;
 import edu.umd.cs.findbugs.StackMapAnalyzer.JumpInfoFromStackMap;
@@ -124,10 +132,47 @@ public class OpcodeStack {
     }
 
     private static final String JAVA_UTIL_ARRAYS_ARRAY_LIST = "Ljava/util/Arrays$ArrayList;";
+    private static final String JAVA_UTIL_COLLECTIONS = "java/util/Collections";
 
     private static final boolean DEBUG = SystemProperties.getBoolean("ocstack.debug");
 
     private static final boolean DEBUG2 = DEBUG;
+
+    private static final Map<Pair<String, String>, String> IMMUTABLE_RETURNER_MAP = new HashMap<>();
+    static {
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptyList"), "Ljava/util/Collections$EmptyList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptyMap"), "Ljava/util/Collections$EmptyMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptyNavigableMap"),
+                "Ljava/util/Collections$UnmodifiableNavigableMap$EmptyNavigableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptySortedMap"),
+                "Ljava/util/Collections$UnmodifiableNavigableMap$EmptyNavigableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptySet"), "Ljava/util/Collections$EmptySet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptyNavigableSet"),
+                "Ljava/util/Collections$UnmodifiableNavigableSet$EmptyNavigableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "emptySortedSet"),
+                "Ljava/util/Collections$UnmodifiableNavigableSet$EmptyNavigableSet;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "singletonList"), "Ljava/util/Collections$SingletonList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "singletonMap"), "Ljava/util/Collections$SingletonMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "singleton"), "Ljava/util/Collections$SingletonSet;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableList"), "Ljava/util/Collections$UnmodifiableList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableMap"), "Ljava/util/Collections$UnmodifiableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableNavigableMap"), "Ljava/util/Collections$UnmodifiableNavigableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableSortedMap"), "Ljava/util/Collections$UnmodifiableSortedMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableSet"), "Ljava/util/Collections$UnmodifiableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableNavigableSet"), "Ljava/util/Collections$UnmodifiableNavigableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(JAVA_UTIL_COLLECTIONS, "unmodifiableSortedSet"), "Ljava/util/Collections$UnmodifiableSortedSet;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_LIST, "of"), "Ljava/util/ImmutableCollections$AbstractImmutableList;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_LIST, "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableList;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_MAP, "of"), "Ljava/util/ImmutableCollections$AbstractImmutableMap;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_MAP, "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableMap;");
+
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_SET, "of"), "Ljava/util/ImmutableCollections$AbstractImmutableSet;");
+        IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_SET, "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableSet;");
+    }
 
     @StaticConstant
     static final HashMap<String, String> boxedTypes = new HashMap<>();
@@ -432,8 +477,8 @@ public class OpcodeStack {
             case NOT_SPECIAL:
                 break;
             default:
-                buf.append(", #" + specialKind);
-                buf.append("(" + specialKindToName.get(specialKind) + ")");
+                buf.append(", #").append(specialKind);
+                buf.append("(").append(specialKindToName.get(specialKind)).append(")");
                 break;
 
             }
@@ -764,33 +809,16 @@ public class OpcodeStack {
 
             baseSig = signature;
 
-            if (baseSig.length() == 0) {
+            if (baseSig.isEmpty()) {
                 return null;
             }
             baseSig = baseSig.substring(1, baseSig.length() - 1);
-            baseSig = baseSig.replace('/', '.');
+            baseSig = ClassName.toDottedClassName(baseSig);
             return Repository.lookupClass(baseSig);
         }
 
         public boolean isArray() {
             return signature.startsWith("[");
-        }
-
-        @Deprecated
-        public String getElementSignature() {
-            if (!isArray()) {
-                return signature;
-            } else {
-                int pos = 0;
-                int len = signature.length();
-                while (pos < len) {
-                    if (signature.charAt(pos) != '[') {
-                        break;
-                    }
-                    pos++;
-                }
-                return signature.substring(pos);
-            }
         }
 
         public boolean isNonNegative() {
@@ -824,12 +852,6 @@ public class OpcodeStack {
          */
         public Object getConstant() {
             return constValue;
-        }
-
-        /** Use getXField instead */
-        @Deprecated
-        public FieldAnnotation getFieldAnnotation() {
-            return FieldAnnotation.fromXField(getXField());
         }
 
         public XField getXField() {
@@ -927,13 +949,15 @@ public class OpcodeStack {
             if (getSpecialKind() == Item.SERVLET_OUTPUT) {
                 return true;
             }
-            if ("Ljavax/servlet/ServletOutputStream;".equals(getSignature())) {
+            if ("Ljavax/servlet/ServletOutputStream;".equals(getSignature())
+                    || "Ljakarta/servlet/ServletOutputStream;".equals(getSignature())) {
                 return true;
             }
             XMethod writingToSource = getReturnValueOf();
 
 
-            return writingToSource != null && "javax.servlet.http.HttpServletResponse".equals(writingToSource.getClassName())
+            return writingToSource != null && ("javax.servlet.http.HttpServletResponse".equals(writingToSource.getClassName())
+                    || "jakarta.servlet.http.HttpServletResponse".equals(writingToSource.getClassName()))
                     && ("getWriter".equals(writingToSource.getName()) || "getOutputStream".equals(writingToSource.getName()));
         }
 
@@ -1265,7 +1289,8 @@ public class OpcodeStack {
     public void sawOpcode(DismantleBytecode dbc, int seen) {
         int register;
         String signature;
-        Item it, it2;
+        Item it;
+        Item it2;
         Constant cons;
 
         // System.out.printf("%3d %12s%s%n", dbc.getPC(), Const.getOpcodeName(seen),
@@ -1445,18 +1470,32 @@ public class OpcodeStack {
                 push(new Item("I"));
                 break;
 
-            case Const.IFNONNULL:
-            case Const.IFNULL:
-                // {
-                // Item topItem = pop();
-                // if (seen == IFNONNULL && topItem.isNull())
-                // break;
-                // seenTransferOfControl = true;
-                // addJumpValue(dbc.getPC(), dbc.getBranchTarget());
-                //
-                // break;
-                // }
-
+            case Const.IFNONNULL: {
+                seenTransferOfControl = true;
+                Item topItem = pop();
+                addJumpValue(dbc.getPC(), dbc.getBranchTarget());
+                // On fall-through the tested value is null; propagate that to the local variable
+                // so that a subsequent IFNULL on the same variable can detect the dead fall-through.
+                int reg = topItem.registerNumber;
+                if (reg >= 0 && reg < lvValues.size()) {
+                    lvValues.set(reg, Item.nullItem(topItem.getSignature()));
+                }
+                break;
+            }
+            case Const.IFNULL: {
+                seenTransferOfControl = true;
+                Item topItem = pop();
+                addJumpValue(dbc.getPC(), dbc.getBranchTarget());
+                // If the item is a local variable definitely set to null (e.g. ACONST_NULL or null-propagated
+                // through IFNONNULL fall-through), the jump always happens and the fall-through is dead code.
+                // Only apply when registerNumber >= 0 (local variable); field-summary nulls (registerNumber == -1)
+                // reflect initial state and may not be null at every call site.
+                if (topItem.isNull() && topItem.registerNumber >= 0) {
+                    setReachOnlyByBranch(true);
+                    setTop(true);
+                }
+                break;
+            }
             case Const.IFEQ:
             case Const.IFNE:
             case Const.IFLT:
@@ -1596,6 +1635,7 @@ public class OpcodeStack {
                         setTop(true);
                         break;
                     } else {
+                        // The jump was deemed impossible after constants analysis
                         break;
                     }
                 }
@@ -2194,6 +2234,10 @@ public class OpcodeStack {
         if (constant instanceof Character) {
             return ((Character) constant).charValue();
         }
+        if (constant instanceof Boolean) {
+            Boolean val = (Boolean) constant;
+            return val.booleanValue() ? 1 : 0;
+        }
         throw new IllegalArgumentException(String.valueOf(constant));
     }
 
@@ -2326,7 +2370,8 @@ public class OpcodeStack {
     }
 
     private void handleDup2() {
-        Item it, it2;
+        Item it;
+        Item it2;
         it = pop();
         if (it.getSize() == 2) {
             push(it);
@@ -2421,7 +2466,7 @@ public class OpcodeStack {
         }
     }
 
-    static private void addBoxedType(Class<?>... clss) {
+    private static void addBoxedType(Class<?>... clss) {
         for (Class<?> c : clss) {
             Class<?> primitiveType;
             try {
@@ -2452,7 +2497,7 @@ public class OpcodeStack {
     private void processMethodCall(DismantleBytecode dbc, int seen) {
         @SlashedClassName
         String clsName = dbc.getClassConstantOperand();
-        String methodName = dbc.getNameConstantOperand();
+        String method = dbc.getNameConstantOperand();
         String signature = dbc.getSigConstantOperand();
         String appenderValue = null;
         boolean servletRequestParameterTainted = false;
@@ -2467,8 +2512,7 @@ public class OpcodeStack {
 
         if (boxedTypes.containsKey(clsName)
                 && topItem != null
-                && ("valueOf".equals(methodName) && !signature.contains("String") || methodName.equals(boxedTypes.get(clsName)
-                        + "Value"))) {
+                && ("valueOf".equals(method) && !signature.contains("String") || method.equals(boxedTypes.get(clsName) + "Value"))) {
             // boxing/unboxing conversion
             Item value = pop();
             String newSignature = new SignatureParser(signature).getReturnTypeSignature();
@@ -2499,7 +2543,7 @@ public class OpcodeStack {
             }
         }
         boolean initializingServletWriter = false;
-        if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(methodName) && clsName.startsWith("java/io") && clsName.endsWith("Writer")
+        if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(method) && clsName.startsWith("java/io") && clsName.endsWith("Writer")
                 && numberArguments > 0) {
             Item firstArg = getStackItem(numberArguments - 1);
             if (firstArg.isServletWriter()) {
@@ -2515,7 +2559,7 @@ public class OpcodeStack {
         // TODO: stack merging for trinaries kills the constant.. would be nice
         // to maintain.
         if ("java/lang/StringBuffer".equals(clsName) || "java/lang/StringBuilder".equals(clsName)) {
-            if (Const.CONSTRUCTOR_NAME.equals(methodName)) {
+            if (Const.CONSTRUCTOR_NAME.equals(method)) {
                 if ("(Ljava/lang/String;)V".equals(signature)) {
                     Item i = getStackItem(0);
                     appenderValue = (String) i.getConstant();
@@ -2525,13 +2569,13 @@ public class OpcodeStack {
                 } else if ("()V".equals(signature)) {
                     appenderValue = "";
                 }
-            } else if ("toString".equals(methodName) && getStackDepth() >= 1) {
+            } else if ("toString".equals(method) && getStackDepth() >= 1) {
                 Item i = getStackItem(0);
                 appenderValue = (String) i.getConstant();
                 if (i.isServletParameterTainted()) {
                     servletRequestParameterTainted = true;
                 }
-            } else if ("append".equals(methodName)) {
+            } else if ("append".equals(method)) {
                 if (signature.indexOf("II)") == -1 && getStackDepth() >= 2) {
                     sbItem = getStackItem(1);
                     Item i = getStackItem(0);
@@ -2553,7 +2597,7 @@ public class OpcodeStack {
                     sawUnknownAppend = true;
                 }
             }
-        } else if (seen == Const.INVOKESPECIAL && "java/io/FileOutputStream".equals(clsName) && Const.CONSTRUCTOR_NAME.equals(methodName)
+        } else if (seen == Const.INVOKESPECIAL && "java/io/FileOutputStream".equals(clsName) && Const.CONSTRUCTOR_NAME.equals(method)
                 && ("(Ljava/io/File;Z)V".equals(signature) || "(Ljava/lang/String;Z)V".equals(signature)) && stack.size() > 3) {
             OpcodeStack.Item item = getStackItem(0);
             Object value = item.getConstant();
@@ -2567,7 +2611,7 @@ public class OpcodeStack {
                 }
                 return;
             }
-        } else if (seen == Const.INVOKESPECIAL && "java/io/BufferedOutputStream".equals(clsName) && Const.CONSTRUCTOR_NAME.equals(methodName)
+        } else if (seen == Const.INVOKESPECIAL && "java/io/BufferedOutputStream".equals(clsName) && Const.CONSTRUCTOR_NAME.equals(method)
                 && "(Ljava/io/OutputStream;)V".equals(signature)) {
 
             if (getStackItem(0).getSpecialKind() == Item.FILE_OPENED_IN_APPEND_MODE
@@ -2580,8 +2624,9 @@ public class OpcodeStack {
                 newTop.setPC(dbc.getPC());
                 return;
             }
-        } else if (seen == Const.INVOKEINTERFACE && "getParameter".equals(methodName)
-                && "javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)) {
+        } else if (seen == Const.INVOKEINTERFACE && "getParameter".equals(method)
+                && ("javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)
+                        || "jakarta/servlet/http/HttpServletRequest".equals(clsName) || "jakarta/servlet/http/ServletRequest".equals(clsName))) {
             Item requestParameter = pop();
             pop();
             Item result = new Item("Ljava/lang/String;");
@@ -2596,8 +2641,9 @@ public class OpcodeStack {
             result.setPC(dbc.getPC());
             push(result);
             return;
-        } else if (seen == Const.INVOKEINTERFACE && "getQueryString".equals(methodName)
-                && "javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)) {
+        } else if (seen == Const.INVOKEINTERFACE && "getQueryString".equals(method)
+                && ("javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)
+                        || "jakarta/servlet/http/HttpServletRequest".equals(clsName) || "jakarta/servlet/http/ServletRequest".equals(clsName))) {
             pop();
             Item result = new Item("Ljava/lang/String;");
             result.setServletParameterTainted();
@@ -2605,8 +2651,9 @@ public class OpcodeStack {
             result.setPC(dbc.getPC());
             push(result);
             return;
-        } else if (seen == Const.INVOKEINTERFACE && "getHeader".equals(methodName)
-                && "javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)) {
+        } else if (seen == Const.INVOKEINTERFACE && "getHeader".equals(method)
+                && ("javax/servlet/http/HttpServletRequest".equals(clsName) || "javax/servlet/http/ServletRequest".equals(clsName)
+                        || "jakarta/servlet/http/HttpServletRequest".equals(clsName) || "jakarta/servlet/http/ServletRequest".equals(clsName))) {
             /* Item requestParameter = */pop();
             pop();
             Item result = new Item("Ljava/lang/String;");
@@ -2615,20 +2662,40 @@ public class OpcodeStack {
             result.setPC(dbc.getPC());
             push(result);
             return;
-        } else if (seen == Const.INVOKESTATIC && "asList".equals(methodName) && "java/util/Arrays".equals(clsName)) {
+        } else if (seen == Const.INVOKESTATIC && "asList".equals(method) && "java/util/Arrays".equals(clsName)) {
             /* Item requestParameter = */pop();
             Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
             push(result);
             return;
-        } else if (seen == Const.INVOKESTATIC && "(Ljava/util/List;)Ljava/util/List;".equals(signature)
-                && "java/util/Collections".equals(clsName)) {
-            Item requestParameter = pop();
-            if (JAVA_UTIL_ARRAYS_ARRAY_LIST.equals(requestParameter.getSignature())) {
-                Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
+        } else if (seen == Const.INVOKESTATIC) {
+            Item requestParameter = null;
+            if ("(Ljava/util/List;)Ljava/util/List;".equals(signature)
+                    && JAVA_UTIL_COLLECTIONS.equals(clsName)) {
+                requestParameter = top();
+            }
+            String returnTypeName = IMMUTABLE_RETURNER_MAP.get(Pair.of(clsName, method));
+            if (returnTypeName != null) {
+                SignatureParser sp = new SignatureParser(signature);
+                for (int i = 0; i < sp.getNumParameters(); ++i) {
+                    pop();
+                }
+                Item result;
+                if (requestParameter != null && JAVA_UTIL_ARRAYS_ARRAY_LIST.equals(requestParameter.getSignature())) {
+                    result = new Item("Ljava/util/Collections$UnmodifiableRandomAccessList;");
+                } else {
+                    result = new Item(returnTypeName);
+                }
                 push(result);
                 return;
+            } else if (requestParameter != null) {
+                pop();
+                if (JAVA_UTIL_ARRAYS_ARRAY_LIST.equals(requestParameter.getSignature())) {
+                    Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
+                    push(result);
+                    return;
+                }
+                push(requestParameter); // fall back to standard logic
             }
-            push(requestParameter); // fall back to standard logic
         }
 
         pushByInvoke(dbc, seen != Const.INVOKESTATIC);
@@ -2662,12 +2729,12 @@ public class OpcodeStack {
         }
 
         if (("java/util/Random".equals(clsName) || "java/security/SecureRandom".equals(clsName)) &&
-                ("nextInt".equals(methodName) && "()I".equals(signature)
-                        || "nextLong".equals(methodName) && "()J".equals(signature))) {
+                ("nextInt".equals(method) && "()I".equals(signature)
+                        || "nextLong".equals(method) && "()J".equals(signature))) {
             Item i = new Item(pop());
             i.setSpecialKind(Item.RANDOM_INT);
             push(i);
-        } else if ("size".equals(methodName) && "()I".equals(signature)
+        } else if ("size".equals(method) && "()I".equals(signature)
                 && Subtypes2.instanceOf(ClassName.toDottedClassName(clsName), "java.util.Collection")) {
             Item i = new Item(pop());
             if (i.getSpecialKind() == Item.NOT_SPECIAL) {
@@ -2678,7 +2745,7 @@ public class OpcodeStack {
                 topItem.getConstant() instanceof String) {
             String input = (String) topItem.getConstant();
             Object result;
-            switch (methodName) {
+            switch (method) {
             case "length":
                 result = input.length();
                 break;
@@ -2697,7 +2764,7 @@ public class OpcodeStack {
                 i.constValue = result;
                 push(i);
             }
-        } else if (ClassName.isMathClass(clsName) && "abs".equals(methodName)) {
+        } else if (ClassName.isMathClass(clsName) && "abs".equals(method)) {
             Item i = new Item(pop());
             if (i.getSpecialKind() == Item.HASHCODE_INT) {
                 i.setSpecialKind(Item.MATH_ABS_OF_HASHCODE);
@@ -2707,15 +2774,16 @@ public class OpcodeStack {
                 i.setSpecialKind(Item.MATH_ABS);
             }
             push(i);
-        } else if (seen == Const.INVOKEVIRTUAL && "hashCode".equals(methodName) && "()I".equals(signature) || seen == Const.INVOKESTATIC
-                && "java/lang/System".equals(clsName) && "identityHashCode".equals(methodName)
+        } else if (seen == Const.INVOKEVIRTUAL && "hashCode".equals(method) && "()I".equals(signature) || seen == Const.INVOKESTATIC
+                && "java/lang/System".equals(clsName) && "identityHashCode".equals(method)
                 && "(Ljava/lang/Object;)I".equals(signature)) {
             Item i = new Item(pop());
             i.setSpecialKind(Item.HASHCODE_INT);
             push(i);
         } else if (topIsTainted
-                && (methodName.startsWith("encode") && "javax/servlet/http/HttpServletResponse".equals(clsName) || "trim".equals(methodName)
-                        && "java/lang/String".equals(clsName))) {
+                && (method.startsWith("encode") && ("javax/servlet/http/HttpServletResponse".equals(clsName)
+                        || "jakarta/servlet/http/HttpServletResponse".equals(clsName))
+                        || "trim".equals(method) && "java/lang/String".equals(clsName))) {
             Item i = new Item(pop());
             i.setSpecialKind(Item.SERVLET_REQUEST_TAINTED);
             i.injection = injection;
@@ -2729,7 +2797,7 @@ public class OpcodeStack {
         }
 
         if (seen == Const.INVOKESTATIC && topItem != null && topItem.isInitialParameter()
-                && isMethodThatReturnsGivenReference(clsName, methodName)) {
+                && isMethodThatReturnsGivenReference(clsName, method)) {
             assert getStackDepth() > 0;
             assert !getStackItem(0).isInitialParameter();
             // keep returned StackItem as initial parameter
@@ -2743,12 +2811,71 @@ public class OpcodeStack {
     }
 
     private void processInvokeDynamic(DismantleBytecode dbc) {
+        String appenderValue = null;
+        boolean servletRequestParameterTainted = false;
+        Item topItem = null;
+        if (getStackDepth() > 0) {
+            topItem = getStackItem(0);
+        }
+
         String signature = dbc.getSigConstantOperand();
+
+        if ("makeConcatWithConstants".equals(dbc.getNameConstantOperand())) {
+            String[] args = new SignatureParser(signature).getArguments();
+            if (args.length == 1) {
+                Item i = getStackItem(0);
+                if (i.isServletParameterTainted()) {
+                    servletRequestParameterTainted = true;
+                }
+                Object sVal = i.getConstant();
+                if (sVal == null) {
+                    appenderValue = null;
+                } else {
+                    JavaClass clazz = dbc.getThisClass();
+                    BootstrapMethod bm = getBootstrapMethod(clazz.getAttributes(), dbc.getConstantRefOperand());
+                    ConstantPool cp = clazz.getConstantPool();
+                    String concatArg = ((ConstantString) cp.getConstant(bm.getBootstrapArguments()[0])).getBytes(cp);
+                    appenderValue = concatArg.replace("\u0001", sVal.toString());
+                }
+            } else if (args.length == 2) {
+                Item i1 = getStackItem(0);
+                Item i2 = getStackItem(1);
+                if (i1.isServletParameterTainted() || i2.isServletParameterTainted()) {
+                    servletRequestParameterTainted = true;
+                }
+                Object sVal1 = i1.getConstant();
+                Object sVal2 = i2.getConstant();
+                if (sVal1 == null || sVal2 == null) {
+                    appenderValue = null;
+                } else {
+                    appenderValue = sVal2.toString() + sVal1.toString();
+                }
+            }
+        }
 
         int numberArguments = PreorderVisitor.getNumberArguments(signature);
 
         pop(numberArguments);
         pushBySignature(new SignatureParser(signature).getReturnTypeSignature(), dbc);
+
+        if ((appenderValue != null || servletRequestParameterTainted) && getStackDepth() > 0) {
+            Item i = this.getStackItem(0);
+            i.constValue = appenderValue;
+            if (servletRequestParameterTainted) {
+                i.injection = topItem.injection;
+                i.setServletParameterTainted();
+            }
+        }
+    }
+
+    private BootstrapMethod getBootstrapMethod(Attribute[] attribs, Constant index) {
+        ConstantInvokeDynamic bmidx = (ConstantInvokeDynamic) index;
+        for (Attribute attr : attribs) {
+            if (attr instanceof BootstrapMethods) {
+                return ((BootstrapMethods) attr).getBootstrapMethods()[bmidx.getBootstrapMethodAttrIndex()];
+            }
+        }
+        return null;
     }
 
     private boolean mergeLists(List<Item> mergeInto, List<Item> mergeFrom, boolean errorIfSizesDoNotMatch) {
@@ -2808,10 +2935,10 @@ public class OpcodeStack {
 
     public void printJumpEntries() {
         for (int i = jumpEntryLocations.nextSetBit(0); i >= 0; i = jumpEntryLocations.nextSetBit(i + 1)) {
-            List<Item> stack = jumpStackEntries.get(i);
+            List<Item> stackItems = jumpStackEntries.get(i);
             List<Item> locals = jumpEntries.get(i);
-            if (stack != null) {
-                System.out.printf("%4d: %s::%s%n", i, stack, locals);
+            if (stackItems != null) {
+                System.out.printf("%4d: %s::%s%n", i, stackItems, locals);
             } else {
                 System.out.printf("%4d:    ::%s%n", i, locals);
             }
@@ -2969,7 +3096,7 @@ public class OpcodeStack {
             setJumpInfoChangedByNewTarget();
             jumpEntries.put(Integer.valueOf(target), new ArrayList<>(lvValues));
             jumpEntryLocations.set(target);
-            if (stack.size() > 0) {
+            if (!stack.isEmpty()) {
                 jumpStackEntries.put(Integer.valueOf(target), new ArrayList<>(stack));
             }
         } else {
@@ -2985,6 +3112,7 @@ public class OpcodeStack {
     }
 
     private String methodName;
+    private String fullyQualifiedMethodName;
 
     DismantleBytecode v;
 
@@ -3016,6 +3144,9 @@ public class OpcodeStack {
         initialize();
 
         int result = resetForMethodEntry0(v);
+
+        fullyQualifiedMethodName = v.getFullyQualifiedMethodName();
+
         Code code = v.getMethod().getCode();
         if (code == null) {
             return result;
@@ -3149,8 +3280,8 @@ public class OpcodeStack {
     public Item getStackItem(int stackOffset) {
         if (stackOffset < 0 || stackOffset >= stack.size()) {
             AnalysisContext.logError("Can't get stack offset " + stackOffset + " from " + stack.toString() + " @ " + v.getPC()
-                    + " in " + v.getFullyQualifiedMethodName(), new IllegalArgumentException(stackOffset
-                            + " is not a value stack offset"));
+                    + " in " + fullyQualifiedMethodName, new IllegalArgumentException(stackOffset
+                            + " is not a valid stack offset"));
             return new Item("Lfindbugs/OpcodeStackError;");
 
         }
@@ -3168,11 +3299,15 @@ public class OpcodeStack {
         return stack.remove(stack.size() - 1);
     }
 
+    private Item top() {
+        return stack.get(stack.size() - 1);
+    }
+
     public void replace(int stackOffset, Item value) {
         if (stackOffset < 0 || stackOffset >= stack.size()) {
             AnalysisContext.logError("Can't get replace stack offset " + stackOffset + " from " + stack.toString() + " @ " + v.getPC()
                     + " in " + v.getFullyQualifiedMethodName(), new IllegalArgumentException(stackOffset
-                            + " is not a value stack offset"));
+                            + " is not a valid stack offset"));
 
         }
         int tos = stack.size() - 1;
@@ -3212,6 +3347,12 @@ public class OpcodeStack {
             push(new Item("D", Double.valueOf(((ConstantDouble) c).getBytes())));
         } else if (c instanceof ConstantLong) {
             push(new Item("J", Long.valueOf(((ConstantLong) c).getBytes())));
+        } else if (c instanceof ConstantDynamic) {
+            ConstantPool cp = dbc.getConstantPool();
+            ConstantNameAndType sig = cp.getConstant(((ConstantDynamic) c).getNameAndTypeIndex());
+            String nameConstantOperand = ((ConstantUtf8) cp.getConstant(sig.getNameIndex())).getBytes();
+            String sigConstantOperand = ((ConstantUtf8) cp.getConstant(sig.getSignatureIndex())).getBytes();
+            push(new Item(sigConstantOperand, nameConstantOperand));
         } else {
             throw new UnsupportedOperationException("StaticConstant type not expected");
         }

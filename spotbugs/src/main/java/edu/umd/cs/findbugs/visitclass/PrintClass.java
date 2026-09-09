@@ -27,6 +27,7 @@ import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -66,11 +67,13 @@ public class PrintClass {
         }
     }
 
-    static boolean code = false, constants = false;
+    static boolean code = false;
+
+    static boolean constants = false;
 
     static boolean superClasses = false;
 
-    public static void main(String argv[]) throws IOException {
+    public static void main(String[] argv) throws IOException {
         String[] file_name = new String[argv.length];
         int files = 0;
         String zip_file = null;
@@ -103,7 +106,7 @@ public class PrintClass {
             System.err.println("list: No input files specified");
         } else if (zip_file != null) {
             for (int i = 0; i < files; i++) {
-                file_name[i] = file_name[i].replace('.', '/');
+                file_name[i] = ClassName.toSlashedClassName(file_name[i]);
             }
             try (ZipFile z = new ZipFile(zip_file)) {
                 TreeSet<ZipEntry> zipEntries = new TreeSet<>(new ZipEntryComparator());

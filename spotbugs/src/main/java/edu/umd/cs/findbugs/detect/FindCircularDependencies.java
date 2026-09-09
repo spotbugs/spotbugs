@@ -26,6 +26,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -38,7 +39,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
 
     private final BugReporter bugReporter;
 
-    private String clsName;
+    private String className;
 
     public FindCircularDependencies(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -47,31 +48,31 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
 
     @Override
     public void visit(JavaClass obj) {
-        clsName = obj.getClassName();
+        className = obj.getClassName();
     }
 
     @Override
     public void sawOpcode(int seen) {
         if ((seen == Const.INVOKESPECIAL) || (seen == Const.INVOKESTATIC) || (seen == Const.INVOKEVIRTUAL)) {
             String refClsName = getClassConstantOperand();
-            refClsName = refClsName.replace('/', '.');
+            refClsName = ClassName.toDottedClassName(refClsName);
             if (refClsName.startsWith("java")) {
                 return;
             }
 
-            if (clsName.equals(refClsName)) {
+            if (className.equals(refClsName)) {
                 return;
             }
 
-            if (clsName.startsWith(refClsName) && (refClsName.indexOf('$') >= 0)) {
+            if (className.startsWith(refClsName) && (refClsName.indexOf('$') >= 0)) {
                 return;
             }
 
-            if (refClsName.startsWith(clsName) && (clsName.indexOf('$') >= 0)) {
+            if (refClsName.startsWith(className) && (className.indexOf('$') >= 0)) {
                 return;
             }
 
-            Set<String> dependencies = dependencyGraph.computeIfAbsent(clsName, k -> new HashSet<>());
+            Set<String> dependencies = dependencyGraph.computeIfAbsent(className, k -> new HashSet<>());
 
             dependencies.add(refClsName);
         }
@@ -123,7 +124,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
                         changed = true;
                     }
                 }
-                if (dependencies.size() == 0) {
+                if (dependencies.isEmpty()) {
                     it.remove();
                     changed = true;
                 }
@@ -148,7 +149,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
         while (cIt.hasNext()) {
             String clsName = cIt.next();
             dependencies = dependencyGraph.get(clsName);
-            if (dependencies.size() == 0) {
+            if (dependencies.isEmpty()) {
                 cIt.remove();
                 removedClass = true;
             }

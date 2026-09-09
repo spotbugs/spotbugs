@@ -27,6 +27,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.meta.When;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 
 /**
@@ -41,7 +42,7 @@ public class TypeQualifierAnnotation {
 
     public final When when;
 
-    private TypeQualifierAnnotation(TypeQualifierValue<?> typeQualifier, When when) {
+    private TypeQualifierAnnotation(@Nullable TypeQualifierValue<?> typeQualifier, @Nullable When when) {
         this.typeQualifier = typeQualifier;
         this.when = when;
     }

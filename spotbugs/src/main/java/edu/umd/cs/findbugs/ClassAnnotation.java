@@ -85,7 +85,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
      * @return the ClassAnnotation
      */
     public static ClassAnnotation fromClassDescriptor(ClassDescriptor classDescriptor) {
-        return new ClassAnnotation(classDescriptor.toDottedClassName());
+        return new ClassAnnotation(classDescriptor.getDottedClassName());
     }
 
     @Override
@@ -196,6 +196,11 @@ public class ClassAnnotation extends PackageMemberAnnotation {
         XMLAttributeList attributeList = new XMLAttributeList().addAttribute("classname", getClassName());
         if (isPrimary) {
             attributeList.addAttribute("primary", "true");
+        }
+
+        if (!getJavaAnnotationNames().isEmpty()) {
+            attributeList.addAttribute("classAnnotationNames",
+                    String.join(",", getJavaAnnotationNames()));
         }
 
         String role = getDescription();

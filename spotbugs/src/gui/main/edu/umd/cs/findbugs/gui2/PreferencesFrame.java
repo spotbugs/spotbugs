@@ -30,10 +30,10 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -336,11 +336,7 @@ public class PreferencesFrame extends FBDialog {
             final URL url = plugin.getPluginLoader().getURL();
             String pluginUrlStr = url.toExternalForm();
             if ("file".equals(url.getProtocol())) {
-                try {
-                    pluginUrlStr = new File(URLDecoder.decode(url.getPath(), "UTF-8")).getAbsolutePath();
-                } catch (UnsupportedEncodingException e) {
-
-                }
+                pluginUrlStr = new File(URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8)).getAbsolutePath();
             }
             text = String.format("<html>%s<br><font style='font-weight:normal;font-style:italic'>%s",
                     text, pluginUrlStr);
@@ -526,7 +522,7 @@ public class PreferencesFrame extends FBDialog {
 
         if (tabSize < TAB_MIN || tabSize > TAB_MAX) {
             JOptionPane.showMessageDialog(instance, "Tab size exceedes range (" + TAB_MIN + " - " + TAB_MAX + ").",
-                    "Tab Size Excedes Range", JOptionPane.INFORMATION_MESSAGE);
+                    "Tab Size Exceeds Range", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
@@ -738,11 +734,7 @@ public class PreferencesFrame extends FBDialog {
             if (result == 0) {
                 if (!GUISaveState.getInstance().removeCustomPlugin(url)) {
                     if ("file".equals(url.getProtocol())) {
-                        String path = url.toExternalForm();
-                        try {
-                            path = new File(URLDecoder.decode(url.getPath(), "UTF-8")).getAbsolutePath();
-                        } catch (UnsupportedEncodingException ex) {
-                        }
+                        String path = new File(URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8)).getAbsolutePath();
                         try {
                             StringSelection contents = new StringSelection(path);
                             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(contents, contents);

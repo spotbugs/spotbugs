@@ -780,7 +780,7 @@ These options are only accepted by the Text User Interface.
   </varlistentry>
 
   <varlistentry>
-    <term><command>-onlyAnalyze</command> <replaceable>com.foobar.MyClass,com.foobar.mypkg.*</replaceable></term>
+    <term><command>-onlyAnalyze</command> <replaceable>com.foobar.MyClass,com.foobar.mypkg.*,!com.foobar.mypkg.ExcludedClass</replaceable></term>
     <listitem>
       <para>
       Restrict analysis to find bugs to given comma-separated list of
@@ -797,6 +797,9 @@ These options are only accepted by the Text User Interface.
       to the full name of the package).
       Replace <literal>.*</literal> with <literal>.-</literal> to also
       analyze all subpackages.
+      Items starting with <literal>!<literal> are treated as exclusions,
+      removing otherwise-included classes from analysis.
+
       </para>
     </listitem>
   </varlistentry>
@@ -1990,13 +1993,13 @@ In other words, each of the children must be true for the predicate to be true.
    </para><para>
                For more coarse-grained matching, use <literal>code</literal> attribute. It takes
                a comma-separated list of bug abbreviations. For most-coarse grained matching use
-               <literal>category</literal> attriute, that takes a comma separated list of bug category names:
+               <literal>category</literal> attribute, that takes a comma separated list of bug category names:
                <literal>CORRECTNESS</literal>, <literal>MT_CORRECTNESS</literal>,
                <literal>BAD_PRACTICICE</literal>, <literal>PERFORMANCE</literal>, <literal>STYLE</literal>.
    </para><para>
                If more than one of the attributes mentioned above are specified on the same
                <literal>&lt;Bug&gt;</literal> element, all bug patterns that match either one of specified
-               pattern names, or abreviations, or categories will be matched.
+               pattern names, or abbreviations, or categories will be matched.
    </para><para>
                As a backwards compatibility measure, <literal>&lt;BugPattern&gt;</literal> and
                <literal>&lt;BugCode&gt;</literal> elements may be used instead of
@@ -2720,7 +2723,7 @@ on those parameters, methods or fields that you want to allow to be null.
     </listitem>
     <listitem>
       <para>
-This is same as the DefaultAnnotation except it only applys to fields.
+This is same as the DefaultAnnotation except it only applies to fields.
       </para>
     </listitem>
   </varlistentry>
@@ -2751,7 +2754,7 @@ This is same as the DefaultAnnotation except it only applys to fields.
     </listitem>
     <listitem>
       <para>
-This is same as the DefaultAnnotation except it only applys to methods.
+This is same as the DefaultAnnotation except it only applies to methods.
       </para>
     </listitem>
   </varlistentry>
@@ -2782,7 +2785,7 @@ This is same as the DefaultAnnotation except it only applys to methods.
     </listitem>
     <listitem>
       <para>
-This is same as the DefaultAnnotation except it only applys to method parameters.
+This is same as the DefaultAnnotation except it only applies to method parameters.
       </para>
     </listitem>
   </varlistentry>
@@ -2849,7 +2852,7 @@ Used to annotate a method that, if overridden, must (or should) be invoke super
 in the overriding method. Examples of such methods include finalize() and clone().
 The argument to the method indicates when the super invocation should occur:
 at any time, at the beginning of the overriding method, or at the end of the overriding method.
-(This anotation is not implmemented in FindBugs as of September 8, 2006).
+(This annotation is not implmemented in FindBugs as of September 8, 2006).
       </para>
     </listitem>
   </varlistentry>
@@ -3597,7 +3600,7 @@ a table header.</para>
     <sect1 id="examples">
         <title>Examples</title>
 <sect2 id="unixscriptsexamples">
-   <title>Mining history using proveded shell scrips</title>
+   <title>Mining history using proveded shell scripts</title>
 <para>In all of the following, the commands are given in a directory that contains
 directories jdk1.6.0-b12, jdk1.6.0-b13, ..., jdk1.6.0-b60.</para>
 

@@ -175,7 +175,7 @@ public class ClassPathImpl implements IClassPath {
      * @param codeBaseList
      *            list of codebases to search
      * @param resourceName
-     *            name of resourse
+     *            name of resource
      * @return codebase entry for the named resource, or null if the named
      *         resource cannot be found
      */

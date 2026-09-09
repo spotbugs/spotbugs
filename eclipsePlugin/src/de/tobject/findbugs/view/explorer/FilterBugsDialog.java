@@ -140,7 +140,7 @@ public class FilterBugsDialog extends SelectionDialog {
         }
     }
 
-    private final static class TreeLabelProvider implements ILabelProvider {
+    private static final class TreeLabelProvider implements ILabelProvider {
         @Override
         public Image getImage(Object element) {
             return null;
@@ -201,8 +201,7 @@ public class FilterBugsDialog extends SelectionDialog {
 
         public boolean isFiltering() {
             String filterString = getFilterString();
-            boolean yes = filterString != null && filterString.length() > 0 && !filterString.equals(getInitialText());
-            return yes;
+            return filterString != null && !filterString.isEmpty() && !filterString.equals(getInitialText());
         }
     }
 
@@ -305,28 +304,12 @@ public class FilterBugsDialog extends SelectionDialog {
             DetectorFactory factory = iterator.next();
             Set<BugPattern> patterns = factory.getReportedBugPatterns();
             for (BugPattern pattern : patterns) {
-                Set<DetectorFactory> set = patternToFactory.get(pattern);
-                if (set == null) {
-                    set = new TreeSet<>(new Comparator<DetectorFactory>() {
-                        @Override
-                        public int compare(DetectorFactory f1, DetectorFactory f2) {
-                            return f1.getFullName().compareTo(f2.getFullName());
-                        }
-                    });
-                    patternToFactory.put(pattern, set);
-                }
+                Set<DetectorFactory> set = patternToFactory.computeIfAbsent(pattern,
+                        k -> new TreeSet<>(Comparator.comparing(DetectorFactory::getFullName)));
                 set.add(factory);
 
-                Set<Plugin> pset = patternToPlugin.get(pattern);
-                if (pset == null) {
-                    pset = new TreeSet<>(new Comparator<Plugin>() {
-                        @Override
-                        public int compare(Plugin f1, Plugin f2) {
-                            return f1.getPluginId().compareTo(f2.getPluginId());
-                        }
-                    });
-                    patternToPlugin.put(pattern, pset);
-                }
+                Set<Plugin> pset = patternToPlugin.computeIfAbsent(pattern,
+                        k -> new TreeSet<>(Comparator.comparing(Plugin::getPluginId)));
                 pset.add(factory.getPlugin());
             }
         }
@@ -336,11 +319,9 @@ public class FilterBugsDialog extends SelectionDialog {
     public boolean close() {
         String text = selectedIds.getText();
         String computed = getSelectedIds();
-        if (text.length() > 0 && !computed.equals(text)) {
-            // allow to specify filters using text area (no validation checks
-            // yet)
-            // TODO validate text entered by user and throw away
-            // invalide/duplicated entries
+        if (!text.isEmpty() && !computed.equals(text)) {
+            // allow to specify filters using text area (no validation checks yet)
+            // TODO validate text entered by user and throw away invalid/duplicated entries
             selectedAsText = text;
         } else {
             selectedAsText = computed;
@@ -462,8 +443,7 @@ public class FilterBugsDialog extends SelectionDialog {
                 }
             }
         } else {
-            // TODO currently it checks for all existing, but it should check
-            // only visible
+            // TODO currently it checks for all existing, but it should check only visible
             Object[] elements = checkList.getVisibleExpandedElements();
             List<Object> list = Arrays.asList(checkedElements);
             for (Object object : elements) {
@@ -492,7 +472,7 @@ public class FilterBugsDialog extends SelectionDialog {
         final ContainerCheckedTreeViewer viewer = new ContainerCheckedTreeViewer(parent, style | SWT.SINGLE | SWT.BORDER
                 | SWT.V_SCROLL | SWT.H_SCROLL | SWT.RESIZE) {
             /**
-             * Overriden to re-set checked state of elements after filter change
+             * Overridden to re-set checked state of elements after filter change
              */
             @Override
             public void refresh(boolean updateLabels) {
@@ -604,19 +584,16 @@ public class FilterBugsDialog extends SelectionDialog {
     }
 
     private void sortCheckedElements() {
-        Arrays.sort(checkedElements, new Comparator<Object>() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                String text1 = labelProvider.getText(o1);
-                String text2 = labelProvider.getText(o2);
-                if (text1 == null) {
-                    return -1;
-                }
-                if (text2 == null) {
-                    return 1;
-                }
-                return text1.compareTo(text2);
+        Arrays.sort(checkedElements, (o1, o2) -> {
+            String text1 = labelProvider.getText(o1);
+            String text2 = labelProvider.getText(o2);
+            if (text1 == null) {
+                return -1;
             }
+            if (text2 == null) {
+                return 1;
+            }
+            return text1.compareTo(text2);
         });
     }
 
@@ -632,7 +609,9 @@ public class FilterBugsDialog extends SelectionDialog {
             txt = getPatternTypeDescription(code);
         }
         Rectangle size = htmlControl.getClientArea();
-        txt = presenter.updatePresentation(getShell().getDisplay(), txt, presentation, size.width, size.height);
+        if (size.width > 0 && size.height > 0) {
+            txt = presenter.updatePresentation(getShell().getDisplay(), txt, presentation, size.width, size.height);
+        }
         htmlControl.setText(txt);
     }
 
@@ -650,7 +629,7 @@ public class FilterBugsDialog extends SelectionDialog {
         sb.append("<p>Contributed by plugin: ").append(plugin.getPluginId());
         sb.append("<p>Provider: ").append(plugin.getProvider());
         String website = plugin.getWebsite();
-        if (website != null && website.length() > 0) {
+        if (website != null && !website.isEmpty()) {
             sb.append(" (").append(website).append(")");
         }
     }
@@ -663,12 +642,7 @@ public class FilterBugsDialog extends SelectionDialog {
             sb.append(bugPattern.getType()).append("<br>");
         }
         // add reported by...
-        Set<DetectorFactory> allFactories = new TreeSet<>(new Comparator<DetectorFactory>() {
-            @Override
-            public int compare(DetectorFactory f1, DetectorFactory f2) {
-                return f1.getFullName().compareTo(f2.getFullName());
-            }
-        });
+        Set<DetectorFactory> allFactories = new TreeSet<>(Comparator.comparing(DetectorFactory::getFullName));
         for (BugPattern bugPattern : patterns) {
             Set<DetectorFactory> set = patternToFactory.get(bugPattern);
             if (set != null) {

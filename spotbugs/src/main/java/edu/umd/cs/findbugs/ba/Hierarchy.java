@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
@@ -394,25 +394,6 @@ public class Hierarchy {
     }
 
     /**
-     * Find the declared exceptions for the method called by given instruction.
-     *
-     * @param inv
-     *            the InvokeInstruction
-     * @param cpg
-     *            the ConstantPoolGen used by the class the InvokeInstruction
-     *            belongs to
-     * @return array of ObjectTypes of thrown exceptions, or null if we can't
-     *         find the list of declared exceptions
-     * @deprecated Use
-     *             {@link Hierarchy2#findDeclaredExceptions(InvokeInstruction,ConstantPoolGen)}
-     *             instead
-     */
-    @Deprecated
-    public static ObjectType[] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg) {
-        return Hierarchy2.findDeclaredExceptions(inv, cpg);
-    }
-
-    /**
      * Find a method in given class.
      *
      * @param javaClass
@@ -478,60 +459,6 @@ public class Hierarchy {
             return null;
         }
 
-    }
-
-    /**
-     * Find a method in given class.
-     *
-     * @param javaClass
-     *            the class
-     * @param methodName
-     *            the name of the method
-     * @param methodSig
-     *            the signature of the method
-     * @return the JavaClassAndMethod, or null if no such method exists in the
-     *         class
-     */
-    @Deprecated
-    public static @CheckForNull JavaClassAndMethod findConcreteMethod(JavaClass javaClass, String methodName, String methodSig) {
-
-        if (DEBUG_METHOD_LOOKUP) {
-            System.out.println("Check " + javaClass.getClassName());
-        }
-        Method[] methodList = javaClass.getMethods();
-        for (Method method : methodList) {
-            if (method.getName().equals(methodName) && method.getSignature().equals(methodSig)
-                    && accessFlagsAreConcrete(method.getAccessFlags())) {
-                JavaClassAndMethod m = new JavaClassAndMethod(javaClass, method);
-
-                return m;
-
-            }
-        }
-        if (DEBUG_METHOD_LOOKUP) {
-            System.out.println("\t==> NOT FOUND");
-        }
-        return null;
-    }
-
-    /**
-     * Find a method in given class.
-     *
-     * @param javaClass
-     *            the class
-     * @param methodName
-     *            the name of the method
-     * @param methodSig
-     *            the signature of the method
-     * @param chooser
-     *            the JavaClassAndMethodChooser to use to screen possible
-     *            candidates
-     * @return the XMethod, or null if no such method exists in the class
-     */
-    @Deprecated
-    public static @CheckForNull XMethod findXMethod(JavaClass javaClass, String methodName, String methodSig, JavaClassAndMethodChooser chooser) {
-        JavaClassAndMethod result = findMethod(javaClass, methodName, methodSig, chooser);
-        return result == null ? null : XFactory.createXMethod(result.getJavaClass(), result.getMethod());
     }
 
     /**
@@ -612,23 +539,6 @@ public class Hierarchy {
      *            the name of the method
      * @param methodSig
      *            the signature of the method
-     * @return the JavaClassAndMethod, or null if no such method exists in the
-     *         class
-     */
-    @Deprecated
-    public static JavaClassAndMethod findMethod(JavaClass[] classList, String methodName, String methodSig) {
-        return findMethod(classList, methodName, methodSig, ANY_METHOD);
-    }
-
-    /**
-     * Find a method in given list of classes, searching the classes in order.
-     *
-     * @param classList
-     *            list of classes in which to search
-     * @param methodName
-     *            the name of the method
-     * @param methodSig
-     *            the signature of the method
      * @param chooser
      *            JavaClassAndMethodChooser to select which methods are
      *            considered; it must return true for a method to be returned
@@ -646,50 +556,6 @@ public class Hierarchy {
         }
 
         return m;
-    }
-
-    /**
-     * Find XMethod for method in given list of classes, searching the classes
-     * in order.
-     *
-     * @param classList
-     *            list of classes in which to search
-     * @param methodName
-     *            the name of the method
-     * @param methodSig
-     *            the signature of the method
-     * @return the XMethod, or null if no such method exists in the class
-     */
-    @Deprecated
-    public static XMethod findXMethod(JavaClass[] classList, String methodName, String methodSig) {
-        return findXMethod(classList, methodName, methodSig, ANY_METHOD);
-    }
-
-    /**
-     * Find XMethod for method in given list of classes, searching the classes
-     * in order.
-     *
-     * @param classList
-     *            list of classes in which to search
-     * @param methodName
-     *            the name of the method
-     * @param methodSig
-     *            the signature of the method
-     * @param chooser
-     *            JavaClassAndMethodChooser to select which methods are
-     *            considered; it must return true for a method to be returned
-     * @return the XMethod, or null if no such method exists in the class
-     */
-    @Deprecated
-    public static XMethod findXMethod(JavaClass[] classList, String methodName, String methodSig,
-            JavaClassAndMethodChooser chooser) {
-        for (JavaClass cls : classList) {
-            JavaClassAndMethod m;
-            if ((m = findMethod(cls, methodName, methodSig)) != null && chooser.choose(m)) {
-                return XFactory.createXMethod(cls, m.getMethod());
-            }
-        }
-        return null;
     }
 
     /**
@@ -838,40 +704,23 @@ public class Hierarchy {
                 && (upperBound == null || !upperBound.getJavaClass().isFinal() && !upperBound.getMethod().isFinal())
                 && !receiverTypeIsExact;
 
-        if (virtualCall) {
-            if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(receiverClassName)) {
-
-                // This is a true virtual call: assume that any concrete
-                // subtype method may be called.
-                Set<ClassDescriptor> subTypeSet = analysisContext.getSubtypes2().getSubtypes(receiverDesc);
-                for (ClassDescriptor subtype : subTypeSet) {
-                    XMethod concreteSubtypeMethod = findMethod(subtype, methodName, methodSig, false);
-                    if (concreteSubtypeMethod != null && (concreteSubtypeMethod.getAccessFlags() & Const.ACC_ABSTRACT) == 0) {
-                        result.add(new JavaClassAndMethod(concreteSubtypeMethod));
-                    }
+        if (virtualCall && !Values.DOTTED_JAVA_LANG_OBJECT.equals(receiverClassName)) {
+            // This is a true virtual call: assume that any concrete
+            // subtype method may be called.
+            Set<ClassDescriptor> subTypeSet = analysisContext.getSubtypes2().getSubtypes(receiverDesc);
+            for (ClassDescriptor subtype : subTypeSet) {
+                XMethod concreteSubtypeMethod = findMethod(subtype, methodName, methodSig, false);
+                if (concreteSubtypeMethod != null && (concreteSubtypeMethod.getAccessFlags() & Const.ACC_ABSTRACT) == 0) {
+                    result.add(new JavaClassAndMethod(concreteSubtypeMethod));
                 }
-                if (false && subTypeSet.size() > 500) {
-                    new RuntimeException(receiverClassName + " has " + subTypeSet.size() + " subclasses, " + result.size()
-                            + " of which implement " + methodName + methodSig + " " + invokeInstruction)
-                                    .printStackTrace(System.out);
-                }
-
+            }
+            if (false && subTypeSet.size() > 500) {
+                new RuntimeException(receiverClassName + " has " + subTypeSet.size() + " subclasses, " + result.size()
+                        + " of which implement " + methodName + methodSig + " " + invokeInstruction)
+                        .printStackTrace(System.out);
             }
         }
         return result;
-    }
-
-    /**
-     * Return whether or not the given method is concrete.
-     *
-     * @param xmethod
-     *            the method
-     * @return true if the method is concrete, false otherwise
-     */
-    @Deprecated
-    public static boolean isConcrete(XMethod xmethod) {
-        int accessFlags = xmethod.getAccessFlags();
-        return (accessFlags & Const.ACC_ABSTRACT) == 0 && (accessFlags & Const.ACC_NATIVE) == 0;
     }
 
     /**

@@ -91,10 +91,8 @@ public class SeverityClassificationPulldownAction implements IWorkbenchWindowPul
                     }
                 }
 
-                if (index < severityItemList.length) {
-                    if (bugInstance != null) {
-                        bugInstance.setProperty(BugProperty.SEVERITY, String.valueOf(index + 1));
-                    }
+                if (index < severityItemList.length && bugInstance != null) {
+                    bugInstance.setProperty(BugProperty.SEVERITY, String.valueOf(index + 1));
                 }
             }
         };

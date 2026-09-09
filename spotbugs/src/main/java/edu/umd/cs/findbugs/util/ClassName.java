@@ -19,12 +19,14 @@
 
 package edu.umd.cs.findbugs.util;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.meta.When;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+import org.apache.commons.lang3.Strings;
+import org.apache.commons.text.similarity.LevenshteinDistance;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.meta.When;
 
 /**
  * Utility methods for working with class names.
@@ -46,7 +48,7 @@ public abstract class ClassName {
     }
 
     public static String toSignature(@SlashedClassName String className) {
-        if (className.length() == 0) {
+        if (className.isEmpty()) {
             throw new IllegalArgumentException("classname can't be empty");
         }
         if (className.charAt(0) == '[' || className.endsWith(";")) {
@@ -135,6 +137,24 @@ public abstract class ClassName {
     }
 
     /**
+     * Converts from signature to dotted class name
+     * (e.g., from Ljava/lang/String; to java.lang.String).
+     * Returns null if it is the signature for an array or primitive type.
+     *
+     * @param signature a class signature
+     * @return the class of the signature in dotted format
+     */
+    @DottedClassName
+    public static @CheckForNull String fromFieldSignatureToDottedClassName(String signature) {
+        String slashedClassName = ClassName.fromFieldSignature(signature);
+        if (slashedClassName == null) {
+            return null;
+        }
+
+        return toDottedClassName(slashedClassName);
+    }
+
+    /**
      * extract the package name from a dotted class name. Package names are
      * always in dotted format.
      *
@@ -173,9 +193,74 @@ public abstract class ClassName {
      * @return true if it's a valid class name, false otherwise
      */
     public static boolean isValidClassName(String className) {
-        // FIXME: should use a regex
+        return !className.isEmpty() &&
+                (isValidBinaryClassName(className) ||
+                        isValidDottedClassName(className) ||
+                        isValidArrayFieldDescriptor(className) ||
+                        isValidClassFieldDescriptor(className));
+    }
 
-        return className.indexOf('(') < 0;
+    /**
+     * @see <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.2.1">
+     *     JVMS (Java SE 8 Edition) 4.2.1. Binary Class and Interface Names
+     *     </a>
+     */
+    private static boolean isValidBinaryClassName(String className) {
+        return className.indexOf('.') == -1 &&
+                className.indexOf('[') == -1 &&
+                className.indexOf(';') == -1;
+    }
+
+    private static boolean isValidDottedClassName(String className) {
+        return className.indexOf('/') == -1 &&
+                className.indexOf('[') == -1 &&
+                className.indexOf(';') == -1;
+    }
+
+    /**
+     * Determines whether a class name is a valid array field descriptor as per
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.3.2">
+     * JVMS (Java SE 8 Edition) 4.3.2</a>
+     *
+     * @param className a class name to test for validity - must be non-{@code null} and non-empty.
+     * @return {@code true} if {@code className} is a valid array field descriptor as
+     *          per JVMS 4.3.2, otherwise {@code false}
+     * @throws IndexOutOfBoundsException if {@code className} is empty.
+     * @throws NullPointerException if {@code className} is {@code null}.
+     */
+    private static boolean isValidArrayFieldDescriptor(String className) {
+        String tail = className.substring(1);
+        return className.startsWith("[") &&
+                (isValidArrayFieldDescriptor(tail) ||
+                        isValidClassFieldDescriptor(tail) ||
+                        isValidBaseTypeFieldDescriptor(tail));
+
+    }
+
+    private static boolean isValidClassFieldDescriptor(String className) {
+        return className.startsWith("L") &&
+                className.endsWith(";") &&
+                isValidBinaryClassName(className.substring(1, className.length() - 1));
+    }
+
+    /**
+     * Determines whether a class name is a valid array field descriptor as per
+     * <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.3.2">
+     * JVMS (Java SE 8 Edition) 4.3.2</a>
+     *
+     * @param className a class name to test for validity - must be non-{@code null} and non-empty.
+     * @return {@code true} if {@code className} is a valid basetype field descriptor as
+     *          per JVMS 4.3.2, otherwise {@code false}
+     */
+    public static boolean isValidBaseTypeFieldDescriptor(String className) {
+        return "B".equals(className) ||
+                "C".equals(className) ||
+                "D".equals(className) ||
+                "F".equals(className) ||
+                "I".equals(className) ||
+                "J".equals(className) ||
+                "S".equals(className) ||
+                "Z".equals(className);
     }
 
     /**
@@ -265,13 +350,32 @@ public abstract class ClassName {
         }
 
         for (String p : pp) {
-            if (p.length() > 0 && className.indexOf(p) >= 0) {
+            if (!p.isEmpty() && (Strings.CI.contains(className, p) || fuzzyMatch(className, p))) {
                 return true;
             }
         }
 
         return false;
+    }
 
+    /**
+     * Perform a fuzzy matching, by comparing the Levenshtein distance of the
+     * simple class name and the search string. A maximum distance of 3 is used.
+     * This means the searchString and the className may differ by 3 single-character
+     * edits (insertions, deletions or substitutions). This limit also speeds up the computation.
+     * <p>
+     * For more information on the Levenshtein distance see
+     * <a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Wikipedia</a> and the
+     * <a href="https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/similarity/LevenshteinDistance.html">Apache Commons Text JavaDoc</a>.
+     *
+     * @param className    the full class name
+     * @param searchString the search string
+     * @return true, if the strings are similar, false otherwise
+     */
+    private static boolean fuzzyMatch(String className, String searchString) {
+        // compare to a maximum Levenshtein distance of 3
+        LevenshteinDistance ld = new LevenshteinDistance(3);
+        return ld.apply(extractSimpleName(className), searchString) != -1;
     }
 
 

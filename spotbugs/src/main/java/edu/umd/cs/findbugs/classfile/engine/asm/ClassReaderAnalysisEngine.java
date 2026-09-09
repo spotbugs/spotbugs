@@ -45,9 +45,7 @@ public class ClassReaderAnalysisEngine extends RecomputableClassAnalysisEngine<F
 
         ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
 
-        FBClassReader classReader = new FBClassReader(classData.getData());
-
-        return classReader;
+        return new FBClassReader(classData.getData());
     }
 
     /*

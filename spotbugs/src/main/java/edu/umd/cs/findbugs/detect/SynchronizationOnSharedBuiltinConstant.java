@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -48,8 +48,8 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
     public SynchronizationOnSharedBuiltinConstant(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
         badSignatures = new HashSet<>();
-        badSignatures.addAll(Arrays.asList(new String[] { "Ljava/lang/Boolean;", "Ljava/lang/Double;", "Ljava/lang/Float;",
-            "Ljava/lang/Byte;", "Ljava/lang/Character;", "Ljava/lang/Short;", "Ljava/lang/Integer;", "Ljava/lang/Long;" }));
+        badSignatures.addAll(List.of("Ljava/lang/Boolean;", "Ljava/lang/Double;", "Ljava/lang/Float;",
+                "Ljava/lang/Byte;", "Ljava/lang/Character;", "Ljava/lang/Short;", "Ljava/lang/Integer;", "Ljava/lang/Long;"));
     }
 
     private static boolean newlyConstructedObject(OpcodeStack.Item item) {
@@ -58,6 +58,14 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
             return false;
         }
         return Const.CONSTRUCTOR_NAME.equals(method.getName());
+    }
+
+    private static boolean internedString(OpcodeStack.Item item) {
+        XMethod method = item.getReturnValueOf();
+        if (method == null) {
+            return false;
+        }
+        return "intern".equals(method.getName());
     }
 
     private static final Pattern identified = Pattern.compile("\\p{Alnum}+");
@@ -91,21 +99,26 @@ public class SynchronizationOnSharedBuiltinConstant extends OpcodeStackDetector 
             syncSignature = top.getSignature();
             isSyncOnBoolean = false;
             Object constant = top.getConstant();
-            if ("Ljava/lang/String;".equals(syncSignature) && constant instanceof String) {
+            XField field = top.getXField();
+            FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
+            OpcodeStack.Item summary = fieldSummary.getSummary(field);
 
-                pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_SHARED_CONSTANT", NORMAL_PRIORITY)
-                        .addClassAndMethod(this);
+            if ("Ljava/lang/String;".equals(syncSignature)) {
+                if (internedString(summary)) {
+                    pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_INTERNED_STRING", NORMAL_PRIORITY)
+                            .addClassAndMethod(this);
+                } else if (constant instanceof String) {
+                    pendingBug = new BugInstance(this, "DL_SYNCHRONIZATION_ON_SHARED_CONSTANT", NORMAL_PRIORITY)
+                            .addClassAndMethod(this);
 
-                String value = (String) constant;
-                if (identified.matcher(value).matches()) {
-                    pendingBug.addString(value).describe(StringAnnotation.STRING_CONSTANT_ROLE);
+                    String value = (String) constant;
+                    if (identified.matcher(value).matches()) {
+                        pendingBug.addString(value).describe(StringAnnotation.STRING_CONSTANT_ROLE);
+                    }
                 }
 
             } else if (badSignatures.contains(syncSignature)) {
                 isSyncOnBoolean = "Ljava/lang/Boolean;".equals(syncSignature);
-                XField field = top.getXField();
-                FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
-                OpcodeStack.Item summary = fieldSummary.getSummary(field);
                 int priority = NORMAL_PRIORITY;
                 if (isSyncOnBoolean) {
                     priority--;

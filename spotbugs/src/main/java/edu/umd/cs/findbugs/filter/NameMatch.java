@@ -36,14 +36,14 @@ import javax.annotation.CheckForNull;
  * java.util.regex.Pattern, with the ~ character omitted. The pattern will be
  * matched against whole value (ie Matcher.match(), not Matcher.find())
  *
- * If matchSpec is a non-null String with any other initial charcter, exact
+ * If matchSpec is a non-null String with any other initial character, exact
  * matching using String.equals(String) will be performed.
  *
  * @author rafal@caltha.pl
  */
 public class NameMatch {
 
-    private @CheckForNull final String spec;
+    private final @CheckForNull String spec;
 
     private @CheckForNull String exact;
 

@@ -1,32 +1,55 @@
 import static groovy.io.FileType.FILES
 
+import java.nio.file.Files
+import java.nio.file.Path
+import org.ajoberstar.grgit.Grgit
+import org.gradle.plugins.ide.eclipse.model.Classpath
+import org.gradle.plugins.ide.eclipse.model.ClasspathEntry
+import org.gradle.plugins.ide.eclipse.model.FileReference
+import org.gradle.plugins.ide.eclipse.model.Library
+
 // TODO: deploy not only jar but also sources and javadoc, to pass validation by Sonatype nexus
-// apply from: "$rootDir/gradle/maven.gradle"
+// apply from: "${rootDir}/gradle/maven.gradle"
 plugins {
-  id 'org.ajoberstar.grgit' version '1.7.2'
+  id 'org.ajoberstar.grgit' version '5.3.3'
+  id 'eclipse-convention'
 }
 
-def readLastCommitHash() {
+// Force Eclipse use Java 11, otherwise it will get Java 17 (!) from gradle
+eclipse {
+  jdt {
+    sourceCompatibility = 11
+    targetCompatibility = 11
+  }
+}
+
+String readLastCommitHash() {
   // Same as 'git log -1 --pretty=format:"%h"'.execute().getText()
-  org.ajoberstar.grgit.Grgit.open(file('../')).head().abbreviatedId
+  return Grgit.open(dir: rootDir).head().abbreviatedId
 }
 
-if (version.endsWith('-SNAPSHOT')) {
-  // eclipse doesn't like the `-SNAPSHOT`, so we timestamp uniquely
-  version = version - '-SNAPSHOT' + '.' + new Date().format('yyyyMMddHHmm') + '-' + readLastCommitHash()
-} else if (version.contains('-RC')) {
-  // eclipse doesn't like the `-RC`, so we timestamp uniquely
-  version = version.substring(0, version.lastIndexOf('-RC')) + '.' + new Date().format('yyyyMMddHHmm') + '-' + readLastCommitHash()
-} else if (version.contains('-beta')) {
-  // eclipse doesn't like the `-beta`, so we timestamp uniquely
-  version = version.substring(0, version.lastIndexOf('-beta')) + '.' + new Date().format('yyyyMMddHHmm') + '-' + readLastCommitHash()
-} else {
-  // A release build version like 3.0.0 without qualifier will always be smaller
-  // then nightly build 3.0.0.20171023-1508734123102, but to update from nightlies
-  // we must give Eclipse a higher version number.
-  // The "r" makes the release version to be always higher then nightly builds
-  version = version + '.r' + new Date().format('yyyyMMddHHmm') + '-' + readLastCommitHash()
+String computeVersion(String baseVersion) {
+  String now = new Date().format('yyyyMMddHHmm')
+  String hash = readLastCommitHash()
+  if (baseVersion.endsWith('-SNAPSHOT')) {
+    // eclipse doesn't like the `-SNAPSHOT`, so we timestamp uniquely
+    return baseVersion - '-SNAPSHOT' + ".${now}-${hash}"
+  } else if (baseVersion.contains('-RC')) {
+    // eclipse doesn't like the `-RC`, so we timestamp uniquely
+    return baseVersion.substring(0, baseVersion.lastIndexOf('-RC')) + ".${now}-${hash}"
+  } else if (baseVersion.contains('-beta')) {
+    // eclipse doesn't like the `-beta`, so we timestamp uniquely
+    return baseVersion.substring(0, baseVersion.lastIndexOf('-beta')) + ".${now}-${hash}"
+  } else {
+    // A release build version like 3.0.0 without qualifier will always be smaller
+    // then nightly build 3.0.0.20171023-1508734123102, but to update from nightlies
+    // we must give Eclipse a higher version number.
+    // The "r" makes the release version to be always higher then nightly builds
+    return baseVersion + ".r${now}-${hash}"
+  }
 }
+
+version = computeVersion(project.version.toString())
 
 sourceSets {
   main {
@@ -41,163 +64,191 @@ sourceSets {
   }
 }
 
-def eclipsePluginId = 'com.github.spotbugs.plugin.eclipse'
+File findEclipseExecutable() {
+  Path localProperties = projectDir.toPath().resolve('local.properties')
+  if (!Files.exists(localProperties)) {
+    return null
+  }
 
-def localProps = new Properties()
-localProps.load(new FileInputStream("$projectDir/local.properties"))
-
-def eclipseRootDir = new File(localProps.getProperty('eclipseRoot.dir'))
-// Eclipse 4.5+ uses a different directory layout under macOS. Try to detect this first.
-def eclipseExecutable = new File(eclipseRootDir, "Contents/MacOS/eclipse")
-def eclipsePluginsDir = new File(eclipseRootDir, "Contents/Eclipse/plugins")
-if (!eclipseExecutable.exists()) {
-   // Fall back to non-macOS directory layout.
-   eclipseExecutable = new File(eclipseRootDir, "eclipse")
-   eclipsePluginsDir = new File(eclipseRootDir, "plugins")
+  Properties localProps = new Properties()
+  Files.newInputStream(localProperties).withCloseable { InputStream input ->
+    localProps.load(input)
+  }
+  File eclipseRootDir = new File(localProps.getProperty('eclipseRoot.dir'))
+  // Eclipse 4.5+ uses a different directory layout under macOS. Try to detect this first.
+  String os = System.getProperty('os.name').toLowerCase(Locale.ROOT)
+  File eclipseExecutable
+  if (os.contains('mac')) {
+    eclipseExecutable = new File(eclipseRootDir, 'Contents/MacOS/eclipse')
+    if (!eclipseExecutable.exists()) {
+      // Fall back to non-macOS directory layout.
+      eclipseExecutable = new File(eclipseRootDir, 'eclipse')
+    }
+  } else if (os.contains('win')) {
+    eclipseExecutable = new File(eclipseRootDir, 'eclipse.exe')
+  } else {
+    eclipseExecutable = new File(eclipseRootDir, 'eclipse')
+  }
+  logger.warn('found eclipseExecutable at ' + eclipseExecutable)
+  if (!eclipseExecutable.exists()) {
+    logger.error('eclipseExecutable at ' + eclipseExecutable + ' does not exist!')
+  }
+  return eclipseExecutable
 }
+
+String eclipsePluginId = 'com.github.spotbugs.plugin.eclipse'
+File eclipseExecutable = findEclipseExecutable()
 
 dependencies {
-  // List below includes all Eclipse SDK plugins except few causing troubles.
-  // TODO: it should include what is required in the MANIFEST.MF, and nothing else
-  compileOnly fileTree(dir:eclipsePluginsDir, include:'**/*.jar',
-    exclude:[
-        '**/datanucleus-enhancer*.jar',
-        'edu.umd.cs.findbugs.**/*.jar',
-        'org.mockito*.jar',
-        'com.github.spotbugs.**/*.jar',
-        '**/*source_*.jar'
-        ])
-
-  api (project(':spotbugs')) {
+  api(project(':spotbugs')) {
     transitive = true
   }
+  compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
 }
 
-clean {
-    delete "lib", "build"
+tasks.named('clean', Delete).configure {
+  delete 'lib', 'build', 'META-INF/MANIFEST.MF', 'build.properties'
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340
-javadoc {
-  doFirst {
+tasks.named('javadoc', Javadoc).configure {
+  options.with {
     // This is supposed to enable everything except "missing" but doesn't work with gradle
-    // See http://docs.oracle.com/javase/8/docs/technotes/tools/unix/javadoc.html
-    options.addBooleanOption('Xdoclint:all,-missing', true)
+    // See https://docs.oracle.com/en/java/javase/11/tools/javadoc.html
+    addBooleanOption('Xdoclint:all,-missing', true)
 
     // TODO remove command and warning below if the doclint can be properly configured
-    options.addStringOption('Xmaxwarns', '3')
+    addStringOption('Xmaxwarns', '3')
   }
+
   doLast {
     logger.warn('Javadoc: too many warnings, only first 3 are shown, see #340!')
   }
 }
 
-task copyLibsForEclipse(type: Copy) {
-    from ('../spotbugs/.libs') {
-      include "*.jar"
-      exclude "*xml-apis*.jar"
-      exclude "*ant-*.jar"
-      exclude "Apple*.jar"
-      exclude "hamcrest*.jar"
-      exclude "slf4j-*alpha*.jar"
-      exclude "Saxon*.jar"
-    }
-    from ('../spotbugs/build/libs') {
-      include "*.jar"
-    }
-    from ('../spotbugs-annotations/build/libs') {
-      include "*.jar"
-    }
-    into "lib"
+TaskProvider<Copy> copyLibsForEclipse = tasks.register('copyLibsForEclipse', Copy) {
+  from(configurations.runtimeClasspath) {
+    include '*.jar'
+    exclude 'Saxon*.jar'
+  }
+  into 'lib'
 }
 
-task distSrcZip(type:Exec) {
-  commandLine 'git', 'archive', '-o', "${buildDir}/distributions/${eclipsePluginId}_${project.version}-source.zip", 'HEAD'
+File resolvedBuildDir = project.layout.buildDirectory.asFile.get()
+
+TaskProvider<Exec> distSrcZip = tasks.register('distSrcZip', Exec) {
+  File out = resolvedBuildDir.toPath().resolve('distributions').resolve("${eclipsePluginId}_${project.version}-source.zip").toFile()
+  outputs.file out
+  commandLine 'git', 'archive', '-o', out, 'HEAD'
 }
 
-task updateManifest {
+TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
+  inputs.file "${projectDir}/META-INF/MANIFEST-TEMPLATE.MF"
+  outputs.file "${projectDir}/META-INF/MANIFEST.MF"
+  outputs.file "${projectDir}/META-INF/MANIFEST-DIST.MF"
+  inputs.file "${projectDir}/build-template.properties"
+  outputs.file "${projectDir}/build.properties"
+
   dependsOn ':spotbugs:updateManifest', copyLibsForEclipse
+  String version = project.version
   doLast {
-    def manifestSpec = manifest {
-      from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
-      attributes 'Bundle-SymbolicName': "$eclipsePluginId; singleton:=true",
-                 'Bundle-Version': project.version,
-                 'Bundle-ClassPath': ".,spotbugs-plugin.jar," + fileTree(dir: 'lib').collect {
-                      projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
+    Set<File> libFiles = fileTree(dir: 'lib').files
+    Manifest manifestSpec = java.manifest {
+      from "${projectDir}/META-INF/MANIFEST-TEMPLATE.MF"
+      attributes 'Bundle-SymbolicName': "${eclipsePluginId}; singleton:=true",
+      'Bundle-Version': version,
+      'Bundle-ClassPath': '.,spotbugs-plugin.jar,' + libFiles.collect { File file ->
+        relativizePath(file)
+      }.join(',')
     }
 
-    def distManifestSpec = manifest {
-      from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
-      attributes 'Bundle-SymbolicName': "$eclipsePluginId; singleton:=true",
-                 'Bundle-Version': project.version,
-                 'Bundle-ClassPath': "spotbugs-plugin.jar," + fileTree(dir: 'lib').collect {
-                        projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(',')
+    Manifest distManifestSpec = java.manifest {
+      from "${projectDir}/META-INF/MANIFEST-TEMPLATE.MF"
+      attributes 'Bundle-SymbolicName': "${eclipsePluginId}; singleton:=true",
+      'Bundle-Version': version,
+      'Bundle-ClassPath': 'spotbugs-plugin.jar,' + libFiles.collect { File file ->
+        relativizePath(file)
+      }.join(',')
     }
     // write manifests
-    manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
-    distManifestSpec.writeTo("$projectDir/META-INF/MANIFEST-DIST.MF")
+    manifestSpec.writeTo("${projectDir}/META-INF/MANIFEST.MF")
+    distManifestSpec.writeTo("${projectDir}/META-INF/MANIFEST-DIST.MF")
 
     // write build.properties
-    def propsTemplate = file('build-template.properties')
-    def props = new Properties()
-    props.load(propsTemplate.newDataInputStream())
+    Path propsTemplate = projectDir.toPath().resolve('build-template.properties')
+    Properties props = new Properties()
+    Files.newInputStream(propsTemplate).withCloseable { InputStream input ->
+      props.load(input)
+    }
     props.setProperty('bin.includes', props.getProperty('bin.includes') + ',' +
-        fileTree(dir: 'lib').collect { projectDir.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.join(','))
-    props.store(file('build.properties').newWriter(), null)
+        libFiles.collect { File file ->
+          relativizePath(file)
+        }.join(','))
+    Files.newBufferedWriter(projectDir.toPath().resolve('build.properties')).withCloseable { Writer writer ->
+      props.store(writer, null)
+    }
   }
 }
 
-tasks['compileJava'].dependsOn ':spotbugs:jar'
+String relativizePath(File file) {
+  return projectDir.toPath().relativize(file.toPath()).toString().replace('\\', '/')
+}
+
+tasks.named('compileJava').configure {
+  dependsOn ':spotbugs:jar'
+}
 
 // create manifest when importing to eclipse
-tasks.eclipse.dependsOn copyLibsForEclipse, updateManifest
+tasks.named('eclipse').configure {
+  dependsOn updateManifest
+}
 
-class FileRef implements org.gradle.plugins.ide.eclipse.model.FileReference {
-    def file;
-    def FileRef(File file){
-        this.file = file
-    }
-    def File getFile(){
-        return file;
-    }
-    def String getJarURL(){
-        return "jar:" + file
-    }
-    def String getPath(){
-        return file.toString().replace('\\', '/')
-    }
-    def boolean isRelativeToPathVariable(){
-        return false
-    }
+class FileRef implements FileReference {
+  File file
+  FileRef(File file){
+    this.file = file
+  }
+  File getFile(){
+    return file
+  }
+  String getJarURL(){
+    return 'jar:' + file
+  }
+  String getPath(){
+    return file.toString().replace('\\', '/')
+  }
+  boolean isRelativeToPathVariable(){
+    return false
+  }
 }
 
 eclipse.classpath.file {
-    whenMerged {
-        classpath ->
-           classpath.entries.removeAll {
-               entry -> entry.kind == 'lib'
-           }
-           copyLibsForEclipse
-           fileTree(dir: 'lib').forEach {
-                file ->
-                    def rel = projectDir.toPath().relativize(java.nio.file.Paths.get(file.toString())).toFile()
-                    org.gradle.plugins.ide.eclipse.model.ClasspathEntry entry =
-                        new org.gradle.plugins.ide.eclipse.model.Library(new FileRef(rel))
-                    classpath.entries.add(entry)
-           }
+  whenMerged { Classpath classpath ->
+    classpath.entries.removeAll { ClasspathEntry entry ->
+      entry.kind == 'lib'
     }
+
+    Set<File> libFiles = fileTree(dir: 'lib').files
+    libFiles.forEach { File file ->
+      File rel = projectDir.toPath().relativize(file.toPath()).toFile()
+      ClasspathEntry entry = new Library(new FileRef(rel))
+      classpath.entries.add(entry)
+    }
+  }
 }
 
-jar {
+TaskProvider<Jar> jar = tasks.named('jar', Jar) {
   // Make sure we always update the manifest when building
   dependsOn updateManifest
   includeEmptyDirs = false
   from sourceSets.main.output
-  archiveName 'spotbugs-plugin.jar'
+  archiveFileName = 'spotbugs-plugin.jar'
 }
 
-def distSpec = copySpec {
-  from jar.outputs.files
+CopySpec distSpec = copySpec {
+  from jar.map { Jar jarTask ->
+    jarTask.outputs.files
+  }
   from(project.projectDir) {
     include 'RELEASENOTES'
     include 'plugin.xml'
@@ -210,15 +261,15 @@ def distSpec = copySpec {
     include 'icons/*.*'
     include 'lib/'
   }
-  from('../spotbugs/') { // FIXME : Ugly... but those plugin are gonna die anyway...
+  // FIXME : Ugly... but those plugin are gonna die anyway...
+  from('../spotbugs/') {
     include 'plugin/**'
   }
   from('META-INF/MANIFEST-DIST.MF') {
-    filter { line ->
+    filter { String line ->
       if (line.startsWith('Bundle-Version:')) {
         return "Bundle-Version: ${project.version}"
       }
-
       line
     }
     into 'META-INF/'
@@ -228,115 +279,125 @@ def distSpec = copySpec {
   }
 }
 
-task distZip(type:Zip, dependsOn:jar) {
+TaskProvider<Zip> distZip = tasks.register('distZip', Zip) {
+  dependsOn jar
   with distSpec
   into "${eclipsePluginId}_${project.version}"
-  archiveName = "${eclipsePluginId}_${project.version}.zip"
+  archiveFileName = "${eclipsePluginId}_${project.version}.zip"
 }
 
-task pluginJar(type:Zip, dependsOn:jar) { // use Zip task, we already provide a manifest
+TaskProvider<Task> testPluginJar = tasks.register('testPluginJar') {
+  File jarFile = resolvedBuildDir.toPath().resolve("site/eclipse/plugins/${eclipsePluginId}_${project.version}.jar").toFile()
+  inputs.file jarFile
+  doLast {
+    File spotbugsJar = zipTree(jarFile).matching {
+      include 'lib/spotbugs.jar'
+    }.singleFile
+    if (!spotbugsJar.exists()) {
+      throw new TaskInstantiationException('Eclipse plugin does not contain spotbugs.jar')
+    } else {
+      logger.lifecycle('Eclipse plugin contains spotbugs.jar')
+    }
+  }
+}
+
+// use Zip task, we already provide a manifest
+TaskProvider<Zip> pluginJar = tasks.register('pluginJar', Zip) {
   with distSpec
-  archiveName = "${eclipsePluginId}_${project.version}.jar"
-  destinationDir = file("${buildDir}/site/eclipse/plugins/")
+  dependsOn jar
+  archiveFileName = "${eclipsePluginId}_${project.version}.jar"
+  destinationDirectory.set(layout.buildDirectory.dir('site/eclipse/plugins/'))
+  finalizedBy testPluginJar
 }
 
-task pluginCandidateJar(type:Copy, dependsOn:pluginJar) {
-  from pluginJar.outputs.files
-  into "${buildDir}/site/eclipse-candidate/plugins/"
+TaskProvider<Copy> pluginCandidateJar = tasks.register('pluginCandidateJar', Copy) {
+  dependsOn pluginJar
+  from pluginJar.map { Zip zipTask ->
+    zipTask.outputs.files
+  }
+  into layout.buildDirectory.dir('site/eclipse-candidate/plugins/')
 }
 
-task pluginDailyJar(type:Copy, dependsOn:pluginJar) {
-  from pluginJar.outputs.files
-  into "${buildDir}/site/eclipse-daily/plugins/"
+TaskProvider<Copy> pluginDailyJar = tasks.register('pluginDailyJar', Copy) {
+  dependsOn pluginJar
+  from pluginJar.map { Zip zipTask ->
+    zipTask.outputs.files
+  }
+  into layout.buildDirectory.dir('site/eclipse-daily/plugins/')
+  mustRunAfter(siteHtml)
+  mustRunAfter(siteXml)
 }
 
-task pluginStableLatestJar(type:Copy, dependsOn:pluginJar) {
-  from pluginJar.outputs.files
-  into "${buildDir}/site/eclipse-stable-latest/plugins/"
-}
-
-def siteFilterTokens = [
+Map<String, String> siteFilterTokens = [
   'PLUGIN_ID': eclipsePluginId,
-  'PLUGIN_VERSION':"${project.version}".toString(),
+  'PLUGIN_VERSION': project.version.toString(),
   'FEATURE_ID': eclipsePluginId,
-  'FEATURE_VERSION':"${project.version}".toString()
+  'FEATURE_VERSION': project.version.toString()
 ]
 
-task featureJar(type:Zip) {
-  archiveName = "${eclipsePluginId}_${project.version}.jar"
+TaskProvider<Zip> featureJar = tasks.register('featureJar', Zip) {
+  archiveFileName = "${eclipsePluginId}_${project.version}.jar"
   entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
   from('plugin_feature.xml') {
-    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+    filter(tokens: siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'feature.xml' }
   }
   from('feature_p2.inf') {
-    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+    filter(tokens: siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'p2.inf' }
   }
-  destinationDir = file("${buildDir}/site/eclipse/features/")
+  destinationDirectory = layout.buildDirectory.dir('site/eclipse/features/')
 }
 
-task featureCandidateJar(type:Zip) {
-  archiveName = "${eclipsePluginId}_${project.version}.jar"
+TaskProvider<Zip> featureCandidateJar = tasks.register('featureCandidateJar', Zip) {
+  archiveFileName = "${eclipsePluginId}_${project.version}.jar"
   entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
   from('plugin_feature-candidate.xml') {
-    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+    filter(tokens: siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'feature.xml' }
   }
   from('feature_p2.inf') {
-    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+    filter(tokens: siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'p2.inf' }
   }
-  destinationDir = file("${buildDir}/site/eclipse-candidate/features/")
+  destinationDirectory = layout.buildDirectory.dir('site/eclipse-candidate/features/')
 }
 
-task featureDailyJar(type:Zip) {
-  archiveName = "${eclipsePluginId}_${project.version}.jar"
+TaskProvider<Zip> featureDailyJar = tasks.register('featureDailyJar', Zip) {
+  archiveFileName = "${eclipsePluginId}_${project.version}.jar"
   entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
   from('plugin_feature-daily.xml') {
-    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+    filter(tokens: siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'feature.xml' }
   }
   from('feature_p2.inf') {
-    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+    filter(tokens: siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
     rename { 'p2.inf' }
   }
-  destinationDir = file("${buildDir}/site/eclipse-daily/features/")
+  destinationDirectory = layout.buildDirectory.dir('site/eclipse-daily/features/')
 }
 
-task featureStableLatestJar(type:Zip) {
-  archiveName = "${eclipsePluginId}_${project.version}.jar"
-  entryCompression = ZipEntryCompression.STORED // no compression, this is a jar with no manifest
-  from('plugin_feature-stable_latest.xml') {
-    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
-    rename { 'feature.xml' }
-  }
-  from('feature_p2.inf') {
-    filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
-    rename { 'p2.inf' }
-  }
-  destinationDir = file("${buildDir}/site/eclipse-stable-latest/features/")
-}
-
-task siteHtml(type:Copy) {
-  filter(tokens:[
+TaskProvider<Copy> siteHtml = tasks.register('siteHtml', Copy) {
+  filter(tokens: [
     'URL': 'https://spotbugs.github.io/eclipse/'
   ] + siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site.html'
-  destinationDir = file("${buildDir}/site/eclipse")
+  into layout.buildDirectory.dir('site/eclipse')
   rename { 'index.html' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
     false
   }
+  dependsOn(pluginCandidateJar)
+  dependsOn(testPluginJar)
 }
 
-task siteCandidateHtml(type:Copy) {
-  filter(tokens:[
+TaskProvider<Copy> siteCandidateHtml = tasks.register('siteCandidateHtml', Copy) {
+  filter(tokens: [
     'URL': 'https://spotbugs.github.io/eclipse-candidate/'
   ] + siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site.html'
-  destinationDir = file("${buildDir}/site/eclipse-candidate")
+  into layout.buildDirectory.dir('site/eclipse-candidate')
   rename { 'index.html' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -344,12 +405,12 @@ task siteCandidateHtml(type:Copy) {
   }
 }
 
-task siteDailyHtml(type:Copy) {
-  filter(tokens:[
+TaskProvider<Copy> siteDailyHtml = tasks.register('siteDailyHtml', Copy) {
+  filter(tokens: [
     'URL': 'https://spotbugs.github.io/eclipse-latest/'
   ] + siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site.html'
-  destinationDir = file("${buildDir}/site/eclipse-daily")
+  into layout.buildDirectory.dir('site/eclipse-daily')
   rename { 'index.html' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -357,34 +418,23 @@ task siteDailyHtml(type:Copy) {
   }
 }
 
-task siteStableLatestHtml(type:Copy) {
-  filter(tokens:[
-    'URL': 'https://spotbugs.github.io/eclipse-stable-latest/'
-  ] + siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
-  from 'plugin_site.html'
-  destinationDir = file("${buildDir}/site/eclipse-stable-latest")
-  rename { 'index.html' }
-  outputs.upToDateWhen {
-    // even if we have generated file, we should rerun this task to overwrite it.
-    false
-  }
-}
-
-task siteXml(type:Copy) {
-  filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+TaskProvider<Copy> siteXml = tasks.register('siteXml', Copy) {
+  filter(tokens: siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site.xml'
-  destinationDir = file("${buildDir}/site/eclipse")
+  into layout.buildDirectory.dir('site/eclipse')
   rename { 'site.xml' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
     false
   }
+  dependsOn(pluginCandidateJar)
+  dependsOn(testPluginJar)
 }
 
-task siteCandidateXml(type:Copy) {
-  filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+TaskProvider<Copy> siteCandidateXml = tasks.register('siteCandidateXml', Copy) {
+  filter(tokens: siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site-candidate.xml'
-  destinationDir = file("${buildDir}/site/eclipse-candidate")
+  into layout.buildDirectory.dir('site/eclipse-candidate')
   rename { 'site.xml' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -392,21 +442,10 @@ task siteCandidateXml(type:Copy) {
   }
 }
 
-task siteDailyXml(type:Copy) {
-  filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
+TaskProvider<Copy> siteDailyXml = tasks.register('siteDailyXml', Copy) {
+  filter(tokens: siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
   from 'plugin_site-daily.xml'
-  destinationDir = file("${buildDir}/site/eclipse-daily")
-  rename { 'site.xml' }
-  outputs.upToDateWhen {
-    // even if we have generated file, we should rerun this task to overwrite it.
-    false
-  }
-}
-
-task siteStableLatestXml(type:Copy) {
-  filter(tokens:siteFilterTokens, org.apache.tools.ant.filters.ReplaceTokens)
-  from 'plugin_site-stable_latest.xml'
-  destinationDir = file("${buildDir}/site/eclipse-stable-latest")
+  into layout.buildDirectory.dir('site/eclipse-daily')
   rename { 'site.xml' }
   outputs.upToDateWhen {
     // even if we have generated file, we should rerun this task to overwrite it.
@@ -416,95 +455,128 @@ task siteStableLatestXml(type:Copy) {
 
 // sign all .jar file under specified dir
 ext.signJar = { File dir ->
-  def keystorepass = project.hasProperty('keystorepass') ? keystorepass : '';
+  String keystorepass = providers.gradleProperty('keystorepass').getOrElse('')
   if (keystorepass.isEmpty()) {
-    print 'to sign eclipse plugins, set "keystorepass" project property'
+    logger.lifecycle('to sign eclipse plugins, set "keystorepass" project property')
+    return
+  } else {
+    logger.lifecycle('Signing of Eclipse plugins is disabled now, see https://github.com/spotbugs/spotbugs/issues/3406')
     return
   }
 
-  dir.traverse(type: FILES, nameFilter: ~/.*\.jar$/) {
-    def relativePath = rootDir.toPath().relativize( it.toPath() )
-    println "signing ${relativePath}"
+  dir.traverse(type: FILES, nameFilter: ~/.*\.jar$/) { File jarFile ->
+    String relativePath = rootDir.toPath().relativize(jarFile.toPath()).toString()
+    logger.lifecycle("signing ${relativePath}")
     ant.signjar(
-        destDir: it.parentFile,
-        jar: it,
+        destDir: jarFile.parentFile,
+        jar: jarFile,
         alias: 'eclipse-plugin',
-        keystore: "$rootDir/spotbugs.jks",
+        keystore: "${rootDir}/spotbugs.jks",
         storepass: keystorepass,
         tsaurl: 'http://timestamp.digicert.com',
         verbose: true
-    )
+        )
   }
 }
 
-task generateP2Metadata(type:Exec) {
+TaskProvider<Task> confirmEclipse = tasks.register('confirmEclipse') {
   doFirst {
-    project.delete "${buildDir}/site/eclipse/artifacts.xml"
-    project.delete "${buildDir}/site/eclipse/content.xml"
-    signJar(file("${buildDir}/site/eclipse"))
+    if (eclipseExecutable == null || !eclipseExecutable.exists()) {
+      logger.warn('found eclipseExecutable at 2 ' + eclipseExecutable)
+      throw new GradleScriptException('No eclipse found in local', null)
+    }
+  }
+}
+
+TaskProvider<Exec> generateP2Metadata = tasks.register('generateP2Metadata', Exec) {
+  doFirst {
+    Provider<Directory> eclipseSiteDir = layout.buildDirectory.dir('site/eclipse')
+    File artifactsXml = eclipseSiteDir.map { Directory dir ->
+      dir.file('artifacts.xml')
+    }.get().asFile
+    File contentXml = eclipseSiteDir.map { Directory dir ->
+      dir.file('content.xml')
+    }.get().asFile
+    delete artifactsXml
+    delete contentXml
+    signJar(eclipseSiteDir.get().asFile)
   }
   inputs.file 'local.properties'
-  dependsOn pluginJar, featureJar, siteXml, siteHtml
-  commandLine "${eclipseExecutable}", '-nosplash',
-    '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
-    '-metadataRepository', "file:${buildDir}/site/eclipse", // TODO : May not work on Windows
-    '-artifactRepository', "file:${buildDir}/site/eclipse", // TODO : May not work on Windows
-    '-source', "${buildDir}/site/eclipse"
+  dependsOn confirmEclipse, pluginJar, featureJar, siteXml, siteHtml
+  commandLine eclipseExecutable, '-nosplash',
+      '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
+      '-metadataRepository', "file:${resolvedBuildDir}/site/eclipse",
+      '-artifactRepository', "file:${resolvedBuildDir}/site/eclipse",
+      '-source', "${resolvedBuildDir}/site/eclipse",
+      '-vm', "${System.getProperty('java.home')}/bin"
 }
 
-task generateCandidateP2Metadata(type:Exec) {
+TaskProvider<Exec> generateCandidateP2Metadata = tasks.register('generateCandidateP2Metadata', Exec) {
   doFirst {
-    project.delete "${buildDir}/site/eclipse-candidate/artifacts.xml"
-    project.delete "${buildDir}/site/eclipse-candidate/content.xml"
-    signJar(file("${buildDir}/site/eclipse-candidate"))
+    Provider<Directory> eclipseSiteCandidateDir = layout.buildDirectory.dir('site/eclipse-candidate')
+    File artifactsXml = eclipseSiteCandidateDir.map { Directory dir ->
+      dir.file('artifacts.xml')
+    }.get().asFile
+    File contentXml = eclipseSiteCandidateDir.map { Directory dir ->
+      dir.file('content.xml')
+    }.get().asFile
+    delete artifactsXml
+    delete contentXml
+    signJar(eclipseSiteCandidateDir.get().asFile)
   }
   inputs.file 'local.properties'
-  dependsOn pluginCandidateJar, featureCandidateJar, siteCandidateXml, siteCandidateHtml
-  commandLine "${eclipseExecutable}", '-nosplash',
-    '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
-    '-metadataRepository', "file:${buildDir}/site/eclipse-candidate", // TODO : May not work on Windows
-    '-artifactRepository', "file:${buildDir}/site/eclipse-candidate", // TODO : May not work on Windows
-    '-source', "${buildDir}/site/eclipse-candidate"
+  dependsOn confirmEclipse, pluginCandidateJar, featureCandidateJar, siteCandidateXml, siteCandidateHtml
+  commandLine eclipseExecutable, '-nosplash',
+      '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
+      '-metadataRepository', "file:${resolvedBuildDir}/site/eclipse-candidate",
+      '-artifactRepository', "file:${resolvedBuildDir}/site/eclipse-candidate",
+      '-source', "${resolvedBuildDir}/site/eclipse-candidate",
+      '-vm', "${System.getProperty('java.home')}/bin"
 }
 
-task generateP2MetadataDaily(type:Exec) {
+TaskProvider<Exec> generateP2MetadataDaily = tasks.register('generateP2MetadataDaily', Exec) {
   doFirst {
-    project.delete "${buildDir}/site/eclipse-daily/artifacts.xml"
-    project.delete "${buildDir}/site/eclipse-daily/content.xml"
-    signJar(file("${buildDir}/site/eclipse-daily"))
+    Provider<Directory> eclipseSiteDailyDir = layout.buildDirectory.dir('site/eclipse-daily')
+    File artifactsXml = eclipseSiteDailyDir.map { Directory dir ->
+      dir.file('artifacts.xml')
+    }.get().asFile
+    File contentXml = eclipseSiteDailyDir.map { Directory dir ->
+      dir.file('content.xml')
+    }.get().asFile
+    delete artifactsXml
+    delete contentXml
+    signJar(eclipseSiteDailyDir.get().asFile)
   }
   inputs.file 'local.properties'
-  dependsOn pluginDailyJar, featureDailyJar, siteDailyXml, siteDailyHtml
-  commandLine "${eclipseExecutable}", '-nosplash',
-    '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
-    '-metadataRepository', "file:${buildDir}/site/eclipse-daily", // TODO : May not work on Windows
-    '-artifactRepository', "file:${buildDir}/site/eclipse-daily", // TODO : May not work on Windows
-    '-source', "${buildDir}/site/eclipse-daily"
+  dependsOn confirmEclipse, pluginDailyJar, featureDailyJar, siteDailyXml, siteDailyHtml
+  commandLine eclipseExecutable, '-nosplash',
+      '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
+      '-metadataRepository', "file:${resolvedBuildDir}/site/eclipse-daily",
+      '-artifactRepository', "file:${resolvedBuildDir}/site/eclipse-daily",
+      '-source', "${resolvedBuildDir}/site/eclipse-daily",
+      '-vm', "${System.getProperty('java.home')}/bin"
 }
 
-task generateP2MetadataStableLatest(type:Exec) {
-  doFirst {
-    project.delete "${buildDir}/site/eclipse-stable-latest/artifacts.xml"
-    project.delete "${buildDir}/site/eclipse-stable-latest/content.xml"
-    signJar(file("${buildDir}/site/eclipse-stable-latest"))
-  }
-  inputs.file 'local.properties'
-  dependsOn pluginStableLatestJar, featureStableLatestJar, siteStableLatestXml, siteStableLatestHtml
-  commandLine "${eclipseExecutable}", '-nosplash',
-    '-application', 'org.eclipse.equinox.p2.publisher.UpdateSitePublisher',
-    '-metadataRepository', "file:${buildDir}/site/eclipse-stable-latest", // TODO : May not work on Windows
-    '-artifactRepository', "file:${buildDir}/site/eclipse-stable-latest", // TODO : May not work on Windows
-    '-source', "${buildDir}/site/eclipse-stable-latest"
-}
-
-task eclipseSite() {
-  dependsOn generateP2Metadata, generateCandidateP2Metadata, generateP2MetadataDaily, generateP2MetadataStableLatest
+TaskProvider<Task> eclipseSite = tasks.register('eclipseSite') {
+  dependsOn generateP2Metadata, generateCandidateP2Metadata, generateP2MetadataDaily
 }
 
 // create zip file to upload to GitHub release page
-task eclipseSiteZip(type:Zip, dependsOn:eclipseSite) {
-  from("${buildDir}/site/eclipse")
-  archiveName = "eclipsePlugin.zip"
+TaskProvider<Zip> eclipseSiteZip = tasks.register('eclipseSiteZip', Zip) {
+  dependsOn eclipseSite
+  from layout.buildDirectory.dir('site/eclipse')
+  archiveFileName = 'eclipsePlugin.zip'
 }
 
-tasks['assemble'].dependsOn eclipseSite, eclipseSiteZip
+if (eclipseExecutable == null) {
+  logger.lifecycle('Create local.properties to build eclipse site')
+} else {
+  tasks.named('assemble').configure {
+    dependsOn eclipseSiteZip
+  }
+}
+
+spotbugs {
+  ignoreFailures = true
+  release = rootProject.version
+}

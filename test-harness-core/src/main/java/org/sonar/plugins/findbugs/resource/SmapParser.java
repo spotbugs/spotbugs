@@ -66,7 +66,7 @@ public class SmapParser {
     private final Map<Integer, FileInfo> fileinfo = new HashMap<>();
     private final Map<Integer, int[]> java2jsp = new HashMap<>();
 
-    private static final Pattern LINE_INFO_PATTERN = Pattern.compile("([0-9]+)(?:#([0-9]+))?(?:,([0-9]+))?:([0-9]+)(?:,([0-9]+))?");
+    private static final Pattern LINE_INFO_PATTERN = Pattern.compile("(\\d+)(?:#(\\d+))?(?:,(\\d+))?:(\\d+)(?:,(\\d+))?");
 
     private static String getLine(BufferedReader reader) throws IOException {
         String s = reader.readLine();

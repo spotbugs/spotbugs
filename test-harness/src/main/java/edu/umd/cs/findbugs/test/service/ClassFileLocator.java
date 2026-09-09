@@ -17,16 +17,23 @@
  */
 package edu.umd.cs.findbugs.test.service;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.net.URISyntaxException;
 import java.net.URL;
 
+/**
+ * ClassFileLocator is a utility class that provides methods to locate class files,
+ * JSP files, and JAR files based on their paths or names.
+ * It retrieves the full path to these files from the class loader's resources.
+ */
 public class ClassFileLocator {
     private static final String PREFIX = "file:";
 
     /**
+     * Get the full path to a class file based on its class name.
+     *
      * @param path
      *            class name
      * @return Full path to the class file base on class name.
@@ -38,28 +45,42 @@ public class ClassFileLocator {
             return getFilenameFromUrl(url);
         }
         url = cl.getResource(path);
-        assertNotNull("No class found for the path = " + path, url);
+        assertNotNull(url, "No class found for the path = " + path);
         return getFilenameFromUrl(url);
     }
 
+    /**
+     * Get the full path to a JSP file based on its path.
+     *
+     * @param path
+     *            JSP file path
+     * @return Full path to the JSP file.
+     */
     public String getJspFilePath(String path) {
         ClassLoader cl = getClass().getClassLoader();
 
         //This is subject to change base on the JSP compiler implementation
-        String generatedClassName = path.replaceAll("_", "_005f").replace(".jsp", "_jsp");
+        String generatedClassName = path.replace("_", "_005f").replace(".jsp", "_jsp");
         URL url = cl.getResource("jsp/" + generatedClassName + ".class");
         if (url == null) {
             url = cl.getResource("org/apache/jsp/" + generatedClassName + ".class");
         }
 
-        assertNotNull("No jsp file found for the path = " + path, url);
+        assertNotNull(url, "No jsp file found for the path = " + path);
         return getFilenameFromUrl(url);
     }
 
+    /**
+     * Get the full path to a JAR file based on its path.
+     *
+     * @param path
+     *            JAR file path
+     * @return Full path to the JAR file.
+     */
     public String getJarFilePath(String path) {
         ClassLoader cl = getClass().getClassLoader();
         URL url = cl.getResource(path);
-        assertNotNull("No jar found for the path = " + path, url);
+        assertNotNull(url, "No jar found for the path = " + path);
         return getFilenameFromUrl(url);
     }
 

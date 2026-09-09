@@ -94,7 +94,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
         default: {
 
             FindbugsPlugin.getDefault()
-                    .logWarning("UKNOWN BUILD kind" + kind);
+                    .logWarning("UNKNOWN BUILD kind" + kind);
             doBuild(args, monitor, kind);
             break;
         }
@@ -125,9 +125,8 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
      * @param kind
      *            kind the kind of build being requested, see
      *            IncrementalProjectBuilder
-     * @throws CoreException
      */
-    private void doBuild(final Map<?, ?> args, final IProgressMonitor monitor, int kind) throws CoreException {
+    private void doBuild(final Map<?, ?> args, final IProgressMonitor monitor, int kind) {
         boolean incremental = (kind == IncrementalProjectBuilder.INCREMENTAL_BUILD
                 || kind == IncrementalProjectBuilder.AUTO_BUILD);
         IProject project = getProject();
@@ -139,6 +138,12 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
             if (configChanged) {
                 files = new ArrayList<>();
                 files.add(new WorkItem(project));
+                // Clear previously saved user preferences
+                try {
+                    project.setSessionProperty(FindbugsPlugin.SESSION_PROPERTY_USERPREFS, null);
+                } catch (CoreException e) {
+                    FindbugsPlugin.getDefault().logException(e, "Failed to clear user preferences in session");
+                }
             } else {
                 files = ResourceUtils.collectIncremental(resourceDelta);
                 if (files.size() == 1) {
@@ -193,14 +198,14 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
         }
     }
 
-    private boolean isConfigUnchanged(IResourceDelta resourceDelta) {
+    private static boolean isConfigUnchanged(IResourceDelta resourceDelta) {
         return resourceDelta != null && resourceDelta.findMember(new Path(".project")) == null
                 && resourceDelta.findMember(new Path(".classpath")) == null
                 && resourceDelta.findMember(FindbugsPlugin.DEPRECATED_PREFS_PATH) == null
                 && resourceDelta.findMember(FindbugsPlugin.DEFAULT_PREFS_PATH) == null;
     }
 
-    private final static class StartedFromBuilderJob extends FindBugsJob {
+    private static final class StartedFromBuilderJob extends FindBugsJob {
         private final List<WorkItem> resources;
 
         private StartedFromBuilderJob(String name, IResource resource, List<WorkItem> resources) {

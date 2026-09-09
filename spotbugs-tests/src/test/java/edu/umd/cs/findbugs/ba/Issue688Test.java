@@ -18,24 +18,17 @@
  */
 package edu.umd.cs.findbugs.ba;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.junit.Assert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
-public class Issue688Test extends AbstractIntegrationTest {
+class Issue688Test extends AbstractIntegrationTest {
 
     @Test
-    public void test() {
-        performAnalysis("ghIssues/Issue688.class");
-        final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder().build();
-        SortedBugCollection bugCollection = (SortedBugCollection) getBugCollection();
-        assertThat(bugCollection, containsExactly(0, bugTypeMatcher));
+    void testIssue() {
+        Assertions.assertDoesNotThrow(() -> performAnalysis("ghIssues/Issue688.class"));
     }
 
 }

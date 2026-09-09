@@ -45,7 +45,7 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
     /**
      * Constructor.
      */
-    public BasicAbstractDataflowAnalysis() {
+    protected BasicAbstractDataflowAnalysis() {
         this.startFactMap = new IdentityHashMap<>();
         this.resultFactMap = new IdentityHashMap<>();
     }
@@ -180,12 +180,7 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
     }
 
     private Fact lookupOrCreateFact(Map<BasicBlock, Fact> map, BasicBlock block) {
-        Fact fact = map.get(block);
-        if (fact == null) {
-            fact = createFact();
-            map.put(block, fact);
-        }
-        return fact;
+        return map.computeIfAbsent(block, b -> createFact());
     }
 
     @Override

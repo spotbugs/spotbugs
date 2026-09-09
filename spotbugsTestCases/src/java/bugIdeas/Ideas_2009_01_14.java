@@ -25,7 +25,7 @@ public class Ideas_2009_01_14 {
             result = "four";
             break;
         default:
-            throw new IllegalArgumentException("Illegal agrument: " + value);
+            throw new IllegalArgumentException("Illegal argument: " + value);
 
         }
         return "Answer is " + result;

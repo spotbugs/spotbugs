@@ -92,7 +92,7 @@ public class ExplicitSerialization extends OpcodeStackDetector implements NonRep
                 }
                 unreadFields.strongEvidenceForIntendedSerialization(c);
             } catch (CheckedAnalysisException e) {
-                bugReporter.logError("Error looking up xClass of " + c, e);
+                bugReporter.reportMissingClass(c, e);
             }
 
         }

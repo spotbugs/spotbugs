@@ -87,7 +87,7 @@ Parameters
 This section describes the parameters that may be specified when using the FindBugs task.
 
 class
-  A optional nested element specifying which classes to analyze.
+  An optional nested element specifying which classes to analyze.
   The class element must specify a location attribute which names the archive file (jar, zip, etc.), directory, or class file to be analyzed.
   Multiple class elements may be specified as children of a single spotbugs element.
 
@@ -111,7 +111,7 @@ quietErrors
 reportLevel
   An optional attribute. It specifies the confidence/priority threshold for reporting issues.
   If set to ``low``, confidence is not used to filter bugs.
-  If set to ``medium`` (the default), low confidence issues are supressed.
+  If set to ``medium`` (the default), low confidence issues are suppressed.
   If set to ``high``, only high confidence bugs are reported.
 
 output

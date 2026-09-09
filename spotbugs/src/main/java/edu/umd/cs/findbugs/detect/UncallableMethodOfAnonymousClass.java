@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -156,7 +157,18 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
         if (obj.isAbstract()) {
             return true;
         }
-
+        if (Values.SLASHED_JAVA_LANG_ENUM.equals(getSuperclassName()) &&
+                (("values".equals(obj.getName()) &&
+                        ("()[L" + getClassName() + ";").equals(obj.getSignature())) ||
+                        ("valueOf".equals(obj.getName())) &&
+                                ("(Ljava/lang/String;)L" + getClassName() + ";").equals(obj.getSignature()))) {
+            return true;
+        }
+        if (Values.SLASHED_JAVA_LANG_RECORD.equals(getSuperclassName()) &&
+                (Arrays.stream(getThisClass().getFields()).anyMatch(f -> f.getName().equals(obj.getName()))) &&
+                (obj.getSignature().startsWith("()"))) {
+            return true;
+        }
         String methodName = obj.getName();
         String sig = obj.getSignature();
         if (Const.CONSTRUCTOR_NAME.equals(methodName)) {
@@ -165,6 +177,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
         if (Const.STATIC_INITIALIZER_NAME.equals(methodName)) {
             return true;
         }
+
         if ("()Ljava/lang/Object;".equals(sig) && ("readResolve".equals(methodName) || "writeReplace".equals(methodName))) {
             return true;
         }
@@ -197,7 +210,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                 if (Values.DOTTED_JAVA_LANG_OBJECT.equals(superclassName)) {
 
                     try {
-                        JavaClass interfaces[] = getThisClass().getInterfaces();
+                        JavaClass[] interfaces = getThisClass().getInterfaces();
                         if (interfaces.length == 1) {
                             superclassName = interfaces[0].getClassName();
                             role = ClassAnnotation.IMPLEMENTED_INTERFACE_ROLE;
@@ -212,7 +225,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
                             DescriptorFactory.createClassDescriptorFromDottedClassName(superclassName));
                     XMethod potentialMatch = null;
                     for (XMethod m : from.getXMethods()) {
-                        if (!m.isStatic() && !m.isPrivate() && m.getName().toLowerCase().equals(obj.getName().toLowerCase())) {
+                        if (!m.isStatic() && !m.isPrivate() && m.getName().equalsIgnoreCase(obj.getName())) {
                             if (potentialMatch == null) {
                                 potentialMatch = m;
                             } else {

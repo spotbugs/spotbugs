@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.xml;
 
 import java.io.IOException;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 
 /**
@@ -43,7 +43,7 @@ public abstract class QuoteMetaCharacters {
      * @param map
      *            the MetaCharacterMap
      */
-    public QuoteMetaCharacters(@Nonnull String text, @Nonnull MetaCharacterMap map) {
+    protected QuoteMetaCharacters(@Nonnull String text, @Nonnull MetaCharacterMap map) {
         if (text == null) {
             throw new NullPointerException("text must be nonnull");
         }
@@ -66,7 +66,7 @@ public abstract class QuoteMetaCharacters {
                 emitLiteral(map.getReplacement(text.substring(meta, meta + 1)));
                 pos = meta + 1;
             } else {
-                emitLiteral(text.substring(pos, text.length()));
+                emitLiteral(text.substring(pos));
                 pos = text.length();
             }
         } while (pos < text.length());

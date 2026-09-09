@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 public abstract class AbstractMethodVisitor extends MethodVisitor {
 
 
-    public AbstractMethodVisitor() {
+    protected AbstractMethodVisitor() {
         super(FindBugsASM.ASM_VERSION);
     }
 

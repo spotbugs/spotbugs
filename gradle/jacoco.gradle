@@ -1,12 +1,13 @@
-apply plugin: "jacoco"
+apply plugin: 'jacoco'
 
 jacoco {
-  toolVersion = "0.8.5"
+  toolVersion = '0.8.15'
 }
 
 jacocoTestReport {
   reports {
-    html.enabled = true
+    html.required = true
+    xml.required = true
   }
 }
 

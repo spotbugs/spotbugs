@@ -22,11 +22,9 @@ package de.tobject.findbugs.reporter;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -130,6 +128,10 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
             if (bugCollection.add(bug)) {
                 notifyObservers(bug);
                 bugCount++;
+                if (DEBUG) {
+                    System.out.println(
+                            "Bug added: " + bug + ", Priority: " + bug.getPriority() + ", Rank: " + bug.getBugRank());
+                }
             } else if (DEBUG) {
                 System.out.println("Duplicated bug added: " + bug);
             }
@@ -141,13 +143,8 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
     public void reportQueuedErrors() {
         // Report unique errors in order of their sequence
         List<Error> errorList = new ArrayList<>(getQueuedErrors());
-        if (errorList.size() > 0) {
-            Collections.sort(errorList, new Comparator<Error>() {
-                @Override
-                public int compare(Error o1, Error o2) {
-                    return o1.getSequence() - o2.getSequence();
-                }
-            });
+        if (!errorList.isEmpty()) {
+            Collections.sort(errorList, (o1, o2) -> o1.getSequence() - o2.getSequence());
 
             MultiStatus status = new MultiStatus(FindbugsPlugin.PLUGIN_ID, IStatus.ERROR,
                     "The following errors occurred during SpotBugs analysis:", null);
@@ -159,7 +156,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
         }
 
         Set<String> missingClasses = getMissingClasses();
-        if (missingClasses.size() > 0) {
+        if (!missingClasses.isEmpty()) {
             FindBugs2Eclipse.cleanClassClache(project.getProject());
             MultiStatus status = new MultiStatus(FindbugsPlugin.PLUGIN_ID, IStatus.WARNING,
                     "The following classes needed for SpotBugs analysis on project " + project.getElementName()
@@ -193,14 +190,7 @@ public class Reporter extends AbstractBugReporter implements FindBugsProgress {
         printToStream("\nFootprint: " + new Footprint(stats.getBaseFootprint()).toString());
 
         Profiler profiler = stats.getProfiler();
-        PrintStream printStream;
-
-        try {
-            printStream = new PrintStream(stream, false, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e1) {
-            // can never happen with UTF-8
-            return;
-        }
+        PrintStream printStream = new PrintStream(stream, false, StandardCharsets.UTF_8);
 
         printToStream("\nTotal time:");
         profiler.report(new Profiler.TotalTimeComparator(profiler), new Profiler.FilterByTime(10000000), printStream);

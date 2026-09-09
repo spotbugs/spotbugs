@@ -86,7 +86,7 @@ public class StaticCalender {
         // test 1
         Calendar tCal1 = calStatic; // should fire
         if (tCal1.equals(calStatic)) // hide from unused variable detector;
-                                     // shoud fire
+                                     // should fire
             System.out.println("Cal1 equals calStatic");
 
         // test 2

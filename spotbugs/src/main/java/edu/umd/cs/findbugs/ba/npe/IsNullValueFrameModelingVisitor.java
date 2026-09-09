@@ -108,25 +108,21 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
             return;
         }
 
-        if (!NO_ASSERT_HACK) {
-            if (assertionMethods.isAssertionHandle(getLocation().getHandle(), cpg)) {
-                IsNullValueFrame frame = getFrame();
-                for (int i = 0; i < frame.getNumSlots(); ++i) {
-                    IsNullValue value = frame.getValue(i);
-                    if (value.isDefinitelyNull() || value.isNullOnSomePath()) {
-                        frame.setValue(i, IsNullValue.nonReportingNotNullValue());
-                    }
+        if (!NO_ASSERT_HACK && assertionMethods.isAssertionHandle(getLocation().getHandle(), cpg)) {
+            IsNullValueFrame frame = getFrame();
+            for (int i = 0; i < frame.getNumSlots(); ++i) {
+                IsNullValue value = frame.getValue(i);
+                if (value.isDefinitelyNull() || value.isNullOnSomePath()) {
+                    frame.setValue(i, IsNullValue.nonReportingNotNullValue());
                 }
-                for (Map.Entry<ValueNumber, IsNullValue> e : frame.getKnownValueMapEntrySet()) {
-                    IsNullValue value = e.getValue();
-                    if (value.isDefinitelyNull() || value.isNullOnSomePath()) {
-                        e.setValue(IsNullValue.nonReportingNotNullValue());
-                    }
-
+            }
+            for (Map.Entry<ValueNumber, IsNullValue> e : frame.getKnownValueMapEntrySet()) {
+                IsNullValue value = e.getValue();
+                if (value.isDefinitelyNull() || value.isNullOnSomePath()) {
+                    e.setValue(IsNullValue.nonReportingNotNullValue());
                 }
             }
         }
-
     }
 
     /**
@@ -246,9 +242,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
                         }
                     }
                 }
-            } catch (DataflowAnalysisException e) {
-                result = IsNullValue.nonReportingNotNullValue();
-            } catch (ClassNotFoundException e) {
+            } catch (DataflowAnalysisException | ClassNotFoundException e) {
                 result = IsNullValue.nonReportingNotNullValue();
             }
             modelInstruction(obj, getNumWordsConsumed(obj), getNumWordsProduced(obj), result);
@@ -271,7 +265,8 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
                 System.out.println("Null value returned from " + calledMethod);
             }
             pushValue = IsNullValue.nullOnSimplePathValue().markInformationAsComingFromReturnValueOfMethod(
-                    calledMethod);
+                    calledMethod,
+                    annotation);
         } else if (annotation == NullnessAnnotation.NULLABLE) {
             pushValue = IsNullValue.nonReportingNotNullValue();
         } else if (annotation == NullnessAnnotation.NONNULL
@@ -280,7 +275,9 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
             if (IsNullValueAnalysis.DEBUG) {
                 System.out.println("NonNull value return from " + calledMethod);
             }
-            pushValue = IsNullValue.nonNullValue().markInformationAsComingFromReturnValueOfMethod(calledMethod);
+            pushValue = IsNullValue.nonNullValue().markInformationAsComingFromReturnValueOfMethod(
+                    calledMethod,
+                    annotation);
 
         } else {
             pushValue = IsNullValue.nonReportingNotNullValue();

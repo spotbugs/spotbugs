@@ -1,18 +1,44 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
 
+import edu.umd.cs.findbugs.annotations.SuppressMatchType;
+import edu.umd.cs.findbugs.detect.NoteSuppressedWarnings;
+import edu.umd.cs.findbugs.detect.UselessSuppressionDetector;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
-abstract public class WarningSuppressor implements Matcher {
+public abstract class WarningSuppressor implements Matcher {
 
-    final static boolean DEBUG = SystemProperties.getBoolean("warning.suppressor");
+    protected static final String USELESS_SUPPRESSION_ABB = "US";
+    protected static final int PRIORITY = Priorities.NORMAL_PRIORITY;
 
-    String bugPattern;
+    static final boolean DEBUG = SystemProperties.getBoolean("warning.suppressor");
 
-    public WarningSuppressor(String bugPattern) {
+    protected final String bugPattern;
+    protected final SuppressMatchType matchType;
+    private final Pattern compiledBugPattern;
+
+    private Set<WarningSuppressor> alternateSuppressors = Collections.emptySet();
+
+    protected WarningSuppressor(String bugPattern, SuppressMatchType matchType) {
         this.bugPattern = bugPattern;
+
+        if (matchType == null) {
+            this.matchType = SuppressMatchType.DEFAULT;
+        } else {
+            this.matchType = matchType;
+        }
+
+        this.compiledBugPattern = (this.matchType == SuppressMatchType.REGEX && bugPattern != null)
+                ? Pattern.compile(bugPattern)
+                : null;
+
         if (DEBUG) {
             System.out.println("Suppressing " + bugPattern);
         }
@@ -27,10 +53,36 @@ abstract public class WarningSuppressor implements Matcher {
             System.out.println(" against: " + bugPattern);
 
         }
-        if (!(bugPattern == null || bugInstance.getType().startsWith(bugPattern)
-                || bugInstance.getBugPattern().getCategory().equalsIgnoreCase(bugPattern) || bugInstance.getBugPattern()
-                        .getAbbrev().equalsIgnoreCase(bugPattern))) {
+        if (USELESS_SUPPRESSION_ABB.equals(bugInstance.getAbbrev())) {
             return false;
+        }
+
+        if (bugPattern != null) {
+            switch (matchType) {
+            case DEFAULT:
+                if (!bugInstance.getType().startsWith(bugPattern)
+                        && !bugInstance.getBugPattern().getCategory().equalsIgnoreCase(bugPattern)
+                        && !bugInstance.getBugPattern().getAbbrev().equalsIgnoreCase(bugPattern)) {
+                    return false;
+                }
+                break;
+            case EXACT:
+                if (!bugInstance.getType().equals(bugPattern)
+                        && !bugInstance.getBugPattern().getCategory().equals(bugPattern)
+                        && !bugInstance.getBugPattern().getAbbrev().equals(bugPattern)) {
+                    return false;
+                }
+                break;
+            case REGEX:
+                if (!compiledBugPattern.matcher(bugInstance.getType()).matches()
+                        && !compiledBugPattern.matcher(bugInstance.getBugPattern().getCategory()).matches()
+                        && !compiledBugPattern.matcher(bugInstance.getBugPattern().getAbbrev()).matches()) {
+                    return false;
+                }
+                break;
+            default:
+                break;
+            }
         }
         if (DEBUG) {
             System.out.println(" pattern matches");
@@ -38,8 +90,37 @@ abstract public class WarningSuppressor implements Matcher {
         return true;
     }
 
+    /**
+     * @return true if useless suppressions should be reported.
+     */
+    public boolean isUselessSuppressionReportable() {
+        return true;
+    }
+
+    public abstract BugInstance buildUselessSuppressionBugInstance(UselessSuppressionDetector detector);
+
     @Override
     public void writeXML(XMLOutput xmlOutput, boolean disabled) throws IOException {
         // no-op; these aren't saved to XML
+    }
+
+    public void addAlternateSuppressors(Collection<WarningSuppressor> additionalSuppressors) {
+        if (alternateSuppressors.isEmpty()) {
+            alternateSuppressors = new HashSet<>(additionalSuppressors);
+        } else {
+            alternateSuppressors.addAll(additionalSuppressors);
+        }
+    }
+
+    /**
+     * @return The alternate suppressors that might have been generated from a single <code>SuppressWarnings</code> annotation.
+     * See {@link NoteSuppressedWarnings}
+     */
+    public Collection<WarningSuppressor> getAlternateSuppressors() {
+        return Collections.unmodifiableCollection(alternateSuppressors);
+    }
+
+    protected String adjustBugPatternForMessage() {
+        return bugPattern != null ? (bugPattern + " ") : "";
     }
 }

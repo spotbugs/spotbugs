@@ -20,7 +20,7 @@ package de.tobject.findbugs.properties.test;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.TabFolder;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 import de.tobject.findbugs.properties.DetectorConfigurationTab;
 import de.tobject.findbugs.properties.FilterFilesTab;
@@ -58,9 +58,9 @@ public class FindbugsPropertyPageTestSubclass extends FindbugsPropertyPage {
         boolean chkEnableProjectVisible = getEnableProjectCheck() != null;
         boolean hasProject = getProject() != null;
 
-        Assert.assertTrue(expectsProject == hasProject);
-        Assert.assertTrue(expectsProject == chkEnableFindBugsVisible);
-        Assert.assertTrue(expectsProject == chkEnableProjectVisible);
+        Assertions.assertTrue(expectsProject == hasProject);
+        Assertions.assertTrue(expectsProject == chkEnableFindBugsVisible);
+        Assertions.assertTrue(expectsProject == chkEnableProjectVisible);
     }
 
     /**
@@ -73,10 +73,10 @@ public class FindbugsPropertyPageTestSubclass extends FindbugsPropertyPage {
      *            true if the controls should be enabled, false otherwise
      */
     public void assertProjectSettingsEnabled(boolean enabled) {
-        Assert.assertEquals(enabled, getDetectorTab().isEnabled());
-        Assert.assertEquals(enabled, getReportTab().isEnabled());
-        Assert.assertEquals(enabled, getFilterTab().isEnabled());
-        Assert.assertEquals(enabled, getEffortViewer().getCombo().isEnabled());
+        Assertions.assertEquals(enabled, getDetectorTab().isEnabled());
+        Assertions.assertEquals(enabled, getReportTab().isEnabled());
+        Assertions.assertEquals(enabled, getFilterTab().isEnabled());
+        Assertions.assertEquals(enabled, getEffortViewer().getCombo().isEnabled());
     }
 
     public void enableFindBugs(boolean enable) {

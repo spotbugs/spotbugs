@@ -29,7 +29,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
@@ -81,7 +81,7 @@ public class MainFrame extends FBFrame implements LogSync {
 
     public static final String TITLE_START_TXT = "SpotBugs";
 
-    private final static String WINDOW_MODIFIED = "windowModified";
+    private static final String WINDOW_MODIFIED = "windowModified";
 
     public static final boolean USE_WINDOWS_LAF = false;
 
@@ -642,7 +642,7 @@ public class MainFrame extends FBFrame implements LogSync {
     public void updateTitle() {
         Project project = getProject();
         String name = project.getProjectName();
-        if ((name == null || "".equals(name.trim())) && saveFile != null) {
+        if ((name == null || name.trim().isEmpty()) && saveFile != null) {
             name = saveFile.getAbsolutePath();
         }
         if (name == null) {

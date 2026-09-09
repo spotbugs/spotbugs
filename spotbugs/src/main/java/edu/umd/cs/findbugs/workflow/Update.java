@@ -83,11 +83,11 @@ public class Update {
     int maxRank = BugRanker.VISIBLE_RANK_MAX;
 
     class UpdateCommandLine extends CommandLine {
-        boolean overrideRevisionNames = false;
+        boolean overrideRevisionNames;
 
         String outputFilename;
 
-        boolean withMessages = false;
+        boolean withMessages;
 
         UpdateCommandLine() {
             addSwitch("-overrideRevisionNames", "override revision names for each version with names computed filenames");
@@ -101,7 +101,7 @@ public class Update {
             addOption("-output", "output file", "explicit filename for merged results (standard out used if not specified)");
             addOption("-maxRank", "max rank", "maximum rank for issues to store");
 
-            addSwitch("-quiet", "don't generate any outout to standard out unless there is an error");
+            addSwitch("-quiet", "don't generate any output to standard out unless there is an error");
             addSwitch("-useAnalysisTimes", "use analysis timestamp rather than code timestamp in history");
             addSwitch("-withMessages", "Add bug description");
             addOption("-onlyMostRecent", "number", "only use the last # input files");
@@ -110,19 +110,19 @@ public class Update {
         @Override
         protected void handleOption(String option, String optionExtraPart) throws IOException {
             if ("-overrideRevisionNames".equals(option)) {
-                if (optionExtraPart.length() == 0) {
+                if (optionExtraPart.isEmpty()) {
                     overrideRevisionNames = true;
                 } else {
                     overrideRevisionNames = Boolean.parseBoolean(optionExtraPart);
                 }
             } else if ("-noPackageMoves".equals(option)) {
-                if (optionExtraPart.length() == 0) {
+                if (optionExtraPart.isEmpty()) {
                     noPackageMoves = true;
                 } else {
                     noPackageMoves = Boolean.parseBoolean(optionExtraPart);
                 }
             } else if ("-noResurrections".equals(option)) {
-                if (optionExtraPart.length() == 0) {
+                if (optionExtraPart.isEmpty()) {
                     noResurrections = true;
                 } else {
                     noResurrections = Boolean.parseBoolean(optionExtraPart);
@@ -456,7 +456,7 @@ public class Update {
         }
 
         if (commandLine.overrideRevisionNames || origCollection.getReleaseName() == null
-                || origCollection.getReleaseName().length() == 0) {
+                || origCollection.getReleaseName().isEmpty()) {
 
             if (commonPrefix >= firstPathParts.length) {
                 // This should only happen if either
@@ -502,7 +502,7 @@ public class Update {
                 newCollection.readXML(newFilename);
 
                 if (commandLine.overrideRevisionNames || newCollection.getReleaseName() == null
-                        || newCollection.getReleaseName().length() == 0) {
+                        || newCollection.getReleaseName().isEmpty()) {
                     newCollection.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
                 }
                 if (useAnalysisTimes) {
@@ -596,13 +596,10 @@ public class Update {
         //        int newBugs = 0;
         //        int matchedBugs = 0;
         for (BugInstance bug : origCollection.getCollection()) {
-            if (!matchedOldBugs.containsKey(bug)) {
-                if (matchOld.match(bug)) {
-                    //                    oldBugs++;
-                    LinkedList<BugInstance> q = set.computeIfAbsent(bug, k -> new LinkedList<>());
-                    q.add(bug);
-                }
-
+            if (!matchedOldBugs.containsKey(bug) && matchOld.match(bug)) {
+                // oldBugs++;
+                LinkedList<BugInstance> q = set.computeIfAbsent(bug, k -> new LinkedList<>());
+                q.add(bug);
             }
         }
         long newVersion = origCollection.getCurrentAppVersion().getSequenceNumber() + 1;

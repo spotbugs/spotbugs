@@ -38,7 +38,7 @@ package sfBugs;
 ** Revision 1.4  2010/06/02 12:50:53  Toshifumi_Kojima
 ** [p112960] Mag:WF7.6.11HF:Special char escapes in category tree
 **  Use encodeURIComponent() function at tree.js instead of escape().
-**  Use java.net.URLDecoder.deocde() method at decode() of RequiredFields class.
+**  Use java.net.URLDecoder.decode() method at decode() of RequiredFields class.
 **
 ** Revision 1.3  2010/04/11 16:48:58  Peter_Lenahan
 ** [p111674][>branch7701] [>branch7610_hotfix] [>branch7611_hotfix] Periods in Category tree cause tree and bread crumb trail to fail.
@@ -59,7 +59,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 /**
 * This class centralizes the parsing of the URL parameters from the search for the
 * &amp;requiredfields= and the &amp;newrequiredfields= parameters.

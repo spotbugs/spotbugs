@@ -36,28 +36,28 @@ public interface FindBugsProgress extends IClassPathBuilderProgress {
      * @param numArchives
      *            the number of archives
      */
-    public void reportNumberOfArchives(int numArchives);
+    void reportNumberOfArchives(int numArchives);
 
     /**
      * Report that FindBugs has started scanning an archive in order to add its
      * classes to the repository.
      */
     @Override
-    public void startArchive(String name);
+    void startArchive(String name);
 
     /**
      * Report that FindBugs has finished scanning an archive in order to add its
      * classes to the repository.
      */
     @Override
-    public void finishArchive();
+    void finishArchive();
 
     /**
      * Provide an array that predicts the number of classes in each pass
      *
      * @param classesPerPass
      */
-    public void predictPassCount(int[] classesPerPass);
+    void predictPassCount(int[] classesPerPass);
 
     /**
      * Report that FindBugs has finished scanning the archives and will start
@@ -66,16 +66,16 @@ public interface FindBugsProgress extends IClassPathBuilderProgress {
      * @param numClasses
      *            number of classes found in all of the archives
      */
-    public void startAnalysis(int numClasses);
+    void startAnalysis(int numClasses);
 
     /**
      * Report that FindBugs has finished analyzing a class.
      */
-    public void finishClass();
+    void finishClass();
 
     /**
      * Called to indicate that the per-class analysis is finished, and that the
      * whole program analysis is taking place.
      */
-    public void finishPerClassAnalysis();
+    void finishPerClassAnalysis();
 }

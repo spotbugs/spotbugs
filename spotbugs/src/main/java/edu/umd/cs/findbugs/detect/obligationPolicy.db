@@ -1,0 +1,4 @@
+org.rocksdb.ReadOptions,<init>,()V,1|ADD,STRONG,org.rocksdb.ReadOptions
+org.rocksdb.ReadOptions,<init>,(ZZ)V,1|ADD,STRONG,org.rocksdb.ReadOptions
+org.rocksdb.ReadOptions,<init>,(Lorg/rocksdb/ReadOptions;)V,1|ADD,STRONG,org.rocksdb.ReadOptions
+org.rocksdb.ReadOptions,close,()V,1|DEL,STRONG,org.rocksdb.ReadOptions

@@ -19,11 +19,13 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.IllegalFormatException;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -31,7 +33,6 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.io.IO;
 
 /**
  * @author pugh
@@ -40,11 +41,11 @@ public class SystemProperties {
 
     private static Properties properties = new Properties();
 
-    public final static boolean ASSERTIONS_ENABLED;
+    public static final boolean ASSERTIONS_ENABLED;
 
-    public final static boolean RUNNING_IN_ECLIPSE;
+    public static final boolean RUNNING_IN_ECLIPSE;
 
-    public final static boolean RUNNING_AS_IDE_PLUGIN;
+    public static final boolean RUNNING_AS_IDE_PLUGIN;
 
     static {
         String name = SystemProperties.class.getClassLoader().getClass().getCanonicalName();
@@ -52,7 +53,7 @@ public class SystemProperties {
         RUNNING_AS_IDE_PLUGIN = RUNNING_IN_ECLIPSE || name.startsWith("com.intellij.ide.");
     }
 
-    final static String OS_NAME;
+    static final String OS_NAME;
     static {
         boolean tmp = false;
         assert tmp = true; // set tmp to true if assertions are enabled
@@ -66,22 +67,17 @@ public class SystemProperties {
         OS_NAME = osName;
         loadPropertiesFromConfigFile();
         if (getBoolean("findbugs.dumpProperties")) {
-            FileOutputStream out = null;
-            try {
-                out = new FileOutputStream("/tmp/outProperties.txt");
+            try (OutputStream out = Files.newOutputStream(Path.of("/tmp/outProperties.txt"))) {
                 System.getProperties().store(out, "System properties dump");
                 properties.store(out, "SpotBugs properties dump");
             } catch (IOException e) {
                 assert true;
-            } finally {
-                IO.close(out);
             }
         }
     }
 
     private static void loadPropertiesFromConfigFile() {
-
-        URL systemProperties = DetectorFactoryCollection.getCoreResource("systemProperties.properties");
+        URL systemProperties = SystemProperties.class.getResource("/systemProperties.properties");
         loadPropertiesFromURL(systemProperties);
         String u = System.getProperty("findbugs.loadPropertiesFrom");
         if (u != null) {
@@ -116,14 +112,10 @@ public class SystemProperties {
         if (url == null) {
             return;
         }
-        InputStream in = null;
-        try {
-            in = url.openStream();
+        try (InputStream in = url.openStream()) {
             properties.load(in);
         } catch (IOException e) {
             AnalysisContext.logError("Unable to load properties from " + url, e);
-        } finally {
-            IO.close(in);
         }
     }
 
@@ -152,27 +144,13 @@ public class SystemProperties {
                 return defaultValue;
             }
             result = toBoolean(value);
-        } catch (IllegalArgumentException e) {
-        } catch (NullPointerException e) {
+        } catch (IllegalArgumentException | NullPointerException ignored) {
         }
         return result;
     }
 
     private static boolean toBoolean(String name) {
-        return ((name != null) && "true".equalsIgnoreCase(name));
-    }
-
-    /**
-     * @param arg0
-     *            property name
-     * @param arg1
-     *            default value
-     * @return the int value (or arg1 if the property does not exist)
-     * @deprecated Use {@link #getInt(String,int)} instead
-     */
-    @Deprecated
-    public static Integer getInteger(String arg0, int arg1) {
-        return getInt(arg0, arg1);
+        return "true".equalsIgnoreCase(name);
     }
 
     /**
@@ -230,6 +208,10 @@ public class SystemProperties {
         properties.setProperty(name, value);
     }
 
+    public static void removeProperty(String name) {
+        properties.remove(name);
+    }
+
     /**
      * @param name
      *            property name
@@ -284,8 +266,7 @@ public class SystemProperties {
         if (!m.matches() || m.groupCount() == 0) {
             return u;
         }
-        String result = String.format(URL_REWRITE_FORMAT, m.group(1));
-        return result;
+        return String.format(URL_REWRITE_FORMAT, m.group(1));
     }
 
 }

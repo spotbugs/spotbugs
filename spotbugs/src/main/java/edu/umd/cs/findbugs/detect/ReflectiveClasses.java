@@ -56,15 +56,11 @@ public class ReflectiveClasses extends BytecodeScanningDetector implements NonRe
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == Const.INVOKESTATIC) {
-            // System.out.println(getClassConstantOperand()+ "." +
-            // getNameConstantOperand());
-            if (constantString != null && "java/lang/Class".equals(getClassConstantOperand())
-                    && "forName".equals(getNameConstantOperand())) {
-                process(ClassName.toSlashedClassName(constantString));
-            }
-
+        if (seen == Const.INVOKESTATIC && constantString != null && "java/lang/Class".equals(getClassConstantOperand())
+                && "forName".equals(getNameConstantOperand())) {
+            process(ClassName.toSlashedClassName(constantString));
         }
+
         constantString = null;
     }
 

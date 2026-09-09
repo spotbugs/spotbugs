@@ -85,13 +85,7 @@ public class LaunchBrowser {
                     JOptionPane.showMessageDialog(null, "desktop browse succeeded");
                 }
                 return true;
-            } catch (InvocationTargetException ite) {
-                assert true;
-            } catch (IllegalAccessException iae) {
-                assert true;
-            } catch (IllegalArgumentException e) {
-                assert true;
-            } catch (URISyntaxException e) {
+            } catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException | URISyntaxException ite) {
                 assert true;
             }
         }
@@ -145,8 +139,7 @@ public class LaunchBrowser {
 
     static Process launchViaExec(URL url) throws IOException {
         ProcessBuilder builder = new ProcessBuilder(execCommand, url.toString());
-        Process p = builder.start();
-        return p;
+        return builder.start();
     }
 
     /**

@@ -18,18 +18,18 @@
  */
 package de.tobject.findbugs.reporter.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.tobject.findbugs.reporter.JdtUtils;
 import de.tobject.findbugs.test.AbstractPluginTest;
@@ -40,19 +40,20 @@ import de.tobject.findbugs.test.TestScenario;
  *
  * @author Tomás Pollak
  */
-public class JdtUtilTest extends AbstractPluginTest {
-    @BeforeClass
-    public static void setUpClass() throws Exception {
+class JdtUtilTest extends AbstractPluginTest {
+
+    @BeforeAll
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.JDT);
     }
 
-    @AfterClass
-    public static void tearDownClass() throws CoreException {
+    @AfterAll
+    static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
 
     @Test
-    public void testFindAnonymous() throws JavaModelException {
+    void testFindAnonymous() throws JavaModelException {
         IType typeC = getTypeC();
         IType typeE = getTypeE();
 
@@ -89,13 +90,11 @@ public class JdtUtilTest extends AbstractPluginTest {
     }
 
     protected IType getTypeC() throws JavaModelException {
-        IType type = getJavaProject().findType("C");
-        return type;
+        return getJavaProject().findType("C");
     }
 
     protected IType getTypeE() throws JavaModelException {
-        IType type = getJavaProject().findType("C.E");
-        return type;
+        return getJavaProject().findType("C.E");
     }
 
     private void doNullTest(IType parentType, String anonymousClassNumber) {

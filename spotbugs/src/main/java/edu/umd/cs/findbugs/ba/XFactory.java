@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Field;
@@ -84,6 +84,10 @@ public class XFactory {
 
     private final Set<XField> emptyArrays = new HashSet<>();
 
+    /**
+     * @deprecated This field is not updated by any code in the project. Will be removed in 5.x release.
+     */
+    @Deprecated
     private final Set<String> calledMethodSignatures = new HashSet<>();
 
     private final Set<MethodDescriptor> functionsThatMightBeMistakenForProcedures = new HashSet<>();
@@ -223,27 +227,6 @@ public class XFactory {
 
     }
 
-    public boolean nameAndSignatureIsCalled(XMethod m) {
-        return calledMethodSignatures.contains(getDetailedSignature(m));
-    }
-
-    private static String getDetailedSignature(XMethod m2) {
-        return m2.getName() + m2.getSignature() + m2.isStatic();
-    }
-
-    @Deprecated
-    public boolean isInterned(XMethod m) {
-        return m.isResolved();
-    }
-
-    /**
-     * @see DescriptorFactory#canonicalizeString(String)
-     */
-    @Deprecated
-    public static String canonicalizeString(String s) {
-        return s;
-    }
-
     /**
      * Create an XMethod object from a BCEL Method.
      *
@@ -375,9 +358,7 @@ public class XFactory {
                 desc = DescriptorFactory.instance().getMethodDescriptor(superClass.getClassName(), desc.getName(),
                         desc.getSignature(), desc.isStatic());
             }
-        } catch (CheckedAnalysisException e) {
-            assert true;
-        } catch (RuntimeException e) {
+        } catch (CheckedAnalysisException | RuntimeException e) {
             assert true;
         }
         UnresolvedXMethod xmethod = new UnresolvedXMethod(originalDescriptor);
@@ -414,7 +395,7 @@ public class XFactory {
                      * obligation. If strict checking is performed, // weak
                      * entries are ignored.
                      */
-                    if (Const.CONSTRUCTOR_NAME.equals(methodName) || methodName.startsWith("access$") || xmethod.isStatic()
+                    if (Const.CONSTRUCTOR_NAME.equals(methodName) || xmethod.isAccessMethod() || xmethod.isStatic()
                             || methodName.toLowerCase().indexOf("close") >= 0
                             || xmethod.getSignature().toLowerCase().indexOf("Closeable") >= 0) {
                         ObligationPolicyDatabaseEntry entry = database.addParameterDeletesObligationDatabaseEntry(xmethod,
@@ -465,7 +446,7 @@ public class XFactory {
         return createXField(fieldDesc);
     }
 
-    public final static boolean DEBUG_CIRCULARITY = SystemProperties.getBoolean("circularity.debug");
+    public static final boolean DEBUG_CIRCULARITY = SystemProperties.getBoolean("circularity.debug");
 
     public static XField createXField(FieldInstruction fieldInstruction, ConstantPoolGen cpg) {
         String className = fieldInstruction.getClassName(cpg);
@@ -639,8 +620,7 @@ public class XFactory {
     public static XMethod createXMethod(PreorderVisitor visitor) {
         JavaClass javaClass = visitor.getThisClass();
         Method method = visitor.getMethod();
-        XMethod m = createXMethod(javaClass, method);
-        return m;
+        return createXMethod(javaClass, method);
     }
 
     /**
@@ -654,8 +634,7 @@ public class XFactory {
     public static XField createXField(PreorderVisitor visitor) {
         JavaClass javaClass = visitor.getThisClass();
         Field field = visitor.getField();
-        XField f = createXField(javaClass, field);
-        return f;
+        return createXField(javaClass, field);
     }
 
     public static XMethod createXMethod(MethodGen methodGen) {

@@ -1,24 +1,24 @@
-apply from: "$rootDir/gradle/checkstyle.gradle"
-apply from: "$rootDir/gradle/javadoc.gradle"
-apply from: "$rootDir/gradle/maven.gradle"
+apply from: "${rootDir}/gradle/checkstyle.gradle"
+apply from: "${rootDir}/gradle/javadoc.gradle"
+apply from: "${rootDir}/gradle/maven.gradle"
 
 dependencies {
-  compileOnly project(':spotbugs')
+  api(project(':spotbugs')) {
+    transitive = true
+  }
+  compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
 }
 
-task javadocJar(type: Jar) {
-  classifier = 'javadoc'
-  from javadoc
+tasks.named('compileJava', JavaCompile).configure {
+  options.release = 17
 }
 
-task sourcesJar(type: Jar) {
-  classifier = 'sources'
-  from sourceSets.main.allSource
+java {
+  withJavadocJar()
+  withSourcesJar()
 }
 
 publishing.publications.maven {
-  artifact javadocJar
-  artifact sourcesJar
   pom {
     name = 'Core of Test Harness for SpotBugs Plugin'
     description = 'Core feature to support unit test for SpotBugs Plugin'
@@ -28,4 +28,4 @@ publishing.publications.maven {
 // Module name should be reverse-DNS (com.github.spotbugs) just like package name
 // http://blog.joda.org/2017/04/java-se-9-jpms-module-naming.html
 ext.moduleName = 'com.github.spotbugs.test.core'
-apply from: "$rootDir/gradle/jigsaw.gradle"
+apply from: "${rootDir}/gradle/jigsaw.gradle"

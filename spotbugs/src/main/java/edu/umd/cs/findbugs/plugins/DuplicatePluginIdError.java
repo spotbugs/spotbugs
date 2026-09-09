@@ -48,7 +48,7 @@ public class DuplicatePluginIdError extends Error {
      * @param loadedFrom
      */
     public DuplicatePluginIdError(String pluginId, URL loadedFrom, URL previouslyLoadedFrom) {
-        super("Manditory plugin " + pluginId + " from " + loadedFrom + " already loaded from " + previouslyLoadedFrom);
+        super("Mandatory plugin " + pluginId + " from " + loadedFrom + " already loaded from " + previouslyLoadedFrom);
         this.pluginId = pluginId;
         this.loadedFrom = loadedFrom;
         this.previouslyLoadedFrom = previouslyLoadedFrom;

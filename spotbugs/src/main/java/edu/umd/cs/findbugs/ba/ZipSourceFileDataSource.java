@@ -19,9 +19,10 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.nio.file.FileSystem;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -33,18 +34,21 @@ public class ZipSourceFileDataSource implements SourceFileDataSource {
 
     private final String entryName;
 
+    private final URI entryURI;
+
     private final ZipEntry zipEntry;
 
-    public ZipSourceFileDataSource(ZipFile zipFile, String entryName) {
+    public ZipSourceFileDataSource(ZipFile zipFile, FileSystem zipFileSystem, String entryName) {
         this.zipFile = zipFile;
         this.entryName = entryName;
+        this.entryURI = zipFileSystem.getPath(entryName).toUri();
         this.zipEntry = zipFile.getEntry(entryName);
     }
 
     @Override
     public InputStream open() throws IOException {
         if (zipEntry == null) {
-            throw new FileNotFoundException("No zip entry for " + entryName);
+            throw new IOException("No zip entry for " + entryName);
         }
         return zipFile.getInputStream(zipEntry);
     }
@@ -52,6 +56,11 @@ public class ZipSourceFileDataSource implements SourceFileDataSource {
     @Override
     public String getFullFileName() {
         return entryName;
+    }
+
+    @Override
+    public URI getFullURI() {
+        return entryURI;
     }
 
     /* (non-Javadoc)

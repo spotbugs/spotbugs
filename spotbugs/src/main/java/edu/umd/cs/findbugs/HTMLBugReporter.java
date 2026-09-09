@@ -20,10 +20,11 @@
 package edu.umd.cs.findbugs;
 
 import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -33,13 +34,19 @@ import javax.xml.transform.stream.StreamSource;
 import org.dom4j.Document;
 import org.dom4j.io.DocumentSource;
 
+import edu.umd.cs.findbugs.xml.XMLUtil;
+
 public class HTMLBugReporter extends BugCollectionBugReporter {
-    private final String stylesheet;
+    private String stylesheet;
 
     private Exception fatalException;
 
     public HTMLBugReporter(Project project, String stylesheet) {
         super(project);
+        this.stylesheet = stylesheet;
+    }
+
+    public void setStylesheet(String stylesheet) {
         this.stylesheet = stylesheet;
     }
 
@@ -60,7 +67,7 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
             xsl.setSystemId(stylesheet);
 
             // Create a transformer using the stylesheet
-            TransformerFactory factory = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
+            TransformerFactory factory = XMLUtil.buildTransformerFactory();
             Transformer transformer = factory.newTransformer(xsl);
 
             // Source document is the XML generated from the BugCollection
@@ -96,7 +103,7 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
             assert true; // ignore it
         }
         try {
-            return new BufferedInputStream(new FileInputStream(stylesheet));
+            return new BufferedInputStream(Files.newInputStream(Path.of(stylesheet)));
         } catch (Exception fnfe) {
             assert true; // ignore it
         }

@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.charsets.UserTextFile;
 import edu.umd.cs.findbugs.config.CommandLine;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 import edu.umd.cs.findbugs.util.Util;
 
@@ -97,7 +98,7 @@ public class CountClassVersions {
 
     }
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         FindBugs.setNoAnalysis();
         CountClassVersionsCommandLine commandLine = new CountClassVersionsCommandLine();
         int argCount = commandLine.parse(args, 0, Integer.MAX_VALUE, "Usage: " + CountClassVersions.class.getName()
@@ -112,7 +113,7 @@ public class CountClassVersions {
         } else {
             fileList = Arrays.asList(args).subList(argCount, args.length - 1);
         }
-        byte buffer[] = new byte[8192];
+        byte[] buffer = new byte[8192];
         MessageDigest digest = Util.getMD5Digest();
         DualKeyHashMap<String, String, String> map = new DualKeyHashMap<>();
 
@@ -139,7 +140,7 @@ public class CountClassVersions {
                     if (!name.endsWith(".class")) {
                         continue;
                     }
-                    if (!name.replace('/', '.').startsWith(commandLine.prefix)) {
+                    if (!ClassName.toDottedClassName(name).startsWith(commandLine.prefix)) {
                         continue;
                     }
 

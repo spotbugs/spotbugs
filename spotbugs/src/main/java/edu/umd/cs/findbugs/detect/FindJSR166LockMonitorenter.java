@@ -117,14 +117,14 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
         try {
             cfg = classContext.getCFG(method);
         } catch (CFGBuilderException e1) {
-            AnalysisContext.logError("Coult not get CFG", e1);
+            AnalysisContext.logError("Could not get CFG", e1);
             return;
         }
         TypeDataflow typeDataflow;
         try {
             typeDataflow = classContext.getTypeDataflow(method);
         } catch (CheckedAnalysisException e1) {
-            AnalysisContext.logError("Coult not get Type dataflow", e1);
+            AnalysisContext.logError("Could not get Type dataflow", e1);
             return;
         }
 
@@ -191,7 +191,7 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
                         }
 
                     } catch (CheckedAnalysisException e) {
-                        AnalysisContext.logError("Coult not get Type dataflow", e);
+                        AnalysisContext.logError("Could not get Type dataflow", e);
                         continue;
                     }
 
@@ -210,7 +210,7 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
                 }
                 type = frame.getInstance(ins, cpg);
             } catch (CheckedAnalysisException e) {
-                AnalysisContext.logError("Coult not get Type dataflow", e);
+                AnalysisContext.logError("Could not get Type dataflow", e);
                 continue;
             }
 
@@ -233,7 +233,7 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
             if (isSubtype) {
                 bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_LOCK_MONITORENTER", isUtilConcurrentSig ? HIGH_PRIORITY
                         : NORMAL_PRIORITY).addClassAndMethod(classContext.getJavaClass(), method).addType(sig)
-                                .addSourceForTopStackValue(classContext, method, location).addSourceLine(classContext, method, location));
+                        .addSourceForTopStackValue(classContext, method, location).addSourceLine(classContext, method, location));
             } else if (isUtilConcurrentSig) {
 
                 int priority = "Ljava/util/concurrent/CopyOnWriteArrayList;".equals(sig) ? HIGH_PRIORITY : NORMAL_PRIORITY;

@@ -47,8 +47,7 @@ public class ClassContextClassAnalysisEngine extends RecomputableClassAnalysisEn
     public ClassContext analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
 
         JavaClass javaClass = analysisCache.getClassAnalysis(JavaClass.class, descriptor);
-        ClassContext classContext = new ClassContext(javaClass, AnalysisContext.currentAnalysisContext());
-        return classContext;
+        return new ClassContext(javaClass, AnalysisContext.currentAnalysisContext());
     }
 
     /*

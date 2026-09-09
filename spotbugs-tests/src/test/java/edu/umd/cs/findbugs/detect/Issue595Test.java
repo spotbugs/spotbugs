@@ -1,67 +1,49 @@
 package edu.umd.cs.findbugs.detect;
 
-import static edu.umd.cs.findbugs.test.CountMatcher.containsExactly;
-import static org.junit.Assert.assertThat;
-
-import org.junit.Rule;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import edu.umd.cs.findbugs.test.SpotBugsRule;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcher;
-import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 /**
  * @see <a href="https://github.com/spotbugs/spotbugs/issues/595">GitHub
  *      issue</a>
  */
-public class Issue595Test extends AbstractIntegrationTest {
-    @Rule
-    public SpotBugsRule spotbugs = new SpotBugsRule();
+class Issue595Test extends AbstractIntegrationTest {
 
     @Test
-    public void testIoOperationOk() {
+    void testIoOperationOk() {
         performAnalysis("rangeArray/IoOperationOk.class");
-        BugInstanceMatcher bugTypeMatcherLength = new BugInstanceMatcherBuilder().bugType("RANGE_ARRAY_LENGTH").build();
-        BugInstanceMatcher bugTypeMatcherOffset = new BugInstanceMatcherBuilder().bugType("RANGE_ARRAY_OFFSET").build();
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcherLength));
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcherOffset));
+        assertNoBugType("RANGE_ARRAY_LENGTH");
+        assertNoBugType("RANGE_ARRAY_OFFSET");
     }
 
     @Test
-    public void testIoOperationRangeArrayLengthExpected() {
+    void testIoOperationRangeArrayLengthExpected() {
         performAnalysis("rangeArray/IoOperationRangeArrayLengthExpected.class");
-        BugInstanceMatcher bugTypeMatcherLength = new BugInstanceMatcherBuilder().bugType("RANGE_ARRAY_LENGTH").build();
-        assertThat(getBugCollection(), containsExactly(5, bugTypeMatcherLength));
+        assertBugTypeCount("RANGE_ARRAY_LENGTH", 5);
     }
 
     @Test
-    public void testIoOperationRangeArrayOffsetExpected() {
+    void testIoOperationRangeArrayOffsetExpected() {
         performAnalysis("rangeArray/IoOperationRangeArrayOffsetExpected.class");
-        BugInstanceMatcher bugTypeMatcherOffset = new BugInstanceMatcherBuilder().bugType("RANGE_ARRAY_OFFSET").build();
-        assertThat(getBugCollection(), containsExactly(2, bugTypeMatcherOffset));
+        assertBugTypeCount("RANGE_ARRAY_OFFSET", 2);
     }
 
     @Test
-    public void testStringConstructorOk() {
+    void testStringConstructorOk() {
         performAnalysis("rangeArray/StringConstructorOk.class");
-        BugInstanceMatcher bugTypeMatcherLength = new BugInstanceMatcherBuilder().bugType("RANGE_ARRAY_LENGTH").build();
-        BugInstanceMatcher bugTypeMatcherOffset = new BugInstanceMatcherBuilder().bugType("RANGE_ARRAY_OFFSET").build();
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcherLength));
-        assertThat(getBugCollection(), containsExactly(0, bugTypeMatcherOffset));
+        assertNoBugType("RANGE_ARRAY_LENGTH");
+        assertNoBugType("RANGE_ARRAY_OFFSET");
     }
 
     @Test
-    public void testStringConstructorRangeArrayLengthExpected() {
+    void testStringConstructorRangeArrayLengthExpected() {
         performAnalysis("rangeArray/StringConstructorRangeArrayLengthExpected.class");
-        BugInstanceMatcher bugTypeMatcherLength = new BugInstanceMatcherBuilder().bugType("RANGE_ARRAY_LENGTH").build();
-        assertThat(getBugCollection(), containsExactly(5, bugTypeMatcherLength));
+        assertBugTypeCount("RANGE_ARRAY_LENGTH", 5);
     }
 
     @Test
-    public void testStringConstructorRangeArrayOffsetExpected() {
+    void testStringConstructorRangeArrayOffsetExpected() {
         performAnalysis("rangeArray/StringConstructorRangeArrayOffsetExpected.class");
-        BugInstanceMatcher bugTypeMatcherOffset = new BugInstanceMatcherBuilder().bugType("RANGE_ARRAY_OFFSET").build();
-        assertThat(getBugCollection(), containsExactly(2, bugTypeMatcherOffset));
+        assertBugTypeCount("RANGE_ARRAY_OFFSET", 2);
     }
 }

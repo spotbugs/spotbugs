@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -45,6 +46,8 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
     private static final String STRUTS_ACTION_NAME = "org.apache.struts.action.Action";
 
     private static final String SERVLET_NAME = "javax.servlet.Servlet";
+
+    private static final String JAKARTA_SERVLET_NAME = "jakarta.servlet.Servlet";
 
     private final BugReporter bugReporter;
 
@@ -78,6 +81,11 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
         } catch (ClassNotFoundException cnfe) {
             // probably would be annoying to report
         }
+        try {
+            mtClasses.add(Repository.lookupClass(JAKARTA_SERVLET_NAME));
+        } catch (ClassNotFoundException cnfe) {
+            // probably would be annoying to report
+        }
 
         return mtClasses;
     }
@@ -96,6 +104,9 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
                 super.visitClassContext(classContext);
             } else if (SERVLET_NAME.equals(superClsName)) {
                 mtClassName = SERVLET_NAME;
+                super.visitClassContext(classContext);
+            } else if (JAKARTA_SERVLET_NAME.equals(superClsName)) {
+                mtClassName = JAKARTA_SERVLET_NAME;
                 super.visitClassContext(classContext);
             } else {
                 for (JavaClass mtClass : getMtClasses()) {
@@ -146,7 +157,7 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
         if (c instanceof ConstantFieldref) {
             fieldRef = (ConstantFieldref) c;
 
-            String className = fieldRef.getClass(getConstantPool()).replace('.', '/');
+            String className = ClassName.toSlashedClassName(fieldRef.getClass(getConstantPool()));
             if (className.equals(this.getClassName())) {
                 ConstantPool cp = getConstantPool();
                 int nameAndTypeIdx = fieldRef.getNameAndTypeIndex();
@@ -168,9 +179,9 @@ public class MultithreadedInstanceAccess extends OpcodeStackDetector {
                             bugReporter.reportBug(new BugInstance(this,
                                     STRUTS_ACTION_NAME.equals(mtClassName) ? "MTIA_SUSPECT_STRUTS_INSTANCE_FIELD"
                                             : "MTIA_SUSPECT_SERVLET_INSTANCE_FIELD", LOW_PRIORITY)
-                                                    .addField(
-                                                            new FieldAnnotation(getDottedClassName(), nameCons.getBytes(), typeCons.getBytes(),
-                                                                    false)).addClass(this).addSourceLine(this));
+                                    .addField(
+                                            new FieldAnnotation(getDottedClassName(), nameCons.getBytes(), typeCons.getBytes(),
+                                                    false)).addClass(this).addSourceLine(this));
                         }
                         break;
                     }

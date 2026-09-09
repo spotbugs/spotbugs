@@ -25,11 +25,11 @@ import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
 
 public abstract class FBMethodVisitor extends MethodVisitor {
 
-    public FBMethodVisitor() {
+    protected FBMethodVisitor() {
         super(FindBugsASM.ASM_VERSION);
     }
 
-    public FBMethodVisitor(MethodVisitor mv) {
+    protected FBMethodVisitor(MethodVisitor mv) {
         super(FindBugsASM.ASM_VERSION, mv);
     }
 

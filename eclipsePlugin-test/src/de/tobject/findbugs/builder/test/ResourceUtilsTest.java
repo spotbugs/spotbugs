@@ -18,9 +18,9 @@
  */
 package de.tobject.findbugs.builder.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,9 +32,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.tobject.findbugs.builder.ResourceUtils;
 import de.tobject.findbugs.builder.WorkItem;
@@ -46,19 +46,19 @@ import de.tobject.findbugs.test.TestScenario;
  *
  * @author Tomás Pollak
  */
-public class ResourceUtilsTest extends AbstractFindBugsTest {
-    @BeforeClass
-    public static void setUpClass() throws Exception {
+class ResourceUtilsTest extends AbstractFindBugsTest {
+    @BeforeAll
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
     }
 
-    @AfterClass
-    public static void tearDownClass() throws CoreException {
+    @AfterAll
+    static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
 
     @Test
-    public void testGetResourcesPerProject_selectedClasses() throws JavaModelException {
+    void testGetResourcesPerProject_selectedClasses() throws JavaModelException {
         // Select classes A and B
         List<ICompilationUnit> classes = Arrays.asList(getClassA(), getClassB());
         Map<IProject, List<WorkItem>> resourcesPerProject = ResourceUtils
@@ -73,7 +73,7 @@ public class ResourceUtilsTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testGetResourcesPerProject_selectedProject() {
+    void testGetResourcesPerProject_selectedProject() {
         // Select the project
         Map<IProject, List<WorkItem>> resourcesPerProject = ResourceUtils.getResourcesPerProject(new StructuredSelection(
                 getProject()));
@@ -86,7 +86,7 @@ public class ResourceUtilsTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testGetResourcesPerProject_selectedProjectAndClasses() throws JavaModelException {
+    void testGetResourcesPerProject_selectedProjectAndClasses() throws JavaModelException {
         // Select project and classes A and B
         List<?> classes = Arrays.asList(getProject(), getClassA(), getClassB());
         Map<IProject, List<WorkItem>> resourcesPerProject = ResourceUtils

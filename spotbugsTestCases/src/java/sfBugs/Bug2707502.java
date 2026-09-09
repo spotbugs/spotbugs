@@ -1,13 +1,17 @@
 package sfBugs;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class Bug2707502 {
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public int foo() {
         Object x = null;
-        return x.hashCode();
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            x.hashCode();
+        });
+        return -1;
     }
 
 }

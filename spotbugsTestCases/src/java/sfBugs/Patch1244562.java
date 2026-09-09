@@ -18,7 +18,7 @@ public class Patch1244562 {
         am.usePattern(okpat);
         am.usePattern(null);
         try {
-            String uee = new String(new byte[] { 'a', 'b' }, "unkown charset");
+            String uee = new String(new byte[] { 'a', 'b' }, "unknown charset");
             String okname = new String(new byte[] { 'a', 'b' }, "iso-8859-7");
         } catch (java.io.UnsupportedEncodingException e) {
         }

@@ -34,5 +34,5 @@ package edu.umd.cs.findbugs;
  */
 
 public interface StatelessDetector extends Cloneable {
-    public Object clone() throws CloneNotSupportedException;
+    Object clone() throws CloneNotSupportedException;
 }

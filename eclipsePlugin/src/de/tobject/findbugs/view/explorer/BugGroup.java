@@ -22,7 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
@@ -65,7 +65,7 @@ public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup>
     }
 
     public Object[] getChildren() {
-        if (children.size() == 0) {
+        if (children.isEmpty()) {
             // TODO should we ask content provider to create children???
             return allMarkers.toArray(new Object[allMarkers.size()]);
         }
@@ -134,7 +134,7 @@ public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup>
         if (BugContentProvider.DEBUG) {
             System.out.println("Removing child: " + child + " from " + this);
         }
-        if (children.size() == 0) {
+        if (children.isEmpty()) {
             if (getMarkersCount() > 0) {
                 removeMarkers(allMarkers);
             }

@@ -217,11 +217,6 @@ public class FindSelfComparison extends OpcodeStackDetector {
         case Const.ISUB:
             checkForSelfOperation(seen, "COMPUTATION");
             break;
-        case Const.FCMPG:
-        case Const.DCMPG:
-        case Const.DCMPL:
-        case Const.FCMPL:
-            break;
         case Const.LCMP:
         case Const.IF_ACMPEQ:
         case Const.IF_ACMPNE:
@@ -233,6 +228,10 @@ public class FindSelfComparison extends OpcodeStackDetector {
         case Const.IF_ICMPGE:
             checkForSelfOperation(seen, "COMPARISON");
             break;
+        case Const.FCMPG:
+        case Const.DCMPG:
+        case Const.DCMPL:
+        case Const.FCMPL:
         default:
             break;
         }
@@ -322,7 +321,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
                 bugAccumulator.accumulateBug(bug, this);
             }
 
-            else if (opCode == Const.IXOR && item0.sameValue(item1)) {
+            else if (item0.sameValue(item1)) {
                 LocalVariableAnnotation localVariableAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(this, item0);
                 if (localVariableAnnotation != null) {
                     bugAccumulator.accumulateBug(

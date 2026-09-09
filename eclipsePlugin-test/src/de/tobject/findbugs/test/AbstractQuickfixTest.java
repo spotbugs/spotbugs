@@ -18,9 +18,9 @@
  */
 package de.tobject.findbugs.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,10 +29,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-import javax.annotation.Nonnull;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -42,14 +40,13 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.IMarkerResolutionGenerator2;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.FindbugsTestPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
-import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolution;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionGenerator;
 
@@ -63,7 +60,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
     private IMarkerResolutionGenerator2 resolutionGenerator;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -75,7 +72,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws CoreException {
         resolutionGenerator = null;
 
@@ -105,7 +102,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
 
         // Assert the expected markers are present
         IMarker[] markers = getInputFileMarkers(classFileName);
-        assertEquals("Too many or too few markers", packages.size(), markers.length);
+        assertEquals(packages.size(), markers.length, "Too many or too few markers");
 
         sortMarkers(markers);
 
@@ -129,25 +126,21 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
     }
 
     protected void sortMarkers(IMarker[] markers) {
-        Arrays.sort(markers, new Comparator<IMarker>() {
-
-            @Override
-            public int compare(IMarker marker1, IMarker marker2) {
-                String pattern1 = MarkerUtil.getBugPatternString(marker1);
-                String pattern2 = MarkerUtil.getBugPatternString(marker2);
-                if (pattern1 != null) {
-                    if (pattern1.equals(pattern2)) {
-                        return MarkerUtil.findPrimaryLineForMaker(marker1) -
-                                MarkerUtil.findPrimaryLineForMaker(marker2);
-                    }
-                    return pattern1.compareTo(pattern2);
+        Arrays.sort(markers, (marker1, marker2) -> {
+            String pattern1 = MarkerUtil.getBugPatternString(marker1);
+            String pattern2 = MarkerUtil.getBugPatternString(marker2);
+            if (pattern1 != null) {
+                if (pattern1.equals(pattern2)) {
+                    return MarkerUtil.findPrimaryLineForMaker(marker1) -
+                            MarkerUtil.findPrimaryLineForMaker(marker2);
                 }
-                //else, perhaps fail because markers don't have bugPatternStrings?
-                else if (pattern2 == null) {
-                    return 0; //neither is a bugPattern?
-                }
-                return MarkerUtil.findPrimaryLineForMaker(marker1) - MarkerUtil.findPrimaryLineForMaker(marker2);
+                return pattern1.compareTo(pattern2);
             }
+            //else, perhaps fail because markers don't have bugPatternStrings?
+            else if (pattern2 == null) {
+                return 0; //neither is a bugPattern?
+            }
+            return MarkerUtil.findPrimaryLineForMaker(marker1) - MarkerUtil.findPrimaryLineForMaker(marker2);
         });
     }
 
@@ -178,7 +171,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
                 }
             }
         }
-        Assert.fail("No resolution of class " + resolutionClass);
+        Assertions.fail("No resolution of class " + resolutionClass);
     }
 
     protected void assertAllMarkersHaveResolutions(IMarker[] markers) {
@@ -198,17 +191,6 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         assertEquals(expectedSource, compilationUnit.getSource());
     }
 
-    @Deprecated
-    protected void assertPresentBugPattern(@Nonnull String bugPatternType, IMarker[] markers) {
-        for (int i = 0; i < markers.length; i++) {
-            BugPattern pattern = MarkerUtil.findBugPatternForMarker(markers[i]);
-            if (pattern != null && bugPatternType.equals(pattern.getType())) {
-                return;
-            }
-        }
-        fail("Couldn't find pattern " + bugPatternType);
-    }
-
     protected void assertPresentBugPatterns(List<QuickFixTestPackage> packages, IMarker[] markers) {
         for (int i = 0; i < packages.size(); i++) {
             String actualBugpattern = MarkerUtil.getBugPatternString(markers[i]);
@@ -220,7 +202,7 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
         for (int i = 0; i < packages.size(); i++) {
             int lineNumber = MarkerUtil.findPrimaryLineForMaker(markers[i]);
             if (packages.get(i).lineNumber != QuickFixTestPackage.LINE_NUMBER_NOT_SPECIFIED) {
-                assertEquals("Line number should match", packages.get(i).lineNumber, lineNumber);
+                assertEquals(packages.get(i).lineNumber, lineNumber, "Line number should match");
             }
         }
     }
@@ -234,12 +216,12 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
             List<String> expectedLabels = new ArrayList<>(packages.get(i).expectedLabels);
             IMarkerResolution[] resolutions = getResolutionGenerator().getResolutions(marker);
 
-            assertEquals("The expected number of resolutions available was wrong", expectedLabels.size(), resolutions.length);
+            assertEquals(expectedLabels.size(), resolutions.length, "The expected number of resolutions available was wrong");
 
             for (int j = 0; j < resolutions.length; j++) {
                 BugResolution resolution = (BugResolution) resolutions[j];
                 String label = resolution.getLabel();
-                assertTrue("Should have seen label: " + label, expectedLabels.contains(label));
+                assertTrue(expectedLabels.contains(label), "Should have seen label: " + label);
                 expectedLabels.remove(label);
             }
         }
@@ -268,27 +250,21 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
     }
 
     private String readFileContents(URL url) throws IOException {
-        StringWriter writer = new StringWriter();
-        InputStream input = null;
-        try {
-            input = url.openStream();
+        try (StringWriter writer = new StringWriter();
+                InputStream input = url.openStream()) {
             int nextChar;
             while ((nextChar = input.read()) != -1) {
                 writer.write(nextChar);
             }
-        } finally {
-            if (input != null) {
-                input.close();
-            }
+            return writer.toString();
         }
-        return writer.toString();
     }
 
     public static class QuickFixTestPackage {
 
         public static final int LINE_NUMBER_NOT_SPECIFIED = -1; //TODO remove this after updating current tests
-        public String expectedPattern = null;
-        public List<String> expectedLabels = null;
+        public String expectedPattern;
+        public List<String> expectedLabels;
         public int lineNumber = LINE_NUMBER_NOT_SPECIFIED;
 
         @Override
@@ -321,15 +297,11 @@ public abstract class AbstractQuickfixTest extends AbstractPluginTest {
          * @return a sorted list of QuickFixTestPackages to be used in assertions.
          */
         public List<QuickFixTestPackage> asList() {
-            Collections.sort(packages, new Comparator<QuickFixTestPackage>() {
-
-                @Override
-                public int compare(QuickFixTestPackage o1, QuickFixTestPackage o2) {
-                    if (o1.expectedPattern.equals(o2.expectedPattern)) {
-                        return o1.lineNumber - o2.lineNumber;
-                    }
-                    return o1.expectedPattern.compareTo(o2.expectedPattern);
+            Collections.sort(packages, (o1, o2) -> {
+                if (o1.expectedPattern.equals(o2.expectedPattern)) {
+                    return o1.lineNumber - o2.lineNumber;
                 }
+                return o1.expectedPattern.compareTo(o2.expectedPattern);
             });
             return Collections.unmodifiableList(packages);
         }

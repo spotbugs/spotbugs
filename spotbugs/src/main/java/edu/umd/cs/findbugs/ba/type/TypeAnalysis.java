@@ -63,6 +63,7 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
+import edu.umd.cs.findbugs.ba.type.ExceptionSet.ThrownExceptionIterator;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -124,12 +125,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
         }
 
         public ExceptionSet getEdgeExceptionSet(Edge edge) {
-            ExceptionSet edgeExceptionSet = edgeExceptionMap.get(edge);
-            if (edgeExceptionSet == null) {
-                edgeExceptionSet = exceptionSetFactory.createExceptionSet();
-                edgeExceptionMap.put(edge, edgeExceptionSet);
-            }
-            return edgeExceptionSet;
+            return edgeExceptionMap.computeIfAbsent(edge, k -> exceptionSetFactory.createExceptionSet());
         }
     }
 
@@ -581,7 +577,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
         }
 
         Type instanceOfType = check.getType();
-        if (!(instanceOfType instanceof ReferenceType || instanceOfType instanceof NullType)) {
+        if (!(instanceOfType instanceof ReferenceType)) {
             return tmpFact;
         }
 
@@ -792,7 +788,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
                 }
 
                 try {
-                    if (Hierarchy.isSubtype(thrownType, catchType)) {
+                    if (handlerBlockCatches(catchType, thrownType)) {
                         // Exception can be thrown along this edge
                         result.add(thrownType, explicit);
 
@@ -822,6 +818,27 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
         }
 
         return result;
+    }
+
+    /**
+     * @return <code>true</code> if the block catching <code>catchType</code> (which might be a multi-catch block) is catching exceptions of type <code>thrownType</code>
+     */
+    private boolean handlerBlockCatches(ObjectType catchType, ObjectType thrownType) throws ClassNotFoundException {
+        if (catchType instanceof ExceptionObjectType) {
+            ExceptionObjectType exceptionType = (ExceptionObjectType) catchType;
+            ThrownExceptionIterator exceptionTypesIterator = exceptionType.getExceptionSet().iterator();
+
+            while (exceptionTypesIterator.hasNext()) {
+                ObjectType caughtExceptionType = exceptionTypesIterator.next();
+                if (Hierarchy.isSubtype(thrownType, caughtExceptionType)) {
+                    return true;
+                }
+            }
+
+            return false;
+        } else {
+            return Hierarchy.isSubtype(thrownType, catchType);
+        }
     }
 
     /**
@@ -888,8 +905,6 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
                     Type throwType = frame.getTopValue();
                     if (throwType instanceof ObjectType) {
                         exceptionTypeSet.addExplicit((ObjectType) throwType);
-                    } else if (throwType instanceof ExceptionObjectType) {
-                        exceptionTypeSet.addAll(((ExceptionObjectType) throwType).getExceptionSet());
                     } else {
                         // Not sure what is being thrown here.
                         // Be conservative.

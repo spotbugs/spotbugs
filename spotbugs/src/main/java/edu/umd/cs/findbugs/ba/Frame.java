@@ -108,7 +108,7 @@ public abstract class Frame<ValueType> {
      * @param numLocals
      *            number of local variable slots in the method
      */
-    public Frame(int numLocals) {
+    protected Frame(int numLocals) {
         this.numLocals = numLocals;
         this.slotList = new ArrayList<>(numLocals + DEFAULT_STACK_CAPACITY);
         for (int i = 0; i < numLocals; ++i) {
@@ -368,27 +368,6 @@ public abstract class Frame<ValueType> {
             throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);
         }
         return numConsumed;
-    }
-
-    /**
-     * Get the <i>i</i>th argument passed to given method invocation.
-     *
-     * @param ins
-     *            the method invocation instruction
-     * @param cpg
-     *            the ConstantPoolGen for the class containing the method
-     * @param i
-     *            index of the argument; 0 for the first argument, etc.
-     * @param numArguments
-     *            total number of arguments to the method
-     * @return the <i>i</i>th argument
-     * @throws DataflowAnalysisException
-     */
-    @Deprecated
-    public ValueType getArgument(InvokeInstruction ins, ConstantPoolGen cpg, int i, int numArguments)
-            throws DataflowAnalysisException {
-        SignatureParser sigParser = new SignatureParser(ins.getSignature(cpg));
-        return getArgument(ins, cpg, i, sigParser);
     }
 
     /**

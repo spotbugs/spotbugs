@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Factory for ValueNumbers. A single Factory must be used to create all of the
@@ -75,19 +76,6 @@ public class ValueNumberFactory {
     }
 
     /**
-     * Compact the value numbers produced by this factory.
-     *
-     * @param map
-     *            array mapping old numbers to new numbers
-     * @param numValuesAllocated
-     *            the number of values allocated in the new numbering
-     */
-    @Deprecated
-    public void compact(int[] map, int numValuesAllocated) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * Get the ValueNumber for given class's Class object.
      *
      * @param className
@@ -96,7 +84,7 @@ public class ValueNumberFactory {
     public ValueNumber getClassObjectValue(@DottedClassName String className) {
         // assert className.indexOf('.') == -1;
         // TODO: Check to see if we need to do this
-        className = className.replace('/', '.');
+        className = ClassName.toDottedClassName(className);
         ValueNumber value = classObjectValueMap.get(className);
         if (value == null) {
             value = createFreshValue(ValueNumber.CONSTANT_CLASS_OBJECT);

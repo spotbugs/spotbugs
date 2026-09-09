@@ -92,7 +92,6 @@ import edu.umd.cs.findbugs.ExitCodes;
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  * @author Michael Tamm <a href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
  * @author Scott Wolk
- * @version $Revision: 1.56 $
  *
  * @since Ant 1.5
  *
@@ -181,7 +180,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
 
     // define the inner class to store class locations
     public static class ClassLocation {
-        File classLocation = null;
+        File classLocation;
 
         public void setLocation(File location) {
             classLocation = location;
@@ -711,7 +710,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
      *            name of output file
      */
     public void setOutputFile(String outputFileName) {
-        if (outputFileName != null && outputFileName.length() > 0) {
+        if (outputFileName != null && !outputFileName.isEmpty()) {
             this.outputFileName = outputFileName;
         }
     }
@@ -753,7 +752,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
     protected void checkParameters() {
         super.checkParameters();
 
-        if (projectFile == null && classLocations.size() == 0 && filesets.size() == 0 && dirsets.size() == 0 && auxAnalyzepath == null) {
+        if (projectFile == null && classLocations.isEmpty() && filesets.isEmpty() && dirsets.isEmpty() && auxAnalyzepath == null) {
             throw new BuildException("either projectfile, <class/>, <fileset/> or <auxAnalyzepath/> child "
                     + "elements must be defined for task <" + getTaskName() + "/>", getLocation());
         }
@@ -850,7 +849,7 @@ public class FindBugsTask extends AbstractFindBugsTask {
             addArg(adjustPriority);
         }
 
-        if (sorted) {
+        if (sorted && (outputFormat == null || "text".equalsIgnoreCase(outputFormat.trim()))) {
             addArg("-sortByClass");
         }
         if (timestampNow) {

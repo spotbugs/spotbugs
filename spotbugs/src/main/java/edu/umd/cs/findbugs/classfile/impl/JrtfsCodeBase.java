@@ -29,7 +29,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,9 +38,10 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  *
@@ -77,7 +78,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
         this.fileName = fileName;
         URL url;
         try {
-            url = Paths.get(fileName).toUri().toURL();
+            url = Path.of(fileName).toUri().toURL();
             URLClassLoader loader = new URLClassLoader(new URL[] { url });
             fs = FileSystems.newFileSystem(URI.create("jrt:/"), Collections.emptyMap(), loader);
             root = fs.getPath("modules");
@@ -90,29 +91,31 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
     public Map<String, Object> createPackageToModuleMap(FileSystem fs) throws IOException {
         HashMap<String, Object> packageToModule = new LinkedHashMap<>();
         Path path = fs.getPath("packages");
-        Files.list(path).forEach(p -> {
-            try {
-                Iterator<Path> modIter = Files.list(p).iterator();
-                while (modIter.hasNext()) {
-                    Path module = modIter.next();
-                    String packageKey = fileName(p).replace('.', '/');
-                    String modulePath = fileName(module);
-                    if (!modIter.hasNext() && !packageToModule.containsKey(packageKey)) {
-                        packageToModule.put(packageKey, modulePath);
-                    } else {
-                        @SuppressWarnings("unchecked")
-                        Set<Object> modules = (Set<Object>) packageToModule.get(packageKey);
-                        if (modules == null) {
-                            modules = new LinkedHashSet<>();
-                            packageToModule.put(packageKey, modules);
+        try (Stream<Path> packList = Files.list(path)) {
+            packList.forEach(p -> {
+                try (Stream<Path> pList = Files.list(p)) {
+                    Iterator<Path> modIter = pList.iterator();
+                    while (modIter.hasNext()) {
+                        Path module = modIter.next();
+                        String packageKey = ClassName.toSlashedClassName(fileName(p));
+                        String modulePath = fileName(module);
+                        if (!modIter.hasNext() && !packageToModule.containsKey(packageKey)) {
+                            packageToModule.put(packageKey, modulePath);
+                        } else {
+                            @SuppressWarnings("unchecked")
+                            Set<Object> modules = (Set<Object>) packageToModule.get(packageKey);
+                            if (modules == null) {
+                                modules = new LinkedHashSet<>();
+                                packageToModule.put(packageKey, modules);
+                            }
+                            modules.add(modulePath);
                         }
-                        modules.add(modulePath);
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+            });
+        }
         return packageToModule;
     }
 

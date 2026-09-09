@@ -10,6 +10,7 @@ import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantDouble;
+import org.apache.bcel.classfile.ConstantDynamic;
 import org.apache.bcel.classfile.ConstantFieldref;
 import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantLong;
@@ -30,8 +31,8 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.util.ClassName;
+import edu.umd.cs.findbugs.util.NestedAccessUtil;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class ResolveAllReferences extends PreorderVisitor implements Detector {
@@ -59,10 +60,8 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
                 try {
                     JavaClass jclass = analysisCache.getClassAnalysis(JavaClass.class, c.getClassDescriptor());
                     addAllDefinitions(jclass);
-                } catch (MissingClassException e) {
-                    bugReporter.reportMissingClass(e.getClassDescriptor());
                 } catch (CheckedAnalysisException e) {
-                    bugReporter.logError("Could not find class " + c.getClassDescriptor().toDottedClassName(), e);
+                    bugReporter.reportMissingClass(c.getClassDescriptor(), e);
                 }
             }
             // System.out.println("Done Computing: " +
@@ -83,15 +82,18 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
     public void addAllDefinitions(JavaClass obj) {
         String className2 = obj.getClassName();
 
+        // ensure we allow access according to JEP 181, better support for nested member access
+        boolean addPrivateFields = NestedAccessUtil.hasNest(obj);
+
         defined.add(className2);
         for (Method m : obj.getMethods()) {
-            if (!m.isPrivate()) {
+            if (!m.isPrivate() || addPrivateFields) {
                 String name = getMemberName(obj, className2, m.getNameIndex(), m.getSignatureIndex());
                 defined.add(name);
             }
         }
         for (Field f : obj.getFields()) {
-            if (!f.isPrivate()) {
+            if (!f.isPrivate() || addPrivateFields) {
                 String name = getMemberName(obj, className2, f.getNameIndex(), f.getSignatureIndex());
                 defined.add(name);
             }
@@ -100,7 +102,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 
     private String getClassName(JavaClass c, int classIndex) {
         String name = c.getConstantPool().getConstantString(classIndex, Const.CONSTANT_Class);
-        return ClassName.extractClassName(name).replace('/', '.');
+        return ClassName.toDottedClassName(ClassName.extractClassName(name));
     }
 
     private String getMemberName(JavaClass c, String className, int memberNameIndex, int signatureIndex) {
@@ -109,7 +111,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
     }
 
     private String getMemberName(String className, String memberName, String signature) {
-        return className.replace('/', '.') + "." + memberName + " : " + signature;
+        return ClassName.toDottedClassName(className) + "." + memberName + " : " + signature;
     }
 
     private boolean find(JavaClass target, String name, String signature) throws ClassNotFoundException {
@@ -154,6 +156,8 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 
             } else if (co instanceof ConstantInvokeDynamic) {
                 // ignore. BCEL puts garbage data into ConstantInvokeDynamic
+            } else if (co instanceof ConstantDynamic) {
+                // ignore.
             } else if (co instanceof ConstantCP) {
                 ConstantCP co2 = (ConstantCP) co;
                 String className = getClassName(obj, co2.getClassIndex());

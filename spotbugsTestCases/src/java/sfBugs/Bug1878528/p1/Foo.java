@@ -15,7 +15,7 @@ public class Foo {
         s.toLowerCase();
         System.out.println(s);
 
-        Integer i = new Integer(null);
+        Integer i = Integer.valueOf(null);
         System.out.println("" + i);
     }
 }

@@ -5,8 +5,10 @@ spotbugs {
   toolVersion = '|release|'
 }
 
-// To generate an HTML report instead of XML
+// To generate an HTML report and XML report
 tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
-  reports.xml.enabled = false
-  reports.html.enabled = true
+  reports {
+    xml.required.set(true)
+    html.required.set(true)
+  }
 }

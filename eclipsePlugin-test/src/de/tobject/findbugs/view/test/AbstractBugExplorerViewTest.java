@@ -18,8 +18,8 @@
  */
 package de.tobject.findbugs.view.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,8 +30,8 @@ import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.ui.PartInitException;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import de.tobject.findbugs.test.AbstractFindBugsTest;
 import de.tobject.findbugs.view.BugExplorerView;
@@ -47,48 +47,45 @@ import de.tobject.findbugs.view.explorer.Grouping;
 public abstract class AbstractBugExplorerViewTest extends AbstractFindBugsTest {
 
     protected static <T> Set<T> setOf(T... a) {
-        return new HashSet<T>(Arrays.asList(a));
+        return new HashSet<>(Arrays.asList(a));
     }
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         resetBugContentProviderInput();
         super.setUp();
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws CoreException {
         super.tearDown();
         resetBugContentProviderInput();
     }
 
     protected Grouping getDefaultGrouping() {
-        List<GroupType> types = new ArrayList<GroupType>();
+        List<GroupType> types = new ArrayList<>();
         types.add(GroupType.Project);
         types.add(GroupType.Pattern);
         types.add(GroupType.Marker);
-        Grouping grouping = Grouping.createFrom(types);
-        return grouping;
+        return Grouping.createFrom(types);
     }
 
     protected ITreeContentProvider getNavigatorContentProvider() throws PartInitException {
         BugExplorerView view = (BugExplorerView) showBugExplorerView();
         assertNotNull(view);
 
-        ITreeContentProvider contentProvider = (ITreeContentProvider) view.getCommonViewer().getContentProvider();
-        return contentProvider;
+        return (ITreeContentProvider) view.getCommonViewer().getContentProvider();
     }
 
     protected Grouping getProjectPatternPackageMarkerGrouping() {
-        List<GroupType> types = new ArrayList<GroupType>();
+        List<GroupType> types = new ArrayList<>();
         types.add(GroupType.Project);
         types.add(GroupType.Pattern);
         types.add(GroupType.Package);
         types.add(GroupType.Marker);
-        Grouping grouping = Grouping.createFrom(types);
-        return grouping;
+        return Grouping.createFrom(types);
     }
 
     protected Object getSingleElement(ITreeContentProvider contentProvider) {

@@ -29,11 +29,11 @@ public interface IClassScreener {
     /**
      * Does the class screener always return true?
      */
-    public boolean vacuous();
+    boolean vacuous();
 
     /**
      * Return whether or not the name of the given file matches.
      */
-    public boolean matches(String fileName);
+    boolean matches(String fileName);
 
 }

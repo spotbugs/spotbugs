@@ -79,14 +79,6 @@ public class ClassFactory implements IClassFactory {
      */
     @Override
     public ICodeBaseLocator createFilesystemCodeBaseLocator(String pathName) {
-        // Attempt to canonicalize the pathname.
-        // It's not fatal if we can't.
-        try {
-            pathName = new File(pathName).getCanonicalPath();
-        } catch (IOException e) {
-            // Ignore
-        }
-
         return new FilesystemCodeBaseLocator(pathName);
     }
 
@@ -147,7 +139,6 @@ public class ClassFactory implements IClassFactory {
      */
     @Override
     public IAnalysisCache createAnalysisCache(IClassPath classPath, BugReporter errorLogger) {
-        IAnalysisCache analysisCache = new AnalysisCache(classPath, errorLogger);
-        return analysisCache;
+        return new AnalysisCache(classPath, errorLogger);
     }
 }

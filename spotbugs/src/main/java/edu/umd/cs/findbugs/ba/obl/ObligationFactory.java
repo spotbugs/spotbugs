@@ -27,6 +27,7 @@ import java.util.Set;
 
 import javax.annotation.CheckForNull;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
@@ -61,7 +62,7 @@ public class ObligationFactory {
     }
 
     public boolean signatureInvolvesObligations(String sig) {
-        sig = sig.replaceAll("java/io/File", "java/io/");
+        sig = sig.replace("java/io/File", "java/io/");
         for (String c : slashedClassNames) {
             if (sig.indexOf(c) >= 0) {
                 return true;
@@ -80,7 +81,7 @@ public class ObligationFactory {
      */
     public boolean isObligationType(ClassDescriptor classDescriptor) {
         try {
-            return getObligationByType(BCELUtil.getObjectTypeInstance(classDescriptor.toDottedClassName())) != null;
+            return getObligationByType(BCELUtil.getObjectTypeInstance(classDescriptor.getDottedClassName())) != null;
         } catch (ClassNotFoundException e) {
             Global.getAnalysisCache().getErrorLogger().reportMissingClass(e);
             return false;
@@ -129,7 +130,7 @@ public class ObligationFactory {
      */
     public @CheckForNull Obligation getObligationByType(ClassDescriptor classDescriptor) {
         try {
-            return getObligationByType(BCELUtil.getObjectTypeInstance(classDescriptor.toDottedClassName()));
+            return getObligationByType(BCELUtil.getObjectTypeInstance(classDescriptor.getDottedClassName()));
         } catch (ClassNotFoundException e) {
             Global.getAnalysisCache().getErrorLogger().reportMissingClass(e);
             return null;
@@ -164,7 +165,7 @@ public class ObligationFactory {
 
     public Obligation addObligation(@DottedClassName String className) {
         int nextId = classNameToObligationMap.size();
-        slashedClassNames.add(className.replace('.', '/'));
+        slashedClassNames.add(ClassName.toSlashedClassName(className));
         Obligation obligation = new Obligation(className, nextId);
         if (classNameToObligationMap.put(className, obligation) != null) {
             throw new IllegalStateException("Obligation " + className + " added multiple times");

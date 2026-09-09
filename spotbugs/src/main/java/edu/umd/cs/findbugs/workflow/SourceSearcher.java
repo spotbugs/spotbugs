@@ -53,8 +53,7 @@ public class SourceSearcher {
             return false;
         }
 
-        boolean result = sourceFinder.hasSourceFile(srcLine);
-        return result;
+        return sourceFinder.hasSourceFile(srcLine);
     }
 
     public boolean findSource0(SourceLineAnnotation srcLine) {

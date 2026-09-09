@@ -3,7 +3,7 @@ package sfBugs;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 public class Bug3598833 {
     @Nonnull

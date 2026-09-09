@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.bcel.Const;
@@ -41,7 +40,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 public class InefficientIndexOf extends OpcodeStackDetector {
     private final BugReporter bugReporter;
 
-    private static final List<MethodDescriptor> methods = Arrays.asList(
+    private static final List<MethodDescriptor> methods = List.of(
             new MethodDescriptor("java/lang/String", "indexOf", "(Ljava/lang/String;)I"),
             new MethodDescriptor("java/lang/String", "lastIndexOf", "(Ljava/lang/String;)I"),
             new MethodDescriptor("java/lang/String", "indexOf", "(Ljava/lang/String;I)I"),
@@ -77,7 +76,7 @@ public class InefficientIndexOf extends OpcodeStackDetector {
                     if (o != null && ((String) o).length() == 1) {
                         bugReporter.reportBug(new BugInstance(this, lastIndexOf ? "IIO_INEFFICIENT_LAST_INDEX_OF" : "IIO_INEFFICIENT_INDEX_OF",
                                 LOW_PRIORITY).addClassAndMethod(this)
-                                        .describe(StringAnnotation.STRING_MESSAGE).addCalledMethod(this).addSourceLine(this));
+                                .describe(StringAnnotation.STRING_MESSAGE).addCalledMethod(this).addSourceLine(this));
                     }
                 }
             }

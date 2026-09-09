@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
  */
 public class Obfuscate {
 
-    final static String HASH_SEED = SystemProperties.getProperty("hashSeed", "");
+    static final String HASH_SEED = SystemProperties.getProperty("hashSeed", "");
 
     public static String hashData(String in) {
         MessageDigest md;

@@ -337,7 +337,7 @@ public class Naming extends PreorderVisitor implements Detector {
      *            class descriptor we want to check
      * @return true iff the descriptor ultimately inherits from Exception
      */
-    private static boolean mightInheritFromException(ClassDescriptor d) {
+    private boolean mightInheritFromException(ClassDescriptor d) {
         while (d != null) {
             try {
                 if ("java.lang.Exception".equals(d.getDottedClassName())) {
@@ -346,6 +346,7 @@ public class Naming extends PreorderVisitor implements Detector {
                 XClass classNameAndInfo = Global.getAnalysisCache().getClassAnalysis(XClass.class, d);
                 d = classNameAndInfo.getSuperclassDescriptor();
             } catch (CheckedAnalysisException e) {
+                bugReporter.reportMissingClass(d, e);
                 return true; // don't know
             }
         }
@@ -388,13 +389,13 @@ public class Naming extends PreorderVisitor implements Detector {
 
             bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NAMING_CONVENTION", priority).addClass(this));
         }
-        if (name.endsWith("Exception")) {
-            // Does it ultimately inherit from Throwable?
-            if (!mightInheritFromException(DescriptorFactory.createClassDescriptor(obj))) {
-                // It doens't, so the name is misleading
-                bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NOT_EXCEPTION", NORMAL_PRIORITY).addClass(this));
-            }
+        if (name.endsWith("Exception")
+                // Does it ultimately inherit from Throwable?
+                && !mightInheritFromException(DescriptorFactory.createClassDescriptor(obj))) {
+            // It doesn't, so the name is misleading
+            bugReporter.reportBug(new BugInstance(this, "NM_CLASS_NOT_EXCEPTION", NORMAL_PRIORITY).addClass(this));
         }
+
 
         int badFieldNames = 0;
         for (Field f : obj.getFields()) {
@@ -431,7 +432,7 @@ public class Naming extends PreorderVisitor implements Detector {
         if (badFieldName(obj)) {
             bugReporter.reportBug(new BugInstance(this, "NM_FIELD_NAMING_CONVENTION", classIsPublicOrProtected
                     && (obj.isPublic() || obj.isProtected()) && !hasBadFieldNames ? NORMAL_PRIORITY : LOW_PRIORITY)
-                            .addClass(this).addVisitedField(this));
+                    .addClass(this).addVisitedField(this));
         }
     }
 
@@ -442,7 +443,7 @@ public class Naming extends PreorderVisitor implements Detector {
                 && Character.isLowerCase(fieldName.charAt(1));
     }
 
-    private final static Pattern sigType = Pattern.compile("L([^;]*/)?([^/]+;)");
+    private static final Pattern sigType = Pattern.compile("L([^;]*/)?([^/]+;)");
 
 
 
@@ -506,9 +507,7 @@ public class Naming extends PreorderVisitor implements Detector {
             Method realVoidConstructor = findVoidConstructor(getThisClass());
             if (code != null && !markedAsNotUsable(obj)) {
                 int priority = NORMAL_PRIORITY;
-                if (codeDoesSomething(code)) {
-                    priority--;
-                } else if (!obj.isPublic() && getThisClass().isPublic()) {
+                if (codeDoesSomething(code) || (!obj.isPublic() && getThisClass().isPublic())) {
                     priority--;
                 }
                 boolean instanceMembers = false;
@@ -520,6 +519,7 @@ public class Naming extends PreorderVisitor implements Detector {
                 for (Field f : this.getThisClass().getFields()) {
                     if (!f.isStatic()) {
                         instanceMembers = true;
+                        break;
                     }
                 }
                 if (!codeDoesSomething(code) && !instanceMembers && "java/lang/Object".equals(getSuperclassName())) {
@@ -542,7 +542,7 @@ public class Naming extends PreorderVisitor implements Detector {
         } else if (badMethodName(mName)) {
             bugReporter.reportBug(new BugInstance(this, "NM_METHOD_NAMING_CONVENTION", classIsPublicOrProtected
                     && (obj.isPublic() || obj.isProtected()) && !hasBadMethodNames ? NORMAL_PRIORITY : LOW_PRIORITY)
-                            .addClassAndMethod(this));
+                    .addClassAndMethod(this));
         }
 
         if (obj.isAbstract()) {

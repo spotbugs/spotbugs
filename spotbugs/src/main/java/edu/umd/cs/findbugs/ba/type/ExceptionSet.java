@@ -59,7 +59,9 @@ public class ExceptionSet {
      * Object to iterate over the exception types in the set.
      */
     public class ThrownExceptionIterator implements Iterator<ObjectType> {
-        private int last = -1, next = -1;
+        private int last = -1;
+
+        private int next = -1;
 
         ThrownExceptionIterator() {
             findNext();

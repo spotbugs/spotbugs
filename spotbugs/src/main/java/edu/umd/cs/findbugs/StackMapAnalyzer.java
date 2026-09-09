@@ -19,9 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import java.lang.reflect.Field;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -43,7 +40,6 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.OpcodeStack.JumpInfo;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -52,8 +48,6 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @author pugh
  */
 public class StackMapAnalyzer {
-
-
 
     public static class StackMapAnalysisFactory extends edu.umd.cs.findbugs.classfile.engine.bcel.AnalysisFactory<JumpInfoFromStackMap> {
         public StackMapAnalysisFactory() {
@@ -65,12 +59,10 @@ public class StackMapAnalyzer {
 
             return getFromStackMap(analysisCache, descriptor);
 
-
         }
     }
 
     static class JumpInfoFromStackMap extends JumpInfo {
-
 
         JumpInfoFromStackMap(Map<Integer, List<Item>> jumpEntries, Map<Integer, List<Item>> jumpStackEntries, BitSet jumpEntryLocations) {
             super(jumpEntries, jumpStackEntries, jumpEntryLocations);
@@ -118,16 +110,13 @@ public class StackMapAnalyzer {
     static List<Item> getInitialLocals(MethodDescriptor descriptor) {
         List<Item> locals = new ArrayList<>();
         Type[] argTypes = Type.getArgumentTypes(descriptor.getSignature());
-        int reg = 0;
         if (!descriptor.isStatic()) {
             Item it = Item.typeOnly("L" + descriptor.getSlashedClassName() + ";");
             locals.add(it);
-            reg += it.getSize();
         }
         for (Type argType : argTypes) {
             Item it = Item.typeOnly(argType.getSignature());
             locals.add(it);
-            reg += it.getSize();
             if (it.usesTwoSlots()) {
                 locals.add(null);
             }
@@ -135,52 +124,8 @@ public class StackMapAnalyzer {
         return locals;
     }
 
-    static final @CheckForNull Field frame_type_field;
-    static {
-        Field f;
-        try {
-            f = AccessController.doPrivileged((PrivilegedAction<Field>) () -> {
-                Class<StackMapEntry> c = StackMapEntry.class;
-                Field result;
-                try {
-                    result = c.getDeclaredField("frame_type");
-                    result.setAccessible(true);
-                    return result;
-                } catch (NoSuchFieldException e1) {
-                    throw new AssertionError("frame_type field doesn't exist");
-                } catch (SecurityException e2) {
-                    return null;
-                }
-
-            });
-        } catch (Exception e) {
-            AnalysisContext.logError("Unable to create frame_type accessor", e);
-            f = null;
-        }
-        if (DEBUG) {
-            System.out.println("Frame type field is null:" + (f == null));
-        }
-        frame_type_field = f;
-    }
-
-    static int getFrameType(StackMapEntry e) {
-        if (frame_type_field == null) {
-            return -1;
-        }
-        try {
-            return (Integer) frame_type_field.get(e);
-        } catch (IllegalArgumentException e1) {
-            return -1;
-        } catch (IllegalAccessException e1) {
-            return -1;
-        }
-    }
-
-    static private @CheckForNull JumpInfoFromStackMap getFromStackMap(IAnalysisCache analysisCache, MethodDescriptor descriptor) {
-        if (frame_type_field == null) {
-            return null;
-        }
-
+    @CheckForNull
+    private static JumpInfoFromStackMap getFromStackMap(IAnalysisCache analysisCache, MethodDescriptor descriptor) {
         Method method;
         try {
             method = analysisCache.getMethodAnalysis(Method.class, descriptor);
@@ -211,7 +156,7 @@ public class StackMapAnalyzer {
         int pc = 0;
         for (StackMapEntry e : stackMapTable.getStackMap()) {
             pc += e.getByteCodeOffset();
-            int rawFrameType = getFrameType(e);
+            int rawFrameType = e.getFrameType();
             StackFrameType stackFrameType = StackFrameType.get(rawFrameType);
             switch (stackFrameType) {
             case SAME_FRAME:
@@ -269,7 +214,7 @@ public class StackMapAnalyzer {
 
     }
 
-    static private Item getItem(StackMapType t) {
+    private static Item getItem(StackMapType t) {
 
         switch (t.getType()) {
 
@@ -283,13 +228,12 @@ public class StackMapAnalyzer {
             return Item.typeOnly("J");
         case Const.ITEM_Bogus:
         case Const.ITEM_NewObject:
+        case Const.ITEM_InitObject:
             return Item.typeOnly("Ljava/lang/Object;");
         case Const.ITEM_Null:
             Item it = new Item();
             it.setSpecialKind(Item.TYPE_ONLY);
             return it;
-        case Const.ITEM_InitObject:
-            return Item.typeOnly("Ljava/lang/Object;");
         case Const.ITEM_Object:
             int index = t.getIndex();
             ConstantClass c = (ConstantClass) t.getConstantPool().getConstant(index);
@@ -304,7 +248,7 @@ public class StackMapAnalyzer {
         }
     }
 
-    static private void addLocals(List<Item> lst, StackMapType[] typesOfStackItems) {
+    private static void addLocals(List<Item> lst, StackMapType[] typesOfStackItems) {
         for (StackMapType t : typesOfStackItems) {
             Item item = getItem(t);
             lst.add(item);
@@ -315,7 +259,7 @@ public class StackMapAnalyzer {
 
     }
 
-    static private void addStack(List<Item> lst, StackMapType[] typesOfStackItems) {
+    private static void addStack(List<Item> lst, StackMapType[] typesOfStackItems) {
         for (StackMapType t : typesOfStackItems) {
             Item item = getItem(t);
             lst.add(item);

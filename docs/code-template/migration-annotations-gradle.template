@@ -1,3 +1,3 @@
 // for Gradle
-compileOnly 'net.jcip:jcip-annotations:1.0'
+compileOnly 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
 compileOnly 'com.github.spotbugs:spotbugs-annotations:|release|'

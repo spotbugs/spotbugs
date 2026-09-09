@@ -1,14 +1,26 @@
-apply from: "$rootDir/gradle/checkstyle.gradle"
-apply from: "$rootDir/gradle/jacoco.gradle"
+plugins {
+  id 'eclipse-convention'
+}
+
+apply from: "${rootDir}/gradle/checkstyle.gradle"
+apply from: "${rootDir}/gradle/jacoco.gradle"
+
+tasks.named('compileJava', JavaCompile).configure {
+  options.release = 17
+}
 
 dependencies {
   implementation project(':eclipsePlugin')
-  testImplementation project(path: ':eclipsePlugin', configuration: 'compileOnly')
-  testImplementation 'junit:junit:4.12'
-  testImplementation 'org.mockito:mockito-core:2.23.0'
+  testImplementation 'org.junit.jupiter:junit-jupiter-engine:6.1.3'
+  testImplementation libs.mockito
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-jacocoTestReport {
+test {
+  useJUnitPlatform()
+}
+
+tasks.named('jacocoTestReport', JacocoReport).configure {
   additionalSourceDirs.setFrom files(project(':eclipsePlugin').sourceSets.main.java.srcDirs)
   additionalClassDirs.setFrom files(project(':eclipsePlugin').sourceSets.main.output.classesDirs)
 }

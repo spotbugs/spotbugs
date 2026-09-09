@@ -211,7 +211,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
             List<IPropertyDescriptor> props = new ArrayList<>();
             try {
                 Map<?, ?> attributes = marker.getAttributes();
-                Set<?> keySet = new TreeSet<Object>(attributes.keySet());
+                Set<?> keySet = new TreeSet<>(attributes.keySet());
                 for (Object object : keySet) {
                     props.add(new PropertyDescriptor(object, "" + object));
                 }
@@ -281,10 +281,9 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
     @Override
     @SuppressWarnings("rawtypes")
     public Object getAdapter(Object adaptableObject, Class adapterType) {
-        if (adapterType == IPropertySheetPage.class) {
-            if (adaptableObject instanceof BugExplorerView || adaptableObject instanceof AbstractFindbugsView) {
-                return new BugPropertySheetPage();
-            }
+        if (adapterType == IPropertySheetPage.class
+                && (adaptableObject instanceof BugExplorerView || adaptableObject instanceof AbstractFindbugsView)) {
+            return new BugPropertySheetPage();
         }
         if (adapterType == IPropertySource.class) {
             if (adaptableObject instanceof BugPattern || adaptableObject instanceof BugInstance
@@ -312,12 +311,7 @@ public class PropertyPageAdapterFactory implements IAdapterFactory {
 
         private boolean isDisposed;
 
-        static ITabbedPropertySheetPageContributor contributor = new ITabbedPropertySheetPageContributor() {
-            @Override
-            public String getContributorId() {
-                return FindbugsPlugin.TREE_VIEW_ID;
-            }
-        };
+        static ITabbedPropertySheetPageContributor contributor = () -> FindbugsPlugin.TREE_VIEW_ID;
 
         public BugPropertySheetPage() {
             super(contributor);

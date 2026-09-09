@@ -22,7 +22,6 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
@@ -61,25 +60,23 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
 
     private Action actionShowBugTreeView;
 
-    private Action actionShowAnnotationsView;
-
     private Action actionShowPerspective;
 
-    public AbstractFindbugsView() {
+    protected AbstractFindbugsView() {
         super();
     }
 
     /**
      * activates view if it is not visible
      */
-    final protected void activate() {
+    protected final void activate() {
         if (!isVisible()) {
             getSite().getPage().activate(this);
         }
     }
 
     @Override
-    final public boolean isVisible() {
+    public final boolean isVisible() {
         return getSite().getPage().isPartVisible(this);
     }
 
@@ -115,7 +112,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
         contributeToActionBars();
     }
 
-    final public Composite getRootControl() {
+    public final Composite getRootControl() {
         return root;
     }
 
@@ -123,17 +120,12 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
      * @param parent
      * @return
      */
-    abstract protected Composite createRootControl(Composite parent);
+    protected abstract Composite createRootControl(Composite parent);
 
     private void hookContextMenu() {
         MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
         menuMgr.setRemoveAllWhenShown(true);
-        menuMgr.addMenuListener(new IMenuListener() {
-            @Override
-            public void menuAboutToShow(IMenuManager manager) {
-                fillContextMenu(manager);
-            }
-        });
+        menuMgr.addMenuListener(this::fillContextMenu);
         Menu menu = menuMgr.createContextMenu(getRootControl());
         getRootControl().setMenu(menu);
         // TODO
@@ -216,9 +208,7 @@ public abstract class AbstractFindbugsView extends ViewPart implements IMarkerSe
      * @return IWorkbenchSiteProgressService or <code>null</code>.
      */
     protected IWorkbenchSiteProgressService getProgressService() {
-        IWorkbenchSiteProgressService service = (IWorkbenchSiteProgressService) getSite().getAdapter(
-                IWorkbenchSiteProgressService.class);
-        return service;
+        return getSite().getAdapter(IWorkbenchSiteProgressService.class);
     }
 
     /**

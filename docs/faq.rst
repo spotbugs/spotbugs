@@ -7,13 +7,13 @@ If you just want general information about SpotBugs, have a look at the manual.
 Q1: I'm getting java.lang.UnsupportedClassVersionError when I try to run SpotBugs
 ---------------------------------------------------------------------------------
 
-SpotBugs requires JRE8 or later to run.
+SpotBugs requires JRE11 or later to run.
 If you use an earlier version, you will see an exception error message similar to the following:
 
   Exception in thread "main" java.lang.UnsupportedClassVersionError:
   edu/umd/cs/findbugs/gui/FindBugsFrame (Unsupported major.minor version 52.0)
 
-The solution is to upgrade to JRE8 or later.
+The solution is to upgrade to JRE11 or later.
 
 Q2: SpotBugs is running out of memory, or is taking a long time to finish
 -------------------------------------------------------------------------
@@ -27,7 +27,7 @@ You can increase this using the ``-maxHeap n`` option, where n is the number of 
 Q3: What is the "auxiliary classpath"? Why should I specify it?
 ---------------------------------------------------------------
 
-Many important facts about a Java class require information about the classes that it references.  For example:
+Many important facts about a Java class require information about the classes that it references. For example:
 
 * What other classes and interfaces the class inherits from
 * What exceptions can be thrown by methods in external classes and interfaces
@@ -64,11 +64,13 @@ As a result, it may assume that an unchecked exception thrown out of the method 
 You can use the ``-workHard`` command line argument or the ``findbugs.workHard`` boolean analysis property to make SpotBugs work harder to prune unlikely exception edges.
 This generally reduces the number of false warnings, at the expense of slowing down the analysis.
 
+.. _faq6:
+
 Q6: The Eclipse plugin loads, but doesn't work correctly
 --------------------------------------------------------
 
 * Make sure the Java code you trying to analyze is built properly and has no classpath or compile errors.
-* Make sure the project and workspace SpotBugs settings are valid - in doubt, revert them to defaults.
+* Make sure the project and workspace SpotBugs settings are valid. In doubt, revert them to defaults.
 * Make sure the Error log view does not show errors.
 
 Q7: Where is the Maven plugin for SpotBugs?

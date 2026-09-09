@@ -35,5 +35,5 @@ public interface BugReporterObserver {
      * @param bugInstance
      *            the BugInstance
      */
-    public void reportBug(BugInstance bugInstance);
+    void reportBug(BugInstance bugInstance);
 }

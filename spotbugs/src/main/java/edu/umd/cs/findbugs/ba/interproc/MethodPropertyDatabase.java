@@ -63,7 +63,7 @@ public abstract class MethodPropertyDatabase<Property> extends PropertyDatabase<
 
     @Override
     protected void writeKey(Writer writer, MethodDescriptor method) throws IOException {
-        writer.write(method.getClassDescriptor().toDottedClassName());
+        writer.write(method.getClassDescriptor().getDottedClassName());
         writer.write(",");
         writer.write(method.getName());
         writer.write(",");

@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -125,6 +125,9 @@ public class MarkerReporter implements IWorkspaceRunnable {
                 oldMarker.delete();
             }
         }
+        // XXX With Eclipse 4.19, we could use *single* method to create marker with attributes
+        // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=570914
+        // We can use that once we have 4.19 as minimum platform
         IMarker newMarker = markerTarget.createMarker(mp.markerType);
         newMarker.setAttributes(attributes);
     }

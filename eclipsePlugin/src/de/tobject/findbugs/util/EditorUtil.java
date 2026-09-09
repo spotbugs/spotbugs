@@ -54,7 +54,7 @@ public class EditorUtil {
         if (document != null) {
             IRegion lineInfo = null;
             try {
-                // line count internaly starts with 0, and not with 1 like in
+                // line count internally starts with 0, and not with 1 like in
                 // GUI
                 lineInfo = document.getLineInformation(lineNumber - 1);
             } catch (BadLocationException e) {

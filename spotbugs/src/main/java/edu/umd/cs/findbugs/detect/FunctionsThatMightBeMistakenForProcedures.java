@@ -53,7 +53,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
     private final boolean testingEnabled;
 
-    final static boolean REPORT_INFERRED_METHODS = SystemProperties.getBoolean("mrc.inferred.report");
+    static final boolean REPORT_INFERRED_METHODS = SystemProperties.getBoolean("mrc.inferred.report");
 
     public FunctionsThatMightBeMistakenForProcedures(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -61,7 +61,8 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
         testingEnabled = SystemProperties.getBoolean("report_TESTING_pattern_in_standard_detectors");
     }
 
-    boolean isInnerClass, hasNonFinalFields;
+    boolean isInnerClass;
+    boolean hasNonFinalFields;
 
     @Override
     public void visit(JavaClass obj) {
@@ -97,7 +98,10 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
     HashSet<XMethod> doNotIgnoreHigh = new HashSet<>();
 
-    int returnSelf, returnOther, returnNew, returnUnknown;
+    int returnSelf;
+    int returnOther;
+    int returnNew;
+    int returnUnknown;
 
     int updates;
 

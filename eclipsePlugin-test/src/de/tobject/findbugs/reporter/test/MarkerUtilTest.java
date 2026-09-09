@@ -18,8 +18,8 @@
  */
 package de.tobject.findbugs.reporter.test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.Set;
@@ -27,9 +27,9 @@ import java.util.Set;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.test.AbstractFindBugsTest;
@@ -40,19 +40,20 @@ import de.tobject.findbugs.test.TestScenario;
  *
  * @author Tomás Pollak
  */
-public class MarkerUtilTest extends AbstractFindBugsTest {
-    @BeforeClass
-    public static void setUpClass() throws Exception {
+class MarkerUtilTest extends AbstractFindBugsTest {
+
+    @BeforeAll
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
     }
 
-    @AfterClass
-    public static void tearDownClass() throws CoreException {
+    @AfterAll
+    static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
 
     @Test
-    public void testGetAllMarkers() throws CoreException {
+    void testGetAllMarkers() throws CoreException {
         // Load bugs from a file
         loadXml(createFindBugsWorker(), getBugsFileLocation());
 
@@ -62,14 +63,14 @@ public class MarkerUtilTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testGetAllMarkers_Empty() {
+    void testGetAllMarkers_Empty() {
         // Get the markers for an empty project
         IMarker[] markers = MarkerUtil.getAllMarkers(getProject());
         assertNoMarkers(markers);
     }
 
     @Test
-    public void testGetMarkersFromSelection() throws CoreException {
+    void testGetMarkersFromSelection() throws CoreException {
         // Load bugs from a file
         loadXml(createFindBugsWorker(), getBugsFileLocation());
 
@@ -79,7 +80,7 @@ public class MarkerUtilTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testIsFiltered() throws CoreException {
+    void testIsFiltered() throws CoreException {
         // Load bugs from a file
         loadXml(createFindBugsWorker(), getBugsFileLocation());
 
@@ -89,7 +90,7 @@ public class MarkerUtilTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testIsFiltered_EmptyFilters() throws CoreException {
+    void testIsFiltered_EmptyFilters() throws CoreException {
         // Load bugs from a file
         loadXml(createFindBugsWorker(), getBugsFileLocation());
 
@@ -98,7 +99,7 @@ public class MarkerUtilTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testIsFiltered_NullFilters() throws CoreException {
+    void testIsFiltered_NullFilters() throws CoreException {
         // Load bugs from a file
         loadXml(createFindBugsWorker(), getBugsFileLocation());
 
@@ -107,12 +108,12 @@ public class MarkerUtilTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testIsFiltered_NullMarker() {
+    void testIsFiltered_NullMarker() {
         assertTrue(MarkerUtil.isFiltered(null, Collections.<String>emptySet()));
     }
 
     @Test
-    public void testRemoveCreateMarkers() throws CoreException {
+    void testRemoveCreateMarkers() throws CoreException {
         // Setup the initial state, load bugs from a file
         loadXml(createFindBugsWorker(), getBugsFileLocation());
         assertExpectedMarkers(MarkerUtil.getAllMarkers(getProject()));
@@ -128,7 +129,6 @@ public class MarkerUtilTest extends AbstractFindBugsTest {
 
     private IMarker getAnyMarker() {
         IMarker[] markers = MarkerUtil.getAllMarkers(getProject());
-        IMarker marker = markers[0];
-        return marker;
+        return markers[0];
     }
 }

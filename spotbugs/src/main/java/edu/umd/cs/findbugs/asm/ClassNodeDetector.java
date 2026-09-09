@@ -21,10 +21,13 @@ package edu.umd.cs.findbugs.asm;
 
 import java.util.ArrayList;
 
+import javax.annotation.CheckForNull;
+
 import org.objectweb.asm.tree.ClassNode;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
+import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -36,9 +39,11 @@ import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
  *
  * @author pugh
  */
-abstract public class ClassNodeDetector extends ClassNode implements Detector2 {
+public abstract class ClassNodeDetector extends ClassNode implements Detector2 {
 
     protected final BugReporter bugReporter;
+
+    protected XClass xclass;
 
     /**
      * Construct a ClassNodeDetector. The bugReporter is passed to the
@@ -47,30 +52,39 @@ abstract public class ClassNodeDetector extends ClassNode implements Detector2 {
      * @param bugReporter
      *            the BugReporter that bug should be reporter to.
      */
-    public ClassNodeDetector(BugReporter bugReporter) {
+    protected ClassNodeDetector(BugReporter bugReporter) {
         super(FindBugsASM.ASM_VERSION);
         this.bugReporter = bugReporter;
     }
 
     @Override
-    public String getDetectorClassName() {
-        return this.getClass().getName();
+    public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
+        xclass = getClassInfo(classDescriptor);
+        if (xclass != null) {
+            FBClassReader cr = Global.getAnalysisCache().getClassAnalysis(FBClassReader.class, classDescriptor);
+            this.interfaces = new ArrayList<>();
+            this.innerClasses = new ArrayList<>();
+            this.fields = new ArrayList<>();
+            this.methods = new ArrayList<>();
+            cr.accept(this, 0);
+        }
     }
 
-    @Override
-    public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
-
-        FBClassReader cr = Global.getAnalysisCache().getClassAnalysis(FBClassReader.class, classDescriptor);
-        this.interfaces = new ArrayList<>();
-        this.innerClasses = new ArrayList<>();
-        this.fields = new ArrayList<>();
-        this.methods = new ArrayList<>();
-        cr.accept(this, 0);
+    @CheckForNull
+    protected XClass getClassInfo(ClassDescriptor classDescr) {
+        if (classDescr == null) {
+            return null;
+        }
+        try {
+            return Global.getAnalysisCache().getClassAnalysis(XClass.class, classDescr);
+        } catch (CheckedAnalysisException e) {
+            bugReporter.reportMissingClass(classDescr, e);
+            return null;
+        }
     }
 
     @Override
     public void finishPass() {
         // do nothing
     }
-
 }

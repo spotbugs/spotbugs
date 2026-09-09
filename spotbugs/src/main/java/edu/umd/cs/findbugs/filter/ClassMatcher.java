@@ -54,7 +54,7 @@ public class ClassMatcher implements Matcher {
     @Override
     public boolean match(BugInstance bugInstance) {
         ClassAnnotation classAnnotation = bugInstance.getPrimaryClass();
-        if (role != null && !"".equals(role)) {
+        if (role != null && !role.isEmpty()) {
             for (BugAnnotation a : bugInstance.getAnnotations()) {
                 if (a instanceof ClassAnnotation && role.equals(a.getDescription())) {
                     classAnnotation = (ClassAnnotation) a;

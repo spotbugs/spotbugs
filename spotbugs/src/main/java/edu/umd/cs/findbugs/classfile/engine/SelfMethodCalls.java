@@ -40,10 +40,6 @@ import edu.umd.cs.findbugs.util.MultiMap;
  */
 public class SelfMethodCalls {
 
-    static private boolean interestingSignature(String signature) {
-        return !"()V".equals(signature);
-    }
-
     public static <T> MultiMap<T, T> getSelfCalls(final ClassDescriptor classDescriptor, final Map<String, T> methods) {
         final MultiMap<T, T> map = new MultiMap<>(HashSet.class);
 
@@ -62,7 +58,7 @@ public class SelfMethodCalls {
                 return new MethodVisitor(FindBugsASM.ASM_VERSION) {
                     @Override
                     public void visitMethodInsn(int opcode, String owner, String name2, String desc2, boolean itf) {
-                        if (owner.equals(classDescriptor.getClassName()) && interestingSignature(desc2)) {
+                        if (owner.equals(classDescriptor.getClassName())) {
                             T from = methods.get(name + desc + ((access & Opcodes.ACC_STATIC) != 0));
                             T to = methods.get(name2 + desc2 + (opcode == Opcodes.INVOKESTATIC));
                             map.add(from, to);

@@ -31,5 +31,5 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 public interface ExpectedViewElement {
     void assertEquals(Object actual, ITreeContentProvider contentProvider) throws CoreException;
 
-    public boolean matches(Object actual) throws CoreException;
+    boolean matches(Object actual) throws CoreException;
 }

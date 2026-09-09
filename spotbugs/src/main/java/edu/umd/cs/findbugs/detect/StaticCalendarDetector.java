@@ -19,10 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.util.MultiThreadedCodeIdentifierUtils;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
@@ -41,9 +41,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.LockDataflow;
-import edu.umd.cs.findbugs.ba.LockSet;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
@@ -55,7 +53,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
  * Detector for static fields of type {@link java.util.Calendar} or
  * {@link java.text.DateFormat} and their subclasses. Because
  * {@link java.util.Calendar} is unsafe for multithreaded use, static fields
- * look suspicous. To work correctly, all access would need to be synchronized
+ * look suspicious. To work correctly, all access would need to be synchronized
  * by the client which cannot be guaranteed.
  *
  * @author Daniel Schneller
@@ -76,9 +74,9 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
     private static final String PROP_SKIP_SYNCHRONIZED_CHECK = "staticcal.skipsynccheck";
 
     /** The reporter to report to */
-    final private BugReporter reporter;
+    private final BugReporter reporter;
 
-    final private BugAccumulator bugAccumulator;
+    private final BugAccumulator bugAccumulator;
 
     /** Name of the class being inspected */
     private String currentClass;
@@ -224,9 +222,7 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
                 currentMethod = obj;
                 currentLockDataFlow = getClassContext().getLockDataflow(currentMethod);
                 currentCFG = getClassContext().getCFG(currentMethod);
-            } catch (CFGBuilderException e) {
-                reporter.logError("Synchronization check in Static Calendar Detector caught an error.", e);
-            } catch (DataflowAnalysisException e) {
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
                 reporter.logError("Synchronization check in Static Calendar Detector caught an error.", e);
             }
         }
@@ -256,12 +252,8 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 
         if (seen == Const.GETSTATIC) {
             XField f = getXFieldOperand();
-            if (pendingBugs.containsKey(f)) {
-                if (!isLocked()) {
-                    reporter.reportBug(pendingBugs.remove(f));
-
-                }
-
+            if (pendingBugs.containsKey(f) && !MultiThreadedCodeIdentifierUtils.isLocked(currentMethod, currentCFG, currentLockDataFlow, getPC())) {
+                reporter.reportBug(pendingBugs.remove(f));
             }
         }
         // we are only interested in method calls
@@ -313,12 +305,12 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
                 }
             }
 
-            if (!SystemProperties.getBoolean(PROP_SKIP_SYNCHRONIZED_CHECK)) {
-                // check synchronization
-                if (isLocked()) {
-                    return;
-                }
+            if (!SystemProperties.getBoolean(PROP_SKIP_SYNCHRONIZED_CHECK)
+                    // check synchronization
+                    && MultiThreadedCodeIdentifierUtils.isLocked(currentMethod, currentCFG, currentLockDataFlow, getPC())) {
+                return;
             }
+
 
             // if we get here, we want to generate a report, depending on the
             // type
@@ -350,24 +342,6 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
         } catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
         }
-    }
-
-    private boolean isLocked() {
-        try {
-            if (currentMethod != null && currentLockDataFlow != null && currentCFG != null) {
-                Collection<Location> tLocations = currentCFG.getLocationsContainingInstructionWithOffset(getPC());
-                for (Location tLoc : tLocations) {
-                    LockSet lockSet = currentLockDataFlow.getFactAtLocation(tLoc);
-                    if (lockSet.getNumLockedObjects() > 0) {
-                        // within a synchronized block
-                        return true;
-                    }
-                }
-            }
-        } catch (DataflowAnalysisException e) {
-            reporter.logError("Synchronization check in Static Calendar Detector caught an error.", e);
-        }
-        return false;
     }
 
     @Override

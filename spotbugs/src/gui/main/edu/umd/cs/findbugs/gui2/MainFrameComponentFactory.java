@@ -15,7 +15,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -24,7 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -309,8 +308,6 @@ public class MainFrameComponentFactory implements Serializable {
     private boolean sourceCodeExists(@Nonnull SourceLineAnnotation note) {
         try {
             mainFrame.getProject().getSourceFinder().findSourceFile(note);
-        } catch (FileNotFoundException e) {
-            return false;
         } catch (IOException e) {
             return false;
         }
@@ -405,30 +402,7 @@ public class MainFrameComponentFactory implements Serializable {
 
         private void setupOSX() {
             if (MainFrame.MAC_OS_X) {
-                try {
-                    mainFrame.mainFrameMenu.initOSX();
-                    mainFrame.mainFrameMenu.enablePreferencesMenuItem(true);
-                } catch (NoClassDefFoundError e) {
-                    // This will be thrown first if the OSXAdapter is loaded on
-                    // a system without the EAWT
-                    // because OSXAdapter extends ApplicationAdapter in its def
-                    System.err
-                            .println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled ("
-                                    + e + ")");
-                } catch (ClassNotFoundException e) {
-                    // This shouldn't be reached; if there's a problem with the
-                    // OSXAdapter we should get the
-                    // above NoClassDefFoundError first.
-                    System.err
-                            .println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled ("
-                                    + e + ")");
-                } catch (Exception e) {
-                    System.err.println("Exception while loading the OSXAdapter: " + e);
-                    e.printStackTrace();
-                    if (MainFrame.GUI2_DEBUG) {
-                        e.printStackTrace();
-                    }
-                }
+                mainFrame.mainFrameMenu.enablePreferencesMenuItem(true);
             }
         }
     }

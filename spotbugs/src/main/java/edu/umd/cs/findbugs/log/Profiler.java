@@ -55,8 +55,8 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
 @NotThreadSafe
 public class Profiler implements IProfiler, XMLWriteable {
 
-    final static boolean REPORT = SystemProperties.getBoolean("profiler.report");
-    final static boolean MAX_CONTEXT = SystemProperties.getBoolean("findbugs.profiler.maxcontext");
+    static final boolean REPORT = SystemProperties.getBoolean("profiler.report");
+    static final boolean MAX_CONTEXT = SystemProperties.getBoolean("findbugs.profiler.maxcontext");
 
     private final Stack<Clock> startTimes = new Stack<>();
 
@@ -234,7 +234,7 @@ public class Profiler implements IProfiler, XMLWriteable {
     }
 
     private Object getContext() {
-        if (context.size() == 0) {
+        if (context.isEmpty()) {
             return "";
         }
         try {
@@ -296,7 +296,7 @@ public class Profiler implements IProfiler, XMLWriteable {
     }
 
     public static class ClassNameComparator implements Comparator<Class<?>> {
-        final protected IProfiler profiler;
+        protected final IProfiler profiler;
 
         public ClassNameComparator(IProfiler p) {
             this.profiler = p;
@@ -308,15 +308,7 @@ public class Profiler implements IProfiler, XMLWriteable {
                 return c1.getSimpleName().compareTo(c2.getSimpleName());
             } catch (RuntimeException e) {
                 AnalysisContext.logError("Error comparing " + c1 + " and " + c2, e);
-                int i1 = System.identityHashCode(c1);
-                int i2 = System.identityHashCode(c2);
-                if (i1 < i2) {
-                    return -1;
-                }
-                if (i1 > i2) {
-                    return 1;
-                }
-                return 0;
+                return Integer.compare(System.identityHashCode(c1), System.identityHashCode(c2));
             }
         }
     }
@@ -385,7 +377,7 @@ public class Profiler implements IProfiler, XMLWriteable {
 
     /**
      * Default implementation uses {@link TotalTimeComparator} and prints out
-     * class statistics based on total time spent fot a class
+     * class statistics based on total time spent for a class
      * @deprecated use {@link ProfileSummary#report} instead.
      */
     @Deprecated
@@ -431,7 +423,7 @@ public class Profiler implements IProfiler, XMLWriteable {
 
     /**
      * Clears the previously accumulated data. This method is public because it
-     * can be accessed explicitely from clients (like Eclipse).
+     * can be accessed explicitly from clients (like Eclipse).
      * <p>
      * There is no need to clear profiler data after each run, because a new
      * profiler instance is used for each analysis run (see

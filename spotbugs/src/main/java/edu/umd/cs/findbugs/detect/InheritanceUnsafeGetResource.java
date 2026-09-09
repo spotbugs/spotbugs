@@ -100,7 +100,7 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
                     && ("getResource".equals(getNameConstantOperand()) || "getResourceAsStream".equals(getNameConstantOperand()))
                     && sawGetClass + 10 >= getPC()) {
                 int priority = NORMAL_PRIORITY;
-                if (prevOpcode == Const.LDC && stringConstant != null && stringConstant.length() > 0 && stringConstant.charAt(0) == '/') {
+                if (prevOpcode == Const.LDC && stringConstant != null && !stringConstant.isEmpty() && stringConstant.charAt(0) == '/') {
                     priority = LOW_PRIORITY;
                 } else {
                     priority = adjustPriority(priority);

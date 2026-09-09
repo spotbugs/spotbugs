@@ -155,7 +155,7 @@ public class TypeQualifierApplications {
             return Collections.<AnnotationValue>emptyList();
         }
         result = TypeQualifierResolver.resolveTypeQualifiers(m.getAnnotations());
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result = Collections.<AnnotationValue>emptyList();
         }
         getDirectObjectAnnotations().put(m, result);
@@ -254,8 +254,7 @@ public class TypeQualifierApplications {
         When when = whenValue == null ? When.ALWAYS : When.valueOf(whenValue.value);
         ClassDescriptor annotationClass = v.getAnnotationClass();
         TypeQualifierValue<?> tqv = TypeQualifierValue.getValue(annotationClass, v.getValue("value"));
-        TypeQualifierAnnotation tqa = TypeQualifierAnnotation.getValue(tqv, when);
-        return tqa;
+        return TypeQualifierAnnotation.getValue(tqv, when);
     }
 
     /**
@@ -559,7 +558,7 @@ public class TypeQualifierApplications {
             TypeQualifierValue<?> typeQualifierValue) {
         if (o instanceof XMethod) {
             XMethod m = (XMethod) o;
-            if (m.getName().startsWith("access$")) {
+            if (m.isAccessMethod()) {
                 InnerClassAccessMap icam = AnalysisContext.currentAnalysisContext().getInnerClassAccessMap();
                 try {
                     InnerClassAccess ica = icam.getInnerClassAccess(m.getClassName(), m.getName());
@@ -984,11 +983,6 @@ public class TypeQualifierApplications {
         if ("<init>".equals(xmethod.getName()) && xmethod.getClassDescriptor().isAnonymousClass()) {
             return null; // constructors for anonymous inner classes don't get
             // default annotations
-        }
-
-        /** private methods don't inherit from class or package scope */
-        if (xmethod.isPrivate()) {
-            stopAtMethodScope = true;
         }
 
         boolean stopAtClassScope = false;

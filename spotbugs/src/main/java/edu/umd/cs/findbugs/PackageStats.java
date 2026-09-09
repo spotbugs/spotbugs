@@ -28,7 +28,7 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -47,7 +47,10 @@ class BugCounts {
     @OverridingMethodsMustInvokeSuper
     public void addError(BugInstance bug) {
         ensureNonnullBugCounts();
-        ++nBugs[bug.getPriority()];
+        // in 'relaxed' mode we might get bug with priority 5 = IGNORE_PRIORITY
+        int adjustedPriority = Math.min(bug.getPriority(), Priorities.IGNORE_PRIORITY - 1);
+
+        ++nBugs[adjustedPriority];
         ++nBugs[0];
     }
 
@@ -93,7 +96,7 @@ class BugCounts {
         writeBugPriorities(xmlOutput, nBugs);
     }
 
-    public static void writeBugPriorities(XMLOutput xmlOutput, @Nonnull int nBugs[]) throws IOException {
+    public static void writeBugPriorities(XMLOutput xmlOutput, @Nonnull int[] nBugs) throws IOException {
         int i = nBugs.length;
         while (--i > 0) {
             if (nBugs[i] > 0) {
@@ -220,19 +223,13 @@ public class PackageStats extends BugCounts implements XMLWriteable {
 
 
     private ClassStats getClassStats(String name, String sourceFile) {
-        ClassStats result = packageMembers.get(name);
-        if (result == null) {
-            result = new ClassStats(name, sourceFile);
-            packageMembers.put(name, result);
-            numClasses = packageMembers.size();
-        }
-
+        ClassStats result = packageMembers.computeIfAbsent(name, k -> new ClassStats(k, sourceFile));
+        numClasses = packageMembers.size();
         return result;
     }
 
     public @CheckForNull ClassStats getClassStatsOrNull(String name) {
-        ClassStats result = packageMembers.get(name);
-        return result;
+        return packageMembers.get(name);
     }
 
     @Override
@@ -292,11 +289,11 @@ public class PackageStats extends BugCounts implements XMLWriteable {
 
         xmlOutput.addAttribute("package", packageName);
         xmlOutput.addAttribute("total_bugs", String.valueOf(getTotalBugs()));
-        int numClasses = packageMembers.size();
-        if (numClasses == 0) {
-            numClasses = this.numClasses;
+        int numClses = packageMembers.size();
+        if (numClses == 0) {
+            numClses = this.numClasses;
         }
-        xmlOutput.addAttribute("total_types", String.valueOf(numClasses));
+        xmlOutput.addAttribute("total_types", String.valueOf(numClses));
         xmlOutput.addAttribute("total_size", String.valueOf(size));
         writeBugPriorities(xmlOutput);
 

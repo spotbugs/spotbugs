@@ -43,9 +43,7 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     static final String ERRORS_ELEMENT_NAME = "Errors";
 
-    static final String ANALYSIS_ERROR_ELEMENT_NAME = "AnalysisError"; // 0.8.6
-    // and
-    // earlier
+    static final String ANALYSIS_ERROR_ELEMENT_NAME = "AnalysisError"; // 0.8.6 and earlier
 
     static final String ERROR_ELEMENT_NAME = "Error"; // 0.8.7 and later
 
@@ -71,7 +69,7 @@ public interface BugCollection extends Iterable<BugInstance> {
 
     static final String HISTORY_ELEMENT_NAME = "History"; // 0.9.2 and later
 
-    public Project getProject();
+    Project getProject();
 
     /**
      * Set the current release name.
@@ -79,19 +77,19 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @param releaseName
      *            the current release name
      */
-    public void setReleaseName(String releaseName);
+    void setReleaseName(String releaseName);
 
     /**
      * Get the current release name.
      *
      * @return current release name
      */
-    public String getReleaseName();
+    String getReleaseName();
 
     /**
      * Get the project stats.
      */
-    public ProjectStats getProjectStats();
+    ProjectStats getProjectStats();
 
     /**
      * Get the timestamp for the analyzed code (when it was compiled)
@@ -99,12 +97,12 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @param timestamp
      *            the timestamp.
      */
-    public void setTimestamp(long timestamp);
+    void setTimestamp(long timestamp);
 
     /**
      * Get the timestamp for the analyzed code (when it was compiled)
      */
-    public long getTimestamp();
+    long getTimestamp();
 
     /**
      * Set the timestamp for when the analysis was performed.
@@ -112,7 +110,7 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @param timestamp
      *            the analysis timestamp.
      */
-    public void setAnalysisTimestamp(long timestamp);
+    void setAnalysisTimestamp(long timestamp);
 
     /**
      * Set the version of FindBugs used to perform the analysis
@@ -120,18 +118,17 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @param analysisVersion
      *            the analysis version.
      */
-    public void setAnalysisVersion(String analysisVersion);
+    void setAnalysisVersion(String analysisVersion);
 
     /**
      * Get the timestamp for when the analysis was performed.
      */
-    public long getAnalysisTimestamp();
+    long getAnalysisTimestamp();
 
     /**
      * Gets the AppVersion corresponding to the given sequence number.
      */
-
-    public AppVersion getAppVersionFromSequenceNumber(long target);
+    AppVersion getAppVersionFromSequenceNumber(long target);
 
     /**
      * Set the sequence number of the BugCollection.
@@ -140,7 +137,7 @@ public interface BugCollection extends Iterable<BugInstance> {
      *            the sequence number
      * @see BugCollection#getSequenceNumber()
      */
-    public void setSequenceNumber(long sequence);
+    void setSequenceNumber(long sequence);
 
     /**
      * Get the sequence number of the BugCollection. This value represents the
@@ -150,19 +147,17 @@ public interface BugCollection extends Iterable<BugInstance> {
      *
      * @return the sequence number
      */
-    public long getSequenceNumber();
+    long getSequenceNumber();
 
-    public boolean isMultiversion();
+    boolean isMultiversion();
 
-    public boolean hasDeadBugs();
-
-
+    boolean hasDeadBugs();
 
     /**
      * Clear all AppVersions representing previously-analyzed versions of the
      * application.
      */
-    public abstract void clearAppVersions();
+    abstract void clearAppVersions();
 
     /**
      * Add an AppVersion representing a version of the analyzed application.
@@ -170,17 +165,17 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @param appVersion
      *            the AppVersion
      */
-    public void addAppVersion(AppVersion appVersion);
+    void addAppVersion(AppVersion appVersion);
 
     /**
      * Get the current AppVersion.
      */
-    public AppVersion getCurrentAppVersion();
+    AppVersion getCurrentAppVersion();
 
     /**
      * Get an Iterator over AppVersions defined in the collection.
      */
-    public Iterator<AppVersion> appVersionIterator();
+    Iterator<AppVersion> appVersionIterator();
 
     /**
      * Add a BugInstance to this BugCollection. This just calls add(bugInstance,
@@ -191,7 +186,7 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @return true if the BugInstance was added, or false if a matching
      *         BugInstance was already in the BugCollection
      */
-    public boolean add(BugInstance bugInstance);
+    boolean add(BugInstance bugInstance);
 
     /**
      * Add a BugInstance to this BugCollection.
@@ -204,20 +199,7 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @return true if the BugInstance was added, or false if a matching
      *         BugInstance was already in the BugCollection
      */
-    public boolean add(BugInstance bugInstance, boolean updateActiveTime);
-
-    /**
-     * Look up a BugInstance by its unique id.
-     *
-     * @param uniqueId
-     *            the BugInstance's unique id.
-     * @return the BugInstance with the given unique id, or null if there is no
-     *         such BugInstance
-     *
-     *         This is deprecated; uniqueIDs are not persistent.
-     */
-    @Deprecated
-    public BugInstance lookupFromUniqueId(String uniqueId);
+    boolean add(BugInstance bugInstance, boolean updateActiveTime);
 
     /**
      * Add an analysis error.
@@ -225,7 +207,7 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @param message
      *            the error message
      */
-    public void addError(String message);
+    void addError(String message);
 
     /**
      * Add an analysis error.
@@ -233,7 +215,7 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @param error
      *            the AnalysisError object to add
      */
-    public void addError(AnalysisError error);
+    void addError(AnalysisError error);
 
     /**
      * Add a missing class message.
@@ -241,17 +223,17 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @param message
      *            the missing class message
      */
-    public void addMissingClass(String message);
+    void addMissingClass(String message);
 
-    public void setClassFeatureSet(ClassFeatureSet classFeatureSet);
+    void setClassFeatureSet(ClassFeatureSet classFeatureSet);
 
-    public void writePrologue(XMLOutput xmlOutput) throws IOException;
+    void writePrologue(XMLOutput xmlOutput) throws IOException;
 
-    public void writeEpilogue(XMLOutput xmlOutput) throws IOException;
+    void writeEpilogue(XMLOutput xmlOutput) throws IOException;
 
-    public void clearClassFeatures();
+    void clearClassFeatures();
 
-    public void clearMissingClasses();
+    void clearMissingClasses();
 
     /**
      * Read XML data from given file into this object, populating given Project
@@ -260,7 +242,7 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @param fileName
      *            name of the file to read
      */
-    public void readXML(String fileName) throws IOException, DocumentException;
+    void readXML(String fileName) throws IOException, DocumentException;
 
     /**
      * Read XML data from given input stream into this object, populating the
@@ -270,7 +252,7 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @param in
      *            the InputStream
      */
-    public void readXML(@WillClose InputStream in) throws IOException, DocumentException;
+    void readXML(@WillClose InputStream in) throws IOException, DocumentException;
 
     /**
      * Read XML data from given reader into this object, populating the Project
@@ -280,7 +262,7 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @param reader
      *            the Reader
      */
-    public void readXML(@WillClose Reader reader) throws IOException, DocumentException;
+    void readXML(@WillClose Reader reader) throws IOException, DocumentException;
 
     /**
      * Write this BugCollection to a file as XML.
@@ -288,7 +270,7 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @param fileName
      *            the file to write to
      */
-    public void writeXML(String fileName) throws IOException;
+    void writeXML(String fileName) throws IOException;
 
     /**
      * Write the BugCollection to given output stream as XML. The output stream
@@ -297,7 +279,7 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @param out
      *            the OutputStream to write to
      */
-    public void writeXML(@WillClose Writer out) throws IOException;
+    void writeXML(@WillClose Writer out) throws IOException;
 
     /**
      * Write the BugCollection to given output stream as XML using a UTF8 encoding.
@@ -307,8 +289,7 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @param out
      *            the OutputStream to write to
      */
-    public void writeXML(@WillClose OutputStream out) throws IOException;
-
+    void writeXML(@WillClose OutputStream out) throws IOException;
 
     /**
      * Write the BugCollection to an XMLOutput object. The finish() method of
@@ -322,53 +303,53 @@ public interface BugCollection extends Iterable<BugInstance> {
      * @param xmlOutput
      *            the XMLOutput object
      */
-    public void writeXML(@WillClose XMLOutput xmlOutput) throws IOException;
+    void writeXML(@WillClose XMLOutput xmlOutput) throws IOException;
 
     /**
      * Return an Iterator over all the BugInstance objects in the BugCollection.
      */
     @Override
-    public Iterator<BugInstance> iterator();
+    Iterator<BugInstance> iterator();
 
     /**
      * Return the Collection storing the BugInstance objects.
      */
-    public Collection<BugInstance> getCollection();
+    Collection<BugInstance> getCollection();
 
     /**
      * Convert the BugCollection into a dom4j Document object.
      *
      * @return the Document representing the BugCollection as a dom4j tree
      */
-    public Document toDocument();
+    Document toDocument();
 
     /**
      * Create a new empty BugCollection with the same metadata as this one.
      *
      * @return a new empty BugCollection with the same metadata as this one
      */
-    public BugCollection createEmptyCollectionWithMetadata();
+    BugCollection createEmptyCollectionWithMetadata();
 
     /**
      * Set whether textual messages should be added to any generated XML
      */
-    public void setWithMessages(boolean withMessages);
+    void setWithMessages(boolean withMessages);
 
     /**
      * Set whether we should minimize XML
      */
-    public void setMinimalXML(boolean minimalXML);
+    void setMinimalXML(boolean minimalXML);
 
     /**
      * Return whether textual messages will be added to any generated XML
      */
-    public boolean getWithMessages();
+    boolean getWithMessages();
 
-    public BugInstance findBug(String instanceHash, String bugType, int lineNumber);
+    BugInstance findBug(String instanceHash, String bugType, int lineNumber);
 
-    public boolean isApplySuppressions();
+    boolean isApplySuppressions();
 
-    public void setApplySuppressions(boolean applySuppressions);
+    void setApplySuppressions(boolean applySuppressions);
 
-    public void bugsPopulated();
+    void bugsPopulated();
 }

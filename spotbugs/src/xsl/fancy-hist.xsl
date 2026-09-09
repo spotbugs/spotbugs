@@ -660,19 +660,16 @@
             }
 
             for (var x=0; x<max; x++) {
-               //if (list=="lbp" && (patterns[x].category!=id1 || patterns[x].code!=id2)) continue;
-               //if (list=="lbp" && classStats[x].totalBugs=="0") continue;
-
                if (list=="lbc") {
                   id3 = patterns[x].id;
-                  label = patterns[x].label;
+                  label = patterns[x].label + " ( " + id3 + " )";
                   containerId = "patterns-"+id1;
                   subContainerId = "cat-" + id1 + "-code-" + id2 + "-pattern-" + id3;
                   p = countBugsPattern(state.release, state.priority, id1, id2, id3);
                }
                if (list=="lbp") {
                   id3 = patterns[x].id;
-                  label = patterns[x].label;
+                  label = patterns[x].label + " ( " + id3 + " )";
                   containerId = "classpatterns-"+id1;
                   subContainerId = "package-" + id1 + "-class-" + id2 + "-pattern-" + id3;
                   p = countBugsClassPattern(state.release, state.priority, id2, id3);

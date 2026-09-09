@@ -1,7 +1,7 @@
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javax.servlet.ServletRequest;
+import jakarta.servlet.ServletRequest;
 
 public class SqlInjection2 {
     public ServletRequest request;

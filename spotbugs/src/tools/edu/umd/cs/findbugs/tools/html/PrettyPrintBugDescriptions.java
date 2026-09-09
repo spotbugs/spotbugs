@@ -46,7 +46,7 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 
     private static final String[] TABLE_COLORS = new String[] { "#eeeeee", "#ffffff" };
 
-    private static class BugPatternComparator implements Comparator<BugPattern>, Serializable {
+    private static final class BugPatternComparator implements Comparator<BugPattern>, Serializable {
         @Override
         public int compare(BugPattern a, BugPattern b) {
             int cmp = a.getCategory().compareTo(b.getCategory());

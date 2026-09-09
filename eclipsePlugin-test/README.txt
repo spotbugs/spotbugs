@@ -8,5 +8,5 @@ that can be found at: http://www.eclipse.org/legal/epl-v10.html
 
 ## About difference with this project and eclipsePlugin-junit project
 
-Currently tests in this project cannot run in Travis CI build.
+Currently tests in this project cannot run in Github CI build.
 If you want to add JUnit test which can run without Eclipse, add test case to eclipsePlugin-junit project.

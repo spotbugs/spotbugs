@@ -58,7 +58,7 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
 
     static final int SEEN_ANEWARRAY = 2;
 
-    private final static JavaClass collectionClass;
+    private static final JavaClass collectionClass;
 
     private final BugReporter bugReporter;
 

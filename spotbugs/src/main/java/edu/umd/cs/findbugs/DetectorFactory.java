@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -51,6 +51,30 @@ public class DetectorFactory {
 
     private static final Class<?>[] constructorArgTypes = new Class<?>[] { BugReporter.class };
 
+    private final @Nonnull Plugin plugin;
+
+    private final ReflectionDetectorCreator detectorCreator;
+
+    private final @Nonnull @DottedClassName String className;
+
+    private int positionSpecifiedInPluginDescriptor;
+
+    private final boolean defEnabled;
+
+    /**
+     * @deprecated This attribute is not used actively, and could be removed in future release
+     */
+    @Deprecated
+    private final String speed;
+
+    private final String reports;
+
+    private final String requireJRE;
+
+    private String detailHTML;
+
+    private boolean hidden;
+
     static class ReflectionDetectorCreator {
         private final Class<?> detectorClass;
 
@@ -61,7 +85,7 @@ public class DetectorFactory {
             if (SUPPORT_OLD_DETECTOR_INTERFACE) {
                 try {
                     setAnalysisContext = detectorClass.getDeclaredMethod("setAnalysisContext",
-                            new Class[] { AnalysisContext.class });
+                            AnalysisContext.class);
                 } catch (NoSuchMethodException e) {
                     // Ignore
                 }
@@ -76,9 +100,9 @@ public class DetectorFactory {
         public Detector createDetector(BugReporter bugReporter) {
             try {
                 Constructor<?> constructor = detectorClass.getConstructor(constructorArgTypes);
-                Detector detector = (Detector) constructor.newInstance(new Object[] { bugReporter });
+                Detector detector = (Detector) constructor.newInstance(bugReporter);
                 if (setAnalysisContext != null) {
-                    setAnalysisContext.invoke(detector, new Object[] { AnalysisContext.currentAnalysisContext() });
+                    setAnalysisContext.invoke(detector, AnalysisContext.currentAnalysisContext());
                 }
                 return detector;
             } catch (Exception e) {
@@ -112,34 +136,6 @@ public class DetectorFactory {
         }
     }
 
-    private final @Nonnull Plugin plugin;
-
-    private final ReflectionDetectorCreator detectorCreator;
-
-    private final @Nonnull @DottedClassName String className;
-
-    private int positionSpecifiedInPluginDescriptor;
-
-    private final boolean defEnabled;
-
-    /**
-     * @deprecated This attribute is not used actively, and could be removed in future release
-     */
-    @Deprecated
-    private final String speed;
-
-    private final String reports;
-
-    private final String requireJRE;
-
-    private String detailHTML;
-
-    private int priorityAdjustment;
-
-    private boolean enabledButNonReporting;
-
-    private boolean hidden;
-
     /**
      * Constructor.
      *
@@ -159,7 +155,7 @@ public class DetectorFactory {
      *            comma separated list of bug pattern codes reported by the
      *            detector; empty if unknown
      * @param requireJRE
-     *            string describing JRE version required to run the the
+     *            string describing JRE version required to run the
      *            detector: e.g., "1.5"
      */
     public DetectorFactory(@Nonnull Plugin plugin, @Nonnull String className,
@@ -172,7 +168,6 @@ public class DetectorFactory {
         this.speed = speed;
         this.reports = reports;
         this.requireJRE = requireJRE;
-        this.priorityAdjustment = 0;
         this.hidden = false;
     }
 
@@ -296,30 +291,13 @@ public class DetectorFactory {
         return defEnabled;
     }
 
-    /**
-     * Set the priority adjustment for the detector produced by this factory.
-     *
-     * @param priorityAdjustment
-     *            the priority adjustment
-     */
-    public void setPriorityAdjustment(int priorityAdjustment) {
-        this.priorityAdjustment = priorityAdjustment;
-    }
-
+    @Deprecated(forRemoval = true)
     public void setEnabledButNonReporting(boolean notReporting) {
-        this.enabledButNonReporting = notReporting;
     }
 
-    /**
-     * Get the priority adjustment for the detector produced by this factory.
-     *
-     * @return the priority adjustment
-     */
+    @Deprecated(forRemoval = true)
     public int getPriorityAdjustment() {
-        if (enabledButNonReporting) {
-            return 100;
-        }
-        return priorityAdjustment;
+        return 0;
     }
 
     /**
@@ -367,21 +345,6 @@ public class DetectorFactory {
      */
     public void setDetailHTML(String detailHTML) {
         this.detailHTML = detailHTML;
-    }
-
-    /**
-     * Create a Detector instance. This method is only guaranteed to work for
-     * old-style detectors using the BCEL bytecode framework.
-     *
-     * @param bugReporter
-     *            the BugReporter to be used to report bugs
-     * @return the Detector
-     * @deprecated Use createDetector2 in new code
-     */
-    @Deprecated
-    public Detector create(BugReporter bugReporter) {
-        checkForNoAnalysis();
-        return detectorCreator.createDetector(bugReporter);
     }
 
     /**

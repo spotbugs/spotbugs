@@ -36,7 +36,6 @@ import javax.annotation.meta.When;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -124,11 +123,10 @@ public class TypeQualifierValue<A extends Annotation> {
                     break;
                 }
             }
-        } catch (MissingClassException e) {
-            AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e.getClassNotFoundException());
         } catch (CheckedAnalysisException e) {
-            AnalysisContext.logError("Error looking up annotation class " + typeQualifier.toDottedClassName(), e);
+            AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(typeQualifier, e);
         }
+
         this.isStrict = isStrict1;
         this.isExclusive = isExclusive1;
         this.isExhaustive = isExhaustive1;
@@ -140,22 +138,13 @@ public class TypeQualifierValue<A extends Annotation> {
             if (!SystemProperties.RUNNING_AS_IDE_PLUGIN) {
                 /* don't do this if running in Eclipse; check below is the quick
                    fix for bug 3599258 (Random obscure Eclipse failures during analysis)
-                   
+                
                    Also don't do this if running in IntelliJ IDEA. This causes weird issues
-                   either (see IDEA-230268) 
+                   either (see IDEA-230268)
                  */
 
                 try {
                     Global.getAnalysisCache().getClassAnalysis(ClassData.class, checkerName);
-
-                    // found it.
-                    SecurityManager m = System.getSecurityManager();
-                    if (m == null) {
-                        if (DEBUG_CLASSLOADING) {
-                            System.out.println("Setting ValidationSecurityManager");
-                        }
-                        System.setSecurityManager(ValidationSecurityManager.INSTANCE);
-                    }
 
                     Class<?> c = ValidatorClassLoader.INSTANCE.loadClass(checkerName.getDottedClassName());
                     if (TypeQualifierValidator.class.isAssignableFrom(c)) {
@@ -177,23 +166,13 @@ public class TypeQualifierValue<A extends Annotation> {
                                 new Class[] { qualifierClass }, handler));
                     }
 
-                } catch (ClassNotFoundException e) {
-                    assert true; // ignore
-                } catch (CheckedAnalysisException e) {
+                } catch (ClassNotFoundException | CheckedAnalysisException e) {
                     assert true; // ignore
                 } catch (Exception e) {
                     AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName, e);
                 } catch (Throwable e) {
                     AnalysisContext.logError("Unable to construct type qualifier checker " + checkerName + " due to "
                             + e.getClass().getSimpleName() + ":" + e.getMessage());
-                }
-            } else if (DEBUG_CLASSLOADING) {
-                SecurityManager m = System.getSecurityManager();
-                if (m == null) {
-                    if (DEBUG_CLASSLOADING) {
-                        System.out.println("Setting ValidationSecurityManager");
-                    }
-                    System.setSecurityManager(ValidationSecurityManager.INSTANCE);
                 }
             }
         }
@@ -215,7 +194,7 @@ public class TypeQualifierValue<A extends Annotation> {
         if (DEBUG_CLASSLOADING) {
             System.out.println("Getting qualifier class for " + className);
         }
-        if (className.startsWith("javax.annotation")) {
+        if (className.startsWith("javax.annotation") || className.startsWith("jakarta.annotation")) {
             return (Class<A>) Class.forName(className);
         }
         try {
@@ -269,7 +248,7 @@ public class TypeQualifierValue<A extends Annotation> {
         Profiler profiler = analysisCache.getProfiler();
         profiler.start(validator.getClass());
         try {
-            return ValidationSecurityManager.sandboxedValidation(proxy, validator, constantValue);
+            return validator.forConstantValue(proxy, constantValue);
         } catch (Exception e) {
             AnalysisContext.logError("Error executing custom validator for " + typeQualifier + " " + constantValue, e);
             return When.UNKNOWN;

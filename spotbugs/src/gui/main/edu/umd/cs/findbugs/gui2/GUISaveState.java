@@ -507,7 +507,7 @@ public class GUISaveState {
 
     /**
      * @param splitSummary
-     *            The location of the summar divider to set.
+     *            The location of the summary divider to set.
      */
     public void setSplitSummary(int splitSummary) {
         this.splitSummary = splitSummary;

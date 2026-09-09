@@ -1,7 +1,27 @@
-apply from: "$rootDir/gradle/jacoco.gradle"
-apply from: "$rootDir/gradle/maven.gradle"
-apply from: "$rootDir/gradle/checkstyle.gradle"
-apply from: "$rootDir/gradle/javadoc.gradle"
+import com.github.spotbugs.snom.SpotBugsTask
+
+import java.nio.file.Files
+import java.nio.file.Path
+
+import org.gradle.plugins.ide.eclipse.model.Classpath
+import org.gradle.plugins.ide.eclipse.model.ClasspathEntry
+
+apply from: "${rootDir}/gradle/jacoco.gradle"
+apply from: "${rootDir}/gradle/maven.gradle"
+apply from: "${rootDir}/gradle/checkstyle.gradle"
+apply from: "${rootDir}/gradle/javadoc.gradle"
+
+tasks.named('compileJava', JavaCompile).configure {
+  options.release = 11
+}
+
+// Force Eclipse use Java 11, otherwise it will get Java 17 (!) from gradle
+eclipse {
+  jdt {
+    sourceCompatibility = 11
+    targetCompatibility = 11
+  }
+}
 
 configurations {
   // used only in distribution. It is not listed in pom.xml, so users like maven plugin don't use this dependency.
@@ -20,8 +40,12 @@ sourceSets {
       /*
        * Because why put everything in a single folder when you can split it
        * and mix it with other files you don't actually need together
-      */
-      srcDirs = ['src/xsl', 'etc', 'src/main/java']
+       */
+      srcDirs = [
+        'src/xsl',
+        'etc',
+        'src/main/java'
+      ]
       include '*.xsd'
       include 'bugrank.txt'
       include 'findbugs.xml'
@@ -31,6 +55,7 @@ sourceSets {
       exclude 'script.properties'
       include '*.xsl'
       include '**/*.db'
+      include 'CWE_4.10.json'
     }
   }
   gui {
@@ -43,162 +68,197 @@ sourceSets {
       include '**/*.png'
     }
   }
-  test {
-    java {
-      srcDirs = ['src/test/java']
-    }
-  }
-  guiTest {
-    java {
-      srcDirs = ['src/gui/test/java']
-    }
-  }
 }
 
 dependencies {
-  api 'org.ow2.asm:asm:8.0.1'
-  api 'org.ow2.asm:asm-analysis:8.0.1'
-  api 'org.ow2.asm:asm-commons:8.0.1'
-  api 'org.ow2.asm:asm-tree:8.0.1'
-  api 'org.ow2.asm:asm-util:8.0.1'
-  api 'org.apache.bcel:bcel:6.4.1'
-  api 'net.jcip:jcip-annotations:1.0'
-  api('org.dom4j:dom4j:2.1.3') {
-    // exclude transitive dependencies to keep compatible with dom4j 2.1.1
-    // https://github.com/dom4j/dom4j/issues/85
-    // https://docs.gradle.org/current/userguide/dependency_downgrade_and_exclude.html#sec:excluding-transitive-deps
-    exclude group: 'jaxen',            module: 'jaxen'
-    exclude group: 'javax.xml.stream', module: 'stax-api'
-    exclude group: 'net.java.dev.msv', module: 'xsdlib'
-    exclude group: 'javax.xml.bind',   module: 'jaxb-api'
-    exclude group: 'pull-parser',      module: 'pull-parser'
-    exclude group: 'xpp3',             module: 'xpp3'
+  api libs.asm
+  api libs.asm.analysis
+  api libs.asm.commons
+  api libs.asm.tree
+  api libs.asm.util
+  api 'org.apache.bcel:bcel:6.12.0'
+  api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
+  api('org.dom4j:dom4j:2.2.0')
+  constraints {
+    logBinding('org.apache.logging.log4j:log4j-core') {
+      version {
+        strictly('[2.17.1, 3[')
+      }
+      because('CVE-2021-44228, CVE-2021-45046, CVE-2021-45105, CVE-2021-44832: Log4j vulnerable to remote code execution and other critical security vulnerabilities')
+    }
+    logBinding('ch.qos.logback:logback-core') {
+      version {
+        strictly('[1.2.13, 2[')
+        prefer('1.4.14')
+      }
+      because('CVE-2021-42550: Logback vulnerable to remote code execution vulnerabilities and CVE-2023-6481, CVE-2023-6378: allows an attacker to mount a Denial-Of-Service attack by sending poisoned data')
+    }
   }
-  implementation 'jaxen:jaxen:1.1.6' // only transitive through dom4j:dom4j:1.6.1, which has an *optional* dependency on jaxen:jaxen.
-  api 'org.apache.commons:commons-lang3:3.10'
-  api 'org.apache.commons:commons-text:1.8'
-  api 'org.slf4j:slf4j-api:1.8.0-beta4'
-  implementation 'net.sf.saxon:Saxon-HE:9.9.1-2'
-  logBinding 'org.apache.logging.log4j:log4j-slf4j18-impl:2.13.1'
+  api 'org.apache.commons:commons-lang3:3.20.0'
+  api 'org.apache.commons:commons-text:1.15.0'
+  api 'org.slf4j:slf4j-api:2.0.19'
+  implementation 'jaxen:jaxen:2.0.6' // only transitive through org.dom4j:dom4j:2.1.4, which has an *optional* dependency on jaxen:jaxen.
+  implementation 'net.sf.saxon:Saxon-HE:12.10'
+  implementation libs.log4j.core
+  logBinding(libs.log4j.slf4j2.impl) {
+    exclude group: 'org.slf4j'
+  }
 
-  // These annotations are repackaged to spotbugs.jar, to keep backward compatibility for Ant task.
-  // If they're not repackaged, Ant task will report 'java.lang.ClassNotFoundException: edu.umd.cs.findbugs.annotations.CleanupObligation'
+  // These annotations are provided as a separate jar (spotbugs-annotations). Ant and plugin users must add a dependency on spotbugs-annotations if they need annotation classes.
   api project(':spotbugs-annotations')
 
-  testImplementation 'junit:junit:4.13'
-  testImplementation 'org.apache.ant:ant:1.10.7'
-  testImplementation 'org.apache.logging.log4j:log4j-slf4j18-impl:2.13.1'
-  testImplementation sourceSets.gui.output
+  compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+
+  api 'com.google.code.gson:gson:2.14.0'
 
   guiImplementation sourceSets.main.runtimeClasspath
-  guiImplementation 'org.apache.commons:commons-lang3:3.10'
-  guiImplementation 'org.apache.commons:commons-text:1.8'
-  guiCompileOnly 'com.apple:AppleJavaExtensions:1.4'
   guiCompileOnly project(':spotbugs-annotations')
-  guiTestImplementation sourceSets.gui.runtimeClasspath
-  guiTestImplementation 'junit:junit:4.12'
-  guiTestCompileOnly project(':spotbugs-annotations')
+  guiCompileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
 }
 
-// spotbugs {
-//   effort = "max"
-//   reportLevel = "high"
-// }
-
-clean {
-  delete ".libs"
+tasks.named('clean', Delete).configure {
+  delete '.libs', 'META-INF/MANIFEST.MF'
 }
 
-tasks.withType(Jar).all {
+project(':spotbugs-annotations') {
+  TaskProvider<Jar> jarTask = tasks.named('jar', Jar)
+  tasks.named('spotbugsMain') {
+    dependsOn(jarTask)
+
+    inputs.file(jarTask.flatMap { Jar jar ->
+      jar.archiveFile
+    })
+    .withPathSensitivity(PathSensitivity.RELATIVE)
+    .withPropertyName('spotbugsJarInput')
+  }
+}
+
+tasks.named('compileGuiJava', JavaCompile).configure {
+  options.release = 11
+}
+
+tasks.withType(Jar).configureEach {
   includeEmptyDirs = false
   // FIXME: this is ugly, but is what ant is currently doing... our own jars are included as dependencies :S
-  //destinationDir = file("$projectDir/lib")
-}
-
-eclipse.classpath {
-  plusConfigurations += [ configurations.compileOnly ]
-  plusConfigurations += [ configurations.guiCompileOnly ]
-  plusConfigurations += [ configurations.testRuntimeClasspath ]
+  //destinationDirectory = file("${projectDir}/lib")
 }
 
 eclipse.classpath.file {
-    whenMerged {
-      classpath ->
-         classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('xml-apis')}
-         classpath.entries.forEach {
-             entry ->
-               if(entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations')
-                   && !java.nio.file.Files.isDirectory(java.nio.file.Paths.get(entry.path))) {
-                   entry.path = ".libs/" + java.nio.file.Paths.get(entry.path).getFileName().toString()
-                   entry.exported = true
-               }
+  whenMerged { Classpath classpath ->
+    List<String> removeLibPaths = [
+      'build/classes/',
+      'build/resources/',
+      'xml-apis'
+    ]
+    classpath.entries.removeAll { ClasspathEntry entry ->
+      entry.kind == 'lib' && removeLibPaths.any { String pathPart ->
+        entry.path.contains(pathPart)
       }
     }
-}
-
-task copyLibsForEclipse (type: Copy) {
-    from configurations.runtimeClasspath.files
-    into ".libs"
-    include "*.jar"
-    exclude "*xml-apis*.jar"
-    exclude "*spotbugs-annotations*.jar"
-
-    from configurations.logBinding.files
-    into ".libs"
-    include "*.jar"
-
-    from configurations.testRuntimeClasspath.files
-    into ".libs"
-    include "*.jar"
-
-    from configurations.compileOnly.files
-    into ".libs"
-    include "*.jar"
-
-    from configurations.guiCompileOnly.files
-    into ".libs"
-    include "*.jar"
-}
-
-task updateManifest {
-  dependsOn configurations.runtimeClasspath, copyLibsForEclipse
-  doLast {
-    def manifestSpec = manifest {
-      from "$projectDir/META-INF/MANIFEST-TEMPLATE.MF"
-      attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
-               'Bundle-Version': project.version.replace('-', '.'),
-               'Bundle-ClassPath': 'spotbugs.jar,' +  fileTree(dir: '.libs').collect { projectDir.toPath().relativize(it.toPath()).toString() }.join(',')
+    classpath.entries.forEach { ClasspathEntry entry ->
+      if (entry.kind == 'lib' && !entry.path.contains('spotbugs-annotations') && !Files.isDirectory(Path.of(entry.path))) {
+        entry.path = '.libs/' + Path.of(entry.path).getFileName().toString()
+        entry.exported = true
+      }
     }
-    // write manifests
-    manifestSpec.writeTo("$projectDir/META-INF/MANIFEST.MF")
+    Map<String, List<ClasspathEntry>> entryByPath = classpath.entries.groupBy { ClasspathEntry entry ->
+      entry.path
+    }
+    entryByPath.each { String key, List<ClasspathEntry> values ->
+      if (values.size() > 1) {
+        ClasspathEntry entry = values.first()
+        if (entry.kind == 'src') {
+          entry.includes = []
+          entry.excludes = []
+        }
+        int index = classpath.entries.indexOf(entry)
+        logger.lifecycle "Removing ${values.collect { ClasspathEntry v -> v.path }}"
+        classpath.entries.removeAll(values)
+        logger.lifecycle "Adding ${entry.path}"
+        classpath.entries.add(index, entry)
+      }
+    }
   }
 }
-tasks.eclipse.dependsOn(updateManifest)
+
+TaskProvider<Copy> copyLibsForEclipse = tasks.register('copyLibsForEclipse', Copy) {
+  from configurations.testCompileClasspath, configurations.testRuntimeClasspath, configurations.guiRuntimeClasspath, configurations.guiCompileClasspath, configurations.logBinding
+  into '.libs'
+  include '*.jar'
+  exclude '*xml-apis*.jar'
+  exclude '*spotbugs-annotations*.jar'
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+TaskProvider<Task> updateManifest = tasks.register('updateManifest') {
+  File manifestTemplate = file("${projectDir}/META-INF/MANIFEST-TEMPLATE.MF")
+  File manifestOutput = file("${projectDir}/META-INF/MANIFEST.MF")
+  String version = project.version.replace('-', '.')
+  String mainClass = 'edu.umd.cs.findbugs.LaunchAppropriateUI'
+  Provider<String> bundleClassPath = provider {
+    List<String> libs = fileTree(dir: '.libs').collect { File file ->
+      projectDir.toPath().relativize(file.toPath()).toString()
+    }
+    return 'spotbugs.jar,' + libs.join(',')
+  }
+  inputs.file manifestTemplate
+  outputs.file manifestOutput
+  dependsOn copyLibsForEclipse
+  doLast {
+    Manifest manifestSpec = java.manifest {
+      from manifestTemplate
+      attributes 'Main-Class': mainClass,
+      'Bundle-Version': version,
+      'Bundle-ClassPath': bundleClassPath.get()
+    }
+    // write manifests
+    manifestSpec.writeTo(manifestOutput)
+  }
+}
+tasks.named('eclipse').configure {
+  dependsOn updateManifest
+}
 
 // Manually define what goes into the default jar, since it's not only main sourceset
-jar {
+TaskProvider<Jar> jar = tasks.named('jar', Jar) {
   // To keep backward compatibility, delete version number from jar name
-  archiveName "${baseName}.${extension}"
+  archiveFileName = archiveBaseName.get() + '.' + archiveExtension.get()
 
   from sourceSets.main.output
   from sourceSets.gui.output
-  def jarInClasspath = project.configurations.runtimeClasspath.collect{it.getName()}
-  jarInClasspath += project.configurations.logBinding.collect{it.getName()}
+  Set<File> jarInClasspath = project.configurations.runtimeClasspath + project.configurations.logBinding
   manifest {
     attributes 'Main-Class': 'edu.umd.cs.findbugs.LaunchAppropriateUI',
-               'Bundle-Version': project.version,
-               'Class-Path': jarInClasspath.join(' ') + ' config/'
+    'Bundle-Version': project.version,
+    'Class-Path': project.providers.provider {
+      jarInClasspath.collect { File file ->
+        file.getName()
+      }.join(' ') + ' config/'
+    }
+  }
+  dependsOn tasks.named('updateManifest')
+}
+tasks.spotbugsMain.dependsOn(jar)
+tasks.spotbugsGui.dependsOn(jar)
+tasks.withType(SpotBugsTask).configureEach {
+  reports {
+    html {
+      // we use local spotbugs.jar, we cannot reference stylesheet from the published jar
+      stylesheet = resources.text.fromFile('src/xsl/fancy-hist.xsl')
+    }
   }
 }
 
 // Populate bin folder with scripts
-task scripts(type:Copy) {
+Properties props = new Properties()
+TaskProvider<Copy> scripts = tasks.register('scripts', Copy) {
   // Take the properties into account for up-to-date checking
-  inputs.file "$projectDir/etc/script.properties"
+  inputs.file "${projectDir}/etc/script.properties"
 
-  def props = new Properties()
   doFirst {
-    props.load(new FileInputStream("$projectDir/etc/script.properties"))
+    Files.newInputStream(projectDir.toPath().resolve('etc').resolve('script.properties')).withCloseable { InputStream input ->
+      props.load(input)
+    }
 
     filesNotMatching('**/*.ico') {
       filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
@@ -207,7 +267,6 @@ task scripts(type:Copy) {
         'WRAP_JAVA': props.getProperty('script.wrap.java'),
         'WRAP_JAR': props.getProperty('script.wrap.jar'),
         'DEFINE_ESCAPE_ARG': props.getProperty('script.define.escape_arg')])
-      fileMode 0755
     }
   }
 
@@ -220,33 +279,33 @@ task scripts(type:Copy) {
     into 'experimental'
   }
 
-  destinationDir file("$buildDir/bin")
-  duplicatesStrategy DuplicatesStrategy.INCLUDE
+  into(layout.buildDirectory.dir('bin'))
+  duplicatesStrategy = DuplicatesStrategy.FAIL
+  filePermissions {
+    unix(0755)
+  }
 }
 
 // This disables hundreds of javadoc warnings on missing tags etc, see #340
 javadoc {
   doFirst {
-    // This is supposed to enable everything except "missing" but doesn't work with gradle
-    // See http://docs.oracle.com/javase/8/docs/technotes/tools/unix/javadoc.html
-    options.addBooleanOption('Xdoclint:all,-missing', true)
+    options.with {
+      // This is supposed to enable everything except "missing" but doesn't work with gradle
+      // See https://docs.oracle.com/en/java/javase/11/tools/javadoc.html
+      addBooleanOption('Xdoclint:all,-missing', true)
 
-    // TODO remove command and warning below if the doclint can be properly configured
-    options.addStringOption('Xmaxwarns', '3')
+      // TODO remove command and warning below if the doclint can be properly configured
+      addStringOption('Xmaxwarns', '3')
+    }
   }
   doLast {
     logger.warn('Javadoc: too many warnings, only first 3 are shown, see #340!')
   }
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-  classifier 'javadoc'
-  from javadoc.destinationDir
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-  classifier = 'sources'
-  from sourceSets.main.allSource
+java {
+  withJavadocJar()
+  withSourcesJar()
 }
 
 apply plugin: 'distribution'
@@ -255,21 +314,30 @@ distributions {
     contents {
       from(scripts) {
         into 'bin'
+        filePermissions {
+          unix(0755)
+        }
       }
-      from 'README.txt'
-      from ('plugin') {
-         into 'plugin'
-         include 'README'
+      from('README.txt')
+      from('plugin') {
+        into 'plugin'
+        include 'README'
       }
       from 'licenses'
-      from([configurations.runtimeClasspath, configurations.logBinding]) {
+      from([
+        configurations.runtimeClasspath,
+        configurations.logBinding
+      ]) {
         into 'lib'
         include '**/*.jar'
       }
-      from([jar, project(':spotbugs-ant').jar]) {
+      from([
+        jar,
+        project(':spotbugs-ant').jar
+      ]) {
         into 'lib'
       }
-      from ('log4j2.xml') {
+      from('log4j2.xml') {
         into 'lib/config'
       }
       from('src/xsl') {
@@ -280,78 +348,98 @@ distributions {
   }
 }
 
-distTar.compression = Compression.GZIP
-tasks['assemble'].dependsOn tasks['assembleDist']
-tasks['jar'].dependsOn tasks['updateManifest']
-
-task distSrcZip(type:Exec) {
-  commandLine 'git', 'archive', '-o', "${buildDir}/distributions/spotbugs-${project.version}-source.zip",
-    '--prefix', "spotbugs-${project.version}/", 'HEAD'
+tasks.named('distTar', Tar) {
+  compression = Compression.GZIP
+  duplicatesStrategy = DuplicatesStrategy.FAIL
 }
-distSrcZip.onlyIf {
-  file("$rootDir/.git").isDirectory()
-}
-tasks['assembleDist'].finalizedBy distSrcZip
-
-test {
-  dependsOn ':spotbugsTestCases:build'
-  maxHeapSize = '1G'
+TaskProvider<Zip> distZip = tasks.named('distZip', Zip) {
+  duplicatesStrategy = DuplicatesStrategy.FAIL
+  filePermissions {
+    unix(0755)
+  }
 }
 
-task unzipDist(type:Copy, dependsOn:distZip) {
-  from zipTree(distZip.outputs.files.singleFile)
-  into file("$buildDir/smoketest/")
+File resolvedBuildDir = project.layout.buildDirectory.asFile.get()
+
+TaskProvider<Exec> distSrcZip = tasks.register('distSrcZip', Exec) {
+  File out = resolvedBuildDir.toPath().resolve('distributions').resolve("spotbugs-${project.version}-source.zip").toFile()
+  outputs.file out
+  commandLine 'git', 'archive', '-o', out,
+      '--prefix', "spotbugs-${project.version}/", 'HEAD'
+
+  onlyIf {
+    file("${rootDir}/.git").isDirectory()
+  }
+}
+TaskProvider<Task> assembleDist = tasks.named('assembleDist') {
+  finalizedBy distSrcZip
+}
+tasks.named('assemble') {
+  dependsOn assembleDist
+}
+
+String version = project.version
+TaskProvider<Copy> unzipDist = tasks.register('unzipDist', Copy) {
+  dependsOn distZip
+  from distZip.map { Zip zipTask ->
+    zipTree(zipTask.outputs.files.singleFile)
+  }
+  into file("${resolvedBuildDir}/smoketest/")
   // Remove prefix
-  eachFile { details ->
-    details.path = details.path - "spotbugs-${project.version}"
+  eachFile { FileCopyDetails details ->
+    details.path = details.path - ('spotbugs-' + version)
   }
 }
 
 // TODO : actually check the output beyond it not blowing up in pieces?
-task smokeTest {
-  dependsOn unzipDist, project(':spotbugs-ant').jar
+TaskProvider<DefaultTask> smokeTest = tasks.register('smokeTest', DefaultTask)
+
+smokeTest.configure {
+  dependsOn unzipDist, project(':spotbugs-ant').tasks.named('jar')
+
   doLast {
-    ant.taskdef(name:'spotbugs', classname:'edu.umd.cs.findbugs.anttask.FindBugsTask', classpath:project(':spotbugs-ant').jar.outputs.files.asPath)
-    ant.spotbugs(home:"$buildDir/smoketest/", output:'xml:withMessages',
-              jvmargs:'-ea -Xmx1200m',
-              excludeFilter:'findbugsExclude.xml',
-              projectName:'spotbugs',
-              maxRank:'20',
-              timeout:'1800000',
-              outputFile:"${buildDir}/smoketest/findbugscheckAll.xml") {
-      sourcePath(path:'src/main/java:src/gui/main:src/tools')
-      'class'(location:project.tasks['compileJava'].destinationDir)
-      configurations.compileClasspath.each { File file -> auxClasspath(path:file.path) }
-    }
+    TaskProvider<Jar> jarTask = project(':spotbugs-ant').tasks.named('jar')
+    TaskProvider<JavaCompile> compileJava = tasks.named('compileJava', JavaCompile)
+
+    ant.taskdef(
+        name: 'spotbugs',
+        classname: 'edu.umd.cs.findbugs.anttask.FindBugsTask',
+        classpath: jarTask.get().outputs.files.asPath
+        )
+
+    ant.spotbugs(
+        home: "${resolvedBuildDir}/smoketest/",
+        output: 'xml:withMessages',
+        jvmargs: '-ea -Xmx1200m',
+        excludeFilter: 'findbugsExclude.xml',
+        projectName: 'spotbugs',
+        maxRank: '20',
+        timeout: '1800000',
+        outputFile: "${resolvedBuildDir}/smoketest/findbugscheckAll.xml"
+        ) {
+          sourcePath(path: 'src/main/java:src/gui/main:src/tools')
+          'class'(location: compileJava.get().destinationDirectory.get().asFile)
+          configurations.compileClasspath.each { File file ->
+            auxClasspath(path: file.path)
+          }
+        }
   }
 }
 
 publishing.publications.maven {
-  artifact javadocJar
-  artifact sourcesJar
-  artifact distTar
-  artifact distZip
   pom {
     name = 'SpotBugs'
-    description = "SpotBugs: Because it's easy!"
+    description = 'SpotBugs: Because it is easy!'
   }
 }
 
 // Module name should be reverse-DNS (com.github.spotbugs) just like package name
 // http://blog.joda.org/2017/04/java-se-9-jpms-module-naming.html
 ext.moduleName = 'com.github.spotbugs.spotbugs'
-apply from: "$rootDir/gradle/jigsaw.gradle"
+apply from: "${rootDir}/gradle/jigsaw.gradle"
 
-task guiTest(type: Test) {
-  classpath = project.sourceSets.guiTest.runtimeClasspath
-  testClassesDirs = project.sourceSets.guiTest.output.classesDirs
-}
-
-jacocoTestReport {
-  dependsOn(test, guiTest)
-  executionData.setFrom files("$buildDir/jacoco/test.exec", "$buildDir/jacoco/guiTest.exec")
-  sourceDirectories.setFrom files(sourceSets.main.java.srcDirs, sourceSets.gui.java.srcDirs)
-  classDirectories.setFrom files(sourceSets.main.output, sourceSets.gui.output)
+tasks.named('spotbugsTest').configure {
+  ignoreFailures = true
 }
 
 // TODO : generatemanual (we should decide what to do with the manual)

@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.classfile.engine.asm.FindBugsASM;
  */
 public abstract class AbstractFieldAnnotationVisitor extends FieldVisitor {
 
-    public AbstractFieldAnnotationVisitor() {
+    protected AbstractFieldAnnotationVisitor() {
         super(FindBugsASM.ASM_VERSION);
     }
 

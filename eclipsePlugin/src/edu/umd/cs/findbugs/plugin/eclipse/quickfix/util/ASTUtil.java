@@ -183,7 +183,7 @@ public class ASTUtil {
     }
 
     /**
-     * Searchs the first <CODE>ASTNode</CODE> between the specified
+     * Searches the first <CODE>ASTNode</CODE> between the specified
      * <CODE>startLine</CODE> and <CODE>endLine</CODE>. If the source line
      * doesn't contain an <CODE>ASTNode</CODE>, a
      * <CODE>ASTNodeNotFoundException</CODE> is thrown.
@@ -196,7 +196,7 @@ public class ASTUtil {
      * @param endLine
      *            the ending source line number.
      * @throws ASTNodeNotFoundException
-     *             if no <CODE>ASTNode</CODE> found between the specifed start
+     *             if no <CODE>ASTNode</CODE> found between the specified start
      *             and end line.
      */
     public static ASTNode getASTNode(CompilationUnit compilationUnit, int startLine, int endLine) throws ASTNodeNotFoundException {

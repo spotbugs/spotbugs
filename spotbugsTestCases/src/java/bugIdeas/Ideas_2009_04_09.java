@@ -1,15 +1,17 @@
 package bugIdeas;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class Ideas_2009_04_09 extends TestCase {
+public class Ideas_2009_04_09 {
 
+    @Test
     public void testBad() {
 
         try {
 
             shouldThrowAssertion();
-            fail();
+            Assertions.fail();
         } catch (AssertionError e) {
 
         }

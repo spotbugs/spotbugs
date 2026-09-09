@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.generic.InstructionHandle;
 
@@ -118,8 +118,7 @@ public class Location implements Comparable<Location> {
 
     @Override
     public int compareTo(Location other) {
-        int pos = handle.getPosition() - other.handle.getPosition();
-        return pos;
+        return handle.getPosition() - other.handle.getPosition();
     }
 
     @Override

@@ -1,8 +1,9 @@
 package bugIdeas;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class Ideas_2011_04_24 extends TestCase {
+public class Ideas_2011_04_24 {
 
 
     public double getDouble() {
@@ -18,12 +19,14 @@ public class Ideas_2011_04_24 extends TestCase {
     public boolean b(String s) {
         return s.length() == 0 || s == null;
     }
+
+    @Test
     public void testBusted() {
-        assertSame(17, getDouble() );
-        assertEquals(42.0, getDouble() );
-        assertEquals(17, getDouble() );
-        assertEquals(42.0, getInt() );
-        assertEquals(42, getFoo() );
-        assertEquals(42.0, getFoo() );
+        Assertions.assertSame(17, getDouble() );
+        Assertions.assertEquals(42.0, getDouble() );
+        Assertions.assertEquals(17, getDouble() );
+        Assertions.assertEquals(42.0, getInt() );
+        Assertions.assertEquals(42, getFoo() );
+        Assertions.assertEquals(42.0, getFoo() );
     }
 }

@@ -83,7 +83,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
      */
     @Override
     public JavaClass loadClass(String className) throws ClassNotFoundException {
-        if (className.length() == 0) {
+        if (className.isEmpty()) {
             throw new IllegalArgumentException("Request to load empty class");
         }
         className = ClassName.toSlashedClassName(className);

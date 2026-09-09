@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -39,9 +39,9 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
  * @author Garvin LeClaire
  */
 public class XDocsBugReporter extends TextUIBugReporter {
-    final private SortedBugCollection bugCollection;
+    private final SortedBugCollection bugCollection;
 
-    final private Project project;
+    private final Project project;
 
     private final Document document;
 
@@ -49,15 +49,11 @@ public class XDocsBugReporter extends TextUIBugReporter {
 
     private static final String ROOT_ELEMENT_NAME = "BugCollection";
 
-    private static final String PROJECT_ELEMENT_NAME = "Project";
-
     private static final String ERRORS_ELEMENT_NAME = "Errors";
 
     private static final String ANALYSIS_ERROR_ELEMENT_NAME = "AnalysisError";
 
     private static final String MISSING_CLASS_ELEMENT_NAME = "MissingClass";
-
-    private static final String SUMMARY_HTML_ELEMENT_NAME = "SummaryHTML";
 
     private static final String ELEMENT_NAME = "BugInstance";
 
@@ -93,6 +89,16 @@ public class XDocsBugReporter extends TextUIBugReporter {
     }
 
     @Override
+    public void reportMissingClass(ClassDescriptor classDescriptor) {
+        String missing = classDescriptor.getDottedClassName();
+        if (!isValidMissingClassMessage(missing)) {
+            return;
+        }
+        bugCollection.addMissingClass(missing);
+        super.reportMissingClass(classDescriptor);
+    }
+
+    @Override
     public void doReportBug(BugInstance bugInstance) {
         if (bugCollection.add(bugInstance)) {
             printBug(bugInstance);
@@ -121,10 +127,11 @@ public class XDocsBugReporter extends TextUIBugReporter {
     }
 
     private void writeXML(Writer out, Project project) throws IOException {
-        Document document = endDocument(project);
+        Document doc = endDocument(project);
 
-        XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
-        writer.write(document);
+        try (XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint())) {
+            writer.write(doc);
+        }
     }
 
     private Document endDocument(Project project) {

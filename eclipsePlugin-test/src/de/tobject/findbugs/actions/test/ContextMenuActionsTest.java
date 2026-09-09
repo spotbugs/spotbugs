@@ -18,16 +18,16 @@
  */
 package de.tobject.findbugs.actions.test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IActionDelegate;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.actions.ClearMarkersAction;
@@ -40,14 +40,14 @@ import de.tobject.findbugs.test.TestScenario;
  *
  * @author Tomás Pollak
  */
-public class ContextMenuActionsTest extends AbstractFindBugsTest {
-    @BeforeClass
-    public static void setUpClass() throws Exception {
+class ContextMenuActionsTest extends AbstractFindBugsTest {
+    @BeforeAll
+    static void setUpClass() throws Exception {
         setUpTestProject(TestScenario.DEFAULT);
     }
 
-    @AfterClass
-    public static void tearDownClass() throws CoreException {
+    @AfterAll
+    static void tearDownClass() throws CoreException {
         tearDownTestProject();
     }
 
@@ -67,7 +67,7 @@ public class ContextMenuActionsTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testClearFindBugs() throws CoreException {
+    void testClearFindBugs() throws CoreException {
         assertNoBugs();
 
         StructuredSelection selection = new StructuredSelection(getProject());
@@ -89,7 +89,7 @@ public class ContextMenuActionsTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testLoadXML() throws CoreException {
+    void testLoadXML() throws CoreException {
         assertNoBugs();
 
         StructuredSelection selection = new StructuredSelection(getProject());
@@ -103,7 +103,7 @@ public class ContextMenuActionsTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testRunFindBugs() throws CoreException {
+    void testRunFindBugs() throws CoreException {
         assertNoBugs();
 
         StructuredSelection selection = new StructuredSelection(getProject());
@@ -117,7 +117,7 @@ public class ContextMenuActionsTest extends AbstractFindBugsTest {
     }
 
     @Test
-    public void testSaveXML() throws CoreException {
+    void testSaveXML() throws CoreException {
         assertNoBugs();
         work(createFindBugsWorker());
         assertExpectedBugs();

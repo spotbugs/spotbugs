@@ -29,7 +29,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.io.IO;
 
 /**
  * @author pugh
@@ -105,14 +104,10 @@ public class PropertyBundle {
         if (url == null) {
             return;
         }
-        InputStream in = null;
-        try {
-            in = url.openStream();
+        try (InputStream in = url.openStream()) {
             properties.load(in);
         } catch (IOException e) {
             AnalysisContext.logError("Unable to load properties from " + url, e);
-        } finally {
-            IO.close(in);
         }
     }
 
@@ -138,14 +133,13 @@ public class PropertyBundle {
                 return defaultValue;
             }
             result = toBoolean(value);
-        } catch (IllegalArgumentException e) {
-        } catch (NullPointerException e) {
+        } catch (IllegalArgumentException | NullPointerException ignored) {
         }
         return result;
     }
 
     private boolean toBoolean(String name) {
-        return ((name != null) && "true".equalsIgnoreCase(name));
+        return "true".equalsIgnoreCase(name);
     }
 
     /**
@@ -231,8 +225,7 @@ public class PropertyBundle {
         if (!m.matches()) {
             return u;
         }
-        String result = String.format(getRewriter().urlRewriteFormat, m.group(1));
-        return result;
+        return String.format(getRewriter().urlRewriteFormat, m.group(1));
     }
 
 }

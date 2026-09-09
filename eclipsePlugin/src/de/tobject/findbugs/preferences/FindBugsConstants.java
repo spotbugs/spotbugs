@@ -35,46 +35,46 @@ public final class FindBugsConstants {
     /**
      * Cache FB class data (experimental)
      */
-    public final static String KEY_CACHE_CLASS_DATA = "cacheClassData";
+    public static final String KEY_CACHE_CLASS_DATA = "cacheClassData";
 
     /**
      * Run FB analysis as extra job (independent from build job)
      */
-    public final static String KEY_RUN_ANALYSIS_AS_EXTRA_JOB = "runAnalysisAsExtraJob";
+    public static final String KEY_RUN_ANALYSIS_AS_EXTRA_JOB = "runAnalysisAsExtraJob";
 
     /** marker severity to use for bugs with of concern tank */
-    public final static String RANK_OFCONCERN_MARKER_SEVERITY = FindBugsMarker.TYPE_OF_CONCERN;
+    public static final String RANK_OFCONCERN_MARKER_SEVERITY = FindBugsMarker.TYPE_OF_CONCERN;
 
     /** marker severity to use for bugs with troubling rank*/
-    public final static String RANK_TROUBLING_MARKER_SEVERITY = FindBugsMarker.TYPE_TROUBLING;
+    public static final String RANK_TROUBLING_MARKER_SEVERITY = FindBugsMarker.TYPE_TROUBLING;
 
     /** marker severity to use for bugs with scary rank */
-    public final static String RANK_SCARY_MARKER_SEVERITY = FindBugsMarker.TYPE_SCARY;
+    public static final String RANK_SCARY_MARKER_SEVERITY = FindBugsMarker.TYPE_SCARY;
 
     /** marker severity to use for bugs with scariest rank */
-    public final static String RANK_SCARIEST_MARKER_SEVERITY = FindBugsMarker.TYPE_SCARIEST;
+    public static final String RANK_SCARIEST_MARKER_SEVERITY = FindBugsMarker.TYPE_SCARIEST;
 
 
     /**
      * comma separated list of bug patterns which should be omitted on export
      * operation
      */
-    public final static String LAST_USED_EXPORT_FILTER = "lastUsedExportFilter";
+    public static final String LAST_USED_EXPORT_FILTER = "lastUsedExportFilter";
 
     /** "sort by" preference for exporting data */
-    public final static String EXPORT_SORT_ORDER = "exportSortOrder";
+    public static final String EXPORT_SORT_ORDER = "exportSortOrder";
 
-    public final static String ORDER_BY_NAME = "byName";
+    public static final String ORDER_BY_NAME = "byName";
 
-    public final static String ORDER_BY_OVERALL_BUGS_COUNT = "byOverallBugsCount";
+    public static final String ORDER_BY_OVERALL_BUGS_COUNT = "byOverallBugsCount";
 
-    public final static String ORDER_BY_NOT_FILTERED_BUGS_COUNT = "byNotFilteredBugsCount";
+    public static final String ORDER_BY_NOT_FILTERED_BUGS_COUNT = "byNotFilteredBugsCount";
 
-    public final static String DONT_REMIND_ABOUT_FULL_BUILD = "dontRemindAboutFullBuild";
+    public static final String DONT_REMIND_ABOUT_FULL_BUILD = "dontRemindAboutFullBuild";
 
-    public final static String LAST_USED_GROUPING = "lastUsedGrouping";
+    public static final String LAST_USED_GROUPING = "lastUsedGrouping";
 
-    public final static String LAST_USED_WORKING_SET = "lastUsedWorkingSet";
+    public static final String LAST_USED_WORKING_SET = "lastUsedWorkingSet";
 
     // ////////////////////////////////////////////////////////
     // FB workspace level settings
@@ -83,34 +83,34 @@ public final class FindBugsConstants {
      * ask if FB should automatically switch to the FB perspective after
      * analysis is done
      */
-    public final static String ASK_ABOUT_PERSPECTIVE_SWITCH = "askAboutPerspectiveSwitch";
+    public static final String ASK_ABOUT_PERSPECTIVE_SWITCH = "askAboutPerspectiveSwitch";
 
     /** true to switch to FindBugs perspective after analysis is done */
-    public final static String SWITCH_PERSPECTIVE_AFTER_ANALYSIS = "switchPerspectiveAfterAnalysis";
+    public static final String SWITCH_PERSPECTIVE_AFTER_ANALYSIS = "switchPerspectiveAfterAnalysis";
 
-    public final static String DISABLED_CATEGORIES = "disabledCategories";
+    public static final String DISABLED_CATEGORIES = "disabledCategories";
 
-    public final static String DISABLED_DETECTORS = "disabledDetectors";
+    public static final String DISABLED_DETECTORS = "disabledDetectors";
 
-    public final static String DISABLED_PATTERN_TYPES = "disabledPatternTypes";
+    public static final String DISABLED_PATTERN_TYPES = "disabledPatternTypes";
 
-    public final static String DISABLED_PATTERNS = "disabledPatterns";
+    public static final String DISABLED_PATTERNS = "disabledPatterns";
 
-    public final static String RUN_ANALYSIS_AUTOMATICALLY = "runAnalysisAutomatically";
+    public static final String RUN_ANALYSIS_AUTOMATICALLY = "runAnalysisAutomatically";
 
-    public final static String RUN_ANALYSIS_ON_FULL_BUILD = "runAnalysisOnFullBuild";
+    public static final String RUN_ANALYSIS_ON_FULL_BUILD = "runAnalysisOnFullBuild";
 
-    public final static String PROJECT_PROPS_DISABLED = "disableProjectProps";
+    public static final String PROJECT_PROPS_DISABLED = "disableProjectProps";
 
-    public final static String ENABLE_CONSOLE_OUTPUT = "enableConsoleOutput";
+    public static final String ENABLE_CONSOLE_OUTPUT = "enableConsoleOutput";
 
-    public final static String PROFILE_OUTPUT_MODE = "profileOutputMode";
+    public static final String PROFILE_OUTPUT_MODE = "profileOutputMode";
 
-    public final static String PROFILE_OUTPUT_BY_TIME = "profileOutputByTime";
+    public static final String PROFILE_OUTPUT_BY_TIME = "profileOutputByTime";
 
-    public final static String PROFILE_OUTPUT_BY_CALL = "profileOutputByCall";
+    public static final String PROFILE_OUTPUT_BY_CALL = "profileOutputByCall";
 
-    public final static String PROFILE_OUTPUT_BY_TIME_PER_CALL = "profileOutputByTimePerCall";
+    public static final String PROFILE_OUTPUT_BY_TIME_PER_CALL = "profileOutputByTimePerCall";
 
     public static final String IDS_PATTERN = "\\s*,\\s*";
 
@@ -129,14 +129,14 @@ public final class FindBugsConstants {
 
     public static Set<String> decodeIds(String text) {
         Set<String> sortedIds = new TreeSet<>();
-        if (text == null || text.trim().length() == 0) {
+        if (text == null || text.trim().isEmpty()) {
             return sortedIds;
         }
 
         String[] strings = text.split(IDS_PATTERN);
         for (String string : strings) {
             string = string.trim();
-            if (string.length() > 0) {
+            if (!string.isEmpty()) {
                 sortedIds.add(string);
             }
         }

@@ -25,9 +25,6 @@ https://spotbugs.github.io/eclipse-candidate/
 https://spotbugs.github.io/eclipse-latest/
   Provides latest SpotBugs Eclipse plugin built from master branch.
 
-https://spotbugs.github.io/eclipse-stable-latest/
-  Provides latest SpotBugs Eclipse plugin built from release-3.1 branch.
-
 Or just use `Eclipse marketplace <https://marketplace.eclipse.org/content/spotbugs-eclipse-plugin>`_ to install SpotBugs Eclipse plugin.
 
 Using the Plugin
@@ -84,4 +81,4 @@ This section lists common problems with the plugin and (if known) how to resolve
   Important: the configuration arguments starting with the line ``-vmargs`` must be last lines in the ``eclipse.ini`` file, and only one argument per line is allowed!
 
 * If you do not see any SpotBugs problem markers (in your source windows or in the Problems View), you may need to change your ``Problems View`` filter settings.
-  See `FAQ <faq.html#q6-the-eclipse-plugin-loads-but-doesn-t-work-correctly>`__ for more information.
+  See :ref:`Q6 at FAQ <faq6>` for more information.

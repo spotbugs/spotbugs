@@ -24,6 +24,7 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.Constant;
@@ -119,7 +120,7 @@ public class AssertionMethods {
                     ConstantNameAndType cnat = (ConstantNameAndType) cp.getConstant(cmr.getNameAndTypeIndex(),
                             Const.CONSTANT_NameAndType);
                     String methodName = ((ConstantUtf8) cp.getConstant(cnat.getNameIndex(), Const.CONSTANT_Utf8)).getBytes();
-                    String className = cp.getConstantString(cmr.getClassIndex(), Const.CONSTANT_Class).replace('/', '.');
+                    String className = ClassName.toDottedClassName(cp.getConstantString(cmr.getClassIndex(), Const.CONSTANT_Class));
                     String methodSig = ((ConstantUtf8) cp.getConstant(cnat.getSignatureIndex(), Const.CONSTANT_Utf8)).getBytes();
 
                     String classNameLC = className.toLowerCase();
@@ -187,7 +188,9 @@ public class AssertionMethods {
                     INVOKEINTERFACE iInterface = (INVOKEINTERFACE) next;
                     String className = iInterface.getClassName(cpg);
                     String fieldName = iInterface.getMethodName(cpg);
-                    if ("javax.servlet.http.HttpServletResponse".equals(className) && "setStatus".equals(fieldName)) {
+                    if (("javax.servlet.http.HttpServletResponse".equals(className)
+                            || "jakarta.servlet.http.HttpServletResponse".equals(className))
+                            && "setStatus".equals(fieldName)) {
                         return true;
                     }
 
@@ -225,9 +228,6 @@ public class AssertionMethods {
     }
 
     public boolean isAssertionCall(InvokeInstruction inv) {
-
-        boolean isAssertionMethod = assertionMethodRefSet.get(inv.getIndex());
-
-        return isAssertionMethod;
+        return assertionMethodRefSet.get(inv.getIndex());
     }
 }

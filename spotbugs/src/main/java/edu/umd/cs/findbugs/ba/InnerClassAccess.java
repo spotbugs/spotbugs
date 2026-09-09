@@ -19,14 +19,14 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 public class InnerClassAccess {
     private final String methodName;
 
     private final String methodSig;
 
-    private @Nonnull final XField field;
+    private final @Nonnull XField field;
 
     private final boolean isLoad;
 

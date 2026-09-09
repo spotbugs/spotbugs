@@ -28,8 +28,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -305,8 +305,7 @@ public class WorkItem {
             recursive = true;
         }
         IMarker[] markers = MarkerUtil.getMarkers(markerTarget, recursive ? IResource.DEPTH_INFINITE : IResource.DEPTH_ONE);
-        Set<IMarker> forJavaElement = MarkerUtil.findMarkerForJavaElement(javaElt, markers, recursive);
-        return forJavaElement;
+        return MarkerUtil.findMarkerForJavaElement(javaElt, markers, recursive);
     }
 
     /**
@@ -379,6 +378,13 @@ public class WorkItem {
             return false;
         }
         return Archive.isArchiveFileName(file.getName());
+    }
+
+    /**
+     * @return true if this work item corresponds to a project
+     */
+    public boolean isProject() {
+        return resource instanceof IProject || javaElt instanceof IJavaProject;
     }
 
     @Override

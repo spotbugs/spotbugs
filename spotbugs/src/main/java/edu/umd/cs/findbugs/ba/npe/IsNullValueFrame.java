@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -39,7 +39,9 @@ import edu.umd.cs.findbugs.util.Util;
 public class IsNullValueFrame extends Frame<IsNullValue> {
 
     static class PointerEqualityInfo {
-        final ValueNumber addr1, addr2;
+        final ValueNumber addr1;
+
+        final ValueNumber addr2;
 
         final boolean areEqual;
 

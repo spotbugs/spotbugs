@@ -48,7 +48,7 @@ public interface AnalysisFeatures {
             return num;
         }
 
-        static @AnalysisFeature public int build(String name) {
+        public static @AnalysisFeature int build(String name) {
             int num = next++;
             return asFeatureNum(num);
         }
