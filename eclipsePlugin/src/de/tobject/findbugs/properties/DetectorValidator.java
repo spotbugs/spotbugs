@@ -49,8 +49,7 @@ public class DetectorValidator {
         /**
          * @return the sum
          */
-        @NonNull
-        public Summary getSummary() {
+        public @NonNull Summary getSummary() {
             return sum;
         }
     }
@@ -69,8 +68,7 @@ public class DetectorValidator {
      *         error status in case anything goes wrong or file at given path is
      *         not considered as a valid plugin.
      */
-    @NonNull
-    public ValidationStatus validate(String path) {
+    public @NonNull ValidationStatus validate(String path) {
         File file = new File(path);
         Summary sum = null;
         try {

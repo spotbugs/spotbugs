@@ -210,8 +210,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
      *
      * @return AbstractMarkerAnnotatiosnModel from the editor
      */
-    @Nullable
-    protected AbstractMarkerAnnotationModel getModel() {
+    protected @Nullable AbstractMarkerAnnotationModel getModel() {
         if (editor == null) {
             return null;
         }

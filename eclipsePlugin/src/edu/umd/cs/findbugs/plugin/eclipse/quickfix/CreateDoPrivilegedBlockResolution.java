@@ -375,15 +375,13 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
         return methodBody;
     }
 
-    @Nullable
-    private ClassInstanceCreation findClassLoaderCreation(ASTNode node) {
+    private @Nullable ClassInstanceCreation findClassLoaderCreation(ASTNode node) {
         ClassLoaderCreationFinder finder = new ClassLoaderCreationFinder();
         node.accept(finder);
         return finder.getClassLoaderCreation();
     }
 
-    @Nullable
-    private MethodDeclaration findMethodDeclaration(ASTNode node) {
+    private @Nullable MethodDeclaration findMethodDeclaration(ASTNode node) {
         if (node == null || node instanceof MethodDeclaration) {
             return (MethodDeclaration) node;
         }

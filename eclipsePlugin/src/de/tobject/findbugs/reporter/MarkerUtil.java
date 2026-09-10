@@ -605,8 +605,7 @@ public final class MarkerUtil {
                 MarkerConfidence.Ignore.name()));
     }
 
-    @Nullable
-    public static BugPattern findBugPatternForMarker(IMarker marker) {
+    public static @Nullable BugPattern findBugPatternForMarker(IMarker marker) {
         String patternId = getBugPatternString(marker);
         if (patternId != null) {
             return DetectorFactoryCollection.instance().lookupBugPattern(patternId);
@@ -614,8 +613,7 @@ public final class MarkerUtil {
         return null;
     }
 
-    @Nullable
-    public static String getBugPatternString(IMarker marker) {
+    public static @Nullable String getBugPatternString(IMarker marker) {
         try {
             return (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
         } catch (CoreException e) {
@@ -978,8 +976,7 @@ public final class MarkerUtil {
      * @param marker marker to check for plugin id
      * @return detector plugin id, or empty string if the detector plugin is unknown
      */
-    @NonNull
-    public static String getPluginId(@NonNull IMarker marker) {
+    public static @NonNull String getPluginId(@NonNull IMarker marker) {
         return marker.getAttribute(FindBugsMarker.DETECTOR_PLUGIN_ID, "");
     }
 
@@ -1001,8 +998,7 @@ public final class MarkerUtil {
      * @return never null (empty array if nothing there or exception happens).
      *         Exception will be logged
      */
-    @NonNull
-    public static IMarker[] getMarkers(IResource fileOrFolder, int depth) {
+    public static @NonNull IMarker[] getMarkers(IResource fileOrFolder, int depth) {
         if (fileOrFolder.getType() == IResource.PROJECT && !fileOrFolder.isAccessible()) {
             // user just closed the project decorator is working on, avoid exception here
             return EMPTY;

@@ -115,8 +115,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
      * The visitor is only used to scan once, the result being cached on subsequent visits.
      */
     @Override
-    @NonNull
-    public String getLabel() {
+    public @NonNull String getLabel() {
         ASTVisitor labelFixingVisitor = getCustomLabelVisitor();
         if (labelFixingVisitor instanceof CustomLabelVisitor) {
             if (customizedLabel == null) {
@@ -129,8 +128,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     }
 
 
-    @NonNull
-    private String findLabelReplacement(ASTVisitor labelFixingVisitor) {
+    private @NonNull String findLabelReplacement(ASTVisitor labelFixingVisitor) {
         IMarker marker = getMarker();
         try {
             ASTNode node = getNodeForMarker(marker);
@@ -155,13 +153,11 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
      * Override this to give a resolution a custom label.
      * @return
      */
-    @Nullable
-    protected ASTVisitor getCustomLabelVisitor() {
+    protected @Nullable ASTVisitor getCustomLabelVisitor() {
         return null;
     }
 
-    @Nullable
-    protected ASTNode getNodeForMarker(IMarker marker) throws JavaModelException, ASTNodeNotFoundException {
+    protected @Nullable ASTNode getNodeForMarker(IMarker marker) throws JavaModelException, ASTNodeNotFoundException {
         BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
         if (bug == null) {
             return null;
@@ -212,8 +208,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         return retVal;
     }
 
-    @Nullable
-    public IProgressMonitor getMonitor() {
+    public @Nullable IProgressMonitor getMonitor() {
         return monitor;
     }
 
@@ -242,8 +237,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         //TODO reenable automatically running FindBugs if appropriate
     }
 
-    @Nullable
-    private IRegion completeRewrite(PendingRewrite p) {
+    private @Nullable IRegion completeRewrite(PendingRewrite p) {
         try {
             if (p != null) {
                 return rewriteCompilationUnit(p.rewrite, p.doc, p.originalUnit);
@@ -254,8 +248,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         return null;
     }
 
-    @Nullable
-    private PendingRewrite resolveWithoutWriting(IMarker marker) {
+    private @Nullable PendingRewrite resolveWithoutWriting(IMarker marker) {
         requireNonNull(marker, "marker");
         ICompilationUnit originalUnit = null;
         try {
@@ -389,8 +382,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
      * @return The compilation unit for the marker, or null if the file was not
      *         accessible or was not a Java file.
      */
-    @Nullable
-    protected ICompilationUnit getCompilationUnit(IMarker marker) {
+    protected @Nullable ICompilationUnit getCompilationUnit(IMarker marker) {
         IResource res = marker.getResource();
         if (res instanceof IFile && res.isAccessible()) {
             IJavaElement element = JavaCore.create((IFile) res);
@@ -415,8 +407,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         MessageDialog.openError(FindbugsPlugin.getShell(), "BugResolution failed.", e.getLocalizedMessage());
     }
 
-    @NonNull
-    protected final CompilationUnit createWorkingCopy(@NonNull ICompilationUnit unit) throws JavaModelException {
+    protected final @NonNull CompilationUnit createWorkingCopy(@NonNull ICompilationUnit unit) throws JavaModelException {
         unit.becomeWorkingCopy(monitor);
         ASTParser parser = createAstParser();
         parser.setSource(unit);
@@ -456,8 +447,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
      * @return the bug type we started to work with (can be different on different resolution instances
      * if the resolution class supports multiple bug patterns)
      */
-    @Nullable
-    public String getBugPattern() {
+    public @Nullable String getBugPattern() {
         return bugPattern;
     }
 

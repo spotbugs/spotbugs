@@ -402,8 +402,7 @@ public class ASTUtil {
         return statement;
     }
 
-    @Nullable
-    protected static ASTNode searchASTNode(CompilationUnit compilationUnit, int startLine, int endLine) {
+    protected static @Nullable ASTNode searchASTNode(CompilationUnit compilationUnit, int startLine, int endLine) {
         Assert.isNotNull(compilationUnit);
         isTrue(startLine <= endLine);
 
@@ -412,8 +411,7 @@ public class ASTUtil {
         return visitor.getASTNode();
     }
 
-    @Nullable
-    protected static TypeDeclaration searchTypeDeclaration(List<?> declarations, String typeName) {
+    protected static @Nullable TypeDeclaration searchTypeDeclaration(List<?> declarations, String typeName) {
         Assert.isNotNull(declarations);
         Assert.isNotNull(typeName);
 
@@ -440,8 +438,7 @@ public class ASTUtil {
         return null;
     }
 
-    @Nullable
-    protected static MethodDeclaration searchMethodDeclaration(AST ast, MethodDeclaration[] methods, String methodName,
+    protected static @Nullable MethodDeclaration searchMethodDeclaration(AST ast, MethodDeclaration[] methods, String methodName,
             String methodSignature) {
         Assert.isNotNull(methods);
         Assert.isNotNull(methodName);
@@ -460,8 +457,7 @@ public class ASTUtil {
         return null;
     }
 
-    @Nullable
-    protected static Statement searchStatement(CompilationUnit compilationUnit, List<?> statements, int startLine, int endLine) {
+    protected static @Nullable Statement searchStatement(CompilationUnit compilationUnit, List<?> statements, int startLine, int endLine) {
         Assert.isNotNull(compilationUnit);
         Assert.isNotNull(statements);
 

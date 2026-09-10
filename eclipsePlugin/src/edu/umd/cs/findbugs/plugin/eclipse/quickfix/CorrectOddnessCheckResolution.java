@@ -77,15 +77,13 @@ public abstract class CorrectOddnessCheckResolution extends BugResolution {
         rewrite.replace(oddnessCheck, correctOddnessCheck, null);
     }
 
-    @Nullable
-    protected InfixExpression findOddnessCheck(ASTNode node) {
+    protected @Nullable InfixExpression findOddnessCheck(ASTNode node) {
         OddnessCheckFinder finder = new OddnessCheckFinder();
         node.accept(finder);
         return finder.getOddnessCheck();
     }
 
-    @Nullable
-    protected Expression findNumberExpression(InfixExpression oddnessCheck) {
+    protected @Nullable Expression findNumberExpression(InfixExpression oddnessCheck) {
         NumberExpressionFinder finder = new NumberExpressionFinder();
         oddnessCheck.accept(finder);
         return finder.getNumberExpression();

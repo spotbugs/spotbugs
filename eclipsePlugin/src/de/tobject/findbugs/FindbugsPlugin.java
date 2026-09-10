@@ -621,8 +621,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION_DIRTY, isDirty ? Boolean.TRUE : Boolean.FALSE);
     }
 
-    @Nullable
-    public static SortedBugCollection getBugCollectionIfSet(IProject project) {
+    public static @Nullable SortedBugCollection getBugCollectionIfSet(IProject project) {
         try {
             return (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
         } catch (CoreException ignored) {

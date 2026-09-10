@@ -104,8 +104,7 @@ public class BugResolutionAssociations {
         return fixes;
     }
 
-    @Nullable
-    private static BugResolution instantiateBugResolution(QuickFixContribution qf) {
+    private static @Nullable BugResolution instantiateBugResolution(QuickFixContribution qf) {
         try {
             BugResolution br = qf.producer.call();
             br.setLabel(qf.label);

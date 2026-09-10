@@ -191,8 +191,7 @@ public class Util {
     }
 
     @SuppressWarnings("unchecked")
-    @Nullable
-    public static <V> V getAdapter(Class<V> adapter, Object obj) {
+    public static <V> @Nullable V getAdapter(Class<V> adapter, Object obj) {
         if (obj == null) {
             return null;
         }

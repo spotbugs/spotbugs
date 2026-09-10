@@ -212,13 +212,11 @@ public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup>
         return null;
     }
 
-    @NonNull
-    public GroupType getType() {
+    public @NonNull GroupType getType() {
         return type;
     }
 
-    @Nullable
-    public Object getData() {
+    public @Nullable Object getData() {
         return identifier;
     }
 

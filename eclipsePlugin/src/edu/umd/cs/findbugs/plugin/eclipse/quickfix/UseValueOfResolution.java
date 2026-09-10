@@ -88,8 +88,7 @@ public class UseValueOfResolution extends BugResolution {
         rewrite.replace(primitiveTypeCreation, valueOfInvocation, null);
     }
 
-    @Nullable
-    protected ClassInstanceCreation findPrimitiveTypeCreation(ASTNode node) {
+    protected @Nullable ClassInstanceCreation findPrimitiveTypeCreation(ASTNode node) {
         PrimitiveTypeCreationFinder visitor = new PrimitiveTypeCreationFinder();
         node.accept(visitor);
         return visitor.getPrimitiveTypeCreation();

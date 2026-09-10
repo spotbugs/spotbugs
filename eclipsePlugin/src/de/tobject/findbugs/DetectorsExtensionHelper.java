@@ -149,8 +149,7 @@ public class DetectorsExtensionHelper {
      * "bin" directory. It doesn't work if the plugin build.properties are not
      * existing or contain invalid content
      */
-    @Nullable
-    private static String resolvePluginClassesDir(String bundleName, File sourceDir) {
+    private static @Nullable String resolvePluginClassesDir(String bundleName, File sourceDir) {
         if (sourceDir.listFiles() == null) {
             FindbugsPlugin.getDefault().logException(new IllegalStateException("No files in the bundle!"),
                     "Failed to create temporary detector package for bundle " + sourceDir);
@@ -183,8 +182,7 @@ public class DetectorsExtensionHelper {
     /**
      * @return possible deployment root directory of a plugin project
      */
-    @NonNull
-    private static String getBuildDirectory(String bundleName, File sourceDir) {
+    private static @NonNull String getBuildDirectory(String bundleName, File sourceDir) {
         Properties props = new Properties();
         File buildProps = new File(sourceDir, "build.properties");
         if (buildProps.isFile()) {

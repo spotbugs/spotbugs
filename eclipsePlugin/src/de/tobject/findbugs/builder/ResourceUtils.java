@@ -324,8 +324,7 @@ public class ResourceUtils {
      *            IResource
      * @return resource object or null
      */
-    @Nullable
-    public static WorkItem getWorkItem(Object element) {
+    public static @Nullable WorkItem getWorkItem(Object element) {
         if (element instanceof IResource) {
             IResource resource = (IResource) element;
             if (resource.getType() == IResource.FILE && !Util.isJavaArtifact(resource) || !resource.isAccessible()) {
@@ -368,8 +367,7 @@ public class ResourceUtils {
      *            IResource
      * @return resource object or null
      */
-    @Nullable
-    public static IResource getResource(Object element) {
+    public static @Nullable IResource getResource(Object element) {
         if (element instanceof IJavaElement) {
             return ((IJavaElement) element).getResource();
         }

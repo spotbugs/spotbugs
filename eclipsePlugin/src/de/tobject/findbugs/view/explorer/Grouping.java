@@ -48,23 +48,19 @@ public class Grouping {
         return createFrom(order);
     }
 
-    @NonNull
-    public static Grouping createFrom(List<GroupType> types) {
+    public static @NonNull Grouping createFrom(List<GroupType> types) {
         return new Grouping(types);
     }
 
-    @NonNull
-    public List<GroupType> asList() {
+    public @NonNull List<GroupType> asList() {
         return new LinkedList<>(groupOrder);
     }
 
-    @NonNull
-    public GroupType getFirstType() {
+    public @NonNull GroupType getFirstType() {
         return groupOrder.isEmpty() ? GroupType.Undefined : groupOrder.getFirst();
     }
 
-    @NonNull
-    public GroupType getChildType(GroupType parent) {
+    public @NonNull GroupType getChildType(GroupType parent) {
         if (parent == GroupType.Marker) {
             return parent;
         }
