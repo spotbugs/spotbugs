@@ -21,8 +21,6 @@ package de.tobject.findbugs.actions;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.CheckForNull;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -47,6 +45,7 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorExtension;
 import org.eclipse.ui.texteditor.IUpdate;
+import org.jspecify.annotations.Nullable;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
@@ -65,7 +64,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 
     private IVerticalRulerInfo ruler;
 
-    @CheckForNull
+    @Nullable
     private ITextEditor editor;
 
     /** Contains the markers of the currently selected line in the ruler margin. */
@@ -211,7 +210,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
      *
      * @return AbstractMarkerAnnotatiosnModel from the editor
      */
-    @CheckForNull
+    @Nullable
     protected AbstractMarkerAnnotationModel getModel() {
         if (editor == null) {
             return null;

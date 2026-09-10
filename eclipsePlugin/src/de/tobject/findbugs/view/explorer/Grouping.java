@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 public class Grouping {
 
@@ -48,22 +48,22 @@ public class Grouping {
         return createFrom(order);
     }
 
-    @Nonnull
+    @NonNull
     public static Grouping createFrom(List<GroupType> types) {
         return new Grouping(types);
     }
 
-    @Nonnull
+    @NonNull
     public List<GroupType> asList() {
         return new LinkedList<>(groupOrder);
     }
 
-    @Nonnull
+    @NonNull
     public GroupType getFirstType() {
         return groupOrder.isEmpty() ? GroupType.Undefined : groupOrder.getFirst();
     }
 
-    @Nonnull
+    @NonNull
     public GroupType getChildType(GroupType parent) {
         if (parent == GroupType.Marker) {
             return parent;

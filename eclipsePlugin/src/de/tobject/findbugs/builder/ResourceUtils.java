@@ -30,8 +30,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -48,6 +46,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.team.internal.core.subscribers.ChangeSet;
 import org.eclipse.ui.IAggregateWorkingSet;
 import org.eclipse.ui.IWorkingSet;
+import org.jspecify.annotations.Nullable;
 
 import de.tobject.findbugs.util.ProjectUtilities;
 import de.tobject.findbugs.util.Util;
@@ -325,7 +324,7 @@ public class ResourceUtils {
      *            IResource
      * @return resource object or null
      */
-    @CheckForNull
+    @Nullable
     public static WorkItem getWorkItem(Object element) {
         if (element instanceof IResource) {
             IResource resource = (IResource) element;
@@ -369,7 +368,7 @@ public class ResourceUtils {
      *            IResource
      * @return resource object or null
      */
-    @javax.annotation.CheckForNull
+    @Nullable
     public static IResource getResource(Object element) {
         if (element instanceof IJavaElement) {
             return ((IJavaElement) element).getResource();

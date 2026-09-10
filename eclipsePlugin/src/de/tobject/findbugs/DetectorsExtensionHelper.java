@@ -27,15 +27,14 @@ import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
-
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.osgi.framework.Bundle;
 
 /**
@@ -109,7 +108,7 @@ public class DetectorsExtensionHelper {
      *            non null
      * @return resolved absolute path for the detector package
      */
-    @CheckForNull
+    @Nullable
     private static String resolveRelativePath(IContributor contributor, String libPathAsString) {
         String bundleName = contributor.getName();
         Bundle bundle = Platform.getBundle(bundleName);
@@ -151,7 +150,7 @@ public class DetectorsExtensionHelper {
      * "bin" directory. It doesn't work if the plugin build.properties are not
      * existing or contain invalid content
      */
-    @CheckForNull
+    @Nullable
     private static String resolvePluginClassesDir(String bundleName, File sourceDir) {
         if (sourceDir.listFiles() == null) {
             FindbugsPlugin.getDefault().logException(new IllegalStateException("No files in the bundle!"),
@@ -185,7 +184,7 @@ public class DetectorsExtensionHelper {
     /**
      * @return possible deployment root directory of a plugin project
      */
-    @Nonnull
+    @NonNull
     private static String getBuildDirectory(String bundleName, File sourceDir) {
         Properties props = new Properties();
         File buildProps = new File(sourceDir, "build.properties");

@@ -29,9 +29,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -67,6 +64,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import de.tobject.findbugs.FindBugsJob;
 import de.tobject.findbugs.FindbugsPlugin;
@@ -275,7 +274,7 @@ public final class MarkerUtil {
      *            the project
      * @return the IResource representing the Java class
      */
-    private static @CheckForNull IJavaElement getJavaElement(BugInstance bug, IJavaProject project) throws JavaModelException {
+    private static @Nullable IJavaElement getJavaElement(BugInstance bug, IJavaProject project) throws JavaModelException {
 
         SourceLineAnnotation primarySourceLineAnnotation = bug.getPrimarySourceLineAnnotation();
         String qualifiedClassName = primarySourceLineAnnotation.getClassName();
@@ -338,7 +337,7 @@ public final class MarkerUtil {
     }
 
     private static void completeFieldInfo(String qualifiedClassName,
-            @Nonnull IType type, @Nonnull BugInstance bug, @Nonnull FieldAnnotation field) {
+            @NonNull IType type, @NonNull BugInstance bug, @NonNull FieldAnnotation field) {
 
         IField ifield = type.getField(field.getFieldName());
         ISourceRange sourceRange = null;
@@ -386,7 +385,7 @@ public final class MarkerUtil {
         return sourceFileStr;
     }
 
-    private static void completeInnerClassInfo(String qualifiedClassName, String innerName, @Nonnull IType type, BugInstance bug)
+    private static void completeInnerClassInfo(String qualifiedClassName, String innerName, @NonNull IType type, BugInstance bug)
             throws JavaModelException {
         int lineNbr = findChildSourceLine(type, innerName, bug);
         if (lineNbr > 0) {
@@ -574,7 +573,7 @@ public final class MarkerUtil {
         job.scheduleInteractive();
     }
 
-    public static @CheckForNull BugCode findBugCodeForMarker(IMarker marker) {
+    public static @Nullable BugCode findBugCodeForMarker(IMarker marker) {
         try {
             Object bugCode = marker.getAttribute(FindBugsMarker.PATTERN_TYPE);
             if (bugCode instanceof String) {
@@ -606,7 +605,7 @@ public final class MarkerUtil {
                 MarkerConfidence.Ignore.name()));
     }
 
-    @CheckForNull
+    @Nullable
     public static BugPattern findBugPatternForMarker(IMarker marker) {
         String patternId = getBugPatternString(marker);
         if (patternId != null) {
@@ -615,7 +614,7 @@ public final class MarkerUtil {
         return null;
     }
 
-    @CheckForNull
+    @Nullable
     public static String getBugPatternString(IMarker marker) {
         try {
             return (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
@@ -628,7 +627,7 @@ public final class MarkerUtil {
         }
     }
 
-    public static @CheckForNull IJavaElement findJavaElementForMarker(IMarker marker) {
+    public static @Nullable IJavaElement findJavaElementForMarker(IMarker marker) {
         try {
             Object elementId = marker.getAttribute(FindBugsMarker.UNIQUE_JAVA_ID);
             if (elementId instanceof String) {
@@ -644,7 +643,7 @@ public final class MarkerUtil {
         return null;
     }
 
-    public static @CheckForNull Plugin findDetectorPluginFor(IMarker marker) {
+    public static @Nullable Plugin findDetectorPluginFor(IMarker marker) {
         try {
             Object pluginId = marker.getAttribute(FindBugsMarker.DETECTOR_PLUGIN_ID);
             if (pluginId instanceof String) {
@@ -714,7 +713,7 @@ public final class MarkerUtil {
             return bugInstance;
         }
 
-        public BugCollectionAndInstance(@Nonnull BugCollection bugCollection, @Nonnull BugInstance bugInstance) {
+        public BugCollectionAndInstance(@NonNull BugCollection bugCollection, @NonNull BugInstance bugInstance) {
             if (bugCollection == null) {
                 throw new NullPointerException("Null bug collection");
             }
@@ -743,7 +742,7 @@ public final class MarkerUtil {
      * @return the BugInstance associated with the marker, or null if we can't
      *         find the BugInstance
      */
-    public static @CheckForNull BugInstance findBugInstanceForMarker(IMarker marker) {
+    public static @Nullable BugInstance findBugInstanceForMarker(IMarker marker) {
         BugCollectionAndInstance bci = findBugCollectionAndInstanceForMarker(marker);
         if (bci == null) {
             return null;
@@ -759,7 +758,7 @@ public final class MarkerUtil {
      * @return the BugInstance associated with the marker, or null if we can't
      *         find the BugInstance
      */
-    public static @CheckForNull BugCollectionAndInstance findBugCollectionAndInstanceForMarker(IMarker marker) {
+    public static @Nullable BugCollectionAndInstance findBugCollectionAndInstanceForMarker(IMarker marker) {
 
         IResource resource = marker.getResource();
         IProject project = resource.getProject();
@@ -979,8 +978,8 @@ public final class MarkerUtil {
      * @param marker marker to check for plugin id
      * @return detector plugin id, or empty string if the detector plugin is unknown
      */
-    @Nonnull
-    public static String getPluginId(@Nonnull IMarker marker) {
+    @NonNull
+    public static String getPluginId(@NonNull IMarker marker) {
         return marker.getAttribute(FindBugsMarker.DETECTOR_PLUGIN_ID, "");
     }
 
@@ -1002,7 +1001,7 @@ public final class MarkerUtil {
      * @return never null (empty array if nothing there or exception happens).
      *         Exception will be logged
      */
-    @Nonnull
+    @NonNull
     public static IMarker[] getMarkers(IResource fileOrFolder, int depth) {
         if (fileOrFolder.getType() == IResource.PROJECT && !fileOrFolder.isAccessible()) {
             // user just closed the project decorator is working on, avoid exception here

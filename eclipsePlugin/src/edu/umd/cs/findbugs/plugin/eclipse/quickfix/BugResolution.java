@@ -11,9 +11,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -44,6 +41,8 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.markers.WorkbenchMarkerResolution;
 import org.eclipse.ui.views.markers.internal.Util;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
@@ -100,7 +99,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
      * Called on initialization
      * @param options optional arguments
      */
-    public void setOptions(@Nonnull Map<String, String> options) {
+    public void setOptions(@NonNull Map<String, String> options) {
         // noop
     }
 
@@ -116,7 +115,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
      * The visitor is only used to scan once, the result being cached on subsequent visits.
      */
     @Override
-    @Nonnull
+    @NonNull
     public String getLabel() {
         ASTVisitor labelFixingVisitor = getCustomLabelVisitor();
         if (labelFixingVisitor instanceof CustomLabelVisitor) {
@@ -130,7 +129,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
     }
 
 
-    @Nonnull
+    @NonNull
     private String findLabelReplacement(ASTVisitor labelFixingVisitor) {
         IMarker marker = getMarker();
         try {
@@ -156,12 +155,12 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
      * Override this to give a resolution a custom label.
      * @return
      */
-    @CheckForNull
+    @Nullable
     protected ASTVisitor getCustomLabelVisitor() {
         return null;
     }
 
-    @CheckForNull
+    @Nullable
     protected ASTNode getNodeForMarker(IMarker marker) throws JavaModelException, ASTNodeNotFoundException {
         BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
         if (bug == null) {
@@ -213,7 +212,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         return retVal;
     }
 
-    @CheckForNull
+    @Nullable
     public IProgressMonitor getMonitor() {
         return monitor;
     }
@@ -243,7 +242,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         //TODO reenable automatically running FindBugs if appropriate
     }
 
-    @CheckForNull
+    @Nullable
     private IRegion completeRewrite(PendingRewrite p) {
         try {
             if (p != null) {
@@ -255,7 +254,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         return null;
     }
 
-    @CheckForNull
+    @Nullable
     private PendingRewrite resolveWithoutWriting(IMarker marker) {
         requireNonNull(marker, "marker");
         ICompilationUnit originalUnit = null;
@@ -294,7 +293,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         }
     }
 
-    private CompilationUnit makeOrReuseWorkingCopy(@Nonnull ICompilationUnit originalUnit) throws JavaModelException {
+    private CompilationUnit makeOrReuseWorkingCopy(@NonNull ICompilationUnit originalUnit) throws JavaModelException {
         if (originalUnit.equals(cachedCompilationUnitKey)) {
             return cachedCompilationUnit;
         }
@@ -390,7 +389,7 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
      * @return The compilation unit for the marker, or null if the file was not
      *         accessible or was not a Java file.
      */
-    @CheckForNull
+    @Nullable
     protected ICompilationUnit getCompilationUnit(IMarker marker) {
         IResource res = marker.getResource();
         if (res instanceof IFile && res.isAccessible()) {
@@ -416,8 +415,8 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
         MessageDialog.openError(FindbugsPlugin.getShell(), "BugResolution failed.", e.getLocalizedMessage());
     }
 
-    @Nonnull
-    protected final CompilationUnit createWorkingCopy(@Nonnull ICompilationUnit unit) throws JavaModelException {
+    @NonNull
+    protected final CompilationUnit createWorkingCopy(@NonNull ICompilationUnit unit) throws JavaModelException {
         unit.becomeWorkingCopy(monitor);
         ASTParser parser = createAstParser();
         parser.setSource(unit);
@@ -457,12 +456,12 @@ public abstract class BugResolution extends WorkbenchMarkerResolution {
      * @return the bug type we started to work with (can be different on different resolution instances
      * if the resolution class supports multiple bug patterns)
      */
-    @CheckForNull
+    @Nullable
     public String getBugPattern() {
         return bugPattern;
     }
 
-    public void setBugPattern(@Nonnull String pattern) {
+    public void setBugPattern(@NonNull String pattern) {
         Objects.requireNonNull(pattern);
         this.bugPattern = pattern;
     }

@@ -22,14 +22,13 @@ package de.tobject.findbugs.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.annotation.Nonnull;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.JavaCore;
+import org.jspecify.annotations.NonNull;
 
 import de.tobject.findbugs.FindbugsPlugin;
 
@@ -97,7 +96,7 @@ public class ProjectUtilities {
     /**
      * @return a (possibly empty) list of existing and opened projects with the FindBugs nature
      */
-    @Nonnull
+    @NonNull
     public static List<IProject> getFindBugsProjects() {
         IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
         List<IProject> fbProj = new ArrayList<>();

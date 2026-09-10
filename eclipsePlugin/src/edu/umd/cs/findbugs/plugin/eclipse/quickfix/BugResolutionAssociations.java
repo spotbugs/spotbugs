@@ -28,11 +28,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.ui.IMarkerResolution;
+import org.jspecify.annotations.Nullable;
 
 import de.tobject.findbugs.FindbugsPlugin;
 
@@ -105,7 +104,7 @@ public class BugResolutionAssociations {
         return fixes;
     }
 
-    @CheckForNull
+    @Nullable
     private static BugResolution instantiateBugResolution(QuickFixContribution qf) {
         try {
             BugResolution br = qf.producer.call();

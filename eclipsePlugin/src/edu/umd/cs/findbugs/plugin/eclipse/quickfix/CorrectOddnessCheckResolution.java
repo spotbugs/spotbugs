@@ -26,8 +26,6 @@ import static java.lang.Integer.parseInt;
 import static org.eclipse.jdt.core.dom.InfixExpression.Operator.EQUALS;
 import static org.eclipse.jdt.core.dom.InfixExpression.Operator.REMAINDER;
 
-import javax.annotation.CheckForNull;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -37,6 +35,7 @@ import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.NumberLiteral;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
@@ -78,14 +77,14 @@ public abstract class CorrectOddnessCheckResolution extends BugResolution {
         rewrite.replace(oddnessCheck, correctOddnessCheck, null);
     }
 
-    @CheckForNull
+    @Nullable
     protected InfixExpression findOddnessCheck(ASTNode node) {
         OddnessCheckFinder finder = new OddnessCheckFinder();
         node.accept(finder);
         return finder.getOddnessCheck();
     }
 
-    @CheckForNull
+    @Nullable
     protected Expression findNumberExpression(InfixExpression oddnessCheck) {
         NumberExpressionFinder finder = new NumberExpressionFinder();
         oddnessCheck.accept(finder);
