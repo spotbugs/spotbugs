@@ -25,9 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -59,6 +56,8 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import de.tobject.findbugs.FindBugsJob;
 import de.tobject.findbugs.FindbugsPlugin;
@@ -133,8 +132,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
     private boolean projectPropsInitiallyEnabled;
 
     //  Nonnull if there is a current project
-    @Nullable
-    private ScopedPreferenceStore projectStore;
+    private @Nullable ScopedPreferenceStore projectStore;
 
     /** never null */
     private ScopedPreferenceStore workspaceStore;
@@ -587,7 +585,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
      * Triggers FB analysis on given project
      * @param myProject opened project with FindBugs nature
      */
-    private static void runBuild(@Nonnull IProject myProject) {
+    private static void runBuild(@NonNull IProject myProject) {
         StructuredSelection selection = new StructuredSelection(myProject);
         FindBugsAction action = new FindBugsAction();
         action.selectionChanged(null, selection);

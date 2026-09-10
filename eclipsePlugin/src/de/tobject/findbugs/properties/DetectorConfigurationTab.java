@@ -29,8 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import jakarta.annotation.Nonnull;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.IColorProvider;
@@ -59,6 +57,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.jspecify.annotations.NonNull;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import edu.umd.cs.findbugs.BugPattern;
@@ -678,8 +677,7 @@ public class DetectorConfigurationTab extends Composite {
         return abbr;
     }
 
-    @Nonnull
-    private String createBugsAbbreviation(DetectorFactory factory) {
+    private @NonNull String createBugsAbbreviation(DetectorFactory factory) {
         StringBuilder sb = new StringBuilder();
         Collection<BugPattern> patterns = factory.getReportedBugPatterns();
         LinkedHashSet<String> abbrs = new LinkedHashSet<>();

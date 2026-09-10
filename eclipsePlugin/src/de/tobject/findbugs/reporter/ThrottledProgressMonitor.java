@@ -2,11 +2,11 @@ package de.tobject.findbugs.reporter;
 
 import java.util.function.LongSupplier;
 
-import jakarta.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.jspecify.annotations.NonNull;
 
 /**
  * <p>SpotBugs Eclipse Plugin uses {@link IProgressMonitor#setTaskName(String)} to tell what it is working for.
@@ -31,7 +31,7 @@ class ThrottledProgressMonitor implements IProgressMonitor {
     private long lastWorked = NOT_TRIGGERED;
     private int accumulatedWork;
 
-    ThrottledProgressMonitor(@Nonnull IProgressMonitor delegate, @Nonnull LongSupplier currentTimeMillis) {
+    ThrottledProgressMonitor(@NonNull IProgressMonitor delegate, @NonNull LongSupplier currentTimeMillis) {
         Assert.isNotNull(delegate);
         Assert.isNotNull(currentTimeMillis);
 
