@@ -20,9 +20,8 @@
 
 package de.tobject.findbugs.marker;
 
-import jakarta.annotation.Nonnull;
-
 import org.eclipse.jdt.core.IJavaElement;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.BugRankCategory;
 import edu.umd.cs.findbugs.annotations.Confidence;
@@ -163,8 +162,7 @@ public interface FindBugsMarker {
          *            name as defined by {@link #name()}
          * @return matching confidence, never null
          */
-        @Nonnull
-        public static MarkerConfidence getConfidence(int bugPrio) {
+        public static @NonNull MarkerConfidence getConfidence(int bugPrio) {
             Confidence con = Confidence.getConfidence(bugPrio);
             MarkerConfidence[] values = MarkerConfidence.values();
             for (MarkerConfidence mc : values) {
@@ -179,8 +177,7 @@ public interface FindBugsMarker {
          * @param confidence name as defined by {@link #name()}
          * @return matching confidence, never null
          */
-        @Nonnull
-        public static MarkerConfidence getConfidence(String confidence) {
+        public static @NonNull MarkerConfidence getConfidence(String confidence) {
             try {
                 return MarkerConfidence.valueOf(confidence);
             } catch (IllegalArgumentException e) {

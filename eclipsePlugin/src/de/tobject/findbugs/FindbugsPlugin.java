@@ -42,8 +42,6 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.annotation.CheckForNull;
-
 import org.dom4j.DocumentException;
 import org.eclipse.core.internal.preferences.EclipsePreferences;
 import org.eclipse.core.resources.IFile;
@@ -77,6 +75,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.jspecify.annotations.Nullable;
 import org.osgi.framework.BundleContext;
 
 import de.tobject.findbugs.builder.FindBugsBuilder;
@@ -622,8 +621,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION_DIRTY, isDirty ? Boolean.TRUE : Boolean.FALSE);
     }
 
-    @CheckForNull
-    public static SortedBugCollection getBugCollectionIfSet(IProject project) {
+    public static @Nullable SortedBugCollection getBugCollectionIfSet(IProject project) {
         try {
             return (SortedBugCollection) project.getSessionProperty(SESSION_PROPERTY_BUG_COLLECTION);
         } catch (CoreException ignored) {
@@ -831,7 +829,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
     }
 
     public static void setProjectSettingsEnabled(IProject project,
-            @CheckForNull IPreferenceStore store, boolean enabled) {
+            @Nullable IPreferenceStore store, boolean enabled) {
         try {
             project.setSessionProperty(SESSION_PROPERTY_SETTINGS_ON, Boolean.valueOf(enabled));
         } catch (CoreException e) {
@@ -854,7 +852,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      *
      * @return the preferences for the project or prefs from workspace
      */
-    public static UserPreferences getCorePreferences(@CheckForNull IProject project, boolean forceRead) {
+    public static UserPreferences getCorePreferences(@Nullable IProject project, boolean forceRead) {
         if (project == null || !isProjectSettingsEnabled(project)) {
             // read workspace (user) settings from instance area
             return getWorkspacePreferences();
@@ -874,7 +872,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
      *
      * @return the preferences for the project or prefs from workspace
      */
-    public static IPreferenceStore getPluginPreferences(@CheckForNull IProject project) {
+    public static IPreferenceStore getPluginPreferences(@Nullable IProject project) {
         if (project == null || !isProjectSettingsEnabled(project)) {
             // read workspace (user) settings from instance area
             return new ScopedPreferenceStore(InstanceScope.INSTANCE, FindbugsPlugin.PLUGIN_ID);

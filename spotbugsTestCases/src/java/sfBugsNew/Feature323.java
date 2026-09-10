@@ -105,5 +105,4 @@ public class Feature323 {
         return TEST_STRING.charAt(TEST_STRING.length());
     }
 
-
 }

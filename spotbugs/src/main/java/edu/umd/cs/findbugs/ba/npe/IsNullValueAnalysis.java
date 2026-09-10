@@ -718,12 +718,15 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
                     // Failed to obtain type dataflow information; fall back to conservative defaults.
                 }
                 if (tos.isDefinitelyNotNull() && notInstanceOfImpliesNull) {
-                    // The value is non-null and its type is known to satisfy the instanceof check.
+                    // Value is known non-null and its static type is a subtype of the check type,
+                    // so instanceof is always true — the "not instanceof" branch is infeasible.
                     if (isNotInstanceOf) {
-                        fallThroughDecision = tos;
+                        fallThroughDecision = tos; // only the instanceof (fall-through) branch is reachable
                     } else {
-                        ifcmpDecision = tos;
+                        ifcmpDecision = tos; // only the instanceof (jump) branch is reachable
                     }
+                } else if (tos.isDefinitelyNotNull()) {
+                    return null;
                 } else if (notInstanceOfImpliesNull) {
                     // "not instanceof" branch: value must be null; "instanceof" branch: value is non-null
                     ifcmpDecision = isNotInstanceOf ? IsNullValue.pathSensitiveNullValue() : IsNullValue.pathSensitiveNonNullValue();
