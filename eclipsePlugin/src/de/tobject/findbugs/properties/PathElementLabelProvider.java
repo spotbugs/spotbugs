@@ -29,7 +29,7 @@ public class PathElementLabelProvider extends LabelProvider implements IColorPro
         return null;
     }
 
-    public String @NonNull getToolTip(Object element) {
+    public @NonNull String getToolTip(Object element) {
         if (!(element instanceof IPathElement)) {
             return "";
         }

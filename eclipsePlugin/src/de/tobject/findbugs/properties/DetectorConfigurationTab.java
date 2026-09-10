@@ -677,7 +677,7 @@ public class DetectorConfigurationTab extends Composite {
         return abbr;
     }
 
-    private String @NonNull createBugsAbbreviation(DetectorFactory factory) {
+    private @NonNull String createBugsAbbreviation(DetectorFactory factory) {
         StringBuilder sb = new StringBuilder();
         Collection<BugPattern> patterns = factory.getReportedBugPatterns();
         LinkedHashSet<String> abbrs = new LinkedHashSet<>();
