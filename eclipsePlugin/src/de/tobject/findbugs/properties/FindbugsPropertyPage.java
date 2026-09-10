@@ -132,8 +132,7 @@ public class FindbugsPropertyPage extends PropertyPage implements IWorkbenchPref
     private boolean projectPropsInitiallyEnabled;
 
     //  Nonnull if there is a current project
-    @Nullable
-    private ScopedPreferenceStore projectStore;
+    private @Nullable ScopedPreferenceStore projectStore;
 
     /** never null */
     private ScopedPreferenceStore workspaceStore;
