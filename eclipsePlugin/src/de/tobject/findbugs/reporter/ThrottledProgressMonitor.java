@@ -2,11 +2,11 @@ package de.tobject.findbugs.reporter;
 
 import java.util.function.LongSupplier;
 
-import javax.annotation.concurrent.NotThreadSafe;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.jspecify.annotations.NonNull;
+
+import net.jcip.annotations.NotThreadSafe;
 
 /**
  * <p>SpotBugs Eclipse Plugin uses {@link IProgressMonitor#setTaskName(String)} to tell what it is working for.
