@@ -108,8 +108,7 @@ public class DetectorsExtensionHelper {
      *            non null
      * @return resolved absolute path for the detector package
      */
-    @Nullable
-    private static String resolveRelativePath(IContributor contributor, String libPathAsString) {
+    private static @Nullable String resolveRelativePath(IContributor contributor, String libPathAsString) {
         String bundleName = contributor.getName();
         Bundle bundle = Platform.getBundle(bundleName);
         if (bundle == null) {
