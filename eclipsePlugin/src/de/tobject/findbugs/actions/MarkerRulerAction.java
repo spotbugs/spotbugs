@@ -64,8 +64,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 
     private IVerticalRulerInfo ruler;
 
-    @Nullable
-    private ITextEditor editor;
+    private @Nullable ITextEditor editor;
 
     /** Contains the markers of the currently selected line in the ruler margin. */
     private final List<IMarker> markers;

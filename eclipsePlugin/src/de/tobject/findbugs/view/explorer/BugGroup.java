@@ -40,14 +40,11 @@ public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup>
 
     private Set<IMarker> allMarkers;
 
-    @Nullable
-    private Object parent;
+    private @Nullable Object parent;
 
-    @Nullable
-    private final Object identifier;
+    private final @Nullable Object identifier;
 
-    @NonNull
-    private final GroupType type;
+    private final @NonNull GroupType type;
 
     public BugGroup(Object parent, Object identifier, @NonNull GroupType type) {
         super();
