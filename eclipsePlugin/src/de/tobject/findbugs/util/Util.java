@@ -24,8 +24,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import javax.annotation.CheckForNull;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
@@ -35,6 +33,7 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.widgets.Display;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.util.Archive;
 
@@ -192,8 +191,7 @@ public class Util {
     }
 
     @SuppressWarnings("unchecked")
-    @CheckForNull
-    public static <V> V getAdapter(Class<V> adapter, Object obj) {
+    public static <V> @Nullable V getAdapter(Class<V> adapter, Object obj) {
         if (obj == null) {
             return null;
         }

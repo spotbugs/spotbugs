@@ -35,8 +35,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.annotation.CheckForNull;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -65,6 +63,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
@@ -376,15 +375,13 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
         return methodBody;
     }
 
-    @CheckForNull
-    private ClassInstanceCreation findClassLoaderCreation(ASTNode node) {
+    private @Nullable ClassInstanceCreation findClassLoaderCreation(ASTNode node) {
         ClassLoaderCreationFinder finder = new ClassLoaderCreationFinder();
         node.accept(finder);
         return finder.getClassLoaderCreation();
     }
 
-    @CheckForNull
-    private MethodDeclaration findMethodDeclaration(ASTNode node) {
+    private @Nullable MethodDeclaration findMethodDeclaration(ASTNode node) {
         if (node == null || node instanceof MethodDeclaration) {
             return (MethodDeclaration) node;
         }

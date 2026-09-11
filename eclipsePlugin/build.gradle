@@ -103,7 +103,7 @@ dependencies {
   api(project(':spotbugs')) {
     transitive = true
   }
-  compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+  compileOnly 'org.jspecify:jspecify:1.0.1'
 }
 
 tasks.named('clean', Delete).configure {

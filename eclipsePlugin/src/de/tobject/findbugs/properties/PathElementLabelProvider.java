@@ -1,13 +1,12 @@
 package de.tobject.findbugs.properties;
 
-import jakarta.annotation.Nonnull;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
+import org.jspecify.annotations.NonNull;
 
 public class PathElementLabelProvider extends LabelProvider implements IColorProvider {
 
@@ -30,8 +29,7 @@ public class PathElementLabelProvider extends LabelProvider implements IColorPro
         return null;
     }
 
-    @Nonnull
-    public String getToolTip(Object element) {
+    public @NonNull String getToolTip(Object element) {
         if (!(element instanceof IPathElement)) {
             return "";
         }
