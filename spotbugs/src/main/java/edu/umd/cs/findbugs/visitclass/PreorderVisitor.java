@@ -323,11 +323,15 @@ public class PreorderVisitor extends BetterVisitor {
             for (Attribute attribute : attributes) {
                 attribute.accept(this);
             }
+            visitAfter(method);
         } finally {
             visitingMethod = false;
             this.method = null;
             this.thisMethodInfo = null;
         }
+    }
+
+    public void visitAfter(Method method) {
     }
 
     public boolean amVisitingMainMethod() {
