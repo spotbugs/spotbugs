@@ -26,6 +26,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `NP_LOAD_OF_KNOWN_NULL_VALUE` false negative when null check uses `instanceof` ([#3916](https://github.com/spotbugs/spotbugs/issues/3916))
 - Fix CLI launcher scripts intercepting `-conserveSpace` with a JVM system property instead passing it to Java Application as equivalent to `-effort:min` ([#4268](https://github.com/spotbugs/spotbugs/pull/4289)) 
 
+### Added
+- Add automatic completion of class names in GUI class filter ([#749](https://github.com/spotbugs/spotbugs/issues/749))
+
 ## 4.10.4 - 2026-08-19
 ### Fixed
 - Fix `NN_NAKED_NOTIFY` false negatives when a field read is stored in a local variable before `notify()` or `notifyAll()` ([#3884](https://github.com/spotbugs/spotbugs/issues/3884))

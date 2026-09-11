@@ -406,6 +406,7 @@ public class MainFrameTree {
         t.setTableHeader(getTableheader());
 
         textFieldForPackagesToDisplay = new JTextField();
+        ClassSearchAutoComplete.attach(textFieldForPackagesToDisplay, mainFrame);
         ActionListener filterAction = e -> {
             try {
                 String text = textFieldForPackagesToDisplay.getText();
