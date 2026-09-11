@@ -14,6 +14,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `NP_NULL_ON_SOME_PATH` false positive when `instanceof` check is always true because the value was created with `new` and its exact type is a subtype of the checked type (e.g. `Base value = new Derived(); if (value instanceof Derived) result = new Object(); result.toString()`) ([#4273](https://github.com/spotbugs/spotbugs/issues/4273))
 - Fix `NN_NAKED_NOTIFY` false positive when guarded state is updated before the synchronized block that calls `notify`/`notifyAll` ([#3786](https://github.com/spotbugs/spotbugs/issues/3786))
 - Fix `SA_LOCAL_SELF_ASSIGNMENT` false positive in methods with `++`/`--` inside a switch nested in a try-catch block ([#3929](https://github.com/spotbugs/spotbugs/issues/3929))
+- Fix `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE` false negative for non-atomic read-modify-write in inner classes accessing enclosing shared fields ([#4236](https://github.com/spotbugs/spotbugs/pull/4236))
 - Fix `OS_OPEN_STREAM` false positive when the result of `PrintWriter.append()` is reassigned before closing the writer ([#4274](https://github.com/spotbugs/spotbugs/issues/4274))
 - Fix `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` false negative when lazy init uses a ternary assignment instead of an `if` statement ([#4154](https://github.com/spotbugs/spotbugs/issues/4154))
 - Fix `UR_UNINIT_READ` false negative for compound assignment to a field (e.g. `m_iType |= e`) ([#4233](https://github.com/spotbugs/spotbugs/pull/4233))
