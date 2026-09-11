@@ -744,6 +744,18 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         }
 
         if (!nullComparisonInstructionSet.get(lastInSourceOpcode)) {
+            if (lastInSourceOpcode == Const.IF_ICMPEQ || lastInSourceOpcode == Const.IF_ICMPNE) {
+                ValueNumberFrame prevVnaFrame = vnaDataflow
+                        .getFactAtLocation(new Location(lastInSourceHandle, basicBlock));
+                ValueNumber tos = prevVnaFrame.getStackValue(0);
+                ValueNumber nextToTos = prevVnaFrame.getStackValue(1);
+                if (tos.equals(nextToTos)) {
+                    boolean comparisonIsTrue = lastInSourceOpcode == Const.IF_ICMPEQ;
+                    IsNullValue feasibleDecision = IsNullValue.pathSensitiveNonNullValue();
+                    return new IsNullConditionDecision(null, comparisonIsTrue ? feasibleDecision : null,
+                            comparisonIsTrue ? null : feasibleDecision);
+                }
+            }
             return null; // doesn't end in null comparison
         }
 

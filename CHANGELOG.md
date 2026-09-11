@@ -9,6 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - `@SuppressFBWarnings` annotation on a method or a constructor now suppresses warnings reported in their lambdas too ([#724](https://github.com/spotbugs/spotbugs/issues/724))
 
 ### Fixed
+- Fix `NP_ALWAYS_NULL` false positives when a non-null value is known to satisfy an `instanceof` check ([#4272](https://github.com/spotbugs/spotbugs/issues/4272))
 - Fix `RANGE_ARRAY_INDEX` false positive when the array access is inside unreachable code caused by an impossible null condition (e.g. `if (x == null && x != null)`) ([#4275](https://github.com/spotbugs/spotbugs/issues/4275))
 - Fix `NP_NULL_ON_SOME_PATH` false positive when `instanceof` check is always true because the value was created with `new` and its exact type is a subtype of the checked type (e.g. `Base value = new Derived(); if (value instanceof Derived) result = new Object(); result.toString()`) ([#4273](https://github.com/spotbugs/spotbugs/issues/4273))
 - Fix `NN_NAKED_NOTIFY` false positive when guarded state is updated before the synchronized block that calls `notify`/`notifyAll` ([#3786](https://github.com/spotbugs/spotbugs/issues/3786))
