@@ -1,5 +1,7 @@
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
+import org.apache.bcel.classfile.Method;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.ca.CallListAnalysis;
 import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -25,13 +27,13 @@ public class CallListDataflowFactory extends AnalysisFactory<CallListDataflow> {
      */
     @Override
     public CallListDataflow analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
-        CallListAnalysis analysis = new CallListAnalysis(getCFG(analysisCache, descriptor), getDepthFirstSearch(analysisCache,
-                descriptor), getConstantPoolGen(analysisCache, descriptor.getClassDescriptor()));
+        ClassContext classContext = analysisCache.getClassAnalysis(ClassContext.class, descriptor.getClassDescriptor());
+        Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);
 
+        CallListAnalysis analysis = new CallListAnalysis(classContext, method);
         CallListDataflow dataflow = new CallListDataflow(getCFG(analysisCache, descriptor), analysis);
         dataflow.execute();
 
         return dataflow;
-
     }
 }
