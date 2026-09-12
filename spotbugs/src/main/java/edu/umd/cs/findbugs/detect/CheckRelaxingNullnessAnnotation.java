@@ -250,7 +250,7 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
         return false;
     }
 
-    static @Nullable Map<Integer, NullnessAnnotation> getNonnullOrNullableParams(@Nullable List<AnnotationNode>[] parameterAnnotations) {
+    static @Nullable Map<Integer, NullnessAnnotation> getNonnullOrNullableParams(@Nullable List<AnnotationNode> @Nullable [] parameterAnnotations) {
         if (parameterAnnotations == null) {
             return null;
         }

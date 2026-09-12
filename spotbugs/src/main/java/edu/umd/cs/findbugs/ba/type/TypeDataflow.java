@@ -49,8 +49,7 @@ public class TypeDataflow extends Dataflow<TypeFrame, TypeAnalysis> {
         return getAnalysis().getEdgeExceptionSet(edge);
     }
 
-    @Nullable
-    public LocationAndFactPair getLocationAndFactForInstruction(int pc) {
+    public @Nullable LocationAndFactPair getLocationAndFactForInstruction(int pc) {
         Collection<Location> locations = getCFG().getLocationsContainingInstructionWithOffset(pc);
 
         LocationAndFactPair result = null;

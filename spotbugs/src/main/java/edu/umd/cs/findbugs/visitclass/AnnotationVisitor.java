@@ -82,7 +82,7 @@ public class AnnotationVisitor extends PreorderVisitor {
     }
 
     @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
-    protected static @Nullable String[] getAnnotationParameterAsStringArray(Map<String, ElementValue> map, String parameter) {
+    protected static String @Nullable [] getAnnotationParameterAsStringArray(Map<String, ElementValue> map, String parameter) {
         try {
             ElementValue e = map.get(parameter);
             ArrayElementValue a = (ArrayElementValue) e;

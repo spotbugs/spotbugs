@@ -486,7 +486,7 @@ public class Hierarchy2 {
      * @return array of ObjectTypes of thrown exceptions, or null if we can't
      *         find the method implementation
      */
-    public static @Nullable ObjectType[] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg) {
+    public static ObjectType @Nullable [] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg) {
         XMethod method = findInvocationLeastUpperBound(inv, cpg, inv instanceof INVOKESTATIC ? STATIC_METHOD : INSTANCE_METHOD);
 
         if (method == null) {
