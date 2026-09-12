@@ -24,10 +24,16 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+// TODO: Switch to JSpecify @Nullable once SpotBugs correctly handles
+// nullable parameters on this nested constructor. Currently it reports
+// false NP_NONNULL_PARAM_VIOLATION findings for the null parent and
+// bindingSet arguments.
+import jakarta.annotation.Nullable;
+
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
-import org.jspecify.annotations.Nullable;
+// import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
