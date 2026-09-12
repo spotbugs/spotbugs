@@ -141,7 +141,7 @@ public class NestedAccessUtil {
         return true;
     }
 
-    private static String @Nullable[] getNestMemberClassNames(JavaClass javaClass) {
+    private static String @Nullable [] getNestMemberClassNames(JavaClass javaClass) {
         Attribute[] sourceAttributes = javaClass.getAttributes();
         for (Attribute sourceAttribute : sourceAttributes) {
             if (sourceAttribute instanceof NestMembers) {
