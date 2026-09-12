@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
@@ -34,15 +32,16 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
-
 
 /**
  * @author pugh
  */
 public class Util {
+
     /**
      * Determine the outer class of obj.
      *
@@ -50,9 +49,7 @@ public class Util {
      * @return JavaClass for outer class, or null if obj is not an outer class
      * @throws ClassNotFoundException
      */
-
-    @CheckForNull
-    public static JavaClass getOuterClass(JavaClass obj) throws ClassNotFoundException {
+    public static @Nullable JavaClass getOuterClass(JavaClass obj) throws ClassNotFoundException {
         for (Attribute a : obj.getAttributes()) {
             if (a instanceof InnerClasses) {
                 for (InnerClass ic : ((InnerClasses) a).getInnerClasses()) {
@@ -69,7 +66,7 @@ public class Util {
         return null;
     }
 
-    public static int getSizeOfSurroundingTryBlock(@CheckForNull Method method, Class<? extends Throwable> exceptionClass, int pc) {
+    public static int getSizeOfSurroundingTryBlock(@Nullable Method method, Class<? extends Throwable> exceptionClass, int pc) {
         if (method == null) {
             return Integer.MAX_VALUE;
         }
@@ -77,15 +74,15 @@ public class Util {
         return getSizeOfSurroundingTryBlock(method, ClassName.toSlashedClassName(exceptionClass), pc);
     }
 
-    public static int getSizeOfSurroundingTryBlock(@CheckForNull Method method, @CheckForNull String vmNameOfExceptionClass, int pc) {
+    public static int getSizeOfSurroundingTryBlock(@Nullable Method method, @Nullable String vmNameOfExceptionClass, int pc) {
         if (method == null) {
             return Integer.MAX_VALUE;
         }
         return getSizeOfSurroundingTryBlock(method.getConstantPool(), method.getCode(), vmNameOfExceptionClass, pc);
     }
 
-    public static @CheckForNull CodeException getSurroundingTryBlock(ConstantPool constantPool, Code code,
-            @CheckForNull String vmNameOfExceptionClass, int pc) {
+    public static @Nullable CodeException getSurroundingTryBlock(ConstantPool constantPool, Code code,
+            @Nullable String vmNameOfExceptionClass, int pc) {
         int size = Integer.MAX_VALUE;
         if (code.getExceptionTable() == null) {
             return null;
@@ -113,7 +110,7 @@ public class Util {
     }
 
     public static int getSizeOfSurroundingTryBlock(ConstantPool constantPool, Code code,
-            @CheckForNull @SlashedClassName String vmNameOfExceptionClass, int pc) {
+            @Nullable @SlashedClassName String vmNameOfExceptionClass, int pc) {
         int size = Integer.MAX_VALUE;
         int tightStartPC = 0;
         int tightEndPC = Integer.MAX_VALUE;

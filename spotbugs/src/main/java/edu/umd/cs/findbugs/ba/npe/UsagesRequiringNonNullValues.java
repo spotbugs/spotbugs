@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.MergeTree;
@@ -73,7 +73,7 @@ public class UsagesRequiringNonNullValues {
         map.add(loc.getHandle().getPosition(), p);
     }
 
-    public @CheckForNull PointerUsageRequiringNonNullValue get(Location loc, ValueNumber vn, ValueNumberDataflow vnaDataflow) {
+    public @Nullable PointerUsageRequiringNonNullValue get(Location loc, ValueNumber vn, ValueNumberDataflow vnaDataflow) {
         // PointerUsageRequiringNonNullValue secondBest = null;
         MergeTree mergeTree = vnaDataflow.getAnalysis().getMergeTree();
         for (Pair p : map.get(loc.getHandle().getPosition())) {

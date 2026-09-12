@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.annotation.CheckForNull;
 import javax.swing.tree.TreePath;
 
+import org.jspecify.annotations.Nullable;
 
 /**
  * @author pugh
@@ -42,7 +42,7 @@ public class FilterActivity {
         listeners.remove(toRemove);
     }
 
-    public static void notifyListeners(FilterListener.Action whatsGoingOnCode, @CheckForNull TreePath optionalPath) {
+    public static void notifyListeners(FilterListener.Action whatsGoingOnCode, @Nullable TreePath optionalPath) {
         Collection<FilterListener> currentListeners = new ArrayList<>(FilterActivity.listeners);
         switch (whatsGoingOnCode) {
         case FILTERING:

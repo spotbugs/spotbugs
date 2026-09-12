@@ -22,9 +22,8 @@ package edu.umd.cs.findbugs.ba;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.classfile.ElementValue;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
@@ -33,8 +32,7 @@ public class JCIPAnnotationDatabase {
 
     Map<String, Map<String, ElementValue>> classAnnotations = new HashMap<>();
 
-    @CheckForNull
-    public ElementValue getClassAnnotation(@DottedClassName String dottedClassName, String annotationClass) {
+    public @Nullable ElementValue getClassAnnotation(@DottedClassName String dottedClassName, String annotationClass) {
         Map<String, ElementValue> map = getEntryForClass(dottedClassName);
         return map == null ? null : map.get(annotationClass);
     }
@@ -45,8 +43,7 @@ public class JCIPAnnotationDatabase {
         return map != null && map.containsKey(annotationClass);
     }
 
-    @CheckForNull
-    public ElementValue getFieldAnnotation(XField field, String annotationClass) {
+    public @Nullable ElementValue getFieldAnnotation(XField field, String annotationClass) {
         Map<String, ElementValue> map = getEntryForClassMember(field);
         return map == null ? null : map.get(annotationClass);
     }
@@ -56,8 +53,7 @@ public class JCIPAnnotationDatabase {
         return map != null && map.containsKey(annotationClass);
     }
 
-    @CheckForNull
-    public ElementValue getMethodAnnotation(XMethod method, String annotationClass) {
+    public @Nullable ElementValue getMethodAnnotation(XMethod method, String annotationClass) {
         Map<String, ElementValue> map = getEntryForClassMember(method);
         return map == null ? null : map.get(annotationClass);
     }
@@ -67,8 +63,7 @@ public class JCIPAnnotationDatabase {
         return map != null && map.containsKey(annotationClass);
     }
 
-    @CheckForNull
-    private Map<String, ElementValue> getEntryForClassMember(ClassMember member) {
+    private @Nullable Map<String, ElementValue> getEntryForClassMember(ClassMember member) {
         return memberAnnotations.get(member);
     }
 
@@ -78,8 +73,7 @@ public class JCIPAnnotationDatabase {
         map.put(annotationClass, value);
     }
 
-    @CheckForNull
-    private Map<String, ElementValue> getEntryForClass(@DottedClassName String dottedClassName) {
+    private @Nullable Map<String, ElementValue> getEntryForClass(@DottedClassName String dottedClassName) {
         assert dottedClassName.indexOf('/') == -1;
         return classAnnotations.get(dottedClassName);
     }

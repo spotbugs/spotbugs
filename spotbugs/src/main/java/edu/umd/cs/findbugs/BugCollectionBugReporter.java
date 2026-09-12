@@ -21,8 +21,9 @@ package edu.umd.cs.findbugs;
 
 import java.io.PrintWriter;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
+
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
@@ -34,14 +35,13 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
 
     private final Project project;
 
-    @CheckForNull
-    private final PrintWriter writer;
+    private final @Nullable PrintWriter writer;
 
     public BugCollectionBugReporter(Project project) {
         this(project, null);
     }
 
-    public BugCollectionBugReporter(Project project, @CheckForNull PrintWriter writer) {
+    public BugCollectionBugReporter(Project project, @Nullable PrintWriter writer) {
         this.project = project;
         this.bugCollection = new SortedBugCollection(getProjectStats(), project);
         bugCollection.setTimestamp(System.currentTimeMillis());

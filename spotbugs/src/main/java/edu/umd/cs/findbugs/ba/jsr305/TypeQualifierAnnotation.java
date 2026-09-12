@@ -23,12 +23,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.meta.When;
 
-import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
+
+import org.jspecify.annotations.Nullable;
 
 /**
  * A type qualifier applied to a field, method, parameter, or return value.
@@ -119,7 +119,7 @@ public class TypeQualifierAnnotation {
      *         both <code>a</code> or <code>b</code>, or null if no such
      *         TypeQualifierAnnotation exists
      */
-    public static @CheckForNull TypeQualifierAnnotation combineReturnTypeAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
+    public static @Nullable TypeQualifierAnnotation combineReturnTypeAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
         return combineAnnotations(a, b, combineReturnValueMatrix);
     }
 

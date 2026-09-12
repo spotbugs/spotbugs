@@ -40,8 +40,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
+
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -120,8 +121,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
     }
 
     @Override
-    @CheckForNull
-    public ICodeBaseEntry lookupResource(String resourceName) {
+    public @Nullable ICodeBaseEntry lookupResource(String resourceName) {
         resourceName = translateResourceName(resourceName);
         String packageName = getPackage(resourceName);
         Object moduleNameOrSet = packageToModuleMap.get(packageName);
@@ -143,8 +143,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
         return null;
     }
 
-    @CheckForNull
-    private ICodeBaseEntry createEntry(String resourceName, String moduleName) {
+    private @Nullable ICodeBaseEntry createEntry(String resourceName, String moduleName) {
         Path resolved = root.resolve(moduleName + "/" + resourceName);
         if (Files.exists(resolved)) {
             return new JrtfsCodebaseEntry(resolved, root, this);

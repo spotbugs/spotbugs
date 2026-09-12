@@ -23,12 +23,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.type.NullType;
@@ -256,7 +255,7 @@ public class GenericUtilities {
      * break up a signature with many types or call createTypes(String) to
      * return a list of types
      */
-    public static @CheckForNull Type getType(String signature) {
+    public static @Nullable Type getType(String signature) {
         try {
             // ensure signature only has one type
             final Iterator<String> signatureIterator = new GenericSignatureParser("(" + signature + ")V")
@@ -325,14 +324,14 @@ public class GenericUtilities {
         }
     }
 
-    public static ObjectType merge(@CheckForNull Type t1, ObjectType t2) {
+    public static ObjectType merge(@Nullable Type t1, ObjectType t2) {
         if (t1 instanceof GenericObjectType) {
             return merge((GenericObjectType) t1, t2);
         }
         return t2;
     }
 
-    public static Type merge(@CheckForNull GenericObjectType t1, Type t2) {
+    public static Type merge(@Nullable GenericObjectType t1, Type t2) {
         if (t1 == null) {
             return t2;
         }
@@ -345,7 +344,7 @@ public class GenericUtilities {
         return t2;
     }
 
-    public static ObjectType merge(@CheckForNull GenericObjectType t1, ObjectType t2) {
+    public static ObjectType merge(@Nullable GenericObjectType t1, ObjectType t2) {
         if (t1 == null || t2 instanceof GenericObjectType) {
             return t2;
         }
@@ -430,7 +429,7 @@ public class GenericUtilities {
      *            bytecode signature e.g. e.g.
      *            <code>Ljava/util/ArrayList&lt;Ljava/lang/String;&gt;;Ljava/util/ArrayList&lt;TT;&gt;;Ljava/util/ArrayList&lt;*&gt;;</code>
      */
-    public static final @CheckForNull List<ReferenceType> getTypeParameters(String signature) {
+    public static final @Nullable List<ReferenceType> getTypeParameters(String signature) {
         GenericSignatureParser parser = new GenericSignatureParser("(" + signature + ")V");
         List<ReferenceType> types = new ArrayList<>();
 

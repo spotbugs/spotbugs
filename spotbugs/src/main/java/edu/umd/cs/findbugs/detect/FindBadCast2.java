@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ConstantClass;
@@ -28,6 +26,7 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Select;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.TypedInstruction;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.Analyze;
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -509,7 +508,7 @@ public class FindBadCast2 implements Detector {
 
                         int priority = NORMAL_PRIORITY;
 
-                        @CheckForNull
+                        @Nullable
                         String oldCheck = instanceOfChecks.get(valueSource);
                         if (DEBUG) {
                             System.out.println("Old check: " + oldCheck);

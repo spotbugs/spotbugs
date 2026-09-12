@@ -16,16 +16,16 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package edu.umd.cs.findbugs.util;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+
 import org.apache.commons.lang3.Strings;
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.meta.When;
 
 /**
@@ -57,7 +57,7 @@ public abstract class ClassName {
         return "L" + className + ";";
     }
 
-    public static @CheckForNull String getPrimitiveType(@SlashedClassName String cls) {
+    public static @Nullable String getPrimitiveType(@SlashedClassName String cls) {
         if (!cls.startsWith("java/lang/")) {
             return null;
         }
@@ -95,7 +95,7 @@ public abstract class ClassName {
      * Returns null if it is the signature for an array or
      * primitive type.
      */
-    public static @CheckForNull @SlashedClassName String fromFieldSignature(String signature) {
+    public static @Nullable @SlashedClassName String fromFieldSignature(String signature) {
         if (signature.charAt(0) != 'L') {
             return null;
         }
@@ -145,7 +145,7 @@ public abstract class ClassName {
      * @return the class of the signature in dotted format
      */
     @DottedClassName
-    public static @CheckForNull String fromFieldSignatureToDottedClassName(String signature) {
+    public static @Nullable String fromFieldSignatureToDottedClassName(String signature) {
         String slashedClassName = ClassName.fromFieldSignature(signature);
         if (slashedClassName == null) {
             return null;

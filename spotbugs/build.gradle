@@ -114,6 +114,7 @@ dependencies {
   guiImplementation sourceSets.main.runtimeClasspath
   guiCompileOnly project(':spotbugs-annotations')
   guiCompileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
+  guiCompileOnly 'org.jspecify:jspecify:1.0.1'
 }
 
 tasks.named('clean', Delete).configure {

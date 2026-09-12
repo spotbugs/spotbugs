@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -78,7 +78,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
     private final boolean hasStubs;
 
-    @CheckForNull
+    @Nullable
     AnnotatedObject containingScope;
 
     private boolean containingScopeCached;
@@ -452,12 +452,12 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
     }
 
     @Override
-    public @CheckForNull String getSource() {
+    public @Nullable String getSource() {
         return source;
     }
 
     @Override
-    public @CheckForNull AnnotatedObject getContainingScope() {
+    public @Nullable AnnotatedObject getContainingScope() {
         if (!containingScopeCached) {
             containingScope = getContainingScope0();
             containingScopeCached = true;
@@ -465,7 +465,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
         return containingScope;
     }
 
-    public @CheckForNull AnnotatedObject getContainingScope0() {
+    public @Nullable AnnotatedObject getContainingScope0() {
         try {
             if (immediateEnclosingClass != null) {
                 return Global.getAnalysisCache().getClassAnalysis(XClass.class, getImmediateEnclosingClass());

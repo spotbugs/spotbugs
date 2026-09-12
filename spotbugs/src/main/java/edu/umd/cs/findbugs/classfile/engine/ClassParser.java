@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -78,7 +78,7 @@ public class ClassParser implements ClassParserInterface {
      * @param codeBaseEntry
      *            codebase entry class is loaded from
      */
-    public ClassParser(DataInputStream in, @CheckForNull ClassDescriptor expectedClassDescriptor, ICodeBaseEntry codeBaseEntry) {
+    public ClassParser(DataInputStream in, @Nullable ClassDescriptor expectedClassDescriptor, ICodeBaseEntry codeBaseEntry) {
         this.in = in;
         this.expectedClassDescriptor = expectedClassDescriptor;
         this.codeBaseEntry = codeBaseEntry;

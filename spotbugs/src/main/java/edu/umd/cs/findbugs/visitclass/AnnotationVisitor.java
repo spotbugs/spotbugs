@@ -21,8 +21,6 @@ package edu.umd.cs.findbugs.visitclass;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Annotations;
 import org.apache.bcel.classfile.ArrayElementValue;
@@ -32,6 +30,7 @@ import org.apache.bcel.classfile.EnumElementValue;
 import org.apache.bcel.classfile.ParameterAnnotationEntry;
 import org.apache.bcel.classfile.ParameterAnnotations;
 import org.apache.bcel.classfile.SimpleElementValue;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -82,9 +81,8 @@ public class AnnotationVisitor extends PreorderVisitor {
         }
     }
 
-    @CheckForNull
     @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
-    protected static String[] getAnnotationParameterAsStringArray(Map<String, ElementValue> map, String parameter) {
+    protected static @Nullable String[] getAnnotationParameterAsStringArray(Map<String, ElementValue> map, String parameter) {
         try {
             ElementValue e = map.get(parameter);
             ArrayElementValue a = (ArrayElementValue) e;
@@ -100,8 +98,7 @@ public class AnnotationVisitor extends PreorderVisitor {
         }
     }
 
-    @CheckForNull
-    protected static <E extends Enum<E>> E getAnnotationParameterAsEnum(Map<String, ElementValue> map, String parameter, Class<E> type) {
+    protected static <E extends Enum<E>> @Nullable E getAnnotationParameterAsEnum(Map<String, ElementValue> map, String parameter, Class<E> type) {
         ElementValue ev = map.get(parameter);
 
         if (ev instanceof EnumElementValue) {

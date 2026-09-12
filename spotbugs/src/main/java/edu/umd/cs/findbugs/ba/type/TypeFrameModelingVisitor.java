@@ -28,13 +28,13 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.util.ClassName;
+
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTypeTable;
 import org.apache.bcel.generic.*;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -812,7 +812,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         }
     }
 
-    @CheckForNull
+    @Nullable
     GenericObjectType getLocalVariable(int index, int pos) {
         if (genericLocalVariables == null || !genericLocalVariables.get(index)) {
             return null;

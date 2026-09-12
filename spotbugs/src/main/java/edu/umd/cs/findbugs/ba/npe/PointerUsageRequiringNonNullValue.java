@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -45,11 +45,11 @@ public abstract class PointerUsageRequiringNonNullValue {
         return false;
     }
 
-    public @CheckForNull XMethodParameter getNonNullParameter() {
+    public @Nullable XMethodParameter getNonNullParameter() {
         return null;
     }
 
-    public @CheckForNull XField getNonNullField() {
+    public @Nullable XField getNonNullField() {
         return null;
     }
 
@@ -100,7 +100,7 @@ public abstract class PointerUsageRequiringNonNullValue {
     public static PointerUsageRequiringNonNullValue getPassedAsNonNullParameter(final XMethod m, final int param) {
         return new PointerUsageRequiringNonNullValue() {
             @Override
-            public @CheckForNull XMethodParameter getNonNullParameter() {
+            public @Nullable XMethodParameter getNonNullParameter() {
                 return new XMethodParameter(m, param);
             }
 
@@ -115,7 +115,7 @@ public abstract class PointerUsageRequiringNonNullValue {
     public static PointerUsageRequiringNonNullValue getStoredIntoNonNullField(final XField f) {
         return new PointerUsageRequiringNonNullValue() {
             @Override
-            public @CheckForNull XField getNonNullField() {
+            public @Nullable XField getNonNullField() {
                 return f;
             }
 

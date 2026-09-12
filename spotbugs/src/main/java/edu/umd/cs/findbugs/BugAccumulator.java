@@ -25,10 +25,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.MethodGen;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.AccessMethodDatabase;
 import edu.umd.cs.findbugs.ba.AccessMethodDatabase.AccessMethodLocation;
@@ -85,7 +84,7 @@ public class BugAccumulator {
         performAccumulation = AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.MERGE_SIMILAR_WARNINGS);
     }
 
-    public @CheckForNull SourceLineAnnotation getLastBugLocation() {
+    public @Nullable SourceLineAnnotation getLastBugLocation() {
         return lastSourceLine;
     }
 
