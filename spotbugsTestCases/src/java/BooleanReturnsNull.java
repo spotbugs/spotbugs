@@ -1,8 +1,7 @@
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nullable;
-
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
+
+import org.jspecify.annotations.Nullable;
 
 public class BooleanReturnsNull {
 
@@ -24,8 +23,7 @@ public class BooleanReturnsNull {
     }
 
     @NoWarning("NP_BOOLEAN_RETURN_NULL")
-    @Nullable
-    public Boolean sometimes_null_as_specified_with_nullable(int n) {
+    public @Nullable Boolean sometimes_null_as_specified_with_nullable(int n) {
         if (n > 3) {
             return new Boolean(true);
         } else if (n < 1) {
@@ -36,8 +34,7 @@ public class BooleanReturnsNull {
     }
 
     @NoWarning("NP_BOOLEAN_RETURN_NULL")
-    @CheckForNull
-    public Boolean sometimes_null_as_specified_with_checkfornull(int n) {
+    public @Nullable Boolean sometimes_null_as_specified_with_checkfornull(int n) {
         if (n > 3) {
             return new Boolean(true);
         } else if (n < 1) {

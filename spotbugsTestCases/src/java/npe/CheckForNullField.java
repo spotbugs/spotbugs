@@ -1,10 +1,9 @@
 package npe;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 public class CheckForNullField {
-    @CheckForNull
-    Object x;
+    @Nullable Object x;
 
     public int getNonNullXDoNotReport() {
         if (x == null)

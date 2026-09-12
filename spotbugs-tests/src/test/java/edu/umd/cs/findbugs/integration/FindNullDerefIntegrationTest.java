@@ -16,11 +16,11 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package edu.umd.cs.findbugs.integration;
 
-import org.junit.jupiter.api.Test;
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
+
+import org.junit.jupiter.api.Test;
 
 class FindNullDerefIntegrationTest extends AbstractIntegrationTest {
     @Test
@@ -42,6 +42,6 @@ class FindNullDerefIntegrationTest extends AbstractIntegrationTest {
         assertBugTypeCount("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", 1);
 
         // It must be on the lambda method, checking by line number
-        assertBugAtLine("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", 24);
+        assertBugAtLine("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", 23);
     }
 }

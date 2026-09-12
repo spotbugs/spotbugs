@@ -7,10 +7,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.meta.TypeQualifierDefault;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @Bug2311143b.ReturnValueIsNonnullByDefault
 public class Bug2311143b {
@@ -20,8 +20,7 @@ public class Bug2311143b {
     public @NonNull @interface ReturnValueIsNonnullByDefault {
     }
 
-    @CheckForNull
-    private static List<String> getMagic() {
+    private static @Nullable List<String> getMagic() {
         return Collections.emptyList();
     }
 

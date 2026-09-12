@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class Ideas_2009_08_27 {
 
-    // static @CheckForNull
+    // static @Nullable
     // Object foo() {
     // return System.getProperty("foo");
     // }

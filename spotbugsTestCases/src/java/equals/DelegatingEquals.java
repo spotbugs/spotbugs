@@ -1,6 +1,6 @@
 package equals;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 public class DelegatingEquals {
 
@@ -20,7 +20,7 @@ public class DelegatingEquals {
     }
 
     @Override
-    public boolean equals(@CheckForNull Object obj) {
+    public boolean equals(@Nullable Object obj) {
         return (this == obj) || delegate().equals(obj);
     }
 

@@ -1,14 +1,15 @@
 package ghIssues.issue374;
 
-import jakarta.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+
+import org.jspecify.annotations.Nullable;
 
 public class MethodLevel {
     public String method() {
         return methodNullable(null);
     }
 
-    private String methodNullable(@Nullable final String test) {
+    private String methodNullable(final @Nullable String test) {
         return methodNonNull(test);
     }
 

@@ -1,7 +1,8 @@
 package bugIdeas;
 
-import jakarta.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+
+import org.jspecify.annotations.Nullable;
 
 @ParametersAreNonnullByDefault
 public class Ideas_2010_08_06 {

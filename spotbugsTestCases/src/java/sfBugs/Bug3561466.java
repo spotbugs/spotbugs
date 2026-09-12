@@ -2,7 +2,7 @@ package sfBugs;
 
 import java.util.List;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 public class Bug3561466 {
 
@@ -51,7 +51,7 @@ public class Bug3561466 {
         EMPTY
     };
 
-    void calculateSymbolicValues(final List<?> items, @CheckForNull final Metric<?, String> domainLabelMap,
+    void calculateSymbolicValues(final List<?> items, final @Nullable Metric<?, String> domainLabelMap,
             final SymbolAxisModel domainAxisModel) {
         Metric<?, String> labellingMetric = null;
 

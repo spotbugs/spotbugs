@@ -1,4 +1,4 @@
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 public class Issue3481 {
     class Nested {
@@ -8,8 +8,7 @@ public class Issue3481 {
         }
     }
 
-    @CheckForNull
-    private String nullReturn() {
+    private @Nullable String nullReturn() {
         return null;
     }
 }

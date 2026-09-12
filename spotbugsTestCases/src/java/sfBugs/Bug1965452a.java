@@ -2,9 +2,9 @@ package sfBugs;
 
 import java.io.File;
 
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+
+import org.jspecify.annotations.Nullable;
 
 /**
  *
@@ -19,8 +19,7 @@ public class Bug1965452a {
      */
     @ParametersAreNonnullByDefault
     public static class ClientFileImportObject {
-        @CheckForNull
-        private final String attributes;
+        private final @Nullable String attributes;
 
         public ClientFileImportObject(File existingFile, @Nullable String mimeType, @Nullable String attributes2) {
             this.attributes = attributes2;
@@ -46,13 +45,13 @@ public class Bug1965452a {
         doImport(null, null);
     }
 
-    public final void doImport(@Nullable final String mimeType, @Nullable final String attributes) {
+    public final void doImport(final @Nullable String mimeType, final @Nullable String attributes) {
         final File existingFile = null;
         // Diese Zeile muss drin bleiben, weil sonst der Fehler verschwindet
         final ImportData importData = createImportData(mimeType, existingFile, attributes);
     }
 
-    ImportData createImportData(@Nullable final String mimeType, final File existingFile, @Nullable final String attributes) {
+    ImportData createImportData(final @Nullable String mimeType, final File existingFile, final @Nullable String attributes) {
         final ClientFileImportObject importObject = new ClientFileImportObject(existingFile, mimeType, attributes);
         return null; // new ImportData(importObject, existingFile);
     }

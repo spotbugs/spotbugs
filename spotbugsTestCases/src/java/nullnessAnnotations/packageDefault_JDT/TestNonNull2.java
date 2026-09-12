@@ -1,10 +1,9 @@
 package nullnessAnnotations.packageDefault_JDT;
 
-
-import org.eclipse.jdt.annotation.Nullable;
-
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 class TestNonNull2 extends TestNonNull1 implements Interface1 {
 

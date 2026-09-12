@@ -2,10 +2,10 @@ package bugIdeas;
 
 import java.util.logging.Logger;
 
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.annotations.DesireWarning;
 import junit.framework.Assert;
+
+import org.jspecify.annotations.Nullable;
 
 public class Ideas_2011_12_19 {
 
@@ -81,7 +81,7 @@ public class Ideas_2011_12_19 {
         return o.hashCode();
     }
 
-    @CheckForNull
+    @Nullable
     Object h(Object x) {
         return x;
     }

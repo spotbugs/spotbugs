@@ -2,15 +2,15 @@ package bugIdeas;
 
 import java.util.Random;
 
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
+
+import org.jspecify.annotations.Nullable;
 
 public class Ideas_2012_11_15 {
 
     Random r = new Random();
-    public @CheckForNull Object get() {
+    public @Nullable Object get() {
         if (r.nextBoolean())
             return "x";
         return null;

@@ -1,9 +1,9 @@
 package npe;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 public class InsideCatchBlock {
-    public int doNotReportCatchNullPointerException(@CheckForNull Object x) {
+    public int doNotReportCatchNullPointerException(@Nullable Object x) {
         try {
             return x.hashCode();
         } catch (NullPointerException e) {
@@ -11,7 +11,7 @@ public class InsideCatchBlock {
         }
     }
 
-    public int doNotReportCatchRuntimeException(@CheckForNull Object x) {
+    public int doNotReportCatchRuntimeException(@Nullable Object x) {
         try {
             return x.hashCode();
         } catch (RuntimeException e) {
@@ -19,7 +19,7 @@ public class InsideCatchBlock {
         }
     }
 
-    public int doNotReportCatchException(@CheckForNull Object x) {
+    public int doNotReportCatchException(@Nullable Object x) {
         try {
             return x.hashCode();
         } catch (Exception e) {

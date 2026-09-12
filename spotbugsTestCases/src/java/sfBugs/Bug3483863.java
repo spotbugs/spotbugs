@@ -1,12 +1,11 @@
 package sfBugs;
 
-import javax.annotation.CheckForNull;
-
-import org.jspecify.annotations.NonNull;
-
 import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
 import edu.umd.cs.findbugs.annotations.DesireWarning;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class Bug3483863 {
 
@@ -27,8 +26,7 @@ public class Bug3483863 {
 
         @DesireWarning(value = "NP", confidence = Confidence.LOW)
         @Override
-        @CheckForNull
-        public Object get() {
+        public @Nullable Object get() {
             return null;
         }
 
@@ -38,8 +36,7 @@ public class Bug3483863 {
 
         @Override
         @DesireWarning(value = "NP", confidence = Confidence.LOW)
-        @CheckForNull
-        public Object get();
+        public @Nullable Object get();
     }
 
 }

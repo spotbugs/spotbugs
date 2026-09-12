@@ -1,8 +1,7 @@
 package nonnull;
 
 import org.jspecify.annotations.NonNull;
-
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 interface A {
     public void f(@NonNull Object obj, @NonNull Object obj2);
@@ -11,7 +10,7 @@ interface A {
 interface B extends A {
     // relax constraint on second param
     @Override
-    public void f(@NonNull Object obj, @CheckForNull Object obj2);
+    public void f(@NonNull Object obj, @Nullable Object obj2);
 }
 
 interface C extends A {
@@ -24,7 +23,7 @@ public class TestNonNull implements B {
     }
 
     public void doNotReport(B b) {
-        // The B interface declared arg 2 to be @CheckForNull, so this is OK
+        // The B interface declared arg 2 to be @Nullable, so this is OK
         b.f(new Object(), null);
     }
 
@@ -42,6 +41,6 @@ public class TestNonNull implements B {
     public void f(Object obj, Object obj2) {
         System.out.println(obj.hashCode()); // ok, declared @NonNull
 
-        System.out.println(obj2.hashCode()); // BAD - declared @CheckForNull
+        System.out.println(obj2.hashCode()); // BAD - declared @Nullable
     }
 }

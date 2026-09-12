@@ -1,15 +1,14 @@
 package npe;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 public class CheckForNullUses {
 
-    @CheckForNull
-    Object doNotReport() {
+    @Nullable Object doNotReport() {
         return this;
     }
 
-    int bar(@CheckForNull Object x) {
+    int bar(@Nullable Object x) {
         return x.hashCode();
     }
 

@@ -1,6 +1,6 @@
 package sfBugs;
 
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class Bug1965452b {
 
