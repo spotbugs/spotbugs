@@ -23,8 +23,7 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-
+import org.jspecify.annotations.Nullable;
 
 public class HighlightInformation {
 
@@ -58,7 +57,7 @@ public class HighlightInformation {
         foundLineNum = line;
     }
 
-    public @CheckForNull Color getHighlight(Integer line) {
+    public @Nullable Color getHighlight(Integer line) {
         return map.get(line);
     }
 }

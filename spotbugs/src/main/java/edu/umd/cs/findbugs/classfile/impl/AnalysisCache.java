@@ -26,11 +26,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -219,7 +219,7 @@ public class AnalysisCache implements IAnalysisCache {
      * @param analysisClass non null analysis type
      * @return map with analysis data for given type, can be null
      */
-    public @CheckForNull Map<ClassDescriptor, Object> getClassAnalysis(Class<?> analysisClass) {
+    public @Nullable Map<ClassDescriptor, Object> getClassAnalysis(Class<?> analysisClass) {
         return classAnalysisMap.get(analysisClass);
     }
 
@@ -473,7 +473,7 @@ public class AnalysisCache implements IAnalysisCache {
     }
 
     @Override
-    public @CheckForNull <E> E getOptionalDatabase(Class<E> databaseClass) {
+    public <E> @Nullable E getOptionalDatabase(Class<E> databaseClass) {
         return getDatabase(databaseClass, true);
     }
 

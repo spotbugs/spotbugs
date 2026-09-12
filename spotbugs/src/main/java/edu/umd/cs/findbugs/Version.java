@@ -25,8 +25,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.jar.Manifest;
 
-import javax.annotation.CheckForNull;
-
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,11 +82,11 @@ public class Version {
         applicationVersion = version;
     }
 
-    public static @CheckForNull String getApplicationName() {
+    public static @Nullable String getApplicationName() {
         return applicationName;
     }
 
-    public static @CheckForNull String getApplicationVersion() {
+    public static @Nullable String getApplicationVersion() {
         return applicationVersion;
     }
 

@@ -4,7 +4,6 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
-import javax.annotation.CheckForNull;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +11,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import org.jspecify.annotations.Nullable;
 
 /**
  * Bug reporter delegate actual operation to each bug reporter in the list.
@@ -68,9 +69,8 @@ public class BugReportDispatcher implements ConfigurableBugReporter {
         forEach(reporter -> reporter.reportBug(bugInstance));
     }
 
-    @CheckForNull
     @Override
-    public BugCollection getBugCollection() {
+    public @Nullable BugCollection getBugCollection() {
         return reporters.get(0).getBugCollection();
     }
 

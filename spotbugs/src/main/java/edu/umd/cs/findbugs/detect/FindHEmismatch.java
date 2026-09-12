@@ -26,8 +26,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -35,6 +33,7 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Signature;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -570,7 +569,7 @@ public class FindHEmismatch extends OpcodeStackDetector implements StatelessDete
         potentialBugs.put(key, bugInstance);
     }
 
-    @CheckForNull
+    @Nullable
     @DottedClassName
     String findHashedClassInSignature(String sig) {
         Matcher m = mapPattern.matcher(sig);

@@ -27,10 +27,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.meta.When;
 
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.Type;
 
 import edu.umd.cs.findbugs.SystemProperties;
@@ -383,7 +383,7 @@ public class TypeQualifierApplications {
      *            a TypeQualifierValue
      * @return matching TypeQualifierAnnotation, or null if none
      */
-    private static @CheckForNull TypeQualifierAnnotation findMatchingTypeQualifierAnnotation(
+    private static @Nullable TypeQualifierAnnotation findMatchingTypeQualifierAnnotation(
             Collection<TypeQualifierAnnotation> typeQualifierAnnotations,
             TypeQualifierValue<?> typeQualifierValue) {
         for (TypeQualifierAnnotation typeQualifierAnnotation : typeQualifierAnnotations) {
@@ -406,7 +406,7 @@ public class TypeQualifierApplications {
      *            annotation
      * @return default TypeQualifierAnnotation, or null if none
      */
-    private static @CheckForNull TypeQualifierAnnotation getDefaultAnnotation(AnnotatedObject o, TypeQualifierValue<?> typeQualifierValue,
+    private static @Nullable TypeQualifierAnnotation getDefaultAnnotation(AnnotatedObject o, TypeQualifierValue<?> typeQualifierValue,
             ElementType elementType) {
         //
         // Try to find a default annotation using the standard JSR-305
@@ -462,7 +462,7 @@ public class TypeQualifierApplications {
         return result;
     }
 
-    private static @CheckForNull TypeQualifierAnnotation checkFindBugsDefaultAnnotation(ClassDescriptor defaultAnnotation, AnnotatedObject o,
+    private static @Nullable TypeQualifierAnnotation checkFindBugsDefaultAnnotation(ClassDescriptor defaultAnnotation, AnnotatedObject o,
             TypeQualifierValue<?> typeQualifierValue) {
 
         if (DEBUG_DEFAULT_ANNOTATION) {
@@ -754,7 +754,7 @@ public class TypeQualifierApplications {
      * @return effective TypeQualifierAnnotation on the parameter, or null if
      *         there is no effective TypeQualifierAnnotation
      */
-    public static @CheckForNull TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation(final XMethod xmethod, final int parameter,
+    public static @Nullable TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation(final XMethod xmethod, final int parameter,
             TypeQualifierValue<?> typeQualifierValue) {
 
         TypeQualifierAnnotation tqa = computeEffectiveTypeQualifierAnnotation(typeQualifierValue, xmethod, parameter);
@@ -914,7 +914,7 @@ public class TypeQualifierApplications {
      * @return TypeQualifierAnnotation directly applied to the parameter, or
      *         null if there is no directly applied TypeQualifierAnnotation
      */
-    public static @CheckForNull @CheckReturnValue TypeQualifierAnnotation getDirectTypeQualifierAnnotation(XMethod xmethod, int parameter,
+    public static @Nullable @CheckReturnValue TypeQualifierAnnotation getDirectTypeQualifierAnnotation(XMethod xmethod, int parameter,
             TypeQualifierValue<?> typeQualifierValue) {
         XMethod bridge = xmethod.bridgeTo();
         if (bridge != null) {
@@ -942,7 +942,7 @@ public class TypeQualifierApplications {
      * @return effective inherited TypeQualifierAnnotation on the parameter, or
      *         null if there is not effective TypeQualifierAnnotation
      */
-    public static @CheckForNull TypeQualifierAnnotation getInheritedTypeQualifierAnnotation(XMethod xmethod, int parameter,
+    public static @Nullable TypeQualifierAnnotation getInheritedTypeQualifierAnnotation(XMethod xmethod, int parameter,
             TypeQualifierValue<?> typeQualifierValue) {
         assert !xmethod.isStatic();
 
@@ -972,7 +972,7 @@ public class TypeQualifierApplications {
      * @return the default (outer scope) TypeQualifierAnnotation on the
      *         parameter, or null if there is no default TypeQualifierAnnotation
      */
-    private static @CheckForNull TypeQualifierAnnotation getDefaultTypeQualifierAnnotationForParameters(XMethod xmethod,
+    private static @Nullable TypeQualifierAnnotation getDefaultTypeQualifierAnnotationForParameters(XMethod xmethod,
             TypeQualifierValue<?> typeQualifierValue, boolean stopAtMethodScope) {
 
         if (xmethod.isSynthetic()) {

@@ -30,9 +30,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.CheckForNull;
-
 import org.dom4j.DocumentException;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
@@ -68,7 +67,7 @@ public class MergeSummarizeAndView {
 
         public boolean alwaysShowGui = false;
 
-        public @CheckForNull Date baselineDate;
+        public @Nullable Date baselineDate;
     }
 
     static class MSVCommandLine extends CommandLine {

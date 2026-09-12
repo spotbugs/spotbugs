@@ -24,18 +24,18 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.annotation.CheckForNull;
 import javax.swing.JOptionPane;
 
+import org.jspecify.annotations.Nullable;
 
 /**
  * @author pugh
  */
 public class JavaWebStart {
 
-    static final @CheckForNull Method jnlpShowDocumentMethod;
+    static final @Nullable Method jnlpShowDocumentMethod;
 
-    static final @CheckForNull Method jnlpGetCodeBaseMethod;
+    static final @Nullable Method jnlpGetCodeBaseMethod;
 
     static final Object jnlpBasicService; // will not be null if
     // jnlpShowMethod!=null

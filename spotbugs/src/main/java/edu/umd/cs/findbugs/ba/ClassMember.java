@@ -20,7 +20,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.io.Serializable;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.classfile.FieldOrMethodName;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -61,7 +61,7 @@ public interface ClassMember extends Serializable, AccessibleEntity, FieldOrMeth
      * Get the signature representing the field/method's type, including generic
      * type
      */
-    public @CheckForNull String getSourceSignature();
+    public @Nullable String getSourceSignature();
 
     /**
      * Did we find a declaration of this entity?

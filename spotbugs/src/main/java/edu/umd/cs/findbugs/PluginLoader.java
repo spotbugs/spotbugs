@@ -53,9 +53,7 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.util.SecurityManagerHandler;
@@ -64,6 +62,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -383,8 +382,7 @@ public class PluginLoader implements AutoCloseable {
      * Trying to find the manifest of "exploded plugin" in the current dir, "standard jar" manifest
      * location or "standard" Eclipse location (sibling to the current classpath)
      */
-    @CheckForNull
-    private static File guessManifest(@Nonnull File parent) {
+    private static @Nullable File guessManifest(@Nonnull File parent) {
         File file = new File(parent, "MANIFEST.MF");
         if (!file.isFile()) {
             file = new File(parent, "META-INF/MANIFEST.MF");
@@ -593,7 +591,7 @@ public class PluginLoader implements AutoCloseable {
         return null;
     }
 
-    static @CheckForNull URL getCoreResource(String name) {
+    static @Nullable URL getCoreResource(String name) {
         URL u = loadFromFindBugsPluginDir(name);
         if (u != null) {
             return u;
@@ -619,8 +617,7 @@ public class PluginLoader implements AutoCloseable {
      * @param slashedResourceName Name of resource to load
      * @return URL which points resource in jar file, or null if JAR file not found
      */
-    @CheckForNull
-    private static URL resourceFromFindbugsJar(String slashedResourceName) {
+    private static @Nullable URL resourceFromFindbugsJar(String slashedResourceName) {
         try {
             @Nullable
             URL findbugsJar = getFindbugsJar();
@@ -650,8 +647,7 @@ public class PluginLoader implements AutoCloseable {
      * or null if found no jar file which contains FindBugs.class
      * @throws MalformedURLException
      */
-    @CheckForNull
-    private static URL getFindbugsJar() throws MalformedURLException {
+    private static @Nullable URL getFindbugsJar() throws MalformedURLException {
         String findBugsClassFile = ClassName.toSlashedClassName(FindBugs.class) + ".class";
         URL me = FindBugs.class.getClassLoader().getResource(findBugsClassFile);
         if (me == null) {
@@ -665,7 +661,7 @@ public class PluginLoader implements AutoCloseable {
         return new URL(jarPath);
     }
 
-    public static @CheckForNull URL loadFromFindBugsEtcDir(String name) {
+    public static @Nullable URL loadFromFindBugsEtcDir(String name) {
 
         String findBugsHome = DetectorFactoryCollection.getFindBugsHome();
         if (findBugsHome != null) {
@@ -682,7 +678,7 @@ public class PluginLoader implements AutoCloseable {
         return null;
     }
 
-    public static @CheckForNull URL loadFromFindBugsPluginDir(String name) {
+    public static @Nullable URL loadFromFindBugsPluginDir(String name) {
 
         String findBugsHome = DetectorFactoryCollection.getFindBugsHome();
         if (findBugsHome != null) {

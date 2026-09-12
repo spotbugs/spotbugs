@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.Const;
@@ -40,6 +39,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.type.NullType;
@@ -93,7 +93,7 @@ public class Hierarchy2 {
         return thisOrNothing(result, chooser);
     }
 
-    private static @CheckForNull XMethod thisOrNothing(@CheckForNull XMethod m, JavaClassAndMethodChooser chooser) {
+    private static @Nullable XMethod thisOrNothing(@Nullable XMethod m, JavaClassAndMethodChooser chooser) {
         if (m == null) {
             return null;
         }
@@ -103,7 +103,7 @@ public class Hierarchy2 {
         return null;
     }
 
-    public static @CheckForNull XMethod findInvocationLeastUpperBound(InvokeInstruction inv, ConstantPoolGen cpg,
+    public static @Nullable XMethod findInvocationLeastUpperBound(InvokeInstruction inv, ConstantPoolGen cpg,
             JavaClassAndMethodChooser methodChooser) {
 
         if (DEBUG_METHOD_LOOKUP) {
@@ -152,7 +152,7 @@ public class Hierarchy2 {
         }
     }
 
-    public static @CheckForNull XMethod findInvocationLeastUpperBound(ClassDescriptor classDesc, String methodName, String methodSig,
+    public static @Nullable XMethod findInvocationLeastUpperBound(ClassDescriptor classDesc, String methodName, String methodSig,
             boolean invokeStatic,
             boolean invokeInterface) {
         try {
@@ -162,7 +162,7 @@ public class Hierarchy2 {
         }
     }
 
-    public static @CheckForNull XMethod findInvocationLeastUpperBound(XClass jClass, String methodName, String methodSig, boolean invokeStatic,
+    public static @Nullable XMethod findInvocationLeastUpperBound(XClass jClass, String methodName, String methodSig, boolean invokeStatic,
             boolean invokeInterface) {
         XMethod result = findMethod(jClass.getClassDescriptor(), methodName, methodSig, invokeStatic);
         if (result != null) {
@@ -186,7 +186,7 @@ public class Hierarchy2 {
         return null;
     }
 
-    public static @CheckForNull XMethod findInvocationLeastUpperBound0(XClass jClass, String methodName, String methodSig, boolean invokeStatic,
+    public static @Nullable XMethod findInvocationLeastUpperBound0(XClass jClass, String methodName, String methodSig, boolean invokeStatic,
             boolean invokeInterface) {
         XMethod result = findMethod(jClass.getClassDescriptor(), methodName, methodSig, invokeStatic);
         if (result != null) {
@@ -218,10 +218,10 @@ public class Hierarchy2 {
     }
 
 
-    public static @CheckForNull XMethod findFirstSuperMethod(XMethod m) {
+    public static @Nullable XMethod findFirstSuperMethod(XMethod m) {
 
         try {
-            @CheckForNull
+            @Nullable
             ClassDescriptor c = m.getClassDescriptor();
             XClass xc = getXClass(c);
             c = xc.getSuperclassDescriptor();
@@ -239,7 +239,7 @@ public class Hierarchy2 {
         return null;
     }
 
-    private static void findSuperMethods(@CheckForNull ClassDescriptor c, XMethod m, Set<XMethod> accumulator) {
+    private static void findSuperMethods(@Nullable ClassDescriptor c, XMethod m, Set<XMethod> accumulator) {
         if (c == null) {
             return;
         }
@@ -262,7 +262,7 @@ public class Hierarchy2 {
         }
     }
 
-    public static @CheckForNull XMethod findMethod(ClassDescriptor classDescriptor, String methodName, String methodSig, boolean isStatic) {
+    public static @Nullable XMethod findMethod(ClassDescriptor classDescriptor, String methodName, String methodSig, boolean isStatic) {
         try {
             return getXClass(classDescriptor).findMethod(methodName, methodSig, isStatic);
         } catch (CheckedAnalysisException e) {
@@ -486,7 +486,7 @@ public class Hierarchy2 {
      * @return array of ObjectTypes of thrown exceptions, or null if we can't
      *         find the method implementation
      */
-    public static @CheckForNull ObjectType[] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg) {
+    public static ObjectType @Nullable [] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg) {
         XMethod method = findInvocationLeastUpperBound(inv, cpg, inv instanceof INVOKESTATIC ? STATIC_METHOD : INSTANCE_METHOD);
 
         if (method == null) {

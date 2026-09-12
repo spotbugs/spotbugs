@@ -22,8 +22,7 @@ package edu.umd.cs.findbugs.classfile.analysis;
 import java.lang.annotation.ElementType;
 import java.util.Collection;
 
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
@@ -42,7 +41,7 @@ public interface AnnotatedObject {
 
     public ElementType getElementType();
 
-    public @CheckForNull AnnotatedObject getContainingScope();
+    public @Nullable AnnotatedObject getContainingScope();
 
     public boolean isSynthetic();
 }

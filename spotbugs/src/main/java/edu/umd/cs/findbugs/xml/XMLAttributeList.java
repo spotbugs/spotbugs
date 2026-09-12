@@ -23,8 +23,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
+
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.util.Strings;
 
@@ -92,7 +93,7 @@ public class XMLAttributeList {
      *            the attribute value
      * @return this object (so calls to addAttribute() can be chained)
      */
-    public XMLAttributeList addOptionalAttribute(@Nonnull String name, @CheckForNull String value) {
+    public XMLAttributeList addOptionalAttribute(@Nonnull String name, @Nullable String value) {
         if (value == null) {
             return this;
         }

@@ -19,10 +19,9 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -165,7 +164,7 @@ public abstract class PatternElement {
      *         PatternElement and BindingSet; if the match is not successful,
      *         returns null
      */
-    public abstract @CheckForNull MatchResult match(InstructionHandle handle, ConstantPoolGen cpg, ValueNumberFrame before, ValueNumberFrame after,
+    public abstract @Nullable MatchResult match(InstructionHandle handle, ConstantPoolGen cpg, ValueNumberFrame before, ValueNumberFrame after,
             BindingSet bindingSet) throws DataflowAnalysisException;
 
     /**

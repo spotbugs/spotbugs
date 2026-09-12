@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Signature;
@@ -32,7 +30,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
-
+import org.jspecify.annotations.Nullable;
 
 /**
  * A simple class to parse method signatures that include generic information.
@@ -209,7 +207,7 @@ public class GenericSignatureParser {
      * @return an iterator over the parameters of the generic signature of
      *         method. Returns null if the generic signature cannot be parsed
      */
-    public static @CheckForNull Iterator<String> getGenericSignatureIterator(Method target) {
+    public static @Nullable Iterator<String> getGenericSignatureIterator(Method target) {
         try {
             GenericSignatureParser parser = null;
             String genericSignature = null;

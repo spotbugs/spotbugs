@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An action applied by an entry in the ObligationPolicyDatabase. Adds or

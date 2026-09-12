@@ -23,11 +23,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -166,7 +165,7 @@ public class ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass extends
 
     }
 
-    private @CheckForNull XMethod getConstructorThatCallsSuperConstructor(XMethod superConstructor) {
+    private @Nullable XMethod getConstructorThatCallsSuperConstructor(XMethod superConstructor) {
         FieldSummary fieldSummary = AnalysisContext.currentAnalysisContext().getFieldSummary();
 
         XMethod lookfor = "()V".equals(superConstructor.getSignature()) ? null : superConstructor;

@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 
 /**
- * Scan classes for @NonNull, @PossiblyNull and @CheckForNull annotations, and
+ * Scan classes for @NonNull, @PossiblyNull and @Nullable annotations, and
  * convey them to FindNullDeref.
  *
  * @deprecated AnnotationDatabases are being phased out, since annotations are

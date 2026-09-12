@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -158,7 +158,7 @@ public class UnconditionalValueDerefSet {
      * @param skipMe
      *            TODO
      */
-    public void mergeWith(UnconditionalValueDerefSet fact, @CheckForNull ValueNumber skipMe, ValueNumberFactory valueNumberFactory) {
+    public void mergeWith(UnconditionalValueDerefSet fact, @Nullable ValueNumber skipMe, ValueNumberFactory valueNumberFactory) {
         if (UnconditionalValueDerefAnalysis.DEBUG) {
             System.out.println("merge update of # " + System.identityHashCode(this) + " from " + System.identityHashCode(fact));
             System.out.println("update " + this);
@@ -401,7 +401,7 @@ public class UnconditionalValueDerefSet {
      * @param location
      * @param vnaFrame
      */
-    public void cleanDerefSet(@CheckForNull Location location, ValueNumberFrame vnaFrame) {
+    public void cleanDerefSet(@Nullable Location location, ValueNumberFrame vnaFrame) {
 
         Set<ValueNumber> valueNumbers = new HashSet<>(vnaFrame.allSlots());
 
