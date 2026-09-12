@@ -473,7 +473,7 @@ public class AnalysisCache implements IAnalysisCache {
     }
 
     @Override
-    public @Nullable <E> E getOptionalDatabase(Class<E> databaseClass) {
+    public <E> @Nullable E getOptionalDatabase(Class<E> databaseClass) {
         return getDatabase(databaseClass, true);
     }
 
