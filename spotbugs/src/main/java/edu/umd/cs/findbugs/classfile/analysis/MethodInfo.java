@@ -235,7 +235,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     final String methodSourceSignature;
 
-    final @Nullable String[] exceptions;
+    final String @Nullable [] exceptions;
 
     Map<ClassDescriptor, AnnotationValue> methodAnnotations;
 
@@ -285,7 +285,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     MethodInfo(@SlashedClassName String className, String methodName, String methodSignature, String methodSourceSignature,
             int accessFlags, boolean isUnconditionalThrower, boolean isUnsupported, boolean usesConcurrency,
             boolean hasBackBranch, boolean isStub, boolean isIdentity,
-            boolean usesInvokeDynamic, int methodCallCount, @Nullable String[] exceptions,
+            boolean usesInvokeDynamic, int methodCallCount, String @Nullable [] exceptions,
             @Nullable MethodDescriptor accessMethodForMethod,
             @Nullable FieldDescriptor accessMethodForField,
             Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations,
@@ -334,7 +334,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     }
 
     @Override
-    public @Nullable String[] getThrownExceptions() {
+    public String @Nullable [] getThrownExceptions() {
         return exceptions;
     }
 
