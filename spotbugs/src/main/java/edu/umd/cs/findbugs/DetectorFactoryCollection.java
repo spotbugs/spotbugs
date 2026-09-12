@@ -38,9 +38,10 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
 import javax.swing.JOptionPane;
+
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.util.ClassPathUtil;
 
@@ -126,7 +127,7 @@ public class DetectorFactoryCollection {
      * @param instance
      *            use null to clear the instance
      */
-    public static void resetInstance(@CheckForNull DetectorFactoryCollection instance) {
+    public static void resetInstance(@Nullable DetectorFactoryCollection instance) {
         synchronized (lock) {
             theInstance = instance;
         }
@@ -222,7 +223,7 @@ public class DetectorFactoryCollection {
     }
 
     public boolean isDisabledByDefault(String bugPatternOrCode) {
-        @CheckForNull
+        @Nullable
         BugPattern pattern = lookupBugPattern(bugPatternOrCode);
         if (pattern != null) {
             for (DetectorFactory fac : factoryList) {
@@ -232,7 +233,7 @@ public class DetectorFactoryCollection {
             }
             return true;
         }
-        @CheckForNull
+        @Nullable
         BugCode code = lookupBugCode(bugPatternOrCode);
         if (code != null) {
             for (DetectorFactory fac : factoryList) {
@@ -352,8 +353,7 @@ public class DetectorFactoryCollection {
 
     }
 
-    @CheckForNull
-    public static URL getCoreResource(String name) {
+    public static @Nullable URL getCoreResource(String name) {
         return PluginLoader.getCoreResource(name);
     }
 
@@ -478,7 +478,7 @@ public class DetectorFactoryCollection {
      *            the bug type for the bug pattern
      * @return the BugPattern, or null if it can't be found
      */
-    public @CheckForNull BugPattern lookupBugPattern(String bugType) {
+    public @Nullable BugPattern lookupBugPattern(String bugType) {
         if (bugType == null) {
             return null;
         }
@@ -519,7 +519,7 @@ public class DetectorFactoryCollection {
      * @param shortBugType the short bug type code
      * @return the description of that short bug type code means
      */
-    public @CheckForNull BugCode lookupBugCode(String shortBugType) {
+    public @Nullable BugCode lookupBugCode(String shortBugType) {
         return bugCodeMap.get(shortBugType);
     }
 

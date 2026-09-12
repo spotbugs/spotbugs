@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
@@ -31,6 +29,7 @@ import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.NestHost;
 import org.apache.bcel.classfile.NestMembers;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 
@@ -142,8 +141,7 @@ public class NestedAccessUtil {
         return true;
     }
 
-    @CheckForNull
-    private static String[] getNestMemberClassNames(JavaClass javaClass) {
+    private static @Nullable String[] getNestMemberClassNames(JavaClass javaClass) {
         Attribute[] sourceAttributes = javaClass.getAttributes();
         for (Attribute sourceAttribute : sourceAttributes) {
             if (sourceAttribute instanceof NestMembers) {
@@ -154,8 +152,7 @@ public class NestedAccessUtil {
         return null;
     }
 
-    @CheckForNull
-    private static String getHostDottedClassName(JavaClass javaClass) {
+    private static @Nullable String getHostDottedClassName(JavaClass javaClass) {
         String hostClassName = getHostClassName(javaClass);
         if (hostClassName != null) {
             return ClassName.toDottedClassName(hostClassName);
@@ -163,8 +160,7 @@ public class NestedAccessUtil {
         return null;
     }
 
-    @CheckForNull
-    private static String getHostClassName(JavaClass javaClass) {
+    private static @Nullable String getHostClassName(JavaClass javaClass) {
         Attribute[] attributes = javaClass.getAttributes();
         for (Attribute attribute : attributes) {
             if (attribute instanceof NestHost) {

@@ -3,8 +3,6 @@ package edu.umd.cs.findbugs.detect;
 import java.util.BitSet;
 import java.util.Iterator;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantCP;
@@ -21,6 +19,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -108,7 +107,7 @@ public class FindUseOfNonSerializableValue implements Detector {
         STORE_INTO_HTTP_SESSION, PASSED_TO_WRITE_OBJECT, STORED_IN_SERIALZIED_FIELD
     }
 
-    @CheckForNull
+    @Nullable
     Use getUse(ConstantPoolGen cpg, Instruction ins) {
         if (ins instanceof InvokeInstruction) {
             InvokeInstruction invoke = (InvokeInstruction) ins;

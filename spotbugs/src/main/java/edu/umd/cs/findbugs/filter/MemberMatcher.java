@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.filter;
 
 import java.util.Objects;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * @author pugh
@@ -30,11 +30,9 @@ public class MemberMatcher {
 
     protected final NameMatch name;
 
-    @CheckForNull
-    protected final String role;
+    protected final @Nullable String role;
 
-    @CheckForNull
-    protected final NameMatch signature;
+    protected final @Nullable NameMatch signature;
 
     public MemberMatcher(String name) {
         this(name, null, null);

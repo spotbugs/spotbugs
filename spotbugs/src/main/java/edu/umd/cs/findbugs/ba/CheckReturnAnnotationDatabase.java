@@ -26,8 +26,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nullable;
 import javax.annotation.meta.When;
 
 import org.apache.bcel.Const;
@@ -35,6 +33,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.ElementValuePair;
 import org.apache.bcel.classfile.JavaClass;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -260,8 +259,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
                 CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM_BAD_PRACTICE);
     }
 
-    @Nullable
-    private CheckReturnValueAnnotation getResolvedAnnotationOnConstructor(XMethod m) {
+    private @Nullable CheckReturnValueAnnotation getResolvedAnnotationOnConstructor(XMethod m) {
         try {
             if (throwableClass != null && Repository.instanceOf(m.getClassName(), throwableClass)) {
                 return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_VERY_HIGH;
@@ -327,8 +325,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
      * Try to find default {@link CheckReturnValueAnnotation} for methods inside of target class.
      *
      */
-    @CheckForNull
-    private CheckReturnValueAnnotation parsePackage(@DottedClassName String packageName) {
+    private @Nullable CheckReturnValueAnnotation parsePackage(@DottedClassName String packageName) {
         String className = ClassName.toSlashedClassName(packageName) + "/package-info";
         ClassDescriptor descriptor = DescriptorFactory.createClassDescriptor(className);
         // ClassInfoAnalysisEngine doesn't support parsing package-info to generate XClass, so use JavaClass instead

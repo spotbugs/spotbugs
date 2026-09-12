@@ -26,10 +26,8 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nullable;
-
 import org.apache.bcel.Const;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -237,7 +235,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     final String methodSourceSignature;
 
-    final @CheckForNull String[] exceptions;
+    final @Nullable String[] exceptions;
 
     Map<ClassDescriptor, AnnotationValue> methodAnnotations;
 
@@ -287,9 +285,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     MethodInfo(@SlashedClassName String className, String methodName, String methodSignature, String methodSourceSignature,
             int accessFlags, boolean isUnconditionalThrower, boolean isUnsupported, boolean usesConcurrency,
             boolean hasBackBranch, boolean isStub, boolean isIdentity,
-            boolean usesInvokeDynamic, int methodCallCount, @CheckForNull String[] exceptions,
-            @CheckForNull MethodDescriptor accessMethodForMethod,
-            @CheckForNull FieldDescriptor accessMethodForField,
+            boolean usesInvokeDynamic, int methodCallCount, @Nullable String[] exceptions,
+            @Nullable MethodDescriptor accessMethodForMethod,
+            @Nullable FieldDescriptor accessMethodForField,
             Map<ClassDescriptor, AnnotationValue> methodAnnotations, Map<Integer, Map<ClassDescriptor, AnnotationValue>> methodParameterAnnotations,
             long variableIsSynthetic) {
         super(className, methodName, methodSignature, (accessFlags & Const.ACC_STATIC) != 0);
@@ -336,11 +334,9 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     }
 
     @Override
-    public @CheckForNull String[] getThrownExceptions() {
+    public @Nullable String[] getThrownExceptions() {
         return exceptions;
     }
-
-
 
     @Override
     public boolean isUnconditionalThrower() {
@@ -631,7 +627,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     }
 
     @Override
-    public @CheckForNull AnnotatedObject getContainingScope() {
+    public @Nullable AnnotatedObject getContainingScope() {
         try {
             return Global.getAnalysisCache().getClassAnalysis(XClass.class, getClassDescriptor());
         } catch (CheckedAnalysisException e) {
@@ -670,12 +666,12 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
     }
 
     @Override
-    public @CheckForNull MethodDescriptor getAccessMethodForMethod() {
+    public @Nullable MethodDescriptor getAccessMethodForMethod() {
         return getAccessmethodformethod().get(this);
     }
 
     @Override
-    public @CheckForNull FieldDescriptor getAccessMethodForField() {
+    public @Nullable FieldDescriptor getAccessMethodForField() {
         return getAccessmethodforfield().get(this);
     }
 

@@ -44,7 +44,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
 import javax.annotation.meta.When;
 
@@ -58,6 +57,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,8 +142,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
     private int instanceOccurrenceMax;
 
-    @CheckForNull
-    private DetectorFactory detectorFactory;
+    private @Nullable DetectorFactory detectorFactory;
 
     /*
      * The following fields are used for tracking Bug instances across multiple
@@ -430,24 +429,21 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /**
      * Get the primary type annotation, which indicates where the bug occurs.
      */
-    @CheckForNull
-    public TypeAnnotation getPrimaryType() {
+    public @Nullable TypeAnnotation getPrimaryType() {
         return findPrimaryAnnotationOfType(TypeAnnotation.class);
     }
 
     /**
      * Get the primary method annotation, which indicates where the bug occurs.
      */
-    @CheckForNull
-    public MethodAnnotation getPrimaryMethod() {
+    public @Nullable MethodAnnotation getPrimaryMethod() {
         return findPrimaryAnnotationOfType(MethodAnnotation.class);
     }
 
     /**
      * Get the primary field annotation, which indicates where the bug occurs.
      */
-    @CheckForNull
-    public FieldAnnotation getPrimaryField() {
+    public @Nullable FieldAnnotation getPrimaryField() {
         return findPrimaryAnnotationOfType(FieldAnnotation.class);
     }
 
@@ -473,8 +469,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * @return the first matching BugAnnotation of the given type, or null if
      *         there is no such BugAnnotation
      */
-    @CheckForNull
-    private <T extends BugAnnotation> T findPrimaryAnnotationOfType(Class<T> cls) {
+    private <T extends BugAnnotation> @Nullable T findPrimaryAnnotationOfType(Class<T> cls) {
         T firstMatch = null;
         for (Iterator<BugAnnotation> i = annotationIterator(); i.hasNext();) {
             BugAnnotation annotation = i.next();
@@ -599,7 +594,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     /** Get the first bug annotation with the specified class and role; return null if no
      * such annotation exists;
      */
-    public @CheckForNull <A extends BugAnnotation> A getAnnotationWithRole(Class<A> c, String role) {
+    public <A extends BugAnnotation> @Nullable A getAnnotationWithRole(Class<A> c, String role) {
         for (BugAnnotation a : annotationList) {
             if (c.isInstance(a) && Objects.equals(role, a.getDescription())) {
                 return c.cast(a);
@@ -1108,7 +1103,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
     }
 
     @Nonnull
-    public BugInstance addEqualsMethodUsed(@CheckForNull Collection<XMethod> equalsMethods) {
+    public BugInstance addEqualsMethodUsed(@Nullable Collection<XMethod> equalsMethods) {
         if (equalsMethods == null) {
             return this;
         }
@@ -1219,7 +1214,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * @return this object
      */
     @Nonnull
-    public BugInstance addOptionalField(@CheckForNull XField xfield) {
+    public BugInstance addOptionalField(@Nullable XField xfield) {
         if (xfield == null) {
             return this;
         }
@@ -2066,14 +2061,14 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
      * ----------------------------------------------------------------------
      */
 
-    public BugInstance addOptionalAnnotation(@CheckForNull BugAnnotation annotation) {
+    public BugInstance addOptionalAnnotation(@Nullable BugAnnotation annotation) {
         if (annotation == null) {
             return this;
         }
         return add(annotation);
     }
 
-    public BugInstance addOptionalAnnotation(@CheckForNull BugAnnotation annotation, String role) {
+    public BugInstance addOptionalAnnotation(@Nullable BugAnnotation annotation, String role) {
         if (annotation == null) {
             return this;
         }
@@ -2169,11 +2164,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         return this.addOptionalAnnotation(b);
     }
 
-    public static @CheckForNull BugAnnotation getSourceForTopStackValue(ClassContext classContext, Method method, Location location) {
+    public static @Nullable BugAnnotation getSourceForTopStackValue(ClassContext classContext, Method method, Location location) {
         return getSourceForStackValue(classContext, method, location, 0);
     }
 
-    public static @CheckForNull BugAnnotation getSourceForStackValue(ClassContext classContext, Method method, Location location, int depth) {
+    public static @Nullable BugAnnotation getSourceForStackValue(ClassContext classContext, Method method, Location location, int depth) {
         try {
             int pc = location.getHandle().getPosition();
             OpcodeStack stack = OpcodeStackScanner.getStackAt(classContext.getJavaClass(), method, pc);
@@ -2186,7 +2181,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         }
     }
 
-    public static @CheckForNull BugAnnotation getSomeSource(ClassContext classContext, Method method, Location location, OpcodeStack stack,
+    public static @Nullable BugAnnotation getSomeSource(ClassContext classContext, Method method, Location location, OpcodeStack stack,
             int stackPos) {
         if (stack.isTop()) {
             return null;
@@ -2206,7 +2201,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
     }
 
-    public static @CheckForNull BugAnnotation getValueSource(OpcodeStack.Item item, Method method, int pc) {
+    public static @Nullable BugAnnotation getValueSource(OpcodeStack.Item item, Method method, int pc) {
         LocalVariableAnnotation lv = LocalVariableAnnotation.getLocalVariableAnnotation(method, item, pc);
         if (lv != null && lv.isNamed()) {
             return lv;
@@ -2231,7 +2226,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
     }
 
-    public BugInstance addValueSource(@CheckForNull OpcodeStack.Item item, DismantleBytecode dbc) {
+    public BugInstance addValueSource(OpcodeStack.@Nullable Item item, DismantleBytecode dbc) {
         if (item != null) {
             addValueSource(item, dbc.getMethod(), dbc.getPC());
         }
@@ -2281,7 +2276,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         return this;
     }
 
-    public static @CheckForNull BugAnnotation getFieldOrMethodValueSource(@CheckForNull OpcodeStack.Item item) {
+    public static @Nullable BugAnnotation getFieldOrMethodValueSource(OpcodeStack.@Nullable Item item) {
         if (item == null) {
             return null;
         }
@@ -2499,8 +2494,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
         return instanceOccurrenceMax;
     }
 
-    @CheckForNull
-    public DetectorFactory getDetectorFactory() {
+    public @Nullable DetectorFactory getDetectorFactory() {
         return detectorFactory;
     }
 

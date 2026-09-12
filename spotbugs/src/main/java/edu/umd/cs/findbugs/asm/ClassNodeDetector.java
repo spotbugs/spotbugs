@@ -21,8 +21,7 @@ package edu.umd.cs.findbugs.asm;
 
 import java.util.ArrayList;
 
-import javax.annotation.CheckForNull;
-
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.tree.ClassNode;
 
 import edu.umd.cs.findbugs.BugReporter;
@@ -70,8 +69,7 @@ public abstract class ClassNodeDetector extends ClassNode implements Detector2 {
         }
     }
 
-    @CheckForNull
-    protected XClass getClassInfo(ClassDescriptor classDescr) {
+    protected @Nullable XClass getClassInfo(ClassDescriptor classDescr) {
         if (classDescr == null) {
             return null;
         }

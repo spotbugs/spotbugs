@@ -47,9 +47,10 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
+
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -171,7 +172,7 @@ public class IO {
      * Close given AutoCloseable instance, ignoring any resulting exception.
      *
      */
-    public static void close(@CheckForNull AutoCloseable c) {
+    public static void close(@Nullable AutoCloseable c) {
         if (c == null) {
             return;
         }
@@ -187,7 +188,7 @@ public class IO {
      * Close given Closeable instance, ignoring any resulting exception.
      *
      */
-    public static void close(@CheckForNull Closeable c) {
+    public static void close(@Nullable Closeable c) {
         close((AutoCloseable) c);
     }
 
@@ -200,7 +201,7 @@ public class IO {
      * @deprecated This method is deprecated and will be removed in or after October 2026. Use try-with resources when creating the stream instead.
      */
     @Deprecated(forRemoval = true)
-    public static void close(@CheckForNull InputStream inputStream) {
+    public static void close(@Nullable InputStream inputStream) {
         if (inputStream == null) {
             return;
         }
@@ -219,7 +220,7 @@ public class IO {
      *            the OutputStream to close; may be null (in which case nothing
      *            happens)
      */
-    public static void close(@CheckForNull OutputStream outputStream) {
+    public static void close(@Nullable OutputStream outputStream) {
         if (outputStream == null) {
             return;
         }

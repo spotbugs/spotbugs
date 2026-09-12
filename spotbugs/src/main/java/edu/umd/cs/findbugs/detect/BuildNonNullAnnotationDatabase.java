@@ -21,11 +21,10 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.classfile.ArrayElementValue;
 import org.apache.bcel.classfile.ClassElementValue;
 import org.apache.bcel.classfile.ElementValue;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
@@ -64,7 +63,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
     private final NullnessAnnotationDatabase database;
 
-    public BuildNonNullAnnotationDatabase(@CheckForNull NullnessAnnotationDatabase database) {
+    public BuildNonNullAnnotationDatabase(@Nullable NullnessAnnotationDatabase database) {
         this.database = database;
     }
 

@@ -28,9 +28,10 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
 import javax.annotation.WillClose;
+
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.util.Util;
@@ -289,7 +290,7 @@ public class SourceInfoMap {
      * @return the line number range, or null if no line number is known for the
      *         field
      */
-    public @CheckForNull SourceLineRange getFieldLine(String className, String fieldName) {
+    public @Nullable SourceLineRange getFieldLine(String className, String fieldName) {
         return fieldLineMap.get(new FieldDescriptor(className, fieldName));
     }
 
@@ -305,7 +306,7 @@ public class SourceInfoMap {
      * @return the line number range, or null if no line number is known for the
      *         method
      */
-    public @CheckForNull SourceLineRange getMethodLine(String className, String methodName, String methodSignature) {
+    public @Nullable SourceLineRange getMethodLine(String className, String methodName, String methodSignature) {
         return methodLineMap.get(new MethodDescriptor(className, methodName, methodSignature));
     }
 
@@ -317,7 +318,7 @@ public class SourceInfoMap {
      * @return the line number range, or null if no line number is known for the
      *         class
      */
-    public @CheckForNull SourceLineRange getClassLine(String className) {
+    public @Nullable SourceLineRange getClassLine(String className) {
         return classLineMap.get(className);
     }
 

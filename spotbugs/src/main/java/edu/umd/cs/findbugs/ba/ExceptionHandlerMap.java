@@ -23,13 +23,12 @@ import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.type.TypeMerger;
 
@@ -126,7 +125,7 @@ public class ExceptionHandlerMap {
         }
     }
 
-    public static CodeExceptionGen merge(@CheckForNull TypeMerger m, CodeExceptionGen e1, CodeExceptionGen e2) {
+    public static CodeExceptionGen merge(@Nullable TypeMerger m, CodeExceptionGen e1, CodeExceptionGen e2) {
         if (e1 == null) {
             return e2;
         }

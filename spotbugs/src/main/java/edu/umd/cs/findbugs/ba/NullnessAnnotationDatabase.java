@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.bytecode.MemberUtils;
@@ -66,9 +66,8 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
         return resolvedAnnotation == NullnessAnnotation.NONNULL;
     }
 
-    @CheckForNull
     @Override
-    public NullnessAnnotation getResolvedAnnotation(final Object o, boolean getMinimal) {
+    public @Nullable NullnessAnnotation getResolvedAnnotation(final Object o, boolean getMinimal) {
 
         Profiler profiler = Global.getAnalysisCache().getProfiler();
         profiler.start(this.getClass());
