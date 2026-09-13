@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
@@ -37,10 +38,11 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.launching.JREContainer;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.osgi.service.resolver.BundleDescription;
+import org.eclipse.osgi.service.resolver.ExportPackageDescription;
+import org.eclipse.pde.core.plugin.IPluginLibrary;
 import org.eclipse.pde.core.plugin.IPluginModelBase;
 import org.eclipse.pde.core.plugin.PluginRegistry;
-import org.eclipse.pde.internal.build.site.PDEState;
-import org.eclipse.pde.internal.core.ClasspathUtilCore;
+import org.eclipse.pde.core.plugin.VersionMatchRule;
 
 import de.tobject.findbugs.FindbugsPlugin;
 
@@ -143,21 +145,21 @@ public class PDEClassPathGenerator {
     }
 
     private static void appendBundleToClasspath(BundleDescription bd, List<String> pdeClassPath) {
-        IPluginModelBase model = PluginRegistry.findModel(bd);
+        IPluginModelBase model = PluginRegistry.findModel(
+                bd.getSymbolicName(), bd.getVersion().toString(), VersionMatchRule.PERFECT);
         if (model == null) {
             return;
         }
-        ArrayList<IClasspathEntry> classpathEntries = new ArrayList<>();
-        ClasspathUtilCore.addLibraries(model, classpathEntries);
-
-        for (IClasspathEntry cpe : classpathEntries) {
-            IPath location = null;
-            if (cpe.getEntryKind() != IClasspathEntry.CPE_SOURCE) {
-                location = cpe.getPath();
-            }
-            if (location == null) {
+        for (IPluginLibrary library : model.getPluginBase().getLibraries()) {
+            if (!IPluginLibrary.CODE.equals(library.getType())) {
                 continue;
             }
+
+            String installLocation = model.getInstallLocation();
+            if (installLocation == null) {
+                continue;
+            }
+            IPath location = new Path(installLocation).append(library.getName());
             String locationStr = location.toOSString();
             if (pdeClassPath.contains(locationStr)) {
                 continue;
@@ -188,15 +190,37 @@ public class PDEClassPathGenerator {
     private static void addDependentBundles(BundleDescription bd, Set<BundleDescription> bundles) {
         // TODO for some reasons, this does not add "native" fragments for the
         // platform. See also: ContributedClasspathEntriesEntry, RequiredPluginsClasspathContainer
-        // BundleDescription[] requires = PDEState.getDependentBundles(target);
-        BundleDescription[] bundles2 = PDEState.getDependentBundlesWithFragments(bd);
-        for (BundleDescription bundleDescription : bundles2) {
-            if (bundleDescription == null) {
+
+        addDependentBundles(bd.getResolvedRequires(), bundles);
+        addImportedBundles(bd, bundles);
+
+        for (BundleDescription fragment : bd.getFragments()) {
+            if (fragment.isResolved() && bundles.add(fragment)) {
+                addDependentBundles(fragment.getResolvedRequires(), bundles);
+                addImportedBundles(fragment, bundles);
+            }
+        }
+    }
+
+    private static void addDependentBundles(BundleDescription[] dependencies, Set<BundleDescription> bundles) {
+        for (BundleDescription dependency : dependencies) {
+            if (dependency != null && bundles.add(dependency)) {
+                addDependentBundles(dependency, bundles);
+            }
+        }
+    }
+
+    private static void addImportedBundles(BundleDescription bd, Set<BundleDescription> bundles) {
+        for (ExportPackageDescription imported : bd.getResolvedImports()) {
+            BundleDescription exporter = imported.getExporter();
+            if (exporter == null
+                    || exporter == bd
+                    || (Objects.equals(bd.getSymbolicName(), exporter.getSymbolicName())
+                            && Objects.equals(bd.getVersion(), exporter.getVersion()))) {
                 continue;
             }
-            if (!bundles.contains(bundleDescription)) {
-                bundles.add(bundleDescription);
-                addDependentBundles(bundleDescription, bundles);
+            if (bundles.add(exporter)) {
+                addDependentBundles(exporter, bundles);
             }
         }
     }
