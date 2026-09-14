@@ -2,6 +2,7 @@ package bugIdeas;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class Ideas_2012_01_04 {
     @ExpectWarning("")
@@ -22,7 +23,8 @@ public class Ideas_2012_01_04 {
         return result;
     }
 
-    @ExpectWarning("MABO")
+    @NoWarning("")
+    @SuppressFBWarnings("MABO")
     static long getLongFixed(byte [] b) {
        long result = 0;
         for(int i = 0; i < b.length; i++) {

@@ -179,4 +179,26 @@ public class MixArithmeticAndBitwise {
         bitField &= 0xff;
         return numericField;
     }
+
+    public int testReportOnceForSameValue(int value) {
+        int bits = value & 1;
+        int number = bits + 1;                  // BUG
+        return number + 1;
+    }
+
+    public long testLongMathThenBitwise(long first, long second) {
+        long number = first + second;
+        return number & 0xffL;                  // BUG
+    }
+
+    public long testLongBitwiseThenMath(long value) {
+        long bits = value & 0xffL;
+        return bits + 1;                        // BUG
+    }
+
+    public long testLongShiftAmountIsMath(long value, int offset) {
+        long bits = value & 0xffL;
+        int distance = offset + 2;
+        return bits << distance;
+    }
 }

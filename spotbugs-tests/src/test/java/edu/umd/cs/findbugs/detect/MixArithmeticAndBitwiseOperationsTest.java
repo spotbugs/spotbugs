@@ -10,7 +10,7 @@ class MixArithmeticAndBitwiseOperationsTest extends AbstractIntegrationTest {
         final String bugType = "MABO_MIXING_ARITHMETIC_AND_BITWISE_OPERATIONS";
         performAnalysis("MixArithmeticAndBitwise.class");
 
-        assertBugTypeCount(bugType, 12);
+        assertBugTypeCount(bugType, 15);
 
         final String className = "MixArithmeticAndBitwise";
 
@@ -25,6 +25,22 @@ class MixArithmeticAndBitwiseOperationsTest extends AbstractIntegrationTest {
         assertBugInMethodAtLine(bugType, className, "testNoncompliant2", 65);
         assertBugInMethodAtLine(bugType, className, "testNoncompliant5", 74);
         assertBugInMethodAtLine(bugType, className, "testNoncompliant6", 84);
-        assertBugInMethod(bugType, className, "testSameInputInSeparateExpressions");
+        assertBugInMethodAtLine(bugType, className, "testSameInputInSeparateExpressions", 169);
+        assertBugInMethod(bugType, className, "testReportOnceForSameValue");
+        assertBugInMethod(bugType, className, "testLongMathThenBitwise");
+        assertBugInMethod(bugType, className, "testLongBitwiseThenMath");
+
+        assertNoBugInMethod(bugType, className, "testPureMath");
+        assertNoBugInMethod(bugType, className, "testPureBitwise");
+        assertNoBugInMethod(bugType, className, "testBitwiseNot");
+        assertNoBugInMethod(bugType, className, "testShiftAmountIsMath");
+        assertNoBugInMethod(bugType, className, "testVariableReuse");
+        assertNoBugInMethod(bugType, className, "testLiteralsOnly");
+        assertNoBugInMethod(bugType, className, "testSlotReuseForIINC");
+        assertNoBugInMethod(bugType, className, "testUntaggedCast");
+        assertNoBugInMethod(bugType, className, "testCompliant1");
+        assertNoBugInMethod(bugType, className, "testCompliant3");
+        assertNoBugInMethod(bugType, className, "testSeparateFields");
+        assertNoBugInMethod(bugType, className, "testLongShiftAmountIsMath");
     }
 }
