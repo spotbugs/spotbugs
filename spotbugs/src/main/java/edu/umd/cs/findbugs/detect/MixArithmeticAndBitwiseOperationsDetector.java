@@ -5,208 +5,205 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import edu.umd.cs.findbugs.BugAccumulator;
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.IINC;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.MethodGen;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.*;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
+import edu.umd.cs.findbugs.ba.vna.MergeTree;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
-@OpcodeStack.CustomUserValue
-public class MixArithmeticAndBitwiseOperationsDetector extends OpcodeStackDetector {
+public class MixArithmeticAndBitwiseOperationsDetector implements Detector {
+    private static final int ARITHMETIC = 1;
+    private static final int BITWISE = 2;
 
-    private final BugAccumulator bugAccumulator;
-
-    private Character saveContext = null;
+    private final BugReporter bugReporter;
 
     public MixArithmeticAndBitwiseOperationsDetector(BugReporter bugReporter) {
-        this.bugAccumulator = new BugAccumulator(bugReporter);
+        this.bugReporter = bugReporter;
     }
 
     @Override
-    public void visitAfter(JavaClass obj) {
-        bugAccumulator.reportAccumulatedBugs();
-    }
-
-    private void checkManipulation(int seen) {
-        if (seen == Const.IINC) {
-            int slot = getRegisterOperand();
-            OpcodeStack.Item lv = stack.getLVValue(slot);
-            Character t = (Character) lv.getUserValue();
-            if (t != null && t == 'B') {
-                bugAccumulator.accumulateBug(new BugInstance(this, "MABO_MIXING_ARITHMETIC_AND_BITWISE_OPERATIONS", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addString("arithmetic").addString("bitwise").addSourceLine(this),
-                        this);
+    public void visitClassContext(ClassContext classContext) {
+        for (Method method : classContext.getJavaClass().getMethods()) {
+            if (method.getCode() == null) {
+                continue;
             }
-        } else if (isArithmeticOpcode(seen) || isBitwiseOpcode(seen)) {
-
-            int start = 1, end = 2, depth = 2;
-            if (isBitwiseShiftOpcode(seen)) {
-                start = 2;
-            } else if (isUnaryArithmeticOpcode(seen)) {
-                end = 1;
-                depth = 1;
-            }
-
-            Character type = isBitwiseOpcode(seen) ? 'B' : 'A';
-
-            if (stack.getStackDepth() < depth) {
-                return;
-            }
-
-            for (int i = start; i <= end; i++) {
-                OpcodeStack.Item item = stack.getStackItem(i - 1);
-                if (!checkItem(item, type)) {
-                    bugAccumulator.accumulateBug(new BugInstance(this, "MABO_MIXING_ARITHMETIC_AND_BITWISE_OPERATIONS", NORMAL_PRIORITY)
-                            .addClassAndMethod(this).addString(type.equals('B') ? "bitwise" : "arithmetic")
-                            .addString(type.equals('A') ? "bitwise" : "arithmetic").addSourceLine(this),
-                            this);
+            try {
+                analyzeMethod(classContext, method);
+            } catch (MethodUnprofitableException e) {
+                if (SystemProperties.getBoolean("unprofitable.debug")) {
+                    bugReporter.logError("Skipping unprofitable method in " + getClass().getName());
                 }
+            } catch (CFGBuilderException | DataflowAnalysisException e) {
+                bugReporter.logError("Detector " + getClass().getName() + " caught exception", e);
             }
         }
+    }
+
+    private void analyzeMethod(ClassContext classContext, Method method)
+            throws CFGBuilderException, DataflowAnalysisException {
+        CFG cfg = classContext.getCFG(method);
+        ValueNumberDataflow dataflow = classContext.getValueNumberDataflow(method);
+        MergeTree mergeTree = dataflow.getAnalysis().getMergeTree();
+        MethodGen methodGen = classContext.getMethodGen(method);
+        String sourceFile = classContext.getJavaClass().getSourceFileName();
+        Map<Integer, Integer> uses = new HashMap<>();
+
+        List<Location> locations = new ArrayList<>();
+        for (Iterator<Location> iterator = cfg.locationIterator(); iterator.hasNext();) {
+            locations.add(iterator.next());
+        }
+        locations.sort(Comparator.comparingInt(location -> location.getHandle().getPosition()));
+
+        for (Location location : locations) {
+            ValueNumberFrame before = dataflow.getFactAtLocation(location);
+            ValueNumberFrame after = dataflow.getFactAfterLocation(location);
+            if (!before.isValid() || !after.isValid()) {
+                continue;
+            }
+
+            Instruction instruction = location.getHandle().getInstruction();
+            int opcode = instruction.getOpcode();
+            if (isCastOpcode(opcode)) {
+                propagateCast(before, after, mergeTree, uses);
+            } else if (opcode == Const.IINC) {
+                int slot = ((IINC) instruction).getIndex();
+                checkOperation(classContext, methodGen, sourceFile, location, ARITHMETIC,
+                        List.of(before.getValue(slot)), after.getValue(slot), mergeTree, uses);
+            } else if (isArithmeticOpcode(opcode) || isBitwiseOpcode(opcode)) {
+                int operation = isArithmeticOpcode(opcode) ? ARITHMETIC : BITWISE;
+                checkOperation(classContext, methodGen, sourceFile, location, operation,
+                        getOperands(before, opcode), after.getTopValue(), mergeTree, uses);
+            }
+        }
+    }
+
+    private void checkOperation(ClassContext classContext, MethodGen methodGen, String sourceFile, Location location,
+            int operation, List<ValueNumber> operands, ValueNumber result, MergeTree mergeTree, Map<Integer, Integer> uses) {
+        int previousUses = 0;
+        for (ValueNumber operand : operands) {
+            if (!isConstant(operand)) {
+                previousUses |= getUses(operand, mergeTree, uses);
+            }
+        }
+
+        int opposite = operation == ARITHMETIC ? BITWISE : ARITHMETIC;
+        if ((previousUses & opposite) != 0) {
+            String currentName = operation == ARITHMETIC ? "arithmetic" : "bitwise";
+            String previousName = operation == ARITHMETIC ? "bitwise" : "arithmetic";
+            bugReporter.reportBug(new BugInstance(this, "MABO_MIXING_ARITHMETIC_AND_BITWISE_OPERATIONS", NORMAL_PRIORITY)
+                    .addClassAndMethod(methodGen, sourceFile)
+                    .addString(currentName)
+                    .addString(previousName)
+                    .addSourceLine(classContext, methodGen, sourceFile, location.getHandle()));
+        }
+
+        for (ValueNumber operand : operands) {
+            if (!isConstant(operand)) {
+                markUses(operand, operation, mergeTree, uses);
+            }
+        }
+        uses.merge(result.getNumber(), previousUses | operation, (left, right) -> left | right);
+    }
+
+    private static List<ValueNumber> getOperands(ValueNumberFrame frame, int opcode) throws DataflowAnalysisException {
+        if (isUnaryArithmeticOpcode(opcode)) {
+            return List.of(frame.getStackValue(0));
+        }
+        if (isBitwiseShiftOpcode(opcode)) {
+            // The shift distance is the top stack value. It does not inherit the shifted value's use.
+            return List.of(frame.getStackValue(1));
+        }
+        int secondOperandOffset = isLongBinaryOpcode(opcode) ? 2 : 1;
+        return List.of(frame.getStackValue(0), frame.getStackValue(secondOperandOffset));
+    }
+
+    private static void propagateCast(ValueNumberFrame before, ValueNumberFrame after, MergeTree mergeTree,
+            Map<Integer, Integer> uses) throws DataflowAnalysisException {
+        ValueNumber input = before.getStackValue(0);
+        ValueNumber output = after.getTopValue();
+        if (!isConstant(input)) {
+            uses.merge(output.getNumber(), getUses(input, mergeTree, uses), (left, right) -> left | right);
+        }
+    }
+
+    private static int getUses(ValueNumber value, MergeTree mergeTree, Map<Integer, Integer> uses) {
+        int result = uses.getOrDefault(value.getNumber(), 0);
+        BitSet inputs = mergeTree.getTransitiveInputSet(value);
+        for (int input = inputs.nextSetBit(0); input >= 0; input = inputs.nextSetBit(input + 1)) {
+            result |= uses.getOrDefault(input, 0);
+        }
+        return result;
+    }
+
+    private static void markUses(ValueNumber value, int operation, MergeTree mergeTree, Map<Integer, Integer> uses) {
+        uses.merge(value.getNumber(), operation, (left, right) -> left | right);
+        BitSet inputs = mergeTree.getTransitiveInputSet(value);
+        for (int input = inputs.nextSetBit(0); input >= 0; input = inputs.nextSetBit(input + 1)) {
+            uses.merge(input, operation, (left, right) -> left | right);
+        }
+    }
+
+    private static boolean isConstant(ValueNumber value) {
+        return value.hasFlag(ValueNumber.CONSTANT_VALUE) || value.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT);
+    }
+
+    private static boolean isCastOpcode(int opcode) {
+        return opcode == Const.I2B || opcode == Const.I2C || opcode == Const.I2L || opcode == Const.I2S || opcode == Const.L2I;
+    }
+
+    private static boolean isUnaryArithmeticOpcode(int opcode) {
+        return opcode == Const.INEG || opcode == Const.LNEG;
+    }
+
+    private static boolean isArithmeticOpcode(int opcode) {
+        return isUnaryArithmeticOpcode(opcode) || opcode == Const.IADD || opcode == Const.ISUB || opcode == Const.IMUL
+                || opcode == Const.IDIV || opcode == Const.IREM || opcode == Const.LADD || opcode == Const.LSUB
+                || opcode == Const.LMUL || opcode == Const.LDIV || opcode == Const.LREM;
+    }
+
+    private static boolean isBitwiseOpcode(int opcode) {
+        return opcode == Const.IOR || opcode == Const.IXOR || opcode == Const.IAND || opcode == Const.LOR
+                || opcode == Const.LXOR || opcode == Const.LAND || isBitwiseShiftOpcode(opcode);
+    }
+
+    private static boolean isBitwiseShiftOpcode(int opcode) {
+        return opcode == Const.ISHL || opcode == Const.ISHR || opcode == Const.IUSHR || opcode == Const.LSHL
+                || opcode == Const.LSHR || opcode == Const.LUSHR;
+    }
+
+    private static boolean isLongBinaryOpcode(int opcode) {
+        return opcode == Const.LADD || opcode == Const.LSUB || opcode == Const.LMUL || opcode == Const.LDIV
+                || opcode == Const.LREM || opcode == Const.LOR || opcode == Const.LXOR || opcode == Const.LAND;
     }
 
     @Override
-    public void sawOpcode(int seen) {
-        if (seen == Const.IINC || isArithmeticOpcode(seen) || isBitwiseOpcode(seen)) {
-            checkManipulation(seen);
-        } else if (isCastOpcode(seen)) {
-            if (stack.getStackDepth() < 1) {
-                return;
-            }
-            saveContext = (Character) stack.getStackItem(0).getUserValue();
-        }
-
+    public void report() {
     }
-
-    @Override
-    public void afterOpcode(int seen) {
-        super.afterOpcode(seen);
-
-        if (seen == Const.IINC) {
-            int slot = getRegisterOperand();
-            OpcodeStack.Item lv = stack.getLVValue(slot);
-            lv.setUserValue('A');
-        } else if (isArithmeticOpcode(seen)
-                || isBitwiseOpcode(seen)) {
-            if (stack.getStackDepth() < 1) {
-                return;
-            }
-            OpcodeStack.Item item = stack.getStackItem(0);
-            if (isArithmeticOpcode(seen)) {
-                item.setUserValue('A');
-            } else if (isBitwiseOpcode(seen)) {
-                item.setUserValue('B');
-            }
-        } else if (isCastOpcode(seen)) {
-            if (saveContext != null && stack.getStackDepth() > 0) {
-                stack.getStackItem(0).setUserValue(saveContext);
-            }
-            saveContext = null;
-        }
-
-    }
-
-    private boolean isCastOpcode(int seen) {
-        switch (seen) {
-        case Const.I2B:
-        case Const.I2L:
-        case Const.I2S:
-        case Const.L2I:
-            return true;
-        default:
-            return false;
-        }
-    }
-
-    private boolean isUnaryArithmeticOpcode(int seen) {
-        switch (seen) {
-        case Const.INEG:
-        case Const.LNEG:
-            return true;
-        default:
-            return false;
-        }
-    }
-
-    private boolean isBinaryArithmeticOpcode(int seen) {
-        switch (seen) {
-        case Const.IADD:
-        case Const.ISUB:
-        case Const.IMUL:
-        case Const.IDIV:
-        case Const.IREM:
-        case Const.LADD:
-        case Const.LSUB:
-        case Const.LMUL:
-        case Const.LDIV:
-        case Const.LREM:
-            return true;
-        default:
-            return false;
-        }
-    }
-
-    private boolean isBitwiseLogicalOpcode(int seen) {
-        switch (seen) {
-        case Const.IOR:
-        case Const.IXOR:
-        case Const.IAND:
-        case Const.LOR:
-        case Const.LXOR:
-        case Const.LAND:
-            return true;
-        default:
-            return false;
-        }
-    }
-
-    private boolean isBitwiseShiftOpcode(int seen) {
-        switch (seen) {
-        case Const.ISHL:
-        case Const.ISHR:
-        case Const.IUSHR:
-        case Const.LSHL:
-        case Const.LSHR:
-        case Const.LUSHR:
-            return true;
-        default:
-            return false;
-        }
-    }
-
-    private boolean isArithmeticOpcode(int seen) {
-        return isUnaryArithmeticOpcode(seen) || isBinaryArithmeticOpcode(seen);
-    }
-
-    private boolean isBitwiseOpcode(int seen) {
-        return isBitwiseLogicalOpcode(seen) || isBitwiseShiftOpcode(seen);
-    }
-
-    private boolean checkItem(OpcodeStack.Item item, Character expectedType) {
-        Character itemType = (Character) item.getUserValue();
-
-        if (itemType == null) {
-            item.setUserValue(expectedType);
-            return true;
-        }
-
-        return expectedType.equals(itemType);
-    }
-
 }

@@ -76,7 +76,7 @@ public class MixArithmeticAndBitwise {
         return result;
     }
 
-    // TP11: Non-compliant example 5 from NUM01-J description
+    // TP11: Non-compliant example 6 from NUM01-J description
     int testNoncompliant6() {
         byte[] b = new byte[] {-1, -1, -1, -1};
         int result = 0;
@@ -162,5 +162,21 @@ public class MixArithmeticAndBitwise {
             result = ((result << 8) | (b[i] & 0xff));
         }
         return result;
+    }
+
+    public int testSameInputInSeparateExpressions(int value) {
+        int bits = value & 1;
+        int number = value + 1;                 // BUG
+        System.out.println(bits);
+        return number;
+    }
+
+    private int numericField;
+    private int bitField;
+
+    public int testSeparateFields() {
+        numericField += 1;
+        bitField &= 0xff;
+        return numericField;
     }
 }

@@ -9123,6 +9123,10 @@ object explicitly.</p>
             Although such operations are valid and will compile, they can reduce code readability.
             </p>
             <p>
+            Keep numeric values and bit collections in separate variables, and use only arithmetic operations on the
+            former and bitwise operations on the latter.
+            </p>
+            <p>
             See SEI CERT rule <a href="https://cmu-sei.github.io/secure-coding-standards/sei-cert-oracle-coding-standard-for-java/rules/numeric-types-and-operations-num/num01-j/">
             NUM01-J. Do not mix arithmetic and bitwise operations on the same data</a>.
             </p>
@@ -10263,7 +10267,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="DL">Unintended contention or possible deadlock due to locking on shared objects</BugCode>
   <BugCode abbrev="JUA">Problems in JUnit Assertions</BugCode>
   <BugCode abbrev="EOS">Bad End of Stream check</BugCode>
-  <BugCode abbrev="MABO">Mixing of arithmetic and bitwose operations on the same data</BugCode>
+  <BugCode abbrev="MABO">Mixing of arithmetic and bitwise operations on the same data</BugCode>
   <BugCode abbrev="REFLC">Reflection increasing accessibility of classes</BugCode>
   <BugCode abbrev="REFLF">Reflection increasing accessibility of fields</BugCode>
   <BugCode abbrev="MC">Dangerous call to overridable method</BugCode>
