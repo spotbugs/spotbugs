@@ -195,7 +195,7 @@ class ConstructorThrowTest extends AbstractIntegrationTest {
         performAnalysis("constructorthrow/ConstructorThrowTest27.class",
                 "constructorthrow/ConstructorThrowTest27$NonSealedChild.class");
         assertBugTypeCount(CT_THROW, 1);
-        assertBugAtLine(CT_THROW, 21);
+        assertBugAtLine(CT_THROW, 22);
     }
 
     @Test
