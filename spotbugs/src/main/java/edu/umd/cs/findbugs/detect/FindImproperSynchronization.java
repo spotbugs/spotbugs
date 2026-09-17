@@ -313,7 +313,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
                     declaredCollectionAccessors.add(updatedField, updateMethod);
                 }
 
-                if (updatedField.isPublic()) {
+                if (updatedField.isPublic() || isNewLockAssignedToCloneCopy(seen)) {
                     return;
                 }
                 declaredLockAccessors.add(updatedField, updateMethod);
@@ -439,6 +439,24 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
 
     private boolean isPackagePrivate(XField field) {
         return !(field.isPublic() || field.isProtected() || field.isPrivate());
+    }
+
+    /**
+     * Check if the current field update happens in {@code clone()} and stores a newly allocated object into a field of
+     * another instance (typically the copy returned by {@code super.clone()}). Giving the copy its own, fresh lock
+     * object does not expose the lock to untrusted code.
+     *
+     * @param seen the current opcode
+     * @return true if a newly allocated object is assigned to a field of an object other than {@code this} in {@code clone()}
+     */
+    private boolean isNewLockAssignedToCloneCopy(int seen) {
+        if (seen != Const.PUTFIELD || !"clone".equals(getMethodName()) || getXMethod().isStatic()
+                || stack.getStackDepth() < 2) {
+            return false;
+        }
+        OpcodeStack.Item value = stack.getStackItem(0);
+        OpcodeStack.Item target = stack.getStackItem(1);
+        return value.isNewlyAllocated() && target.getRegisterNumber() != 0;
     }
 
     private boolean isInitializerMethod(String methodName) {
