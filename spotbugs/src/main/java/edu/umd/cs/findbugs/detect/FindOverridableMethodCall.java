@@ -187,7 +187,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
             if (method == null) {
                 return;
             }
-            OpcodeStack.Item item = stack.getStackItem(0);
+            OpcodeStack.Item item = stack.getStackItem(getNumberArguments(getSigConstantOperand()));
             if (item.getRegisterNumber() == 0 && Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
                 if (checkAndRecordDirectCase(caller, method, CONSTRUCTOR_BUG, LOW_PRIORITY, SourceLineAnnotation.fromVisitedInstruction(
                         this))) {
