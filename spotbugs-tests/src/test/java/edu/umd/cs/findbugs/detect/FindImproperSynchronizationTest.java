@@ -505,7 +505,6 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         performAnalysis("synchronizationLocks/privateFinalLocks/SafeSynchronizationWithNewLockInClone.class");
 
         assertNoUnsafeLockBugs();
-        assertBugTypeCount(EXPOSED_LOCK_OBJECT_BUG, 0);
     }
 
     /**
@@ -538,6 +537,7 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertBugTypeCount(OBJECT_BUG, 0);
         assertBugTypeCount(ACCESSIBLE_OBJECT_BUG, 0);
         assertBugTypeCount(INHERITABLE_OBJECT_BUG, 0);
+        assertBugTypeCount(EXPOSED_LOCK_OBJECT_BUG, 0);
         assertBugTypeCount(BAD_BACKING_COLLECTION, 0);
         assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 0);
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
