@@ -34,9 +34,11 @@ import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.PermittedSubclasses;
 
 /**
  * This detector can find constructors that throw exception.
@@ -62,13 +64,39 @@ public class ConstructorThrow extends OpcodeStackDetector {
      */
     private static final Map<String, Set<JavaClass>> knownMethodsToThrownExceptions;
 
-    private boolean isFinalClass = false;
+    private boolean canOnlyHaveSafeSubclasses = false;
     private boolean isFinalFinalizer = false;
     private boolean isFirstPass = true;
     private boolean hadObjectConstructor = false;
 
     public ConstructorThrow(BugReporter bugReporter) {
         this.bugAccumulator = new BugAccumulator(bugReporter);
+    }
+
+    private boolean canOnlyHaveSafeSubClasses(JavaClass obj) {
+        if (obj.isFinal()) {
+            return true;
+        }
+
+        boolean hasPermittedSubClassAttribute = false;
+        for (Attribute a : obj.getAttributes()) {
+            if (a instanceof PermittedSubclasses) {
+                hasPermittedSubClassAttribute = true;
+                String[] permittedSubClassNames = ((PermittedSubclasses) a).getClassNames();
+                for (String permittedSubClassName : permittedSubClassNames) {
+                    try {
+                        JavaClass permittedSubClass = AnalysisContext.currentAnalysisContext().lookupClass(permittedSubClassName);
+                        if (!canOnlyHaveSafeSubClasses(permittedSubClass)) {
+                            return false;
+                        }
+                    } catch (ClassNotFoundException e) {
+                        AnalysisContext.reportMissingClass(e);
+                        return false;
+                    }
+                }
+            }
+        }
+        return hasPermittedSubClassAttribute;
     }
 
     /**
@@ -79,8 +107,8 @@ public class ConstructorThrow extends OpcodeStackDetector {
     @Override
     public void visit(JavaClass obj) {
         resetState();
-        if (obj.isFinal()) {
-            isFinalClass = true;
+        if (canOnlyHaveSafeSubClasses(obj)) {
+            canOnlyHaveSafeSubclasses = true;
             return;
         }
 
@@ -121,7 +149,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
     /**
      * 1. Check for any throw expression in the constructor.
      * 2. Check for any exception throw inside constructor, or any of the called methods.
-     * If the class is final, we are fine, no finalizer attack can happen.
+     * If the class can only have safe subclasses, we are fine, no finalizer attack can happen.
      * In the first pass the detector shouldn't report, because there could be
      * a final finalizer and a throwing constructor. Reporting in this case
      * would be a false positive as classes with a final finalizer are not
@@ -129,7 +157,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if (isFinalClass || isFinalFinalizer) {
+        if (canOnlyHaveSafeSubclasses || isFinalFinalizer) {
             return;
         }
         if (isFirstPass) {
@@ -367,7 +395,7 @@ public class ConstructorThrow extends OpcodeStackDetector {
     }
 
     private void resetState() {
-        isFinalClass = false;
+        canOnlyHaveSafeSubclasses = false;
         isFinalFinalizer = false;
         isFirstPass = true;
         exHandlesToMethodCallsByMethodsMap.clear();
