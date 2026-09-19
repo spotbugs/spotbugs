@@ -25,6 +25,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Narrow the definition of singletons ([#2985](https://github.com/spotbugs/spotbugs/issues/2985))
 - Fix `NP_LOAD_OF_KNOWN_NULL_VALUE` false negative when null check uses `instanceof` ([#3916](https://github.com/spotbugs/spotbugs/issues/3916))
 - Fix CLI launcher scripts intercepting `-conserveSpace` with a JVM system property instead passing it to Java Application as equivalent to `-effort:min` ([#4268](https://github.com/spotbugs/spotbugs/pull/4289)) 
+- Fix `CT_CONSTRUCTOR_THROW` false positive with sealed classes ([#4259](https://github.com/spotbugs/spotbugs/issues/4259))
 
 ## 4.10.4 - 2026-08-19
 ### Fixed
