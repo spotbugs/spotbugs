@@ -23,8 +23,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -76,16 +74,55 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
     public JrtfsCodeBase(ICodeBaseLocator codeBaseLocator, @Nonnull String fileName) {
         super(codeBaseLocator);
         this.fileName = fileName;
-        URL url;
         try {
-            url = Path.of(fileName).toUri().toURL();
-            URLClassLoader loader = new URLClassLoader(new URL[] { url });
-            fs = FileSystems.newFileSystem(URI.create("jrt:/"), Collections.emptyMap(), loader);
+            fs = openJrtFileSystem(fileName);
             root = fs.getPath("modules");
             packageToModuleMap = createPackageToModuleMap(fs);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Opens the module image of the JDK the given {@code jrt-fs.jar} belongs to, which is not
+     * necessarily the JDK running SpotBugs.
+     * <p>
+     * Selecting a foreign image requires the {@code java.home} environment entry used by
+     * {@code jdk.internal.jrtfs.JrtFileSystemProvider}. Without it, the {@code jrt} provider
+     * installed in the running JVM answers the request with the running JVM's own image.
+     * <p>
+     * Passing a class loader over the given {@code jrt-fs.jar} does not help: since Java 9,
+     * {@code java.base} installs a provider for the {@code jrt} scheme, and
+     * {@link FileSystems#newFileSystem(URI, Map, ClassLoader)} falls back to the loader only when
+     * no installed provider matches the scheme.
+     *
+     * @param jrtFsJar
+     *            path of a {@code jrt-fs.jar}, usually {@code <javaHome>/lib/jrt-fs.jar}
+     * @return file system for the module image of that JDK, or of the running JVM if the jar is
+     *         not in the layout expected by the provider
+     */
+    private static FileSystem openJrtFileSystem(String jrtFsJar) throws IOException {
+        Path javaHome = javaHomeOf(jrtFsJar);
+        if (javaHome == null) {
+            return FileSystems.newFileSystem(URI.create("jrt:/"), Collections.emptyMap());
+        }
+        return FileSystems.newFileSystem(URI.create("jrt:/"), Map.of("java.home", javaHome.toString()));
+    }
+
+    /**
+     * Maps {@code <javaHome>/lib/jrt-fs.jar} back to {@code <javaHome>}.
+     *
+     * @return the JDK home owning the given jar, or {@code null} if the jar is not in the layout
+     *         expected by the {@code jrt} file system provider
+     */
+    @CheckForNull
+    private static Path javaHomeOf(String jrtFsJar) {
+        Path lib = Path.of(jrtFsJar).toAbsolutePath().getParent();
+        Path javaHome = lib == null ? null : lib.getParent();
+        if (javaHome == null || !Files.isRegularFile(javaHome.resolve("lib").resolve("jrt-fs.jar"))) {
+            return null;
+        }
+        return javaHome;
     }
 
     public Map<String, Object> createPackageToModuleMap(FileSystem fs) throws IOException {
