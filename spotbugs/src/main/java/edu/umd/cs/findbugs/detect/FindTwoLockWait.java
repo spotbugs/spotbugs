@@ -93,13 +93,13 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
                 bugReporter.logError("Error analyzing " + method.toString(), e);
             }
         }
-        if (!possibleNotifyLocations.isEmpty()) {
-            for (BugInstance bug : possibleWaitBugs) {
+        for (BugInstance bug : possibleWaitBugs) {
+            if (!possibleNotifyLocations.isEmpty()) {
                 for (SourceLineAnnotation notifyLine : possibleNotifyLocations) {
                     bug.addSourceLine(notifyLine).describe("SOURCE_NOTIFICATION_DEADLOCK");
                 }
-                bugReporter.reportBug(bug);
             }
+            bugReporter.reportBug(bug);
         }
     }
 
