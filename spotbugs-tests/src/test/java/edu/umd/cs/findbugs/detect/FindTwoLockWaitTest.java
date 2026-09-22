@@ -9,6 +9,7 @@ class FindTwoLockWaitTest extends AbstractIntegrationTest {
     void reportsWaitWhileHoldingDistinctMonitors() {
         performAnalysis("TwoLockWaitDistinctMonitors.class");
 
+        assertBugTypeCount("TLW_TWO_LOCK_WAIT", 1);
         assertBugInMethod("TLW_TWO_LOCK_WAIT", "TwoLockWaitDistinctMonitors", "waitWithTwoLocks");
     }
 
