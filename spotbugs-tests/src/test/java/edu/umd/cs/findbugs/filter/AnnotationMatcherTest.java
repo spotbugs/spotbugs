@@ -153,7 +153,7 @@ class AnnotationMatcherTest {
                 .filter(bugInstanceMatcher::match)
                 .count();
 
-        assertEquals(4, numberOfMatchedBugs);
+        assertEquals(6, numberOfMatchedBugs);
     }
 
     @Test
