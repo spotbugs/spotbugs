@@ -36,11 +36,6 @@ import org.apache.bcel.generic.Type;
 
 /**
  * A simple class to parse method signatures that include generic information.
- * <p>
- *
- * Modified from edu.umd.cs.findbugs.ba.SignatureParser
- *
- * @author Nat Ayewah
  */
 public class GenericSignatureParser {
     private class ParameterSignatureIterator implements Iterator<String> {

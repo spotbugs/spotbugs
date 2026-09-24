@@ -45,11 +45,11 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -864,7 +864,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         for (Entry<MethodDescriptor, SideEffectStatus> entry : statusMap.entrySet()) {
             MethodDescriptor m = entry.getKey();
             if (entry.getValue() == SideEffectStatus.NO_SIDE_EFFECT) {
-                String returnType = new SignatureParser(m.getSignature()).getReturnTypeSignature();
+                String returnType = new GenericSignatureParser(m.getSignature()).getReturnTypeSignature();
                 if (!returnType.equals("V") || m.getName().equals(Const.CONSTRUCTOR_NAME)) {
                     if (m.equals(GET_CLASS)) {
                         /* We do not mark getClass() call as pure, because it can appear in code like this:

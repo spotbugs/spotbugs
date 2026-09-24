@@ -7,6 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2026-??-??
 ### Changed
 - `@SuppressFBWarnings` annotation on a method or a constructor now suppresses warnings reported in their lambdas too ([#724](https://github.com/spotbugs/spotbugs/issues/724))
+- Replace deprecated calls to 'SignatureParser' to 'GenericSignatureParser' where feasible ([#xxx](xxxx))
 
 ### Fixed
 - Fix `NP_ALWAYS_NULL` false positives when a non-null value is known to satisfy an `instanceof` check ([#4272](https://github.com/spotbugs/spotbugs/issues/4272))
