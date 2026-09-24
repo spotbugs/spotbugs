@@ -61,10 +61,10 @@ import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -736,7 +736,7 @@ public class DumbMethods extends OpcodeStackDetector {
                     XField field = stack.getStackItem(1).getXField();
                     String signature;
                     if (rvo != null) {
-                        signature = new SignatureParser(rvo.getSignature()).getReturnTypeSignature();
+                        signature = new GenericSignatureParser(rvo.getSignature()).getReturnTypeSignature();
                     } else if (field != null) {
                         signature = field.getSignature();
                     } else {
@@ -866,7 +866,7 @@ public class DumbMethods extends OpcodeStackDetector {
 
         if ((seen == Const.INVOKESTATIC || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESPECIAL || seen == Const.INVOKEINTERFACE)
                 && getSigConstantOperand().contains("Ljava/lang/Runnable;")) {
-            SignatureParser parser = new SignatureParser(getSigConstantOperand());
+            GenericSignatureParser parser = new GenericSignatureParser(getSigConstantOperand());
             int count = 0;
             for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext(); count++) {
                 String parameter = i.next();

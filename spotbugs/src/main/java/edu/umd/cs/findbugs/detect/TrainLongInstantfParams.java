@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.TrainingDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
@@ -75,7 +75,7 @@ public class TrainLongInstantfParams extends PreorderVisitor implements Detector
         if (!getMethod().isPublic() && !getMethod().isProtected()) {
             return;
         }
-        SignatureParser p = new SignatureParser(getMethodSig());
+        GenericSignatureParser p = new GenericSignatureParser(getMethodSig());
         LocalVariableTable t = obj.getLocalVariableTable();
 
         if (t == null) {

@@ -47,10 +47,10 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -186,8 +186,8 @@ public class Naming extends PreorderVisitor implements Detector {
                             }
                             priority++;
                         }
-                        Iterator<String> s = new SignatureParser(m.getSignature()).parameterSignatureIterator();
-                        Iterator<String> s2 = new SignatureParser(m2.getSignature()).parameterSignatureIterator();
+                        Iterator<String> s = new GenericSignatureParser(m.getSignature()).parameterSignatureIterator();
+                        Iterator<String> s2 = new GenericSignatureParser(m2.getSignature()).parameterSignatureIterator();
                         while (s.hasNext()) {
                             String p = s.next();
                             String p2 = s2.next();

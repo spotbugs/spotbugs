@@ -46,8 +46,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -124,7 +124,7 @@ public class FindSelfComparison2 implements Detector {
                     }
                     String sig = iins.getSignature(cpg);
 
-                    SignatureParser parser = new SignatureParser(sig);
+                    GenericSignatureParser parser = new GenericSignatureParser(sig);
                     if (parser.getNumParameters() == 1
                             && (booleanComparisonMethod(invoking) && sig.endsWith(";)Z") || comparatorMethod(invoking) && sig.endsWith(";)I"))) {
                         checkForSelfOperation(classContext, location, valueNumberDataflow, "COMPARISON", method, methodGen,

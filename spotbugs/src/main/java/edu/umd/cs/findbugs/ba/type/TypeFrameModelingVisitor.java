@@ -46,7 +46,6 @@ import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -508,7 +507,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         String signature = obj.getSignature(cpg);
         String className = obj.getClassName(cpg);
 
-        String returnValueSignature = new SignatureParser(signature).getReturnTypeSignature();
+        String returnValueSignature = new GenericSignatureParser(signature).getReturnTypeSignature();
         if ("V".equals(returnValueSignature)) {
             consumeStack(obj);
             return;
@@ -694,7 +693,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                 }
 
                 if (m == m2) {
-                    SignatureParser p = new SignatureParser(m.getSignature());
+                    GenericSignatureParser p = new GenericSignatureParser(m.getSignature());
                     String rv = p.getReturnTypeSignature();
 
                     Type t = Type.getType(rv);

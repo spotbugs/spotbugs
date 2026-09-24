@@ -29,6 +29,8 @@ import jakarta.annotation.Nonnull;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
 
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
+
 /**
  * A simple class to parse method signatures.
  *
@@ -251,7 +253,7 @@ public class SignatureParser {
      * @return int number of parameters
      */
     public static int getNumParametersForInvocation(InvokeInstruction inv, ConstantPoolGen cpg) {
-        SignatureParser sigParser = new SignatureParser(inv.getSignature(cpg));
+        GenericSignatureParser sigParser = new GenericSignatureParser(inv.getSignature(cpg));
         return sigParser.getNumParameters();
     }
 
@@ -274,10 +276,10 @@ public class SignatureParser {
 
     public static void main(String[] args) {
         if (args.length != 1) {
-            System.err.println("Usage: " + SignatureParser.class.getName() + " '<method signature>'");
+            System.err.println("Usage: " + GenericSignatureParser.class.getName() + " '<method signature>'");
             System.exit(1);
         }
-        SignatureParser parser = new SignatureParser(args[0]);
+        GenericSignatureParser parser = new GenericSignatureParser(args[0]);
         for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext();) {
             System.out.println(i.next());
         }
