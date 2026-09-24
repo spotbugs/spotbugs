@@ -18,6 +18,11 @@
  */
 package edu.umd.cs.findbugs.ba.ca;
 
+import java.util.Collections;
+import java.util.List;
+
+import edu.umd.cs.findbugs.ba.XField;
+
 public class Call {
     private final String className;
 
@@ -25,10 +30,13 @@ public class Call {
 
     private final String methodSig;
 
-    public Call(String className, String methodName, String methodSig) {
+    private final List<XField> attributes;
+
+    public Call(String className, String methodName, String methodSig, List<XField> attributes) {
         this.className = className;
         this.methodName = methodName;
         this.methodSig = methodSig;
+        this.attributes = attributes != null ? Collections.unmodifiableList(attributes) : Collections.emptyList();
     }
 
     public String getClassName() {
@@ -43,6 +51,10 @@ public class Call {
         return methodSig;
     }
 
+    public List<XField> getAttributes() {
+        return attributes;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null || obj.getClass() != this.getClass()) {
@@ -50,11 +62,11 @@ public class Call {
         }
         Call other = (Call) obj;
         return this.className.equals(other.className) && this.methodName.equals(other.methodName)
-                && this.methodSig.equals(other.methodSig);
+                && this.methodSig.equals(other.methodSig) && this.attributes.equals(other.attributes);
     }
 
     @Override
     public int hashCode() {
-        return className.hashCode() + methodName.hashCode() + methodSig.hashCode();
+        return className.hashCode() + methodName.hashCode() + methodSig.hashCode() + attributes.hashCode();
     }
 }
