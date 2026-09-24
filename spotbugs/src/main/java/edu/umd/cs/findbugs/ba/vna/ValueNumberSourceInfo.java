@@ -19,12 +19,12 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ACONST_NULL;
 import org.apache.bcel.generic.InstructionHandle;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.FieldAnnotation;
@@ -54,8 +54,8 @@ public abstract class ValueNumberSourceInfo {
      *            TODO
      * @return the annotation
      */
-    public static @CheckForNull BugAnnotation findAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber,
-            ValueNumberFrame vnaFrame, @CheckForNull String partialRole) {
+    public static @Nullable BugAnnotation findAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber,
+            ValueNumberFrame vnaFrame, @Nullable String partialRole) {
         if (location.getHandle().getInstruction() instanceof ACONST_NULL) {
             StringAnnotation nullConstant = new StringAnnotation("null");
             nullConstant.setDescription(StringAnnotation.STRING_NONSTRING_CONSTANT_ROLE);
@@ -94,7 +94,7 @@ public abstract class ValueNumberSourceInfo {
      * @return the annotation
      */
     public static @Nonnull BugAnnotation findRequiredAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber,
-            ValueNumberFrame vnaFrame, @CheckForNull String partialRole) {
+            ValueNumberFrame vnaFrame, @Nullable String partialRole) {
         BugAnnotation result = findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame, partialRole);
         if (result != null) {
             return result;
@@ -158,7 +158,7 @@ public abstract class ValueNumberSourceInfo {
      * @throws DataflowAnalysisException
      * @throws CFGBuilderException
      */
-    public static @CheckForNull BugAnnotation getFromValueNumber(ClassContext classContext, Method method, Location location, int stackPos)
+    public static @Nullable BugAnnotation getFromValueNumber(ClassContext classContext, Method method, Location location, int stackPos)
             throws DataflowAnalysisException, CFGBuilderException {
         ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
         if (!vnaFrame.isValid()) {

@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.filter;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Matches a String value against a predefined specification.
@@ -43,11 +43,11 @@ import javax.annotation.CheckForNull;
  */
 public class NameMatch {
 
-    private final @CheckForNull String spec;
+    private final @Nullable String spec;
 
-    private @CheckForNull String exact;
+    private @Nullable String exact;
 
-    private @CheckForNull Pattern pattern;
+    private @Nullable Pattern pattern;
 
     @Override
     public int hashCode() {

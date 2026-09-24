@@ -25,11 +25,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
-
-import edu.umd.cs.findbugs.util.ClassName;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.ba.Hierarchy;
@@ -38,6 +36,7 @@ import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Factory for Obligation and ObligationSet objects to be used in an instance of
@@ -108,7 +107,7 @@ public class ObligationFactory {
      *         there is no such Obligation
      * @throws ClassNotFoundException
      */
-    public @CheckForNull Obligation getObligationByType(ObjectType type) throws ClassNotFoundException {
+    public @Nullable Obligation getObligationByType(ObjectType type) throws ClassNotFoundException {
         for (Iterator<Obligation> i = obligationIterator(); i.hasNext();) {
             Obligation obligation = i.next();
             if (Hierarchy.isSubtype(type, obligation.getType())) {
@@ -128,7 +127,7 @@ public class ObligationFactory {
      * @return an Obligation that is a supertype of the given type, or null if
      *         there is no such Obligation
      */
-    public @CheckForNull Obligation getObligationByType(ClassDescriptor classDescriptor) {
+    public @Nullable Obligation getObligationByType(ClassDescriptor classDescriptor) {
         try {
             return getObligationByType(BCELUtil.getObjectTypeInstance(classDescriptor.getDottedClassName()));
         } catch (ClassNotFoundException e) {

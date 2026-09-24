@@ -31,8 +31,9 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
+
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.FieldSummary;
@@ -110,7 +111,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
         return buf.toString();
     }
 
-    public @CheckForNull AvailableLoad getLoad(ValueNumber v) {
+    public @Nullable AvailableLoad getLoad(ValueNumber v) {
         if (!REDUNDANT_LOAD_ELIMINATION) {
             return null;
         }
@@ -206,7 +207,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
     }
 
-    public void killAllLoadsExceptFor(@CheckForNull ValueNumber v) {
+    public void killAllLoadsExceptFor(@Nullable ValueNumber v) {
         if (!REDUNDANT_LOAD_ELIMINATION) {
             return;
         }
@@ -227,7 +228,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
      * Kill all loads. This conservatively handles method calls where we don't
      * really know what fields might be assigned.
      */
-    public void killAllLoadsOf(@CheckForNull ValueNumber v) {
+    public void killAllLoadsOf(@Nullable ValueNumber v) {
         if (!REDUNDANT_LOAD_ELIMINATION) {
             return;
         }

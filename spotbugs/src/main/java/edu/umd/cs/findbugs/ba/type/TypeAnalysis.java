@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
@@ -42,6 +40,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.Analyze;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -403,7 +402,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
     }
 
     @Override
-    public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, TypeFrame start, TypeFrame result)
+    public void transfer(BasicBlock basicBlock, @Nullable InstructionHandle end, TypeFrame start, TypeFrame result)
             throws DataflowAnalysisException {
         visitor.startBasicBlock();
 
@@ -425,7 +424,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame> impleme
         }
     }
 
-    private void computeThrownExceptionTypes(BasicBlock basicBlock, @CheckForNull InstructionHandle end, TypeFrame result)
+    private void computeThrownExceptionTypes(BasicBlock basicBlock, @Nullable InstructionHandle end, TypeFrame result)
             throws DataflowAnalysisException {
 
         // Do nothing if we're not computing propagated exceptions

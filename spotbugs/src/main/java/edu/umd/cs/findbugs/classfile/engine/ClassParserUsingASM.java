@@ -22,9 +22,10 @@ package edu.umd.cs.findbugs.classfile.engine;
 import java.util.HashSet;
 import java.util.TreeSet;
 
-import javax.annotation.CheckForNull;
 
 import org.apache.bcel.Const;
+import org.jspecify.annotations.Nullable;
+import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -297,7 +298,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         }
 
         @Override
-        public org.objectweb.asm.AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
+        public AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
             AnnotationValue value = new AnnotationValue(desc);
             mBuilder.addAnnotation(desc, value);
             return value.getAnnotationVisitor();
@@ -485,7 +486,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         }
 
         @Override
-        public org.objectweb.asm.AnnotationVisitor visitParameterAnnotation(int parameter, String desc,
+        public AnnotationVisitor visitParameterAnnotation(int parameter, String desc,
                 boolean visible) {
             AnnotationValue value = new AnnotationValue(desc);
             int shift = 0;
@@ -498,7 +499,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         }
 
         @Override
-        public org.objectweb.asm.AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath,
+        public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath,
                 String desc, boolean visible) {
             TypeReference typeRefObject = new TypeReference(typeRef);
             if (typeRefObject.getSort() == TypeReference.METHOD_FORMAL_PARAMETER && typePath == null) {
@@ -528,7 +529,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         OTHER, LOADED_THIS, LOADED_THIS_AND_PARAMETER;
     }
 
-    public ClassParserUsingASM(ClassReader classReader, @CheckForNull ClassDescriptor expectedClassDescriptor,
+    public ClassParserUsingASM(ClassReader classReader, @Nullable ClassDescriptor expectedClassDescriptor,
             ICodeBaseEntry codeBaseEntry) {
         this.classReader = classReader;
         //        this.expectedClassDescriptor = expectedClassDescriptor;

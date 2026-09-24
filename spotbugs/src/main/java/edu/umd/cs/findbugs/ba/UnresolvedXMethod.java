@@ -6,10 +6,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nullable;
-
 import org.apache.bcel.Const;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -68,7 +66,7 @@ class UnresolvedXMethod extends AbstractMethod {
     }
 
     @Override
-    public @CheckForNull AnnotatedObject getContainingScope() {
+    public @Nullable AnnotatedObject getContainingScope() {
         try {
             return Global.getAnalysisCache().getClassAnalysis(XClass.class, getClassDescriptor());
         } catch (CheckedAnalysisException e) {
@@ -153,7 +151,7 @@ class UnresolvedXMethod extends AbstractMethod {
     }
 
     @Override
-    public @CheckForNull String getSourceSignature() {
+    public @Nullable String getSourceSignature() {
         return null;
     }
 

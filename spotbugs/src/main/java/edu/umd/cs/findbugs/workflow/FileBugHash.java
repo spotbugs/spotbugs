@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
@@ -101,7 +101,7 @@ public class FileBugHash {
         return counts.keySet();
     }
 
-    public @CheckForNull String getHash(String sourceFile) {
+    public @Nullable String getHash(String sourceFile) {
         StringBuilder rawHash = hashes.get(sourceFile);
         if (rawHash == null || digest == null) {
             return null;

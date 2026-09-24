@@ -19,8 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.ch;
 
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -41,7 +40,7 @@ class ClassVertex extends AbstractVertex<InheritanceEdge, ClassVertex> {
 
     private final ClassDescriptor classDescriptor;
 
-    private final @CheckForNull XClass xclass;
+    private final @Nullable XClass xclass;
 
     private int flags;
 

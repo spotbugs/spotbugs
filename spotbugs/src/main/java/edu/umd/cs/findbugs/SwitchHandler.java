@@ -25,13 +25,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.Location;
@@ -55,7 +54,7 @@ public class SwitchHandler {
         return switchOffsetStack.size();
     }
 
-    int numEnumValues(@CheckForNull XClass c) {
+    int numEnumValues(@Nullable XClass c) {
         if (c == null) {
             return -1;
         }
@@ -68,7 +67,7 @@ public class SwitchHandler {
         return total;
     }
 
-    public void enterSwitch(DismantleBytecode dbc, @CheckForNull XClass enumType) {
+    public void enterSwitch(DismantleBytecode dbc, @Nullable XClass enumType) {
         int[] switchOffsets = dbc.getSwitchOffsets();
         enterSwitch(dbc.getOpcode(), dbc.getPC(), switchOffsets, dbc.getDefaultSwitchOffset(), switchOffsets.length == numEnumValues(enumType));
     }
@@ -124,8 +123,7 @@ public class SwitchHandler {
         return -1;
     }
 
-    @CheckForNull
-    public SwitchDetails getNextSwitchDetails(DismantleBytecode dbc) {
+    public @Nullable SwitchDetails getNextSwitchDetails(DismantleBytecode dbc) {
         int size = switchOffsetStack.size();
         while (size > 0) {
             SwitchDetails details = switchOffsetStack.get(size - 1);

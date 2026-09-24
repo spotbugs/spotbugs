@@ -21,9 +21,8 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.Iterator;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.generic.InstructionHandle;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
@@ -113,7 +112,7 @@ public abstract class AbstractDataflowAnalysis<Fact> extends BasicAbstractDatafl
      */
 
     @Override
-    public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, Fact start, Fact result)
+    public void transfer(BasicBlock basicBlock, @Nullable InstructionHandle end, Fact start, Fact result)
             throws DataflowAnalysisException {
         copy(start, result);
 

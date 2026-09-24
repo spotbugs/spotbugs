@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs.ba.jsr305;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.classfile.analysis.AnnotatedObject;
 
@@ -92,7 +92,7 @@ public class TypeQualifierAnnotationLookupResult {
      * @return the effective TypeQualifierAnnotation, or null if no effective
      *         TypeQualifierAnnotation can be found
      */
-    public @CheckForNull TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation() {
+    public @Nullable TypeQualifierAnnotation getEffectiveTypeQualifierAnnotation() {
         boolean firstPartialResult = true;
         TypeQualifierAnnotation effective = null;
 

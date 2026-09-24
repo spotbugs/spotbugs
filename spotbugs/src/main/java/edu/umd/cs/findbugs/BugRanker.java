@@ -28,8 +28,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.CheckForNull;
-
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,7 +135,7 @@ public class BugRanker {
      *            all bugs
      * @throws IOException
      */
-    BugRanker(@CheckForNull URL u) throws IOException {
+    BugRanker(@Nullable URL u) throws IOException {
         if (u == null) {
             return;
         }
@@ -267,7 +266,7 @@ public class BugRanker {
     };
 
 
-    public static int findRank(BugPattern pattern, @CheckForNull DetectorFactory detectorFactory) {
+    public static int findRank(BugPattern pattern, @Nullable DetectorFactory detectorFactory) {
         boolean haveCache = Global.getAnalysisCache() != null;
         if (haveCache) {
             Integer cachedResult = rankForBugPattern.get().get(pattern);

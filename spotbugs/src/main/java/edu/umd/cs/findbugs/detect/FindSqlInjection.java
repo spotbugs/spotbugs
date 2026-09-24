@@ -25,8 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.BootstrapMethod;
 import org.apache.bcel.classfile.BootstrapMethods;
@@ -48,6 +46,7 @@ import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NOP;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -469,7 +468,7 @@ public class FindSqlInjection implements Detector {
         return false;
     }
 
-    private @CheckForNull InstructionHandle getPreviousInstruction(InstructionHandle handle, boolean skipNops) {
+    private @Nullable InstructionHandle getPreviousInstruction(InstructionHandle handle, boolean skipNops) {
         while (handle.getPrev() != null) {
             handle = handle.getPrev();
             Instruction prevIns = handle.getInstruction();
@@ -480,7 +479,7 @@ public class FindSqlInjection implements Detector {
         return null;
     }
 
-    private @CheckForNull Location getPreviousLocation(CFG cfg, Location startLocation, boolean skipNops) {
+    private @Nullable Location getPreviousLocation(CFG cfg, Location startLocation, boolean skipNops) {
         Location loc = startLocation;
         InstructionHandle prev = getPreviousInstruction(loc.getHandle(), skipNops);
         if (prev != null) {

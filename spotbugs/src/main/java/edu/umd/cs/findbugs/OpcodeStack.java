@@ -37,9 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import javax.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.Const;
@@ -68,6 +66,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.OpcodeStack.Item.SpecialKind;
 import edu.umd.cs.findbugs.StackMapAnalyzer.JumpInfoFromStackMap;
@@ -315,7 +314,7 @@ public class OpcodeStack {
 
         private Object constValue = UNKNOWN;
 
-        private @CheckForNull ClassMember source;
+        private @Nullable ClassMember source;
 
         private int pc = -1;
 
@@ -323,8 +322,7 @@ public class OpcodeStack {
 
         private int registerNumber = -1;
 
-        @Nullable
-        private Object userValue;
+        private @Nullable Object userValue;
 
         private HttpParameterInjection injection;
 
@@ -722,7 +720,7 @@ public class OpcodeStack {
             this.registerNumber = -1;
         }
 
-        public @CheckForNull String getHttpParameterName() {
+        public @Nullable String getHttpParameterName() {
             if (!isServletParameterTainted()) {
                 throw new IllegalStateException();
             }
@@ -800,7 +798,7 @@ public class OpcodeStack {
         }
 
         /** Returns null for primitive and arrays */
-        public @CheckForNull JavaClass getJavaClass() throws ClassNotFoundException {
+        public @Nullable JavaClass getJavaClass() throws ClassNotFoundException {
             String baseSig;
 
             if (isPrimitive() || isArray()) {
@@ -906,7 +904,7 @@ public class OpcodeStack {
          * @return if this value is the return value of a method, give the
          *         method invoked
          */
-        public @CheckForNull XMethod getReturnValueOf() {
+        public @Nullable XMethod getReturnValueOf() {
             if (source instanceof XMethod) {
                 return (XMethod) source;
             }
@@ -927,8 +925,7 @@ public class OpcodeStack {
          *
          * @return the custom value
          */
-        @Nullable
-        public Object getUserValue() {
+        public @Nullable Object getUserValue() {
             return userValue;
         }
 
@@ -2971,7 +2968,7 @@ public class OpcodeStack {
         }
 
         @Override
-        public @CheckForNull JumpInfo analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+        public @Nullable JumpInfo analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
             Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);
             JavaClass jclass = getJavaClass(analysisCache, descriptor.getClassDescriptor());
             Code code = method.getCode();
@@ -3029,7 +3026,7 @@ public class OpcodeStack {
             }
         }
 
-        public static @CheckForNull JumpInfo computeJumpInfo(JavaClass jclass, Method method,
+        public static @Nullable JumpInfo computeJumpInfo(JavaClass jclass, Method method,
                 JumpStackComputation branchAnalysis) {
             branchAnalysis.setupVisitorForClass(jclass);
             XMethod createXMethod = XFactory.createXMethod(jclass, method);
@@ -3168,7 +3165,7 @@ public class OpcodeStack {
 
     }
 
-    int nullSafeSize(@CheckForNull Collection<?> c) {
+    int nullSafeSize(@Nullable Collection<?> c) {
         if (c == null) {
             return 0;
         }
