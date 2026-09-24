@@ -28,7 +28,7 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.ba.AbstractDataflow;
 import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, ValueNumberAnalysis> {
@@ -63,7 +63,7 @@ public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, Valu
 
         ValueNumberFrame frameAtEntry = getStartFact(getCFG().getEntry());
 
-        int numParams = new SignatureParser(methodSignature).getNumParameters();
+        int numParams = new GenericSignatureParser(methodSignature).getNumParameters();
         int shift = isStatic ? 0 : 1;
         for (int i = 0; i < numParams; ++i) {
             valueNumberToParamMap.put(frameAtEntry.getValue(i + shift), i);

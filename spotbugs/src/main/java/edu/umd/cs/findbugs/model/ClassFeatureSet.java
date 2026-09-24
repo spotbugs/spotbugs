@@ -34,7 +34,7 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
-import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -258,7 +258,7 @@ public class ClassFeatureSet implements XMLWriteable {
 
         buf.append('(');
 
-        SignatureParser parser = new SignatureParser(signature);
+        GenericSignatureParser parser = new GenericSignatureParser(signature);
         for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext();) {
             String param = i.next();
             param = transformSignature(param);

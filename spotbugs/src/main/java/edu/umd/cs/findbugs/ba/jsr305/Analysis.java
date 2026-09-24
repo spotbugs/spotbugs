@@ -35,11 +35,11 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.OverriddenMethodsVisitor;
 import edu.umd.cs.findbugs.ba.ch.SupertypeTraversalVisitor;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -214,7 +214,7 @@ public class Analysis {
      * @param m
      */
     public static void addKnownTypeQualifiersForParameters(HashSet<? super TypeQualifierValue<?>> result, XMethod m) {
-        int numParameters = new SignatureParser(m.getSignature()).getNumParameters();
+        int numParameters = new GenericSignatureParser(m.getSignature()).getNumParameters();
         for (int p = 0; p < numParameters; p++) {
             addKnownTypeQualifiers(result, TypeQualifierApplications.getApplicableApplications(m, p));
         }

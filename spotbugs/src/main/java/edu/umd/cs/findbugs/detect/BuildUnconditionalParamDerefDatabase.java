@@ -45,11 +45,11 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.interproc.ParameterProperty;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
@@ -118,7 +118,7 @@ public abstract class BuildUnconditionalParamDerefDatabase implements Detector {
             ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
             UnconditionalValueDerefDataflow dataflow = classContext.getUnconditionalValueDerefDataflow(method);
 
-            SignatureParser parser = new SignatureParser(method.getSignature());
+            GenericSignatureParser parser = new GenericSignatureParser(method.getSignature());
             int paramLocalOffset = method.isStatic() ? 0 : 1;
 
             // Build BitSet of params that are unconditionally dereferenced
