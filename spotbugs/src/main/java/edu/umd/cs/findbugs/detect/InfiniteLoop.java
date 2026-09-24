@@ -404,8 +404,45 @@ public class InfiniteLoop extends OpcodeStackDetector {
             }
 
             if (constantSince(item0, target) && constantSince(item1, target)) {
-                // int since0 = constantSince(item0);
-                // int since1 = constantSince(item1);
+                // When both operands have known constant integer values, evaluate the actual
+                // comparison. If the backward-branch condition is always false the loop exits
+                // after its first (and only) iteration - it is not an infinite loop.
+                // item0 is the top-of-stack operand (value2) and item1 is below it (value1);
+                // the branch is taken when: value1 <op> value2, i.e., item1 <op> item0.
+                Object rawConst0 = item0.getConstant();
+                Object rawConst1 = item1.getConstant();
+                if (rawConst0 instanceof Integer && rawConst1 instanceof Integer) {
+                    int v0 = (Integer) rawConst0;
+                    int v1 = (Integer) rawConst1;
+                    boolean branchTaken;
+                    switch (seen) {
+                    case Const.IF_ICMPLT:
+                        branchTaken = v1 < v0;
+                        break;
+                    case Const.IF_ICMPLE:
+                        branchTaken = v1 <= v0;
+                        break;
+                    case Const.IF_ICMPGT:
+                        branchTaken = v1 > v0;
+                        break;
+                    case Const.IF_ICMPGE:
+                        branchTaken = v1 >= v0;
+                        break;
+                    case Const.IF_ICMPEQ:
+                        branchTaken = v1 == v0;
+                        break;
+                    case Const.IF_ICMPNE:
+                        branchTaken = v1 != v0;
+                        break;
+                    default:
+                        branchTaken = true;
+                        break;
+                    }
+                    if (!branchTaken) {
+                        // Backward branch never taken: loop exits immediately - not infinite.
+                        break;
+                    }
+                }
                 BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP", HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
                         this, getPC());
                 int reg0 = item0.getRegisterNumber();
