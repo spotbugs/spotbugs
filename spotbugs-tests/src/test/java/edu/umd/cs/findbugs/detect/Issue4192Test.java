@@ -27,4 +27,32 @@ class Issue4192Test extends AbstractIntegrationTest {
         assertNoBugInMethod(BUG, CLASS, "greaterOrEqual127");
         assertNoBugInMethod(BUG, CLASS, "equal127");
     }
+
+    @Test
+    void testBadThingsToDoWithSignedBytes() {
+        performAnalysis("BadThingsToDoWithSignedBytes.class");
+
+        assertBugTypeCount(BUG, 16);
+        assertBugInMethod(BUG, "BadThingsToDoWithSignedBytes", "compareGT127");
+        assertBugInMethod(BUG, "BadThingsToDoWithSignedBytes", "compareLE127");
+        // PR #4201 made compareGE127 and compareLT127 acceptable usages based on Issue #4192
+
+        assertBugInMethod(BUG, "BadThingsToDoWithSignedBytes", "compareGT128");
+        assertBugInMethod(BUG, "BadThingsToDoWithSignedBytes", "compareGE128");
+        assertBugInMethod(BUG, "BadThingsToDoWithSignedBytes", "compareNE128");
+        assertBugInMethod(BUG, "BadThingsToDoWithSignedBytes", "compareEQ128");
+        assertBugInMethod(BUG, "BadThingsToDoWithSignedBytes", "compareLE128");
+        assertBugInMethod(BUG, "BadThingsToDoWithSignedBytes", "compareLT128");
+
+        assertBugInMethod(BUG, "BadThingsToDoWithSignedBytes", "compareGT200");
+        assertBugInMethod(BUG, "BadThingsToDoWithSignedBytes", "compareGE200");
+        assertBugInMethod(BUG, "BadThingsToDoWithSignedBytes", "compareNE200");
+        assertBugInMethod(BUG, "BadThingsToDoWithSignedBytes", "compareEQ200");
+        assertBugInMethod(BUG, "BadThingsToDoWithSignedBytes", "compareLE200");
+        assertBugInMethod(BUG, "BadThingsToDoWithSignedBytes", "compareLT200");
+
+        assertBugInMethod(BUG, "BadThingsToDoWithSignedBytes", "isHundred");
+        assertBugInMethod(BUG, "BadThingsToDoWithSignedBytes", "isHundred2");
+    }
+
 }

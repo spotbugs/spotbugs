@@ -15,4 +15,12 @@ class DontUseFloatsAsLoopCountersTest extends AbstractIntegrationTest {
         assertBugInMethodAtLine("FL_FLOATS_AS_LOOP_COUNTERS", "DontUseFloatsAsLoopCounters", "test2", 15);
         assertBugInMethodAtLine("FL_FLOATS_AS_LOOP_COUNTERS", "DontUseFloatsAsLoopCounters", "test3", 21);
     }
+
+    @Test
+    void testFloatMath() {
+        performAnalysis("FloatMath.class");
+
+        assertBugTypeCount("FL_FLOATS_AS_LOOP_COUNTERS", 1);
+        assertBugInMethodAtLine("FL_FLOATS_AS_LOOP_COUNTERS", "FloatMath", "main", 5);
+    }
 }
