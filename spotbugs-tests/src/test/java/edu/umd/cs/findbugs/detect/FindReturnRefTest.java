@@ -339,4 +339,20 @@ class FindReturnRefTest extends AbstractIntegrationTest {
         assertBugTypeCount("MS_EXPOSE_BUF", 0);
         assertBugTypeCount("MS_EXPOSE_REP", 0);
     }
+
+    @Test
+    void testEI2() {
+        performAnalysis("EI2.class");
+
+        assertBugTypeCount("EI_EXPOSE_REP2", 1);
+        assertBugInMethod("EI_EXPOSE_REP2", "EI2", "setStuff");
+    }
+
+    @Test
+    void testMutableMan() {
+        performAnalysis("MutableMan.class");
+
+        assertBugTypeCount("EI_EXPOSE_REP", 1);
+        assertBugAtField("EI_EXPOSE_REP", "MutableMan", "x");
+    }
 }
