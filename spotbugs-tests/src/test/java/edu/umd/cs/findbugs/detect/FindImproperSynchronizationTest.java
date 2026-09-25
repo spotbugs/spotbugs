@@ -497,6 +497,50 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertNoUnsafeLockBugs();
     }
 
+    /**
+     * @see <a href="https://github.com/spotbugs/spotbugs/issues/4320">GitHub issue #4320</a>
+     */
+    @Test
+    void testSafeSynchronizationWithNewLockInClone() {
+        performAnalysis("synchronizationLocks/privateFinalLocks/SafeSynchronizationWithNewLockInClone.class");
+
+        assertNoUnsafeLockBugs();
+    }
+
+    /**
+     * Regression test for GitHub issue #4331: assigning a new lock to a newly
+     * allocated object must not be reported as unsafe synchronization.
+     */
+    @Test
+    void testSafeSynchronizationWithNewLockInNewObject() {
+        performAnalysis("synchronizationLocks/privateFinalLocks/UnsafeSynchronizationNewObjectTarget.class");
+
+        assertNoUnsafeLockBugs();
+    }
+
+    /**
+     * @see <a href="https://github.com/spotbugs/spotbugs/issues/4320">GitHub issue #4320</a>
+     */
+    @Test
+    void testUnsafeSynchronizationWithNewLockInCloneAndLockSetter() {
+        performAnalysis("synchronizationLocks/privateFinalLocks/UnsafeSynchronizationWithNewLockInCloneAndLockSetter.class");
+
+        assertBugTypeCount(METHOD_BUG, 0);
+        assertBugTypeCount(STATIC_METHOD_BUG, 0);
+        assertBugTypeCount(OBJECT_BUG, 0);
+        assertBugTypeCount(ACCESSIBLE_OBJECT_BUG, 1);
+        assertBugTypeCount(INHERITABLE_OBJECT_BUG, 0);
+        assertBugTypeCount(EXPOSED_LOCK_OBJECT_BUG, 0);
+        assertBugTypeCount(BAD_BACKING_COLLECTION, 0);
+        assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 0);
+        assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
+
+        assertBugInMethodAtField(ACCESSIBLE_OBJECT_BUG,
+                "UnsafeSynchronizationWithNewLockInCloneAndLockSetter",
+                "doStuff",
+                "lock");
+    }
+
 
     private void assertNoUnsafeLockBugs() {
         assertBugTypeCount(METHOD_BUG, 0);
@@ -504,6 +548,7 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
         assertBugTypeCount(OBJECT_BUG, 0);
         assertBugTypeCount(ACCESSIBLE_OBJECT_BUG, 0);
         assertBugTypeCount(INHERITABLE_OBJECT_BUG, 0);
+        assertBugTypeCount(EXPOSED_LOCK_OBJECT_BUG, 0);
         assertBugTypeCount(BAD_BACKING_COLLECTION, 0);
         assertBugTypeCount(ACCESSIBLE_BACKING_COLLECTION, 0);
         assertBugTypeCount(INHERITABLE_BACKING_COLLECTION, 0);
