@@ -380,7 +380,10 @@ public class FindBadCast2 implements Detector {
                 continue;
             }
 
-            if (!operandTypeIsExact && "Ljava/lang/Object;".equals(refSig2)) {
+            if (!operandTypeIsExact
+                    && "Ljava/lang/Object;".equals(refSig2)
+                    // Keep inspecting this instruction if casting an Object[] because it might from a toArray() call
+                    && !"[Ljava/lang/Object;".equals(refSig)) {
                 continue;
             }
             /*
@@ -405,6 +408,16 @@ public class FindBadCast2 implements Detector {
             // XXX call below causes 86% of all OpcodeStackDetector.EarlyExitException (getPC() == targetPC) thrown (13000 on java* JDK7 classes)
             BugAnnotation source = BugInstance.getSourceForTopStackValue(classContext, method, location);
             boolean isParameter = paramValueNumberSet.contains(valueNumber) && source instanceof LocalVariableAnnotation;
+
+            checkAndReportDowncastOfToArray(methodGen,
+                    sourceFile,
+                    isCast,
+                    castType,
+                    refType,
+                    refSig,
+                    sourceLineAnnotation,
+                    valueSource,
+                    source);
 
             try {
                 JavaClass castJavaClass = Repository.lookupClass(castName);
@@ -638,19 +651,34 @@ public class FindBadCast2 implements Detector {
                 if (DEBUG) {
                     e.printStackTrace(System.out);
                 }
-                if (isCast && "[Ljava/lang/Object;".equals(refSig) && source instanceof MethodAnnotation
-                        && "toArray".equals(((MethodAnnotation) source).getMethodName())
-                        && "()[Ljava/lang/Object;".equals(((MethodAnnotation) source).getMethodSignature())) {
-                    bugReporter.reportBug(new BugInstance(this, "BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY", HIGH_PRIORITY)
-                            .addClassAndMethod(methodGen, sourceFile)
-                            .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(valueSource, source)
-                            .addSourceLine(sourceLineAnnotation));
-                }
-
-
+                checkAndReportDowncastOfToArray(methodGen,
+                        sourceFile,
+                        isCast,
+                        castType,
+                        refType,
+                        refSig,
+                        sourceLineAnnotation,
+                        valueSource,
+                        source);
             }
         }
         accumulator.reportAccumulatedBugs();
+    }
+
+    /**
+     * Checks if the instruction is the downcast to a toArray() call and reports it
+     */
+    private void checkAndReportDowncastOfToArray(MethodGen methodGen, String sourceFile, boolean isCast,
+            final Type castType, final ReferenceType refType, String refSig, SourceLineAnnotation sourceLineAnnotation,
+            BugAnnotation valueSource, BugAnnotation source) {
+        if (isCast && "[Ljava/lang/Object;".equals(refSig) && source instanceof MethodAnnotation
+                && "toArray".equals(((MethodAnnotation) source).getMethodName())
+                && "()[Ljava/lang/Object;".equals(((MethodAnnotation) source).getMethodSignature())) {
+            bugReporter.reportBug(new BugInstance(this, "BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY", HIGH_PRIORITY)
+                    .addClassAndMethod(methodGen, sourceFile)
+                    .addFoundAndExpectedType(refType, castType).addOptionalUniqueAnnotations(valueSource, source)
+                    .addSourceLine(sourceLineAnnotation));
+        }
     }
 
     @Override
