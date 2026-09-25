@@ -23,6 +23,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URLClassLoader;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -236,6 +237,14 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
         if (fs != null) {
             try {
                 fs.close();
+
+                // when the jrt-fs.jar location has been provided,
+                // JrtFileSystemProvider created an own URLClassloader,
+                // which also needs to be closed to free the jrt-fs.jar
+                ClassLoader classLoader = fs.getClass().getClassLoader();
+                if (classLoader instanceof URLClassLoader) {
+                    ((URLClassLoader) classLoader).close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
