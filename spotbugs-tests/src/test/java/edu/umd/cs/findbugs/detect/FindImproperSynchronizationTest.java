@@ -521,11 +521,3 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
     }
 
 }
-
-After replacing the file, save it.
-
-Then run:
-
-git diff --check
-
-If that is clean, **do not commit yet**. We'll next verify the complete staged + unstaged diff so the PR contains only the #4331 changes.
