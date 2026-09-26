@@ -10,6 +10,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Replace deprecated calls to 'SignatureParser' to 'GenericSignatureParser' where feasible ([#4336](https://github.com/spotbugs/spotbugs/pull/4337))
 
 ### Fixed
+- Fix `PT_ABSOLUTE_PATH_TRAVERSAL` false negative for `new File(parent, child)`, where the attacker controlled segment is the second argument ([#4340](https://github.com/spotbugs/spotbugs/pull/4340))
 - Fix `NP_ALWAYS_NULL` false positives when a non-null value is known to satisfy an `instanceof` check ([#4272](https://github.com/spotbugs/spotbugs/issues/4272))
 - Fix `RANGE_ARRAY_INDEX` false positive when the array access is inside unreachable code caused by an impossible null condition (e.g. `if (x == null && x != null)`) ([#4275](https://github.com/spotbugs/spotbugs/issues/4275))
 - Fix `NP_NULL_ON_SOME_PATH` false positive when `instanceof` check is always true because the value was created with `new` and its exact type is a subtype of the checked type (e.g. `Base value = new Derived(); if (value instanceof Derived) result = new Object(); result.toString()`) ([#4273](https://github.com/spotbugs/spotbugs/issues/4273))
