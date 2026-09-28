@@ -122,7 +122,6 @@ class ArrayEqualsTest extends AbstractIntegrationTest {
         assertNoBugType("EC_UNRELATED_TYPES");
         assertNoBugType("EC_UNRELATED_INTERFACES");
         assertNoBugType("EC_UNRELATED_CLASS_AND_INTERFACE");
-        assertNoBugType("EC_UNRELATED_CLASS_AND_INTERFACE");
     }
 
     @Test

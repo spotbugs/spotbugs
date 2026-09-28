@@ -26,6 +26,7 @@ class BadCastTest extends AbstractIntegrationTest {
     void testCastOfArray() {
         performAnalysis("CastOfArray.class");
 
+        assertNoBugType("BC_BAD_CAST_TO_CONCRETE_COLLECTION");
         assertNoBugType("BC_BAD_CAST_TO_ABSTRACT_COLLECTION");
         assertNoBugType("BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY");
         assertNoBugType("BC_IMPOSSIBLE_CAST");
@@ -34,7 +35,6 @@ class BadCastTest extends AbstractIntegrationTest {
         assertNoBugType("BC_UNCONFIRMED_CAST");
         assertNoBugType("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE");
         assertNoBugType("BC_BAD_CAST_TO_CONCRETE_COLLECTION");
-        assertNoBugType("BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY");
     }
 
     @Test
