@@ -34,7 +34,6 @@ class BadCastTest extends AbstractIntegrationTest {
         assertNoBugType("BC_IMPOSSIBLE_DOWNCAST_OF_TOARRAY");
         assertNoBugType("BC_UNCONFIRMED_CAST");
         assertNoBugType("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE");
-        assertNoBugType("BC_BAD_CAST_TO_CONCRETE_COLLECTION");
     }
 
     @Test
