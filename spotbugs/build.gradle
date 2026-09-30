@@ -94,7 +94,7 @@ dependencies {
       because('CVE-2021-42550: Logback vulnerable to remote code execution vulnerabilities and CVE-2023-6481, CVE-2023-6378: allows an attacker to mount a Denial-Of-Service attack by sending poisoned data')
     }
   }
-  api 'org.apache.commons:commons-lang3:3.20.0'
+  api 'org.apache.commons:commons-lang3:3.21.0'
   api 'org.apache.commons:commons-text:1.15.0'
   api 'org.slf4j:slf4j-api:2.0.20'
   implementation 'jaxen:jaxen:2.0.6' // only transitive through org.dom4j:dom4j:2.1.4, which has an *optional* dependency on jaxen:jaxen.
