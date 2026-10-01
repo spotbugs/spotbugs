@@ -58,7 +58,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Stop reporting missing java.applet at java 26 or higher ([#4390](https://github.com/spotbugs/spotbugs/pull/4390))
 
 ### Refactor
-- Replace deprecated/internal PDE APIs in classpath generation ([#4297](https://github.com/spotbugs/spotbugs/issues/4297))
+- Replace deprecated/internal PDE APIs in classpath generation ([#4297](https://github.com/spotbugs/spotbugs/pull/4297))
 
 ## 4.10.4 - 2026-08-19
 ### Fixed
