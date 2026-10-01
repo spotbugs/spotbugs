@@ -20,6 +20,11 @@ class FindOverridableMethodCallTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void testDirectCaseWithArguments() {
+        testCase("DirectCaseWithArguments", 13, 25);
+    }
+
+    @Test
     void testIndirectCase1() {
         testCase("IndirectCase1", 9, 22);
     }

@@ -47,7 +47,6 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.BootstrapMethodsUtil;
 import edu.umd.cs.findbugs.util.MultiMap;
-import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class FindOverridableMethodCall extends OpcodeStackDetector {
 
@@ -189,7 +188,7 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
                 return;
             }
 
-            int argumentCount = PreorderVisitor.getNumberArguments(method.getSignature());
+            int argumentCount = getNumberArguments(getSigConstantOperand());
             OpcodeStack.Item item = stack.getStackItem(argumentCount);
 
             if (item.getRegisterNumber() == 0 && Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
