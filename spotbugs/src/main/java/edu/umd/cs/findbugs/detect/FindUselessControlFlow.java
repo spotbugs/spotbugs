@@ -19,11 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
 
-import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -50,16 +48,10 @@ import edu.umd.cs.findbugs.StatelessDetector;
  */
 public class FindUselessControlFlow extends BytecodeScanningDetector implements StatelessDetector {
 
-    private final BugAccumulator bugAccumulator;
+    private final BugReporter bugReporter;
 
     public FindUselessControlFlow(BugReporter bugReporter) {
-        this.bugAccumulator = new BugAccumulator(bugReporter);
-    }
-
-    @Override
-    public void visit(Code obj) {
-        super.visit(obj);
-        bugAccumulator.reportAccumulatedBugs();
+        this.bugReporter = bugReporter;
     }
 
     @Override
@@ -82,9 +74,10 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
             } else {
                 priority = LOW_PRIORITY;
             }
-            bugAccumulator.accumulateBug(new BugInstance(this,
+            bugReporter.reportBug(new BugInstance(this,
                     priority == HIGH_PRIORITY ? "UCF_USELESS_CONTROL_FLOW_NEXT_LINE" : "UCF_USELESS_CONTROL_FLOW", priority)
-                    .addClassAndMethod(this), this);
+                    .addClassAndMethod(this)
+                    .addSourceLine(this));
         }
     }
 
