@@ -22,9 +22,9 @@ package edu.umd.cs.findbugs.classfile.engine;
 import java.util.HashSet;
 import java.util.TreeSet;
 
-import javax.annotation.CheckForNull;
 
 import org.apache.bcel.Const;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
@@ -489,12 +489,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         public AnnotationVisitor visitParameterAnnotation(int parameter, String desc,
                 boolean visible) {
             AnnotationValue value = new AnnotationValue(desc);
-            int shift = 0;
-            if (parameterCount >= 0) {
-                // if we have synthetic parameter, shift `parameter` value
-                shift = new GenericSignatureParser(methodDesc).getNumParameters() - parameterCount;
-            }
-            mBuilder.addParameterAnnotation(parameter + shift, desc, value);
+            mBuilder.addParameterAnnotation(getParameterIndex(parameter), desc, value);
             return value.getAnnotationVisitor();
         }
 
@@ -516,6 +511,22 @@ public class ClassParserUsingASM implements ClassParserInterface {
             }
             return null;
         }
+
+        /**
+         * Get the parameter index adjusted for synthetic parameters.
+         *
+         * @param parameter the parameter index
+         * @return the adjusted parameter index
+         */
+        private int getParameterIndex(int parameter) {
+            if (parameterCount < 0) {
+                return parameter;
+            }
+
+            // If we have synthetic parameters, shift the parameter index.
+            int shift = new GenericSignatureParser(methodDesc).getNumParameters() - parameterCount;
+            return parameter + shift;
+        }
     }
 
     enum StubState {
@@ -529,7 +540,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         OTHER, LOADED_THIS, LOADED_THIS_AND_PARAMETER;
     }
 
-    public ClassParserUsingASM(ClassReader classReader, @CheckForNull ClassDescriptor expectedClassDescriptor,
+    public ClassParserUsingASM(ClassReader classReader, @Nullable ClassDescriptor expectedClassDescriptor,
             ICodeBaseEntry codeBaseEntry) {
         this.classReader = classReader;
         //        this.expectedClassDescriptor = expectedClassDescriptor;

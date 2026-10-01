@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.classfile.Code;
@@ -34,6 +33,7 @@ import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -282,7 +282,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      *            the method
      * @return a SourceLineAnnotation for the entire method
      */
-    public static SourceLineAnnotation forEntireMethod(JavaClass javaClass, @CheckForNull Method method) {
+    public static SourceLineAnnotation forEntireMethod(JavaClass javaClass, @Nullable Method method) {
         String sourceFile = javaClass.getSourceFileName();
         if (method == null) {
             return createUnknown(javaClass.getClassName(), sourceFile);

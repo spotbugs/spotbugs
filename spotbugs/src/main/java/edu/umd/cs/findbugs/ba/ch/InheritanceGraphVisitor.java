@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.ch;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -41,7 +41,7 @@ public interface InheritanceGraphVisitor {
      *            class cannot be resolved
      * @return true if traversal should continue, false otherwise
      */
-    public boolean visitClass(ClassDescriptor classDescriptor, @CheckForNull XClass xclass);
+    public boolean visitClass(ClassDescriptor classDescriptor, @Nullable XClass xclass);
 
     /**
      * Visit an inheritance edge in the inheritance graph.
@@ -57,5 +57,5 @@ public interface InheritanceGraphVisitor {
      *            if class cannot be resolved
      * @return true if traversal should continue, false otherwise
      */
-    public boolean visitEdge(ClassDescriptor sourceDesc, XClass source, ClassDescriptor targetDesc, @CheckForNull XClass target);
+    public boolean visitEdge(ClassDescriptor sourceDesc, XClass source, ClassDescriptor targetDesc, @Nullable XClass target);
 }

@@ -27,6 +27,7 @@ import java.util.Map;
 import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import org.apache.bcel.Const;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -1414,15 +1415,15 @@ public class DumbMethods extends OpcodeStackDetector {
                 checkMonitorWait();
             }
 
-            if ((seen == Const.INVOKESPECIAL) && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())
-                    && "java/lang/Thread".equals(getClassConstantOperand())) {
+            if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())
+                    && usesDefaultThreadRun(getDottedClassConstantOperand())) {
                 String sig = getSigConstantOperand();
-                if ("()V".equals(sig) || "(Ljava/lang/String;)V".equals(sig) || "(Ljava/lang/ThreadGroup;Ljava/lang/String;)V".equals(sig)) {
+                if ("()V".equals(sig) || "(Ljava/lang/String;)V".equals(sig)
+                        || "(Ljava/lang/ThreadGroup;Ljava/lang/String;)V".equals(sig)) {
                     OpcodeStack.Item invokedOn = stack.getItemMethodInvokedOn(this);
                     if (!Const.CONSTRUCTOR_NAME.equals(getMethodName()) || invokedOn.getRegisterNumber() != 0) {
                         accumulator.accumulateBug(
                                 new BugInstance(this, "DM_USELESS_THREAD", LOW_PRIORITY).addClassAndMethod(this), this);
-
                     }
                 }
             }
@@ -1449,6 +1450,44 @@ public class DumbMethods extends OpcodeStackDetector {
 
         } finally {
             prevOpcode = seen;
+        }
+    }
+
+    /**
+     * Returns true if the given class is java.lang.Thread itself, or a Thread subclass
+     * that neither declares nor inherits (below Thread) a run()V override.
+     */
+    private boolean usesDefaultThreadRun(String dottedClassName) {
+        try {
+            if ("java.lang.Thread".equals(dottedClassName)) {
+                return true;
+            }
+
+            JavaClass cls = Repository.lookupClass(dottedClassName);
+            JavaClass threadClass = Repository.lookupClass("java.lang.Thread");
+
+            if (!cls.instanceOf(threadClass)) {
+                return false;
+            }
+
+            while (cls != null && !"java.lang.Thread".equals(cls.getClassName())) {
+                for (Method m : cls.getMethods()) {
+                    if ("run".equals(m.getName()) && "()V".equals(m.getSignature())) {
+                        return false;
+                    }
+                }
+
+                String superClassName = cls.getSuperclassName();
+                if (superClassName == null) {
+                    break;
+                }
+
+                cls = Repository.lookupClass(superClassName);
+            }
+
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
         }
     }
 

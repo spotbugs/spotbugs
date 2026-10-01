@@ -30,7 +30,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.Const;
@@ -57,6 +56,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugAnnotation;
@@ -1322,7 +1322,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
     }
 
-    public @CheckForNull MethodAnnotation getMethodCalledAnnotation(ConstantPoolGen cpg, InvokeInstruction inv) {
+    public @Nullable MethodAnnotation getMethodCalledAnnotation(ConstantPoolGen cpg, InvokeInstruction inv) {
         MethodDescriptor invokedMethod = getInvokedMethod(cpg, inv);
         boolean standardEquals = "equals".equals(invokedMethod.getName())
                 && "(Ljava/lang/Object;)Z".equals(invokedMethod.getSignature()) && !invokedMethod.isStatic();

@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.Objects;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -37,11 +37,11 @@ import edu.umd.cs.findbugs.util.Strings;
  * @see IsNullValueAnalysis
  */
 public class IsNullConditionDecision {
-    private final @CheckForNull ValueNumber value;
+    private final @Nullable ValueNumber value;
 
-    private final @CheckForNull IsNullValue ifcmpDecision;
+    private final @Nullable IsNullValue ifcmpDecision;
 
-    private final @CheckForNull IsNullValue fallThroughDecision;
+    private final @Nullable IsNullValue fallThroughDecision;
 
     /**
      * Constructor.
@@ -56,8 +56,8 @@ public class IsNullConditionDecision {
      *            the decision for the FALL_THROUGH_EDGE; null if that edge is
      *            not feasible
      */
-    public IsNullConditionDecision(@CheckForNull ValueNumber value, @CheckForNull IsNullValue ifcmpDecision,
-            @CheckForNull IsNullValue fallThroughDecision) {
+    public IsNullConditionDecision(@Nullable ValueNumber value, @Nullable IsNullValue ifcmpDecision,
+            @Nullable IsNullValue fallThroughDecision) {
         this.value = value;
 
         // At least one of the edges must be feasible
@@ -118,7 +118,7 @@ public class IsNullConditionDecision {
      * @return the IsNullValue representing the decision, or null if the edge is
      *         infeasible
      */
-    public @CheckForNull IsNullValue getDecision(int edgeType) {
+    public @Nullable IsNullValue getDecision(int edgeType) {
         switch (edgeType) {
         case EdgeTypes.IFCMP_EDGE:
             return ifcmpDecision;
