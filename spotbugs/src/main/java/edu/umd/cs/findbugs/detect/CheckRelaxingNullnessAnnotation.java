@@ -35,9 +35,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
 
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.LocalVariableNode;
@@ -51,9 +51,9 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation.Parser;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
@@ -63,7 +63,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Checks that overriding methods do not relax {@link Nonnull} (made
- * {@link CheckForNull}) on return values or {@link CheckForNull} (made
+ * {@link Nullable}) on return values or {@link Nullable} (made
  * {@link Nonnull}) on parameters.
  *
  * The code accepts also old (deprecated) nullness annotations from
@@ -237,7 +237,7 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
         }
     }
 
-    static boolean containsRelaxedNonNull(@CheckForNull List<AnnotationNode> methodAnnotations) {
+    static boolean containsRelaxedNonNull(@Nullable List<AnnotationNode> methodAnnotations) {
         if (methodAnnotations == null) {
             return false;
         }
@@ -250,8 +250,7 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
         return false;
     }
 
-    @CheckForNull
-    static Map<Integer, NullnessAnnotation> getNonnullOrNullableParams(@CheckForNull List<AnnotationNode>[] parameterAnnotations) {
+    static @Nullable Map<Integer, NullnessAnnotation> getNonnullOrNullableParams(@Nullable List<AnnotationNode> @Nullable [] parameterAnnotations) {
         if (parameterAnnotations == null) {
             return null;
         }
@@ -272,8 +271,7 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
         return nonNullParameter;
     }
 
-    @CheckForNull
-    static NullnessAnnotation getNullness(@SlashedClassName String annotationDesc) {
+    static @Nullable NullnessAnnotation getNullness(@SlashedClassName String annotationDesc) {
         if (annotationDesc.length() < 2) {
             return null;
         }
@@ -293,8 +291,8 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
     }
 
     static boolean compatibleParameters(String signature, String superSignature) {
-        SignatureParser sig = new SignatureParser(signature);
-        SignatureParser superSig = new SignatureParser(superSignature);
+        GenericSignatureParser sig = new GenericSignatureParser(signature);
+        GenericSignatureParser superSig = new GenericSignatureParser(superSignature);
         if (sig.getNumParameters() == superSig.getNumParameters()) {
             Iterator<String> params = sig.parameterSignatureIterator();
             Iterator<String> superParams = superSig.parameterSignatureIterator();

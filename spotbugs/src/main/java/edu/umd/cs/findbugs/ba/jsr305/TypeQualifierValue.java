@@ -29,10 +29,11 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifierValidator;
 import javax.annotation.meta.When;
+
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -72,7 +73,7 @@ public class TypeQualifierValue<A extends Annotation> {
 
     public final A proxy;
 
-    public final @CheckForNull Object value;
+    public final @Nullable Object value;
 
     private final boolean isStrict;
 
@@ -80,11 +81,11 @@ public class TypeQualifierValue<A extends Annotation> {
 
     private final boolean isExhaustive;
 
-    private final @CheckForNull TypeQualifierValidator<A> validator;
+    private final @Nullable TypeQualifierValidator<A> validator;
 
 
 
-    private TypeQualifierValue(ClassDescriptor typeQualifier, @CheckForNull Object value) {
+    private TypeQualifierValue(ClassDescriptor typeQualifier, @Nullable Object value) {
         this.typeQualifier = typeQualifier;
         this.value = value;
         /**  will be set to true if this is a strict type qualifier value */
@@ -236,11 +237,11 @@ public class TypeQualifierValue<A extends Annotation> {
         instance.remove();
     }
 
-    public boolean canValidate(@CheckForNull Object constantValue) {
+    public boolean canValidate(@Nullable Object constantValue) {
         return validator != null;
     }
 
-    public When validate(@CheckForNull Object constantValue) {
+    public When validate(@Nullable Object constantValue) {
         if (validator == null) {
             throw new IllegalStateException("No validator");
         }
@@ -268,7 +269,7 @@ public class TypeQualifierValue<A extends Annotation> {
      * @return an interned TypeQualifierValue object
      */
     @SuppressWarnings("rawtypes")
-    public static @Nonnull TypeQualifierValue<?> getValue(ClassDescriptor desc, @CheckForNull Object value) {
+    public static @Nonnull TypeQualifierValue<?> getValue(ClassDescriptor desc, @Nullable Object value) {
         DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue<?>> map = instance.get().typeQualifierMap;
         TypeQualifierValue<?> result = map.get(desc, value);
         if (result != null) {
@@ -281,7 +282,7 @@ public class TypeQualifierValue<A extends Annotation> {
     }
 
     @SuppressWarnings("unchecked")
-    public static @Nonnull <A extends Annotation> TypeQualifierValue<A> getValue(Class<A> clazz, @CheckForNull Object value) {
+    public static @Nonnull <A extends Annotation> TypeQualifierValue<A> getValue(Class<A> clazz, @Nullable Object value) {
         return (TypeQualifierValue<A>) getValue(DescriptorFactory.createClassDescriptor(clazz), value);
     }
 

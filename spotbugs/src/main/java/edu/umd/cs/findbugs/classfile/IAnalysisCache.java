@@ -20,8 +20,9 @@ package edu.umd.cs.findbugs.classfile;
 
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
+
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.log.Profiler;
 
@@ -172,7 +173,7 @@ public interface IAnalysisCache {
      */
     public <E> E getDatabase(Class<E> databaseClass);
 
-    public @CheckForNull <E> E getOptionalDatabase(Class<E> databaseClass);
+    public <E> @Nullable E getOptionalDatabase(Class<E> databaseClass);
 
     /**
      * Eagerly install a database. This avoids the need to register a database

@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -43,7 +43,7 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
      * @return ClassDescriptor of this class's immediate superclass, or null if
      *         this class has no immediate superclass
      */
-    public @CheckForNull ClassDescriptor getSuperclassDescriptor();
+    public @Nullable ClassDescriptor getSuperclassDescriptor();
 
     /**
      * Get ClassDescriptors of interfaces directly implemented by this class.
@@ -75,7 +75,7 @@ public interface XClass extends Comparable<ClassDescriptor>, AccessibleEntity, A
      *
      * @return the Source attribute
      */
-    public @CheckForNull String getSource();
+    public @Nullable String getSource();
 
     @Override
     public Collection<ClassDescriptor> getAnnotationDescriptors();

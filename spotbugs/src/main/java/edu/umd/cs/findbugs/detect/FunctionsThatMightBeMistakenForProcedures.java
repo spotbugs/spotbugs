@@ -21,13 +21,12 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.HashSet;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -105,7 +104,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
 
     int updates;
 
-    @CheckForNull
+    @Nullable
     BugInstance inferredMethod;
 
     @Override
@@ -257,7 +256,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                 if (!isInnerClass) {
                     voidConstructor = "()V".equals(sig);
                 } else {
-                    SignatureParser parser = new SignatureParser(sig);
+                    GenericSignatureParser parser = new GenericSignatureParser(sig);
                     voidConstructor = parser.getNumParameters() <= 1;
                 }
                 if (voidConstructor) {

@@ -39,11 +39,11 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.zip.GZIPOutputStream;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
 import javax.annotation.WillCloseWhenClosed;
 
 import org.dom4j.DocumentException;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -442,7 +442,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
         }
     }
 
-    protected @CheckForNull File outputFile;
+    protected @Nullable File outputFile;
 
     @SuppressFBWarnings("DM_EXIT")
     @Override
