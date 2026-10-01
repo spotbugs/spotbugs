@@ -42,6 +42,7 @@ import org.eclipse.osgi.service.resolver.ExportPackageDescription;
 import org.eclipse.pde.core.plugin.IPluginLibrary;
 import org.eclipse.pde.core.plugin.IPluginModelBase;
 import org.eclipse.pde.core.plugin.PluginRegistry;
+import org.eclipse.pde.core.plugin.TargetPlatform;
 import org.eclipse.pde.core.plugin.VersionMatchRule;
 
 import de.tobject.findbugs.FindbugsPlugin;
@@ -55,7 +56,7 @@ import de.tobject.findbugs.FindbugsPlugin;
  */
 public class PDEClassPathGenerator {
 
-    private static final Set<String> JRE_CLASSPATH_ENTRIES =
+    private static final Set<String> JRE_LIBRARY_NAMES =
             Set.of("rt.jar", "jrt-fs.jar", "jce.jar");
 
     /**
@@ -103,7 +104,7 @@ public class PDEClassPathGenerator {
                             IPath path = iClasspathEntry.getPath();
                             // smallest possible fix for #1228 Eclipse plugin always uses host VM to resolve JDK classes
                             if (isValidPath(path)
-                                    && JRE_CLASSPATH_ENTRIES.contains(path.lastSegment())) {
+                                    && JRE_LIBRARY_NAMES.contains(path.lastSegment())) {
                                 classPath.add(path.toOSString());
                             }
                         }
@@ -165,7 +166,7 @@ public class PDEClassPathGenerator {
 
         if (installPath.toFile().isFile()) {
             String locationStr = installPath.toOSString();
-            if (!pdeClassPath.contains(locationStr)) {
+            if (isValidPath(installPath) && !pdeClassPath.contains(locationStr)) {
                 pdeClassPath.add(locationStr);
             }
             return;
@@ -176,7 +177,7 @@ public class PDEClassPathGenerator {
                 continue;
             }
 
-            String libraryName = library.getName();
+            String libraryName = expandLibraryName(library.getName());
             IPath location = ".".equals(libraryName)
                     ? installPath
                     : installPath.append(libraryName);
@@ -264,5 +265,17 @@ public class PDEClassPathGenerator {
 
             addDependentBundles(exporter, bundles);
         }
+    }
+
+    private static String expandLibraryName(String libraryName) {
+        if (libraryName == null || libraryName.isEmpty()) {
+            return "";
+        }
+
+        return libraryName
+                .replace("$ws$", "ws" + IPath.SEPARATOR + TargetPlatform.getWS())
+                .replace("$os$", "os" + IPath.SEPARATOR + TargetPlatform.getOS())
+                .replace("$nl$", "nl" + IPath.SEPARATOR + TargetPlatform.getNL())
+                .replace("$arch$", "arch" + IPath.SEPARATOR + TargetPlatform.getOSArch());
     }
 }
