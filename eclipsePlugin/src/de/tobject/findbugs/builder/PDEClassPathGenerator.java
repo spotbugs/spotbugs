@@ -55,6 +55,9 @@ import de.tobject.findbugs.FindbugsPlugin;
  */
 public class PDEClassPathGenerator {
 
+    private static final Set<String> JRE_CLASSPATH_ENTRIES =
+            Set.of("rt.jar", "jrt-fs.jar", "jce.jar");
+
     /**
      * @param javaProject non null
      * @return never null (may be empty array)
@@ -87,20 +90,20 @@ public class PDEClassPathGenerator {
                     classPath.add(path.toOSString());
                 }
             }
+
             // add CPE_CONTAINER classpathes
             IClasspathEntry[] rawClasspath = javaProject.getRawClasspath();
             for (IClasspathEntry entry : rawClasspath) {
                 if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
-                    IClasspathContainer classpathContainer = JavaCore.getClasspathContainer(entry.getPath(), javaProject);
+                    IClasspathContainer classpathContainer =
+                            JavaCore.getClasspathContainer(entry.getPath(), javaProject);
                     if (classpathContainer instanceof JREContainer) {
                         IClasspathEntry[] classpathEntries = classpathContainer.getClasspathEntries();
                         for (IClasspathEntry iClasspathEntry : classpathEntries) {
                             IPath path = iClasspathEntry.getPath();
                             // smallest possible fix for #1228 Eclipse plugin always uses host VM to resolve JDK classes
-                            if (isValidPath(path) &&
-                                    ("rt.jar".equals(path.lastSegment())
-                                            || "jrt-fs.jar".equals(path.lastSegment())
-                                            || "jce.jar".equals(path.lastSegment()))) {
+                            if (isValidPath(path)
+                                    && JRE_CLASSPATH_ENTRIES.contains(path.lastSegment())) {
                                 classPath.add(path.toOSString());
                             }
                         }
@@ -129,15 +132,17 @@ public class PDEClassPathGenerator {
         if (model == null || model.getPluginBase().getId() == null) {
             return javaClassPath;
         }
-        BundleDescription target = model.getBundleDescription();
 
+        BundleDescription target = model.getBundleDescription();
         // target is null if plugin uses non OSGI format
         if (target == null) {
             return javaClassPath;
         }
+
         List<String> pdeClassPath = new ArrayList<>(javaClassPath);
         Set<BundleDescription> bundles = new HashSet<>();
         addDependentBundles(target, bundles);
+
         for (BundleDescription bd : bundles) {
             appendBundleToClasspath(bd, pdeClassPath);
         }
@@ -150,36 +155,49 @@ public class PDEClassPathGenerator {
         if (model == null) {
             return;
         }
+
+        String installLocation = model.getInstallLocation();
+        if (installLocation == null) {
+            return;
+        }
+
+        IPath installPath = new Path(installLocation);
+
         for (IPluginLibrary library : model.getPluginBase().getLibraries()) {
             if (!IPluginLibrary.CODE.equals(library.getType())) {
                 continue;
             }
 
-            String installLocation = model.getInstallLocation();
-            if (installLocation == null) {
-                continue;
-            }
-            IPath location = new Path(installLocation).append(library.getName());
+            String libraryName = library.getName();
+            IPath location = ".".equals(libraryName)
+                    ? installPath
+                    : installPath.append(libraryName);
+
             String locationStr = location.toOSString();
             if (pdeClassPath.contains(locationStr)) {
                 continue;
             }
+
             // extra cleanup for some directories on classpath
             String bundleLocation = bd.getLocation();
-            if (bundleLocation != null && !"jar".equals(location.getFileExtension())
+            if (bundleLocation != null
+                    && !"jar".equals(location.getFileExtension())
                     && new File(bundleLocation).isDirectory()
                     && bd.getSymbolicName().equals(location.lastSegment())) {
                 // ignore badly resolved plugin directories inside workspace
                 // ("." as classpath is resolved as plugin root directory)
-                // which is, if under workspace, NOT a part of the classpath
+                // which, if under workspace, is NOT a part of the classpath
                 continue;
             }
+
             if (!location.isAbsolute()) {
                 location = ResourceUtils.relativeToAbsolute(location);
             }
+
             if (!isValidPath(location)) {
                 continue;
             }
+
             locationStr = location.toOSString();
             if (!pdeClassPath.contains(locationStr)) {
                 pdeClassPath.add(locationStr);
@@ -195,18 +213,30 @@ public class PDEClassPathGenerator {
         addImportedBundles(bd, bundles);
 
         for (BundleDescription fragment : bd.getFragments()) {
-            if (fragment.isResolved() && bundles.add(fragment)) {
-                addDependentBundles(fragment.getResolvedRequires(), bundles);
-                addImportedBundles(fragment, bundles);
+            if (!fragment.isResolved()) {
+                continue;
             }
+
+            if (!bundles.add(fragment)) {
+                continue;
+            }
+
+            addDependentBundles(fragment.getResolvedRequires(), bundles);
+            addImportedBundles(fragment, bundles);
         }
     }
 
     private static void addDependentBundles(BundleDescription[] dependencies, Set<BundleDescription> bundles) {
         for (BundleDescription dependency : dependencies) {
-            if (dependency != null && bundles.add(dependency)) {
-                addDependentBundles(dependency, bundles);
+            if (dependency == null) {
+                continue;
             }
+
+            if (!bundles.add(dependency)) {
+                continue;
+            }
+
+            addDependentBundles(dependency, bundles);
         }
     }
 
@@ -219,10 +249,12 @@ public class PDEClassPathGenerator {
                             && Objects.equals(bd.getVersion(), exporter.getVersion()))) {
                 continue;
             }
-            if (bundles.add(exporter)) {
-                addDependentBundles(exporter, bundles);
+
+            if (!bundles.add(exporter)) {
+                continue;
             }
+
+            addDependentBundles(exporter, bundles);
         }
     }
-
 }
