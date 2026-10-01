@@ -11,6 +11,7 @@ import jakarta.annotation.Nullable;
 
 import org.apache.bcel.Const;
 
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
@@ -41,7 +42,7 @@ class UnresolvedXMethod extends AbstractMethod {
      */
     @Override
     public boolean isReturnTypeReferenceType() {
-        SignatureParser parser = new SignatureParser(getSignature());
+        GenericSignatureParser parser = new GenericSignatureParser(getSignature());
         String returnTypeSig = parser.getReturnTypeSignature();
         return SignatureParser.isReferenceType(returnTypeSig);
     }

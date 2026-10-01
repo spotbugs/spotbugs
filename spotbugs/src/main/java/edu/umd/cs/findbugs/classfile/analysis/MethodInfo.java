@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -365,7 +366,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
 
     @Override
     public int getNumParams() {
-        return new SignatureParser(getSignature()).getNumParameters();
+        return new GenericSignatureParser(getSignature()).getNumParameters();
     }
 
     @Override
@@ -411,7 +412,7 @@ public class MethodInfo extends MethodDescriptor implements XMethod {
      */
     @Override
     public boolean isReturnTypeReferenceType() {
-        SignatureParser parser = new SignatureParser(getSignature());
+        GenericSignatureParser parser = new GenericSignatureParser(getSignature());
         String returnTypeSig = parser.getReturnTypeSignature();
         return SignatureParser.isReferenceType(returnTypeSig);
     }

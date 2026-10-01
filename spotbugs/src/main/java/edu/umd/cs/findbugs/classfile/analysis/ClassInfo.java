@@ -34,10 +34,10 @@ import javax.annotation.CheckForNull;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -131,12 +131,12 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
                         System.out.println("Have bridge method:" + m);
                     }
 
-                    String[] mArguments = new SignatureParser(m.getSignature()).getArguments();
+                    String[] mArguments = new GenericSignatureParser(m.getSignature()).getArguments();
 
                     for (MethodInfo to : methodInfoList) {
                         if (m != to && !to.isBridge()
                                 && m.getName().equals(to.getName())
-                                && Arrays.equals(mArguments, new SignatureParser(to.getSignature()).getArguments())) {
+                                && Arrays.equals(mArguments, new GenericSignatureParser(to.getSignature()).getArguments())) {
                             if (DEBUG) {
                                 System.out.println("  to method:" + to);
                             }
