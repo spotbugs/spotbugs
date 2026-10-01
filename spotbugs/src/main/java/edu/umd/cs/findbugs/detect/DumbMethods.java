@@ -1465,7 +1465,7 @@ public class DumbMethods extends OpcodeStackDetector {
 
             JavaClass cls = Repository.lookupClass(dottedClassName);
             JavaClass threadClass = Repository.lookupClass("java.lang.Thread");
-            
+
             if (!cls.instanceOf(threadClass)) {
                 return false;
             }
