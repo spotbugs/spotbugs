@@ -51,9 +51,9 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation.Parser;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
@@ -293,8 +293,8 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
     }
 
     static boolean compatibleParameters(String signature, String superSignature) {
-        SignatureParser sig = new SignatureParser(signature);
-        SignatureParser superSig = new SignatureParser(superSignature);
+        GenericSignatureParser sig = new GenericSignatureParser(signature);
+        GenericSignatureParser superSig = new GenericSignatureParser(superSignature);
         if (sig.getNumParameters() == superSig.getNumParameters()) {
             Iterator<String> params = sig.parameterSignatureIterator();
             Iterator<String> superParams = superSig.parameterSignatureIterator();

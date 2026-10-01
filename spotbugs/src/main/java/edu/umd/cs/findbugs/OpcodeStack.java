@@ -75,11 +75,11 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ClassMember;
 import edu.umd.cs.findbugs.ba.FieldSummary;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -2515,7 +2515,7 @@ public class OpcodeStack {
                 && ("valueOf".equals(method) && !signature.contains("String") || method.equals(boxedTypes.get(clsName) + "Value"))) {
             // boxing/unboxing conversion
             Item value = pop();
-            String newSignature = new SignatureParser(signature).getReturnTypeSignature();
+            String newSignature = new GenericSignatureParser(signature).getReturnTypeSignature();
             Item newValue = new Item(value, newSignature);
             if (newValue.source == null) {
                 newValue.source = XFactory.createReferencedXMethod(dbc);
@@ -2675,7 +2675,7 @@ public class OpcodeStack {
             }
             String returnTypeName = IMMUTABLE_RETURNER_MAP.get(Pair.of(clsName, method));
             if (returnTypeName != null) {
-                SignatureParser sp = new SignatureParser(signature);
+                GenericSignatureParser sp = new GenericSignatureParser(signature);
                 for (int i = 0; i < sp.getNumParameters(); ++i) {
                     pop();
                 }
@@ -2821,7 +2821,7 @@ public class OpcodeStack {
         String signature = dbc.getSigConstantOperand();
 
         if ("makeConcatWithConstants".equals(dbc.getNameConstantOperand())) {
-            String[] args = new SignatureParser(signature).getArguments();
+            String[] args = new GenericSignatureParser(signature).getArguments();
             if (args.length == 1) {
                 Item i = getStackItem(0);
                 if (i.isServletParameterTainted()) {
@@ -2856,7 +2856,7 @@ public class OpcodeStack {
         int numberArguments = PreorderVisitor.getNumberArguments(signature);
 
         pop(numberArguments);
-        pushBySignature(new SignatureParser(signature).getReturnTypeSignature(), dbc);
+        pushBySignature(new GenericSignatureParser(signature).getReturnTypeSignature(), dbc);
 
         if ((appenderValue != null || servletRequestParameterTainted) && getStackDepth() > 0) {
             Item i = this.getStackItem(0);
@@ -3666,7 +3666,7 @@ public class OpcodeStack {
             return;
         }
         pop(PreorderVisitor.getNumberArguments(signature) + (popThis ? 1 : 0));
-        pushBySignature(new SignatureParser(signature).getReturnTypeSignature(), dbc);
+        pushBySignature(new GenericSignatureParser(signature).getReturnTypeSignature(), dbc);
     }
 
     public Item getItemMethodInvokedOn(DismantleBytecode dbc) {

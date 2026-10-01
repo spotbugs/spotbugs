@@ -30,10 +30,10 @@ import org.apache.bcel.Const;
 import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.ba.ComparableField;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -107,7 +107,7 @@ public class FieldInfo extends FieldDescriptor implements XField {
     }
 
     public int getNumParams() {
-        return new SignatureParser(getSignature()).getNumParameters();
+        return new GenericSignatureParser(getSignature()).getNumParameters();
     }
 
     private boolean checkFlag(int flag) {

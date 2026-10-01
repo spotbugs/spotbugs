@@ -33,12 +33,12 @@ import edu.umd.cs.findbugs.ba.AnnotationDatabase.Target;
 import edu.umd.cs.findbugs.ba.DefaultNullnessAnnotations;
 import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.jsr305.FindBugsDefaultAnnotations;
 import edu.umd.cs.findbugs.ba.jsr305.JSR305NullnessAnnotations;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
@@ -393,7 +393,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         }
 
         if (SystemProperties.ASSERTIONS_ENABLED) {
-            SignatureParser parser = new SignatureParser(sig);
+            GenericSignatureParser parser = new GenericSignatureParser(sig);
             int numParams = parser.getNumParameters();
             assert param < numParams;
         }
