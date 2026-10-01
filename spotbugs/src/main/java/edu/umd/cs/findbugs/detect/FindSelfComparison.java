@@ -34,9 +34,9 @@ import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.util.EditDistance;
 
@@ -197,7 +197,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
             boolean booleanComparisonMethod = FindSelfComparison2.booleanComparisonMethod(name);
             if (booleanComparisonMethod || FindSelfComparison2.comparatorMethod(name)) {
                 String sig = getSigConstantOperand();
-                SignatureParser parser = new SignatureParser(sig);
+                GenericSignatureParser parser = new GenericSignatureParser(sig);
                 int numParameters = parser.getNumParameters();
                 if ((numParameters == 1 || seen == Const.INVOKESTATIC && numParameters == 2)
                         && (booleanComparisonMethod && sig.endsWith(";)Z")

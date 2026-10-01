@@ -25,6 +25,7 @@ import java.util.TreeSet;
 import javax.annotation.CheckForNull;
 
 import org.apache.bcel.Const;
+import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -36,7 +37,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.TypePath;
 import org.objectweb.asm.TypeReference;
 
-import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
@@ -297,7 +298,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         }
 
         @Override
-        public org.objectweb.asm.AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
+        public AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
             AnnotationValue value = new AnnotationValue(desc);
             mBuilder.addAnnotation(desc, value);
             return value.getAnnotationVisitor();
@@ -422,7 +423,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                     mBuilder.setAccessMethodForMethod(accessOwner, accessName, accessDesc, accessIsStatic);
                 } else if (accessForField && fieldInstructionCount == 1) {
                     boolean isSetter = methodDesc.endsWith(")V");
-                    int numArg = new SignatureParser(methodDesc).getNumParameters();
+                    int numArg = new GenericSignatureParser(methodDesc).getNumParameters();
                     int expected = 0;
                     if (!accessIsStatic) {
                         expected++;
@@ -485,20 +486,20 @@ public class ClassParserUsingASM implements ClassParserInterface {
         }
 
         @Override
-        public org.objectweb.asm.AnnotationVisitor visitParameterAnnotation(int parameter, String desc,
+        public AnnotationVisitor visitParameterAnnotation(int parameter, String desc,
                 boolean visible) {
             AnnotationValue value = new AnnotationValue(desc);
             int shift = 0;
             if (parameterCount >= 0) {
                 // if we have synthetic parameter, shift `parameter` value
-                shift = new SignatureParser(methodDesc).getNumParameters() - parameterCount;
+                shift = new GenericSignatureParser(methodDesc).getNumParameters() - parameterCount;
             }
             mBuilder.addParameterAnnotation(parameter + shift, desc, value);
             return value.getAnnotationVisitor();
         }
 
         @Override
-        public org.objectweb.asm.AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath,
+        public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath,
                 String desc, boolean visible) {
             TypeReference typeRefObject = new TypeReference(typeRef);
             if (typeRefObject.getSort() == TypeReference.METHOD_FORMAL_PARAMETER && typePath == null) {
@@ -562,7 +563,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
             }
 
             @Override
-            public org.objectweb.asm.AnnotationVisitor visitAnnotation(String desc, boolean isVisible) {
+            public AnnotationVisitor visitAnnotation(String desc, boolean isVisible) {
                 if (cBuilder instanceof ClassInfo.Builder) {
                     AnnotationValue value = new AnnotationValue(desc);
                     ((ClassInfo.Builder) cBuilder).addAnnotation(desc, value);
@@ -599,7 +600,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
                     return new AbstractFieldAnnotationVisitor() {
 
                         @Override
-                        public org.objectweb.asm.AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
+                        public AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
                             AnnotationValue value = new AnnotationValue(desc);
                             fBuilder.addAnnotation(desc, value);
                             return value.getAnnotationVisitor();
@@ -608,7 +609,6 @@ public class ClassParserUsingASM implements ClassParserInterface {
                         @Override
                         public void visitEnd() {
                             cBuilder2.addFieldDescriptor(fBuilder.build());
-
                         }
 
                     };

@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.util.EditDistance;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -350,7 +350,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
             if (!method.isStatic()) {
                 startIndex = 1;
             }
-            SignatureParser parser = new SignatureParser(method.getSignature());
+            GenericSignatureParser parser = new GenericSignatureParser(method.getSignature());
             Iterator<String> signatureIterator = parser.parameterSignatureIterator();
             for (int i = startIndex; i < localsThatAreParameters + startIndex; i++) {
                 String sig = signatureIterator.next();
@@ -388,7 +388,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
         if (!method.isStatic()) {
             startIndex = 1;
         }
-        SignatureParser parser = new SignatureParser(method.getSignature());
+        GenericSignatureParser parser = new GenericSignatureParser(method.getSignature());
         Iterator<String> signatureIterator = parser.parameterSignatureIterator();
         int lowestCost = Integer.MAX_VALUE;
         for (int i = startIndex; i < localsThatAreParameters + startIndex; i++) {

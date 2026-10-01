@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.classfile.engine.bcel;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -49,7 +49,7 @@ public class ParameterSignatureListFactory extends AnalysisFactory<String[]> {
      */
     @Override
     public String[] analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
-        SignatureParser parser = new SignatureParser(descriptor.getSignature());
+        GenericSignatureParser parser = new GenericSignatureParser(descriptor.getSignature());
         ArrayList<String> resultList = new ArrayList<>();
         for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext();) {
             resultList.add(i.next());

@@ -43,11 +43,12 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
 
 /**
  * Abstract class for integration testing. Extend, call {@code performAnalysis("com/company/classname.class")},
- * and finally assert the issues found over {@code getBugCollection()} by creating appropriate matchers with {@link BugInstanceMatcherBuilder}
+ * and finally assert the issues found over {@code getBugCollection()} by creating appropriate matchers with {@link BugInstanceMatcherBuilder},
+ * or using the assert functions from this class.
  * For example:
  *
  * <pre>
- * <code>
+ * {@code
  * public class MyIntegrationTest extends AbstractIntegrationTest {
  *
  *     @Test
@@ -55,19 +56,12 @@ import edu.umd.cs.findbugs.test.matcher.BugInstanceMatcherBuilder;
  *         performAnalysis("my/company/AnalyzedClass.class");
  *
  *         // There should only be exactly 1 issue of this type
- *         final BugInstanceMatcher bugTypeMatcher = new BugInstanceMatcherBuilder()
- *                 .bugType("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE").build();
- *         assertThat(getBugCollection(), CountMatcher.containsExactly(1, bugTypeMatcher));
- *
- *         final BugInstanceMatcher bugInstanceMatcher = new BugInstanceMatcherBuilder()
- *                 .bugType("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
- *                 .inClass("AnalyzedClass")
- *                 .atLine(25)
- *                 .build();
- *         assertThat(getBugCollection(), hasItem(bugInstanceMatcher));
+ *         assertBugTypeCount("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", 1);
+ *         // Details of the expected bug
+ *         assertBugInMethodAtLine("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", "AnalyzedClass", "faultyMethod", 25);
  *     }
  * }
- * </code>
+ * }
  * </pre>
  *
  * @author jmsotuyo
