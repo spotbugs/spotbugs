@@ -51,7 +51,6 @@ import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
 import javax.xml.XMLConstants;
@@ -63,6 +62,7 @@ import javax.xml.transform.TransformerException;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
+import org.jspecify.annotations.Nullable;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -119,8 +119,7 @@ public class SortedBugCollection implements BugCollection {
 
     private final TreeSet<String> missingClassSet;
 
-    @CheckForNull
-    private String summaryHTML;
+    private @Nullable String summaryHTML;
 
     final Project project;
 
@@ -329,7 +328,7 @@ public class SortedBugCollection implements BugCollection {
         doReadXML(reader, null);
     }
 
-    private void doReadXML(@WillClose InputStream in, @CheckForNull File base) throws IOException, DocumentException {
+    private void doReadXML(@WillClose InputStream in, @Nullable File base) throws IOException, DocumentException {
         try {
             checkInputStream(in);
             Reader reader = Util.getReader(in);
@@ -340,7 +339,7 @@ public class SortedBugCollection implements BugCollection {
         }
     }
 
-    private void doReadXML(@WillClose Reader reader, @CheckForNull File base) throws IOException, DocumentException {
+    private void doReadXML(@WillClose Reader reader, @Nullable File base) throws IOException, DocumentException {
         timeStartedLoading = System.currentTimeMillis();
 
         SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, base);

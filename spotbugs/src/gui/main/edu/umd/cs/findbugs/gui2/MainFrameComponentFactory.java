@@ -22,7 +22,6 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -42,6 +41,8 @@ import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
+
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugAnnotationWithSourceLines;
@@ -194,7 +195,7 @@ public class MainFrameComponentFactory implements Serializable {
      * Sets the title of the source tabs for either docking or non-docking
      * versions.
      */
-    void setSourceTab(String title, @CheckForNull BugInstance bug) {
+    void setSourceTab(String title, @Nullable BugInstance bug) {
         JComponent label = mainFrame.getGuiLayout().getSourceViewComponent();
         if (label != null) {
             removeLink(label);

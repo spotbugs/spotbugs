@@ -24,8 +24,6 @@ import static org.apache.bcel.Const.*;
 import java.util.*;
 import java.util.Map.Entry;
 
-import jakarta.annotation.Nullable;
-
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantNameAndType;
@@ -51,6 +49,7 @@ import org.apache.bcel.generic.LoadInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PushInstruction;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;

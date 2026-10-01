@@ -32,11 +32,11 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.AnalysisCacheToRepositoryAdapter;
@@ -275,11 +275,11 @@ public class AnalysisContext implements AutoCloseable {
         this.unreadFields = unreadFields;
     }
 
-    private static boolean skipReportingMissingClass(@CheckForNull @DottedClassName String missing) {
+    private static boolean skipReportingMissingClass(@Nullable @DottedClassName String missing) {
         return missing == null || missing.isEmpty() || missing.charAt(0) == '[' || missing.endsWith("package-info");
     }
 
-    private static @CheckForNull RepositoryLookupFailureCallback getCurrentLookupFailureCallback() {
+    private static @Nullable RepositoryLookupFailureCallback getCurrentLookupFailureCallback() {
         AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
         if (currentAnalysisContext2 == null) {
             return null;
@@ -1031,18 +1031,13 @@ public class AnalysisContext implements AutoCloseable {
         return Global.getAnalysisCache().getDatabase(DirectlyRelevantTypeQualifiersDatabase.class);
     }
 
-
-    @CheckForNull
-    public XMethod getBridgeTo(MethodInfo m) {
+    public @Nullable XMethod getBridgeTo(MethodInfo m) {
         return bridgeTo.get(m);
     }
 
-
-    @CheckForNull
-    public XMethod getBridgeFrom(MethodInfo m) {
+    public @Nullable XMethod getBridgeFrom(MethodInfo m) {
         return bridgeFrom.get(m);
     }
-
 
     public void setBridgeMethod(MethodInfo from, MethodInfo to) {
         bridgeTo.put(from, to);

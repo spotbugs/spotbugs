@@ -21,8 +21,9 @@ package edu.umd.cs.findbugs;
 
 import java.util.Objects;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
+
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -117,8 +118,7 @@ class SynchronizedBugReporter implements BugReporter {
     }
 
     @Override
-    @CheckForNull
-    public synchronized BugCollection getBugCollection() {
+    public synchronized @Nullable BugCollection getBugCollection() {
         return delegate.getBugCollection();
     }
 }
