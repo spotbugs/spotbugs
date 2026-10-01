@@ -163,15 +163,15 @@ public class PDEClassPathGenerator {
 
         IPath installPath = new Path(installLocation);
 
-if (installPath.toFile().isFile()) {
-    String locationStr = installPath.toOSString();
-    if (!pdeClassPath.contains(locationStr)) {
-        pdeClassPath.add(locationStr);
-    }
-    return;
-}
+        if (installPath.toFile().isFile()) {
+            String locationStr = installPath.toOSString();
+            if (!pdeClassPath.contains(locationStr)) {
+                pdeClassPath.add(locationStr);
+            }
+            return;
+        }
 
-for (IPluginLibrary library : model.getPluginBase().getLibraries()) {
+        for (IPluginLibrary library : model.getPluginBase().getLibraries()) {
             if (!IPluginLibrary.CODE.equals(library.getType())) {
                 continue;
             }
