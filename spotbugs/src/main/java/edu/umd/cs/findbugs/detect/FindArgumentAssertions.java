@@ -133,7 +133,10 @@ public class FindArgumentAssertions extends AbstractAssertDetector {
             return;
         }
 
-        if (isMethodCall(seen)) {
+        if (seen == Const.INSTANCEOF && stack.getStackDepth() > 0 && stack.getStackItem(0).isInitialParameter()) {
+            // assert value instanceof T leaves an int, not the parameter, for the following ifeq/ifne.
+            wasArg = true;
+        } else if (isMethodCall(seen)) {
             // Handle method call
             wasArg = isInitialArg();
         } else {
