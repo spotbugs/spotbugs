@@ -33,6 +33,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `NP_LOAD_OF_KNOWN_NULL_VALUE` false negative when null check uses `instanceof` ([#3916](https://github.com/spotbugs/spotbugs/issues/3916))
 - Fix `MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR` false negative when a constructor calls an overridable method that takes arguments, such as a setter (e.g. `setValue(value)`) ([#4309](https://github.com/spotbugs/spotbugs/issues/4309))
 - Fix CLI launcher scripts intercepting `-conserveSpace` with a JVM system property instead passing it to Java Application as equivalent to `-effort:min` ([#4268](https://github.com/spotbugs/spotbugs/pull/4289))
+- Fix `USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` false positive when `clone()` assigns a newly created lock object to the copy ([#4320](https://github.com/spotbugs/spotbugs/issues/4320))
 - Fix `CT_CONSTRUCTOR_THROW` false positive with sealed classes ([#4259](https://github.com/spotbugs/spotbugs/issues/4259))
 - Fix `USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` false positive when a lock is assigned to a newly allocated object ([#4331](https://github.com/spotbugs/spotbugs/issues/4331))
 
