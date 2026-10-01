@@ -1422,14 +1422,13 @@ public class DumbMethods extends OpcodeStackDetector {
      */
     private boolean usesDefaultThreadRun(String dottedClassName) {
         try {
-            JavaClass threadClass = Repository.lookupClass("java.lang.Thread");
-
             if ("java.lang.Thread".equals(dottedClassName)) {
                 return true;
             }
 
             JavaClass cls = Repository.lookupClass(dottedClassName);
-
+            JavaClass threadClass = Repository.lookupClass("java.lang.Thread");
+            
             if (!cls.instanceOf(threadClass)) {
                 return false;
             }
