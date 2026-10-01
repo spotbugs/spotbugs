@@ -22,13 +22,12 @@ package edu.umd.cs.findbugs.ba.heap;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -146,7 +145,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
         }
     }
 
-    private @CheckForNull XField lookupField(InstructionHandle handle, FieldInstruction fins) {
+    private @Nullable XField lookupField(InstructionHandle handle, FieldInstruction fins) {
         if (instructionToFieldMap.containsKey(handle)) {
             return instructionToFieldMap.get(handle);
         }

@@ -28,8 +28,6 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
@@ -38,6 +36,7 @@ import org.apache.bcel.classfile.Deprecated;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -47,10 +46,10 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.bcel.BCELUtil;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -81,7 +80,7 @@ public class Naming extends PreorderVisitor implements Detector {
 
     boolean classIsPublicOrProtected;
 
-    public static @CheckForNull XMethod definedIn(JavaClass clazz, XMethod m) {
+    public static @Nullable XMethod definedIn(JavaClass clazz, XMethod m) {
         for (Method m2 : clazz.getMethods()) {
             if (m.getName().equals(m2.getName()) && m.getSignature().equals(m2.getSignature()) && m.isStatic() == m2.isStatic()) {
                 return XFactory.createXMethod(clazz, m2);
@@ -186,8 +185,8 @@ public class Naming extends PreorderVisitor implements Detector {
                             }
                             priority++;
                         }
-                        Iterator<String> s = new SignatureParser(m.getSignature()).parameterSignatureIterator();
-                        Iterator<String> s2 = new SignatureParser(m2.getSignature()).parameterSignatureIterator();
+                        Iterator<String> s = new GenericSignatureParser(m.getSignature()).parameterSignatureIterator();
+                        Iterator<String> s2 = new GenericSignatureParser(m2.getSignature()).parameterSignatureIterator();
                         while (s.hasNext()) {
                             String p = s.next();
                             String p2 = s2.next();
@@ -447,7 +446,7 @@ public class Naming extends PreorderVisitor implements Detector {
 
 
 
-    private static @CheckForNull String getSignatureOfOuterClass(JavaClass obj) {
+    private static @Nullable String getSignatureOfOuterClass(JavaClass obj) {
         for (Field f : obj.getFields()) {
             if (f.getName().startsWith("this$")) {
                 return f.getSignature();
@@ -482,7 +481,7 @@ public class Naming extends PreorderVisitor implements Detector {
         return false;
     }
 
-    private static @CheckForNull Method findVoidConstructor(JavaClass clazz) {
+    private static @Nullable Method findVoidConstructor(JavaClass clazz) {
         for (Method m : clazz.getMethods()) {
             if (isVoidConstructor(clazz, m)) {
                 return m;

@@ -530,6 +530,16 @@ class FindImproperSynchronizationTest extends AbstractIntegrationTest {
                 "lock");
     }
 
+    /**
+     * Regression test for GitHub issue #4331: assigning a new lock to a newly
+     * allocated object must not be reported as unsafe synchronization.
+     */
+    @Test
+    void testSafeSynchronizationWithNewLockInNewObject() {
+        performAnalysis("synchronizationLocks/privateFinalLocks/UnsafeSynchronizationNewObjectTarget.class");
+
+        assertNoUnsafeLockBugs();
+    }
 
     private void assertNoUnsafeLockBugs() {
         assertBugTypeCount(METHOD_BUG, 0);

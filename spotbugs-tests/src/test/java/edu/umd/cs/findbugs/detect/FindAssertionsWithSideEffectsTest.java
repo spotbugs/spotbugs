@@ -19,4 +19,12 @@ class FindAssertionsWithSideEffectsTest extends AbstractIntegrationTest {
         assertBugInMethodAtLine("ASE_ASSERTION_WITH_SIDE_EFFECT", "AssertionsWithSideEffects", "storeInt", 18);
         assertBugInMethodAtLine("ASE_ASSERTION_WITH_SIDE_EFFECT_METHOD", "AssertionsWithSideEffects", "addAndRemove", 26);
     }
+
+    @Test
+    void testQuestionableBooleanAssignmentInAssertStatement() {
+        performAnalysis("QuestionableBooleanAssignmentInAssertStatement.class");
+
+        assertBugTypeCount("ASE_ASSERTION_WITH_SIDE_EFFECT", 1);
+        assertBugInMethodAtLine("ASE_ASSERTION_WITH_SIDE_EFFECT", "QuestionableBooleanAssignmentInAssertStatement", "main", 5);
+    }
 }

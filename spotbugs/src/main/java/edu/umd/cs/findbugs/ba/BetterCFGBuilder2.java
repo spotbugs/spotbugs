@@ -29,13 +29,13 @@ import java.util.List;
 import java.util.Map;
 
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.*;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.type.ExceptionSetFactory;

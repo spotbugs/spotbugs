@@ -313,7 +313,7 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
                     declaredCollectionAccessors.add(updatedField, updateMethod);
                 }
 
-                if (updatedField.isPublic() || isNewLockAssignedToCloneCopy(seen)) {
+                if (updatedField.isPublic() || isNewLockAssignedToCloneCopy(seen) || isNewLockAssignedToNewObject(seen)) {
                     return;
                 }
                 declaredLockAccessors.add(updatedField, updateMethod);
@@ -457,6 +457,21 @@ public class FindImproperSynchronization extends OpcodeStackDetector {
         OpcodeStack.Item value = stack.getStackItem(0);
         OpcodeStack.Item target = stack.getStackItem(1);
         return value.isNewlyAllocated() && target.getRegisterNumber() != 0;
+    }
+
+    /**
+     * Check if the current field update targets a newly allocated object.
+     * A field assignment to an object that has not escaped yet cannot expose
+     * the lock to another thread.
+     *
+     * @param seen the current opcode
+     * @return true if the target object of a {@code PUTFIELD} is newly allocated
+     */
+    private boolean isNewLockAssignedToNewObject(int seen) {
+        if (seen != Const.PUTFIELD || stack.getStackDepth() < 2) {
+            return false;
+        }
+        return stack.getStackItem(1).isNewlyAllocated();
     }
 
     private boolean isInitializerMethod(String methodName) {

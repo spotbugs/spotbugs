@@ -23,8 +23,6 @@ import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ATHROW;
@@ -37,6 +35,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.TypedInstruction;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -106,7 +105,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 
     private JavaClassAndMethod classAndMethod;
 
-    private final @CheckForNull PointerEqualityCheck pointerEqualityCheck;
+    private final @Nullable PointerEqualityCheck pointerEqualityCheck;
 
     public IsNullValueAnalysis(MethodDescriptor descriptor, MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow,
             TypeDataflow typeDataflow, DepthFirstSearch dfs, AssertionMethods assertionMethods) {
@@ -134,7 +133,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         INIT, START, SAW1, SAW2, IFEQUAL, IFNOTEQUAL;
     }
 
-    public static @CheckForNull PointerEqualityCheck getForPointerEqualityCheck(CFG cfg, ValueNumberDataflow vna) {
+    public static @Nullable PointerEqualityCheck getForPointerEqualityCheck(CFG cfg, ValueNumberDataflow vna) {
         PointerEqualityCheckState state = PointerEqualityCheckState.INIT;
         int target = Integer.MAX_VALUE;
         Location test = null;
@@ -193,7 +192,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         return null;
     }
 
-    private @CheckForNull ValueNumber getKnownNonnullDueToPointerDisequality(ValueNumber knownNull, int pc) {
+    private @Nullable ValueNumber getKnownNonnullDueToPointerDisequality(ValueNumber knownNull, int pc) {
         if (pointerEqualityCheck == null || pc < pointerEqualityCheck.firstValuePC) {
             return null;
         }
@@ -260,7 +259,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
                 XMethodParameter methodParameter = new XMethodParameter(xm, paramIndex);
                 NullnessAnnotation n = db.getResolvedAnnotation(methodParameter, false);
                 if (n == NullnessAnnotation.CHECK_FOR_NULL) {
-                    // Parameter declared @CheckForNull
+                    // Parameter declared @Nullable
                     value = IsNullValue.parameterMarkedAsMightBeNull(methodParameter);
                 } else if (n == NullnessAnnotation.NONNULL) {
                     // Parameter declared @NonNull
@@ -282,7 +281,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
     }
 
     @Override
-    public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, IsNullValueFrame start,
+    public void transfer(BasicBlock basicBlock, @Nullable InstructionHandle end, IsNullValueFrame start,
             IsNullValueFrame result) throws DataflowAnalysisException {
         startTransfer();
         super.transfer(basicBlock, end, start, result);
@@ -303,7 +302,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         instanceOfFrame = null;
     }
 
-    public void endTransfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, IsNullValueFrame result)
+    public void endTransfer(BasicBlock basicBlock, @Nullable InstructionHandle end, IsNullValueFrame result)
             throws DataflowAnalysisException {
         // Determine if this basic block ends in a redundant branch.
         if (end == null) {
