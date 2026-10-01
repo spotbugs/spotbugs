@@ -235,14 +235,16 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
     public void close() {
         if (fs != null) {
             try {
-                fs.close();
-
-                // when the jrt-fs.jar location has been provided,
-                // JrtFileSystemProvider created an own URLClassloader,
-                // which also needs to be closed to free the jrt-fs.jar
-                ClassLoader classLoader = fs.getClass().getClassLoader();
-                if (classLoader instanceof URLClassLoader) {
-                    ((URLClassLoader) classLoader).close();
+                try {
+                    fs.close();
+                } finally {
+                    // when the jrt-fs.jar location has been provided,
+                    // JrtFileSystemProvider created an own URLClassloader,
+                    // which also needs to be closed to free the jrt-fs.jar
+                    ClassLoader classLoader = fs.getClass().getClassLoader();
+                    if (classLoader instanceof URLClassLoader) {
+                        ((URLClassLoader) classLoader).close();
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
