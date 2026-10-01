@@ -326,9 +326,7 @@ public class UnreadFields extends OpcodeStackDetector {
 
     private final ReflectiveAccessTracker reflectiveAccessTracker = new ReflectiveAccessTracker();
 
-    // A reflective accessor under construction. It's created when the handle is obtained and then completed when
-    // the handle gets assigned to a field. It carries the PC at which that assignment is expected, so there is a
-    // single piece of in-flight state, reset for every visited method by both visit(Code) and visit(Method).
+    /** A reflective accessor under construction. */
     private ReflectiveFieldAccessor inFlightRFAccessor;
 
     @Override
@@ -479,25 +477,15 @@ public class UnreadFields extends OpcodeStackDetector {
 
         if (seen == Const.INVOKEVIRTUAL && "java/lang/invoke/MethodHandles$Lookup".equals(getClassConstantOperand())) {
             String methodName = getNameConstantOperand();
-            if (("findGetter".equals(methodName) || "findSetter".equals(methodName))
-                    && getSigConstantOperand().endsWith("Ljava/lang/invoke/MethodHandle;")) {
+            AccessType accessType = lookupAccessType(methodName, getSigConstantOperand());
+            if (accessType != null) {
+                boolean isStatic = methodName.startsWith("findStatic");
                 String fieldSignature = resolveFieldSignature(stack.getStackItem(0));
                 String fieldName = (String) stack.getStackItem(1).getConstant();
                 String fieldClass = (String) stack.getStackItem(2).getConstant();
                 if (fieldName != null && fieldSignature != null && fieldClass != null) {
-                    XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, fieldSignature, false);
-                    inFlightRFAccessor = new ReflectiveFieldAccessor(f,
-                            methodName.equals("findGetter") ? AccessType.GETTER : AccessType.SETTER,
-                            SourceLineAnnotation.fromVisitedInstruction(this), getNextPC());
-                }
-            }
-            if ("findVarHandle".equals(methodName) && getSigConstantOperand().endsWith("Ljava/lang/invoke/VarHandle;")) {
-                String fieldSignature = resolveFieldSignature(stack.getStackItem(0));
-                String fieldName = (String) stack.getStackItem(1).getConstant();
-                String fieldClass = (String) stack.getStackItem(2).getConstant();
-                if (fieldName != null && fieldSignature != null && fieldClass != null) {
-                    XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, fieldSignature, false);
-                    inFlightRFAccessor = new ReflectiveFieldAccessor(f, AccessType.BOTH,
+                    XField f = XFactory.createXField(ClassName.toDottedClassName(fieldClass), fieldName, fieldSignature, isStatic);
+                    inFlightRFAccessor = new ReflectiveFieldAccessor(f, accessType,
                             SourceLineAnnotation.fromVisitedInstruction(this), getNextPC());
                 }
             }
@@ -847,6 +835,23 @@ public class UnreadFields extends OpcodeStackDetector {
         }
         previousPreviousOpcode = previousOpcode;
         previousOpcode = seen;
+    }
+
+    /** Returns the access type granted by the given {@code MethodHandles.Lookup} method, or null if it is not a field lookup. */
+    private static @CheckForNull AccessType lookupAccessType(final String methodName, final String signature) {
+        switch (methodName) {
+        case "findGetter":
+        case "findStaticGetter":
+            return signature.endsWith("Ljava/lang/invoke/MethodHandle;") ? AccessType.GETTER : null;
+        case "findSetter":
+        case "findStaticSetter":
+            return signature.endsWith("Ljava/lang/invoke/MethodHandle;") ? AccessType.SETTER : null;
+        case "findVarHandle":
+        case "findStaticVarHandle":
+            return signature.endsWith("Ljava/lang/invoke/VarHandle;") ? AccessType.BOTH : null;
+        default:
+            return null;
+        }
     }
 
     private @CheckForNull String resolveFieldSignature(final Item fieldStackItem) {
@@ -1402,9 +1407,11 @@ public class UnreadFields extends OpcodeStackDetector {
         XFactory xFactory = AnalysisContext.currentXFactory();
         for (Map.Entry<XField, SourceLineAnnotation> entry : reflectiveAccessTracker.getFieldsNeverWritten().entrySet()) {
             XField f = entry.getKey();
-            if (!f.isResolved()) {
+            // A field written directly, e.g. by its initializer, is not unwritten even if no setter accessor is used.
+            if (!f.isResolved() || data.writtenFields.contains(f)) {
                 continue;
             }
+
             int priority = NORMAL_PRIORITY;
             if (xFactory.isReflectiveClass(f.getClassDescriptor())) {
                 priority++;
@@ -1430,11 +1437,14 @@ public class UnreadFields extends OpcodeStackDetector {
         XFactory xFactory = AnalysisContext.currentXFactory();
         for (Map.Entry<XField, SourceLineAnnotation> entry : reflectiveAccessTracker.getFieldsNeverRead().entrySet()) {
             XField f = entry.getKey();
+            // A field read directly is not unread even if no getter accessor is used.
             if (!f.isResolved()
+                    || data.readFields.contains(f)
                     || containsSpecialAnnotation(f.getAnnotations())
                     || f.getName().toLowerCase().contains("guardian")) {
                 continue;
             }
+
             int priority = NORMAL_PRIORITY;
             if (xFactory.isReflectiveClass(f.getClassDescriptor())) {
                 priority++;

@@ -252,4 +252,96 @@ class Issue2749Test extends AbstractIntegrationTest {
         assertNoBugType("UWF_UNWRITTEN_FIELD");
         assertNoBugType("URF_UNREAD_FIELD");
     }
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_8)
+    void testStaticMethodHandlesInvoked() {
+        performAnalysis(
+                "../java11/ghIssues/issue2749/WithStaticMethodHandles.class",
+                "../java11/ghIssues/issue2749/WithStaticMethodHandles$Value.class");
+
+        assertNoBugType("UUF_UNUSED_FIELD");
+        assertNoBugType("UWF_UNWRITTEN_FIELD");
+        assertNoBugType("URF_UNREAD_FIELD");
+    }
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_8)
+    void testStaticMethodHandleSetterNotInvoked() {
+        performAnalysis(
+                "../java11/ghIssues/issue2749/WithStaticMethodHandleSetterNotInvoked.class",
+                "../java11/ghIssues/issue2749/WithStaticMethodHandleSetterNotInvoked$Value.class");
+
+        assertNoBugType("URF_UNREAD_FIELD");
+
+        assertBugTypeCount("UUF_UNUSED_FIELD", 1);
+        assertBugAtFieldAtLine("UUF_UNUSED_FIELD", "WithStaticMethodHandleSetterNotInvoked", "reflectiveField", 21);
+        assertBugTypeCount("UWF_UNWRITTEN_FIELD", 1);
+        assertBugAtFieldAtLine("UWF_UNWRITTEN_FIELD", "WithStaticMethodHandleSetterNotInvoked", "reflectiveField", 21);
+    }
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_8)
+    void testStaticVarHandleInvoked() {
+        performAnalysis(
+                "../java11/ghIssues/issue2749/WithStaticVarHandle.class",
+                "../java11/ghIssues/issue2749/WithStaticVarHandle$Value.class");
+
+        assertNoBugType("UUF_UNUSED_FIELD");
+        assertNoBugType("UWF_UNWRITTEN_FIELD");
+        assertNoBugType("URF_UNREAD_FIELD");
+    }
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_8)
+    void testStaticVarHandleNoWriting() {
+        performAnalysis(
+                "../java11/ghIssues/issue2749/WithStaticVarHandleNoWriting.class",
+                "../java11/ghIssues/issue2749/WithStaticVarHandleNoWriting$Value.class");
+
+        assertNoBugType("UUF_UNUSED_FIELD");
+        assertNoBugType("URF_UNREAD_FIELD");
+
+        assertBugTypeCount("UWF_UNWRITTEN_FIELD", 1);
+        assertBugAtFieldAtLine("UWF_UNWRITTEN_FIELD", "WithStaticVarHandleNoWriting", "value", 18);
+    }
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_8)
+    void testStaticVarHandleInitialized() {
+        performAnalysis(
+                "../java11/ghIssues/issue2749/WithStaticVarHandleInitialized.class",
+                "../java11/ghIssues/issue2749/WithStaticVarHandleInitialized$Value.class");
+
+        assertNoBugType("UUF_UNUSED_FIELD");
+        assertNoBugType("UWF_UNWRITTEN_FIELD");
+        assertNoBugType("URF_UNREAD_FIELD");
+    }
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_8)
+    void testStaticMethodHandleGetterNotInvoked() {
+        performAnalysis(
+                "../java11/ghIssues/issue2749/WithStaticMethodHandleGetterNotInvoked.class",
+                "../java11/ghIssues/issue2749/WithStaticMethodHandleGetterNotInvoked$Value.class");
+
+        assertNoBugType("UWF_UNWRITTEN_FIELD");
+        // Unread static fields of a reflective class fall below the reported priority, as in the ordinary analysis.
+        assertNoBugType("URF_UNREAD_FIELD");
+
+        assertBugTypeCount("UUF_UNUSED_FIELD", 1);
+        assertBugAtFieldAtLine("UUF_UNUSED_FIELD", "WithStaticMethodHandleGetterNotInvoked", "reflectiveField", 20);
+    }
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_8)
+    void testMethodHandleSetterAndDirectRead() {
+        performAnalysis(
+                "../java11/ghIssues/issue2749/WithMethodHandleSetterAndDirectRead.class",
+                "../java11/ghIssues/issue2749/WithMethodHandleSetterAndDirectRead$Value.class");
+
+        assertNoBugType("UUF_UNUSED_FIELD");
+        assertNoBugType("UWF_UNWRITTEN_FIELD");
+        assertNoBugType("URF_UNREAD_FIELD");
+    }
 }

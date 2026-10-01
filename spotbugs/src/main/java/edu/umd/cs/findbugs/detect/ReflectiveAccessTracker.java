@@ -36,9 +36,9 @@ import java.util.function.Predicate;
  * Only one shape is recognized, and every condition below has to hold for a field to be tracked:
  * <ul>
  * <li>the accessor is created by {@code Lookup.findVarHandle}, {@code Lookup.findGetter},
- * {@code Lookup.findSetter}, or {@code newUpdater} on one of the reference, integer and long
- * {@code AtomicFieldUpdater} classes. All of those target a non-static field, so the accessed field
- * is always an instance field.</li>
+ * {@code Lookup.findSetter}, their static counterparts {@code Lookup.findStaticVarHandle},
+ * {@code Lookup.findStaticGetter} and {@code Lookup.findStaticSetter}, or {@code newUpdater} on one
+ * of the reference, integer and long {@code AtomicFieldUpdater} classes.</li>
  * <li>the accessor is stored into a <em>static</em> field by the instruction immediately following
  * the creating call.</li>
  * <li>the accessor is invoked directly on the value loaded from that static field.</li>
@@ -49,11 +49,9 @@ import java.util.function.Predicate;
  * {@code UWF} report the ordinary analysis produces for it. That includes accessors stored into an
  * instance field, kept in a local variable, cached in an array or a map, returned from a factory
  * method or never stored at all; accessors whose accessed class or field name is not a compile-time
- * constant at the creation site; static target fields via {@code findStaticGetter},
- * {@code findStaticSetter} or {@code findStaticVarHandle}; accessors obtained from
- * {@code Lookup.unreflect*}, {@code java.lang.reflect.Field} or {@code Unsafe}; and invocations made
- * on a derived accessor such as the result of {@code MethodHandle.asType}, {@code bindTo} or
- * {@code VarHandle.toMethodHandle}.
+ * constant at the creation site; accessors obtained from {@code Lookup.unreflect*}, {@code java.lang.reflect.Field} or
+ * {@code Unsafe}; and invocations made on a derived accessor such as the result of {@code MethodHandle.asType},
+ * {@code bindTo} or {@code VarHandle.toMethodHandle}.
  */
 class ReflectiveAccessTracker {
 
