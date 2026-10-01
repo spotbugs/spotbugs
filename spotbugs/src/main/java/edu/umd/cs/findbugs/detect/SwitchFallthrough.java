@@ -67,6 +67,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
     private int lastPC;
     private int biggestJumpTarget;
+    private boolean pendingDynamicSwitch;
 
     private final BitSet potentiallyDeadStores = new BitSet();
 
@@ -101,6 +102,7 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         reachable = false;
         lastPC = 0;
         biggestJumpTarget = -1;
+        pendingDynamicSwitch = false;
         found.clear();
         switchHdlr = new SwitchHandler();
         clearAllDeadStores();
@@ -180,7 +182,9 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                     SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(
                             getClassContext(), this, lastPC, getPC());
                     found.add(sourceLineAnnotation);
-                } else if (getPC() >= biggestJumpTarget) {
+                } else if (getPC() >= biggestJumpTarget
+                        && !(switchHdlr.isCurrentSwitchEnumSwitch()
+                                && switchHdlr.getLastCasePC() == getPC())) {
                     SourceLineAnnotation sourceLineAnnotation = switchHdlr.getCurrentSwitchStatement(this);
                     if (DEBUG) {
                         System.out.printf("Found fallthrough to default offset at %d (BJT is %d)%n", getPC(), biggestJumpTarget);
@@ -190,6 +194,27 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
                 }
             }
 
+        }
+
+        // When the last switch case contains only a break, the compiler merges its bytecode
+        // offset with the default offset in the switch table (both point to the same PC).
+        // In that scenario the code is only reachable via a GOTO (reachable=false), so the
+        // normal fall-through detection above misses it.  Detect it explicitly here.
+        //
+        // This heuristic must be skipped for Java 21+ enum/type switches (invokedynamic
+        // enumSwitch / typeSwitch): those compilers add an explicit "catch-all" tableswitch
+        // entry whose offset matches the tableswitch default even when an explicit default:
+        // branch exists, making the last-case-PC equal the default-PC regardless.
+        if (!reachable
+                && isDefaultOffset
+                && switchHdlr.getLastCasePC() == getPC()
+                && getPC() >= biggestJumpTarget
+                && !switchHdlr.isCurrentSwitchEnumSwitch()) {
+            SourceLineAnnotation sourceLineAnnotation = switchHdlr.getCurrentSwitchStatement(this);
+            if (DEBUG) {
+                System.out.printf("Found empty-last-case at default offset %d (BJT is %d)%n", getPC(), biggestJumpTarget);
+            }
+            foundSwitchNoDefault(sourceLineAnnotation);
         }
 
         if (isSwitch(seen)
@@ -273,11 +298,16 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
         case Const.TABLESWITCH:
         case Const.LOOKUPSWITCH:
             if (justSawHashcode) {
+                pendingDynamicSwitch = false;
                 break; // javac compiled switch statement
             }
             reachable = false;
             biggestJumpTarget = -1;
             switchHdlr.enterSwitch(this, enumType);
+            if (pendingDynamicSwitch) {
+                switchHdlr.markCurrentSwitchAsDynamic();
+            }
+            pendingDynamicSwitch = false;
             if (DEBUG) {
                 System.out.printf("  entered switch, default is %d%n", switchHdlr.getDefaultCasePC());
             }
@@ -310,6 +340,12 @@ public class SwitchFallthrough extends OpcodeStackDetector implements StatelessD
 
         case Const.INVOKESTATIC:
             reachable = !("exit".equals(getNameConstantOperand()) && "java/lang/System".equals(getClassConstantOperand()));
+            break;
+
+        case Const.INVOKEDYNAMIC:
+            switchHdlr.sawInvokeDynamic(getPC(), getNameConstantOperand());
+            pendingDynamicSwitch = "enumSwitch".equals(getNameConstantOperand()) || "typeSwitch".equals(getNameConstantOperand());
+            reachable = true;
             break;
 
         default:
