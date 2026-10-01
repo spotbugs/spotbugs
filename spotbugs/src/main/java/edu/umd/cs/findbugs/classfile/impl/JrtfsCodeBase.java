@@ -117,7 +117,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
      * @return the JDK home owning the given jar, or {@code null} if the jar is not in the layout
      *         expected by the {@code jrt} file system provider
      */
-@Nullable
+    @Nullable
     private static Path javaHomeOf(String jrtFsJar) {
         Path lib = Path.of(jrtFsJar).toAbsolutePath().getParent();
         Path javaHome = lib == null ? null : lib.getParent();
