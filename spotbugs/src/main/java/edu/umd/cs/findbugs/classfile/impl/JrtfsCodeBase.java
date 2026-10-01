@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.classfile.impl;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystem;
@@ -73,7 +74,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
      */
     private Map<String, Object> packageToModuleMap;
 
-    public JrtfsCodeBase(ICodeBaseLocator codeBaseLocator, @Nonnull String fileName) {
+    public JrtfsCodeBase(ICodeBaseLocator codeBaseLocator, @Nonnull String fileName) throws IOException {
         super(codeBaseLocator);
         this.fileName = fileName;
         try {
@@ -81,7 +82,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
             root = fs.getPath("modules");
             packageToModuleMap = createPackageToModuleMap(fs);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IOException("Could not initialize jrt-fs for " + fileName, e);
         }
     }
 
@@ -151,7 +152,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
                         }
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw new UncheckedIOException("Could not read packages/modules in jrt-fs for " + fileName, e);
                 }
             });
         }
