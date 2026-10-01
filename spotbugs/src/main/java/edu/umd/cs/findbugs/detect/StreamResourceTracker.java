@@ -73,6 +73,12 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
     private final TreeSet<StreamEscape> streamEscapeSet;
 
     /**
+     * Set of stream escapes where the stream is passed as an argument to the
+     * call that creates another stream, i.e. the stream is being wrapped.
+     */
+    private final TreeSet<StreamEscape> wrappedStreamEscapeSet;
+
+    /**
      * Map of individual streams to equivalence classes. Any time a stream "A"
      * is wrapped with a stream "B", "A" and "B" belong to the same equivalence
      * class. If any stream in an equivalence class is closed, then we consider
@@ -97,6 +103,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
         this.streamOpenLocationMap = new HashMap<>();
         this.uninterestingStreamEscapeSet = new HashSet<>();
         this.streamEscapeSet = new TreeSet<>();
+        this.wrappedStreamEscapeSet = new TreeSet<>();
         this.streamEquivalenceMap = new HashMap<>();
     }
 
@@ -116,8 +123,27 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
      *            the target Location (where the stream escapes)
      */
     public void addStreamEscape(Stream source, Location target) {
+        addStreamEscape(source, target, false);
+    }
+
+    /**
+     * Indicate that a stream escapes at the given target Location.
+     *
+     * @param source
+     *            the Stream that is escaping
+     * @param target
+     *            the target Location (where the stream escapes)
+     * @param passedAsArgument
+     *            true if the stream is passed as an argument at the target
+     *            Location (rather than being the receiver of the call), so
+     *            that a stream created there wraps it
+     */
+    public void addStreamEscape(Stream source, Location target, boolean passedAsArgument) {
         StreamEscape streamEscape = new StreamEscape(source, target);
         streamEscapeSet.add(streamEscape);
+        if (passedAsArgument) {
+            wrappedStreamEscapeSet.add(streamEscape);
+        }
         if (FindOpenStream.DEBUG) {
             System.out.println("Adding potential stream escape " + streamEscape);
         }
@@ -138,6 +164,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
                     System.out.println("Eliminating false stream escape " + streamEscape);
                 }
                 i.remove();
+                wrappedStreamEscapeSet.remove(streamEscape);
             }
         }
 
@@ -151,9 +178,25 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
             streamEquivalenceMap.put(stream, equivalenceClass);
         }
 
+        // A stream passed as an argument to the creation of another stream is
+        // wrapped by it, so both refer to the same underlying resource: closing
+        // either one releases it. Put every wrapper and its wrapped stream in
+        // the same equivalence class, whether or not the wrapped stream is
+        // interesting. A stream that is only the receiver of the call (e.g. a
+        // Connection creating a Statement) is not wrapped, so closing the
+        // created stream does not close it.
+        for (StreamEscape streamEscape : wrappedStreamEscapeSet) {
+            Stream target = streamOpenLocationMap.get(streamEscape.target);
+            if (target == null) {
+                throw new IllegalStateException();
+            }
+            mergeEquivalenceClasses(streamEscape.source, target);
+        }
+
         // Starting with the set of uninteresting stream open location points,
         // propagate all uninteresting stream escapes. Iterate until there
-        // is no change. This also builds the map of stream equivalence classes.
+        // is no change. This also merges the equivalence classes of
+        // uninteresting streams and the streams they escape into.
         Set<Stream> orig = new HashSet<>();
         do {
             orig.clear();
@@ -171,18 +214,25 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
                     uninterestingStreamEscapeSet.add(target);
 
                     // Combine equivalence classes for source and target
-                    StreamEquivalenceClass sourceClass = streamEquivalenceMap.get(streamEscape.source);
-                    StreamEquivalenceClass targetClass = streamEquivalenceMap.get(target);
-                    if (sourceClass != targetClass) {
-                        sourceClass.addAll(targetClass);
-                        for (Iterator<Stream> j = targetClass.memberIterator(); j.hasNext();) {
-                            Stream stream = j.next();
-                            streamEquivalenceMap.put(stream, sourceClass);
-                        }
-                    }
+                    mergeEquivalenceClasses(streamEscape.source, target);
                 }
             }
         } while (!orig.equals(uninterestingStreamEscapeSet));
+    }
+
+    /**
+     * Put two streams in the same equivalence class.
+     */
+    private void mergeEquivalenceClasses(Stream source, Stream target) {
+        StreamEquivalenceClass sourceClass = streamEquivalenceMap.get(source);
+        StreamEquivalenceClass targetClass = streamEquivalenceMap.get(target);
+        if (sourceClass != targetClass) {
+            sourceClass.addAll(targetClass);
+            for (Iterator<Stream> j = targetClass.memberIterator(); j.hasNext();) {
+                Stream stream = j.next();
+                streamEquivalenceMap.put(stream, sourceClass);
+            }
+        }
     }
 
     /**

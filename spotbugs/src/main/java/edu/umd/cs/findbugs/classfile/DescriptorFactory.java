@@ -23,13 +23,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ObjectType;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
@@ -274,7 +274,7 @@ public class DescriptorFactory {
      * Create a class descriptor from a field signature
      *
      */
-    public static @CheckForNull ClassDescriptor createClassDescriptorFromFieldSignature(String signature) {
+    public static @Nullable ClassDescriptor createClassDescriptorFromFieldSignature(String signature) {
         int start = signature.indexOf('L');
         if (start < 0) {
             return null;

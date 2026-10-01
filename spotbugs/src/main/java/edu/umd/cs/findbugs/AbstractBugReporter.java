@@ -29,15 +29,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import org.dom4j.DocumentException;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
@@ -59,8 +58,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 
         private final String message;
 
-        @Nullable
-        private final Throwable cause;
+        private final @Nullable Throwable cause;
 
         public Error(int sequence, String message) {
             this(sequence, message, null);
@@ -80,8 +78,7 @@ public abstract class AbstractBugReporter implements BugReporter {
             return message;
         }
 
-        @CheckForNull
-        public Throwable getCause() {
+        public @Nullable Throwable getCause() {
             return cause;
         }
 
@@ -227,7 +224,7 @@ public abstract class AbstractBugReporter implements BugReporter {
         }
     }
 
-    public static @CheckForNull @DottedClassName String getMissingClassName(ClassNotFoundException ex) {
+    public static @Nullable @DottedClassName String getMissingClassName(ClassNotFoundException ex) {
 
         // Try to decode the error message by extracting the class name.
         String className = ClassNotFoundExceptionParser.getMissingClassName(ex);

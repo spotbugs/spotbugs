@@ -23,12 +23,11 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
@@ -438,7 +437,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
         return valueNumber;
     }
 
-    public @CheckForNull @DottedClassName String getClassName(ValueNumber v) {
+    public @Nullable @DottedClassName String getClassName(ValueNumber v) {
         return factory.getClassName(v);
     }
 }
