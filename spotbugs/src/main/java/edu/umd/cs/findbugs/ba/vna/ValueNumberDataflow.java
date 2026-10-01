@@ -22,9 +22,8 @@ package edu.umd.cs.findbugs.ba.vna;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.classfile.Method;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.AbstractDataflow;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -72,7 +71,7 @@ public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, Valu
         return valueNumberToParamMap;
     }
 
-    public @CheckForNull @DottedClassName String getClassName(ValueNumber v) {
+    public @Nullable @DottedClassName String getClassName(ValueNumber v) {
         return getAnalysis().getClassName(v);
 
     }

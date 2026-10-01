@@ -39,8 +39,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
+
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
@@ -67,7 +68,7 @@ public class Plugin implements AutoCloseable {
     private String provider;
 
     private URI website;
-    private @CheckForNull URI updateUrl;
+    private @Nullable URI updateUrl;
 
     private String shortDescription;
     private String detailedDescription;
@@ -168,7 +169,7 @@ public class Plugin implements AutoCloseable {
      *
      * @return the provider, or null if the provider was not specified
      */
-    public @CheckForNull String getProvider() {
+    public @Nullable String getProvider() {
         return provider;
     }
 
@@ -176,7 +177,7 @@ public class Plugin implements AutoCloseable {
         this.updateUrl = new URI(url);
     }
 
-    public @CheckForNull URI getUpdateUrl() {
+    public @Nullable URI getUpdateUrl() {
         return updateUrl;
     }
 
@@ -204,14 +205,14 @@ public class Plugin implements AutoCloseable {
      *
      * @return the website, or null if the was not specified
      */
-    public @CheckForNull String getWebsite() {
+    public @Nullable String getWebsite() {
         if (website == null) {
             return null;
         }
         return website.toASCIIString();
     }
 
-    public @CheckForNull URI getWebsiteURI() {
+    public @Nullable URI getWebsiteURI() {
         return website;
     }
 
@@ -371,8 +372,7 @@ public class Plugin implements AutoCloseable {
      * @param id may be null
      * @return return bug category with given id, may return null if the bug category is unknown
      */
-    @CheckForNull
-    public BugCategory getBugCategory(String id) {
+    public @Nullable BugCategory getBugCategory(String id) {
         return bugCategories.get(id);
     }
 
@@ -428,7 +428,7 @@ public class Plugin implements AutoCloseable {
         public boolean choose(DetectorFactory factory);
     }
 
-    private @CheckForNull DetectorFactory findFirstMatchingFactory(FactoryChooser chooser) {
+    private @Nullable DetectorFactory findFirstMatchingFactory(FactoryChooser chooser) {
         for (DetectorFactory factory : getDetectorFactories()) {
             if (chooser.choose(factory)) {
                 return factory;
@@ -451,7 +451,7 @@ public class Plugin implements AutoCloseable {
         mainPlugins.put(cmd, main);
     }
 
-    public @CheckForNull FindBugsMain getFindBugsMain(String cmd) {
+    public @Nullable FindBugsMain getFindBugsMain(String cmd) {
         return mainPlugins.get(cmd);
 
     }
@@ -481,7 +481,7 @@ public class Plugin implements AutoCloseable {
         return (ComponentPlugin<T>) componentPlugins.get(componentClass, name);
     }
 
-    public static synchronized @CheckForNull Plugin getByPluginId(String name) {
+    public static synchronized @Nullable Plugin getByPluginId(String name) {
         if (name == null) {
             return null;
         }
@@ -539,16 +539,14 @@ public class Plugin implements AutoCloseable {
     /**
      * @return may return null
      */
-    @CheckForNull
-    static synchronized Plugin getPlugin(URI uri) {
+    static synchronized @Nullable Plugin getPlugin(URI uri) {
         return allPlugins.get(uri);
     }
 
     /**
      * @return may return null
      */
-    @CheckForNull
-    static synchronized Plugin putPlugin(URI uri, Plugin plugin) {
+    static synchronized @Nullable Plugin putPlugin(URI uri, Plugin plugin) {
         return allPlugins.put(uri, plugin);
     }
 
@@ -621,7 +619,7 @@ public class Plugin implements AutoCloseable {
         return getPluginLoader().getClassLoader();
     }
 
-    public @CheckForNull Plugin getParentPlugin() {
+    public @Nullable Plugin getParentPlugin() {
         if (getPluginLoader().hasParent()) {
             return Plugin.getByPluginId(getPluginLoader().parentId);
         }
@@ -636,7 +634,7 @@ public class Plugin implements AutoCloseable {
      * @param project
      *      A nullable target project
      */
-    public static Plugin loadCustomPlugin(File f, @CheckForNull Project project)
+    public static Plugin loadCustomPlugin(File f, @Nullable Project project)
             throws PluginException {
         URL urlString;
         try {
@@ -650,7 +648,7 @@ public class Plugin implements AutoCloseable {
     /**
      * Loads the given plugin and enables it for the given project.
      */
-    public static Plugin loadCustomPlugin(URL urlString, @CheckForNull Project project) throws PluginException {
+    public static Plugin loadCustomPlugin(URL urlString, @Nullable Project project) throws PluginException {
         Plugin plugin = addCustomPlugin(urlString);
         if (project != null) {
             project.setPluginStatusTrinary(plugin.getPluginId(), true);
@@ -658,15 +656,15 @@ public class Plugin implements AutoCloseable {
         return plugin;
     }
 
-    public static @CheckForNull Plugin addCustomPlugin(URL u) throws PluginException {
+    public static @Nullable Plugin addCustomPlugin(URL u) throws PluginException {
         return addCustomPlugin(u, PluginLoader.class.getClassLoader());
     }
 
-    public static @CheckForNull Plugin addCustomPlugin(URI u) throws PluginException {
+    public static @Nullable Plugin addCustomPlugin(URI u) throws PluginException {
         return addCustomPlugin(u, PluginLoader.class.getClassLoader());
     }
 
-    public static @CheckForNull Plugin addCustomPlugin(URL u, ClassLoader parent) throws PluginException {
+    public static @Nullable Plugin addCustomPlugin(URL u, ClassLoader parent) throws PluginException {
         PluginLoader pluginLoader = PluginLoader.getPluginLoader(u, parent, false, true);
         Plugin plugin = pluginLoader.loadPlugin();
         if (plugin != null) {
@@ -675,7 +673,7 @@ public class Plugin implements AutoCloseable {
         return plugin;
     }
 
-    public static @CheckForNull Plugin addCustomPlugin(URI u, ClassLoader parent) throws PluginException {
+    public static @Nullable Plugin addCustomPlugin(URI u, ClassLoader parent) throws PluginException {
         URL url;
         try {
             url = u.toURL();

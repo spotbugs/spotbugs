@@ -49,13 +49,13 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
@@ -150,8 +150,7 @@ public class Project implements XMLWriteable, AutoCloseable {
 
     static final String PLUGIN_STATUS_ELEMENT_NAME = "enabled";
 
-    @CheckForNull
-    public Boolean getPluginStatus(Plugin plugin) {
+    public @Nullable Boolean getPluginStatus(Plugin plugin) {
         return enabledPlugins.get(plugin.getPluginId());
     }
 
@@ -622,7 +621,7 @@ public class Project implements XMLWriteable, AutoCloseable {
         return project;
     }
 
-    public void writeXML(File f, @CheckForNull BugCollection bugCollection) throws IOException {
+    public void writeXML(File f, @Nullable BugCollection bugCollection) throws IOException {
         OutputStream out = Files.newOutputStream(f.toPath());
         XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
         try {
@@ -696,7 +695,7 @@ public class Project implements XMLWriteable, AutoCloseable {
         writeXML(xmlOutput, null, null);
     }
 
-    public void writeXML(XMLOutput xmlOutput, @CheckForNull File destination, @CheckForNull BugCollection bugCollection)
+    public void writeXML(XMLOutput xmlOutput, @Nullable File destination, @Nullable BugCollection bugCollection)
             throws IOException {
         {
             XMLAttributeList attributeList = new XMLAttributeList();

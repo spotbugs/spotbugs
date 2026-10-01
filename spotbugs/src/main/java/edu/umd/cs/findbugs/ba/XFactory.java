@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.Const;
@@ -39,6 +38,7 @@ import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.FieldAnnotation;
@@ -136,7 +136,7 @@ public class XFactory {
         emptyArrays.add(f);
     }
 
-    public boolean isEmptyArrayField(@CheckForNull XField f) {
+    public boolean isEmptyArrayField(@Nullable XField f) {
         return emptyArrays.contains(f);
     }
 
@@ -203,7 +203,7 @@ public class XFactory {
         }
     }
 
-    private boolean isCalledDirectlyOrIndirectly(@CheckForNull ClassDescriptor clazzDescriptor, XMethod m)
+    private boolean isCalledDirectlyOrIndirectly(@Nullable ClassDescriptor clazzDescriptor, XMethod m)
             throws CheckedAnalysisException {
         if (clazzDescriptor == null) {
             return false;
@@ -658,7 +658,7 @@ public class XFactory {
      * @return an XClass object providing information about the class, or null
      *         if the class cannot be found
      */
-    public @CheckForNull XClass getXClass(ClassDescriptor classDescriptor) {
+    public @Nullable XClass getXClass(ClassDescriptor classDescriptor) {
         try {
             IAnalysisCache analysisCache = Global.getAnalysisCache();
             return analysisCache.getClassAnalysis(XClass.class, classDescriptor);

@@ -22,9 +22,9 @@ package edu.umd.cs.findbugs.classfile.engine;
 import java.util.HashSet;
 import java.util.TreeSet;
 
-import javax.annotation.CheckForNull;
 
 import org.apache.bcel.Const;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
@@ -529,7 +529,7 @@ public class ClassParserUsingASM implements ClassParserInterface {
         OTHER, LOADED_THIS, LOADED_THIS_AND_PARAMETER;
     }
 
-    public ClassParserUsingASM(ClassReader classReader, @CheckForNull ClassDescriptor expectedClassDescriptor,
+    public ClassParserUsingASM(ClassReader classReader, @Nullable ClassDescriptor expectedClassDescriptor,
             ICodeBaseEntry codeBaseEntry) {
         this.classReader = classReader;
         //        this.expectedClassDescriptor = expectedClassDescriptor;
