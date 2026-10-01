@@ -23,12 +23,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.CheckForNull;
 import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -53,9 +53,9 @@ public class GenericObjectType extends ObjectType {
 
     final List<? extends ReferenceType> parameters;
 
-    final @CheckForNull String variable;
+    final @Nullable String variable;
 
-    final @CheckForNull ReferenceType extension;
+    final @Nullable ReferenceType extension;
 
     public ReferenceType produce() {
         return getTypeCategory().produce(this);
@@ -159,7 +159,7 @@ public class GenericObjectType extends ObjectType {
         }
     }
 
-    public @CheckForNull List<? extends ReferenceType> getParameters() {
+    public @Nullable List<? extends ReferenceType> getParameters() {
         if (parameters == null) {
             return null;
         }
@@ -183,7 +183,7 @@ public class GenericObjectType extends ObjectType {
      * Create a GenericObjectType that represents a Wildcard with extensions
      *
      */
-    GenericObjectType(@Nonnull String wildcard, @CheckForNull ReferenceType extension) {
+    GenericObjectType(@Nonnull String wildcard, @Nullable ReferenceType extension) {
         super(Type.OBJECT.getClassName());
         this.variable = wildcard;
         this.extension = extension;

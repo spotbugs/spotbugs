@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -93,7 +93,7 @@ public class ValueNumberFactory {
         return value;
     }
 
-    public @CheckForNull @DottedClassName String getClassName(ValueNumber v) {
+    public @Nullable @DottedClassName String getClassName(ValueNumber v) {
         if (!v.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) {
             throw new IllegalArgumentException("Not a value number for a constant class");
         }
