@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.InnerClassAccess;
-import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 
 public class InefficientMemberAccess extends BytecodeScanningDetector implements StatelessDetector {
 
@@ -75,7 +75,7 @@ public class InefficientMemberAccess extends BytecodeScanningDetector implements
             if (!parCls.equals(getClassConstantOperand())) {
                 return;
             }
-            if ((argTypes.length == 2) && !argTypes[1].getSignature().equals(new SignatureParser(methodSig).getReturnTypeSignature())) {
+            if ((argTypes.length == 2) && !argTypes[1].getSignature().equals(new GenericSignatureParser(methodSig).getReturnTypeSignature())) {
                 return;
             }
 

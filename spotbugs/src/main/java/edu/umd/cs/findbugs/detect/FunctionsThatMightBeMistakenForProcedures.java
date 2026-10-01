@@ -256,7 +256,7 @@ public class FunctionsThatMightBeMistakenForProcedures extends OpcodeStackDetect
                 if (!isInnerClass) {
                     voidConstructor = "()V".equals(sig);
                 } else {
-                    SignatureParser parser = new SignatureParser(sig);
+                    GenericSignatureParser parser = new GenericSignatureParser(sig);
                     voidConstructor = parser.getNumParameters() <= 1;
                 }
                 if (voidConstructor) {

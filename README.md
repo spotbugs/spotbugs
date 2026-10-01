@@ -1,7 +1,7 @@
 
 # ![SpotBugs](https://spotbugs.github.io/images/logos/spotbugs_logo_300px.png)
 
-[![Build Status](https://github.com/spotbugs/spotbugs/workflows/build/badge.svg)](https://github.com/spotbugs/spotbugs/actions)
+[![Build](https://github.com/spotbugs/spotbugs/actions/workflows/build.yaml/badge.svg)](https://github.com/spotbugs/spotbugs/actions/workflows/build.yaml)
 [![Documentation Status](https://readthedocs.org/projects/spotbugs/badge/?version=latest)](https://spotbugs.readthedocs.io/en/latest/?badge=latest)
 [![Coverage Status](https://sonarcloud.io/api/project_badges/measure?branch=master&project=com.github.spotbugs.spotbugs&metric=coverage)](https://sonarcloud.io/component_measures?id=com.github.spotbugs.spotbugs&metric=coverage)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.spotbugs/spotbugs)](https://central.sonatype.com/artifact/com.github.spotbugs/spotbugs)

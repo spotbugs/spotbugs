@@ -23,7 +23,7 @@ import java.util.Iterator;
 
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
@@ -44,7 +44,7 @@ public abstract class ClassNameRewriterUtil {
      */
     public static String rewriteMethodSignature(ClassNameRewriter classNameRewriter, String methodSignature) {
         if (classNameRewriter != IdentityClassNameRewriter.instance()) {
-            SignatureParser parser = new SignatureParser(methodSignature);
+            GenericSignatureParser parser = new GenericSignatureParser(methodSignature);
 
             StringBuilder buf = new StringBuilder();
 

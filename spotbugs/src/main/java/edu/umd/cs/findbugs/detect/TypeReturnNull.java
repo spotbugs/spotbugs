@@ -27,8 +27,8 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 /**
@@ -48,7 +48,7 @@ public abstract class TypeReturnNull extends OpcodeStackDetector {
 
     @Override
     public void visit(Code code) {
-        SignatureParser sp = new SignatureParser(getMethodSig());
+        GenericSignatureParser sp = new GenericSignatureParser(getMethodSig());
         // Check to see if the method has expected return type
         String returnSignature = sp.getReturnTypeSignature();
         if (!matchesReturnSignature(returnSignature)) {
