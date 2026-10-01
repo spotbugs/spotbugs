@@ -18,6 +18,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `NN_NAKED_NOTIFY` false positive when guarded state is updated before the synchronized block that calls `notify`/`notifyAll` ([#3786](https://github.com/spotbugs/spotbugs/issues/3786))
 - Fix `SA_LOCAL_SELF_ASSIGNMENT` false positive in methods with `++`/`--` inside a switch nested in a try-catch block ([#3929](https://github.com/spotbugs/spotbugs/issues/3929))
 - Fix `OS_OPEN_STREAM` false positive when the result of `PrintWriter.append()` is reassigned before closing the writer ([#4274](https://github.com/spotbugs/spotbugs/issues/4274))
+- Fix `OS_OPEN_STREAM` false positive when a stream is wrapped (e.g. in a `PrintStream`, `BufferedOutputStream` or `PrintWriter`) and the wrapped stream is closed instead of the wrapper ([#4304](https://github.com/spotbugs/spotbugs/issues/4304))
 - Fix `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` false negative when lazy init uses a ternary assignment instead of an `if` statement ([#4154](https://github.com/spotbugs/spotbugs/issues/4154))
 - Fix `UR_UNINIT_READ` false negative for compound assignment to a field (e.g. `m_iType |= e`) ([#4233](https://github.com/spotbugs/spotbugs/pull/4233))
 - Fix `NP_BOOLEAN_RETURN_NULL` false negative when `null` is returned via a local variable ([#4234](https://github.com/spotbugs/spotbugs/pull/4234))
