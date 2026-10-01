@@ -1,8 +1,12 @@
 package overridableMethodCall;
 
-import java.applet.Applet;
+class Base {
+    public String getParameter(String name) {
+        return name;
+    }
+}
 
-public class AppletGetParameterCase extends Applet {
+public class AppletGetParameterCase extends Base {
     AppletGetParameterCase() {
         getParameter("name");
     }
