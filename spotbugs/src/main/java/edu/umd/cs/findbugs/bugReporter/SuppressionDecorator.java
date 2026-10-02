@@ -26,7 +26,7 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.HashSet;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -115,7 +115,7 @@ public class SuppressionDecorator extends BugReporterDecorator {
     }
 
     @Override
-    public void reportBug(@Nonnull BugInstance bugInstance) {
+    public void reportBug(@NonNull BugInstance bugInstance) {
 
         if (!category.equals(bugInstance.getBugPattern().getCategory())) {
             getDelegate().reportBug(bugInstance);

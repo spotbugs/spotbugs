@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.bugReporter;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -38,7 +38,7 @@ public class MaxRankDecorator extends BugReporterDecorator {
     }
 
     @Override
-    public void reportBug(@Nonnull BugInstance bugInstance) {
+    public void reportBug(@NonNull BugInstance bugInstance) {
         int rank = bugInstance.getBugRank();
         if (rank <= maxRank) {
             getDelegate().reportBug(bugInstance);

@@ -43,7 +43,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import javax.annotation.WillClose;
 import javax.annotation.WillCloseWhenClosed;
 import javax.annotation.WillNotClose;
@@ -283,7 +283,7 @@ public class Util {
         return s;
     }
 
-    public static @Nonnull MessageDigest getMD5Digest() {
+    public static @NonNull MessageDigest getMD5Digest() {
         try {
             return MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {

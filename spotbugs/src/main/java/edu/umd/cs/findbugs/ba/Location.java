@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.Objects;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import org.apache.bcel.generic.InstructionHandle;
 
@@ -56,14 +56,14 @@ public class Location implements Comparable<Location> {
      * @param basicBlock
      *            the basic block containing the instruction
      */
-    public Location(@Nonnull InstructionHandle handle, @Nonnull BasicBlock basicBlock) {
+    public Location(@NonNull InstructionHandle handle, @NonNull BasicBlock basicBlock) {
         Objects.requireNonNull(handle, "handle cannot be null");
         Objects.requireNonNull(basicBlock, "basicBlock cannot be null");
         this.handle = handle;
         this.basicBlock = basicBlock;
     }
 
-    public static Location getFirstLocation(@Nonnull BasicBlock basicBlock) {
+    public static Location getFirstLocation(@NonNull BasicBlock basicBlock) {
         InstructionHandle location = basicBlock.getFirstInstruction();
         if (location == null) {
             return null;
@@ -71,7 +71,7 @@ public class Location implements Comparable<Location> {
         return new Location(location, basicBlock);
     }
 
-    public static Location getLastLocation(@Nonnull BasicBlock basicBlock) {
+    public static Location getLastLocation(@NonNull BasicBlock basicBlock) {
         InstructionHandle lastInstruction = basicBlock.getLastInstruction();
         /*
          * if (lastInstruction == null) lastInstruction =
@@ -87,7 +87,7 @@ public class Location implements Comparable<Location> {
     /**
      * Get the instruction handle.
      */
-    @Nonnull
+    @NonNull
     public InstructionHandle getHandle() {
         return handle;
     }
@@ -95,7 +95,7 @@ public class Location implements Comparable<Location> {
     /**
      * Get the basic block.
      */
-    @Nonnull
+    @NonNull
     public BasicBlock getBasicBlock() {
         return basicBlock;
     }

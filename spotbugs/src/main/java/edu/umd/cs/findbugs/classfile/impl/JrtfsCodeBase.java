@@ -40,7 +40,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import org.jspecify.annotations.Nullable;
 
@@ -74,7 +74,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
      */
     private Map<String, Object> packageToModuleMap;
 
-    public JrtfsCodeBase(ICodeBaseLocator codeBaseLocator, @Nonnull String fileName) {
+    public JrtfsCodeBase(ICodeBaseLocator codeBaseLocator, @NonNull String fileName) {
         super(codeBaseLocator);
         this.fileName = fileName;
         URL url;
@@ -209,7 +209,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
         return new JrtfsCodeBaseIterator();
     }
 
-    @Nonnull
+    @NonNull
     static String fileName(Path p) {
         Path name = p.getFileName();
         return name != null ? name.toString() : "";

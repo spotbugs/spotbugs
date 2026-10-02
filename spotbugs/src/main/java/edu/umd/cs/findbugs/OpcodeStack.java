@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import javax.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.Const;
@@ -3759,7 +3759,7 @@ public class OpcodeStack {
         lvValues.set(index, value);
     }
 
-    @Nonnull
+    @NonNull
     public Item getLVValue(int index) {
         if (index >= lvValues.size()) {
             return new Item();

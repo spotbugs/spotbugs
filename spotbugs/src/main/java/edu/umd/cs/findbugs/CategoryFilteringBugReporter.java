@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.util.Set;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ public class CategoryFilteringBugReporter extends DelegatingBugReporter {
     }
 
     @Override
-    public void reportBug(@Nonnull BugInstance bugInstance) {
+    public void reportBug(@NonNull BugInstance bugInstance) {
         BugPattern bugPattern = bugInstance.getBugPattern();
         String category = bugPattern.getCategory();
         if (categorySet.contains(category)) {

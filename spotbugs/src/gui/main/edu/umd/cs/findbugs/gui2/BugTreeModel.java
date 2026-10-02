@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
@@ -183,7 +183,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
         return result;
     }
 
-    private @Nonnull Object getChild(BugAspects a, int index) {
+    private @NonNull Object getChild(BugAspects a, int index) {
 
         int treeLevels = st.getOrderBeforeDivider().size();
         int queryDepth = a.size();
@@ -245,7 +245,7 @@ public class BugTreeModel implements TreeModel, TableColumnModelListener, TreeEx
      * very fast
      */
 
-    private @Nonnull List<SortableValue> enumsThatExist(BugAspects a) {
+    private @NonNull List<SortableValue> enumsThatExist(BugAspects a) {
         List<Sortables> orderBeforeDivider = st.getOrderBeforeDivider();
         if (orderBeforeDivider.size() == 0) {
             List<SortableValue> result = Collections.emptyList();

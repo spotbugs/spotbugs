@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import org.objectweb.asm.Opcodes;
 
@@ -148,7 +148,7 @@ public class ClassNameAndSuperclassInfo extends ClassDescriptor {
             ClassDescriptor[] interfaceDescriptorList, ICodeBaseEntry codeBaseEntry, int accessFlags,
             /* TODO: We aren't doing anything with this */
             Collection<ClassDescriptor> referencedClassDescriptorList,
-            @Nonnull Set<ClassDescriptor> calledClassDescriptors, int majorVersion, int minorVersion) {
+            @NonNull Set<ClassDescriptor> calledClassDescriptors, int majorVersion, int minorVersion) {
         super(classDescriptor.getClassName());
         this.superclassDescriptor = superclassDescriptor;
         this.interfaceDescriptorList = interfaceDescriptorList;

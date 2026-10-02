@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import org.apache.bcel.Const;
@@ -168,7 +168,7 @@ public class FindUnsatisfiedObligation extends CFGDetector {
         Obligation consumed;
         Obligation produced;
 
-        public PossibleObligationTransfer(@Nonnull Obligation consumed, @Nonnull Obligation produced) {
+        public PossibleObligationTransfer(@NonNull Obligation consumed, @NonNull Obligation produced) {
             this.consumed = consumed;
             this.produced = produced;
         }

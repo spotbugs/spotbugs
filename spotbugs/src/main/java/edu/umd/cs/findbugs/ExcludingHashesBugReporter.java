@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import org.dom4j.DocumentException;
 
@@ -61,7 +61,7 @@ public class ExcludingHashesBugReporter extends DelegatingBugReporter {
     }
 
     @Override
-    public void reportBug(@Nonnull BugInstance bugInstance) {
+    public void reportBug(@NonNull BugInstance bugInstance) {
         String instanceHash = bugInstance.getInstanceHash();
         if (!excludedHashes.contains(instanceHash)) {
             getDelegate().reportBug(bugInstance);

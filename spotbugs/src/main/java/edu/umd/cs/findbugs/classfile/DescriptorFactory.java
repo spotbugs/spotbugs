@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -93,7 +93,7 @@ public class DescriptorFactory {
         }
     }
 
-    public @Nonnull ClassDescriptor getClassDescriptor(Class<?> actualClass) {
+    public @NonNull ClassDescriptor getClassDescriptor(Class<?> actualClass) {
         return getClassDescriptorForDottedClassName(actualClass.getName());
     }
 
@@ -104,7 +104,7 @@ public class DescriptorFactory {
      *            a class name in VM (slashed) format
      * @return ClassDescriptor for that class
      */
-    public @Nonnull ClassDescriptor getClassDescriptor(@SlashedClassName String className) {
+    public @NonNull ClassDescriptor getClassDescriptor(@SlashedClassName String className) {
         assert className.indexOf('.') == -1;
         ClassDescriptor classDescriptor = classDescriptorMap.get(className);
         if (classDescriptor == null) {
@@ -331,7 +331,7 @@ public class DescriptorFactory {
         return instance().getClassDescriptor(ClassName.toSlashedClassName(aClass.getName()));
     }
 
-    public static @Nonnull ClassDescriptor createClassDescriptor(@SlashedClassName String className) {
+    public static @NonNull ClassDescriptor createClassDescriptor(@SlashedClassName String className) {
         return instance().getClassDescriptor(className);
     }
 

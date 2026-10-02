@@ -39,7 +39,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.zip.GZIPOutputStream;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import javax.annotation.WillCloseWhenClosed;
 
 import org.dom4j.DocumentException;
@@ -232,7 +232,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
     }
 
     @Override
-    public @Nonnull Project getProject() {
+    public @NonNull Project getProject() {
         return project;
     }
 

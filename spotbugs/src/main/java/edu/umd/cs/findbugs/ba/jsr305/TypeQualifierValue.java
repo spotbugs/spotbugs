@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import javax.annotation.meta.TypeQualifierValidator;
 import javax.annotation.meta.When;
 
@@ -269,7 +269,7 @@ public class TypeQualifierValue<A extends Annotation> {
      * @return an interned TypeQualifierValue object
      */
     @SuppressWarnings("rawtypes")
-    public static @Nonnull TypeQualifierValue<?> getValue(ClassDescriptor desc, @Nullable Object value) {
+    public static @NonNull TypeQualifierValue<?> getValue(ClassDescriptor desc, @Nullable Object value) {
         DualKeyHashMap<ClassDescriptor, Object, TypeQualifierValue<?>> map = instance.get().typeQualifierMap;
         TypeQualifierValue<?> result = map.get(desc, value);
         if (result != null) {
@@ -282,7 +282,7 @@ public class TypeQualifierValue<A extends Annotation> {
     }
 
     @SuppressWarnings("unchecked")
-    public static @Nonnull <A extends Annotation> TypeQualifierValue<A> getValue(Class<A> clazz, @Nullable Object value) {
+    public static @NonNull <A extends Annotation> TypeQualifierValue<A> getValue(Class<A> clazz, @Nullable Object value) {
         return (TypeQualifierValue<A>) getValue(DescriptorFactory.createClassDescriptor(clazz), value);
     }
 

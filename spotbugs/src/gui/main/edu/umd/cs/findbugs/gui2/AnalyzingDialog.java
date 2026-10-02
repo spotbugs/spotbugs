@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -49,7 +49,7 @@ import edu.umd.cs.findbugs.Project;
 public final class AnalyzingDialog extends FBDialog implements FindBugsProgress {
     private volatile boolean analysisFinished = false;
 
-    @Nonnull
+    @NonNull
     private final Project project;
 
     private final AnalysisCallback callback;
@@ -66,7 +66,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
 
     private final JButton cancelButton;
 
-    public static void show(@Nonnull final Project project) {
+    public static void show(@NonNull final Project project) {
         AnalysisCallback callback = new AnalysisCallback() {
             @Override
             public void analysisFinished(BugCollection results) {
@@ -104,7 +104,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
      *            until the analysis is either finished or interrupted.
      */
 
-    public static void show(@Nonnull Project project, AnalysisCallback callback, boolean joinThread) {
+    public static void show(@NonNull Project project, AnalysisCallback callback, boolean joinThread) {
         AnalyzingDialog dialog = new AnalyzingDialog(project, callback, joinThread);
         MainFrame.getInstance().acquireDisplayWait();
         try {
@@ -136,7 +136,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
      *            analysis is complete. If true, the constructor does not return
      *            until the analysis is either finished or interrupted.
      */
-    private AnalyzingDialog(@Nonnull Project project, AnalysisCallback callback, boolean joinThread) {
+    private AnalyzingDialog(@NonNull Project project, AnalysisCallback callback, boolean joinThread) {
         if (project == null) {
             throw new NullPointerException("null project");
         }

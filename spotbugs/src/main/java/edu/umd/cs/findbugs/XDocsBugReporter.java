@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -225,7 +225,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
      */
 
     @Override
-    public @Nonnull BugCollection getBugCollection() {
+    public @NonNull BugCollection getBugCollection() {
         return bugCollection;
     }
 

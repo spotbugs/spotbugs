@@ -28,7 +28,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -88,7 +88,7 @@ public class BugLoader {
      * @throws InterruptedException
      * @throws IOException
      */
-    public static BugCollection doAnalysis(@Nonnull Project p, FindBugsProgress progressCallback) throws IOException,
+    public static BugCollection doAnalysis(@NonNull Project p, FindBugsProgress progressCallback) throws IOException,
             InterruptedException {
         StringWriter stringWriter = new StringWriter();
         BugCollectionBugReporter pcb = new BugCollectionBugReporter(p, new PrintWriter(stringWriter, true));
@@ -122,7 +122,7 @@ public class BugLoader {
      *            the PrintCallBack
      * @return the IFindBugsEngine
      */
-    private static IFindBugsEngine createEngine(@Nonnull Project p, BugReporter pcb) {
+    private static IFindBugsEngine createEngine(@NonNull Project p, BugReporter pcb) {
         FindBugs2 engine = new FindBugs2();
         engine.setBugReporter(pcb);
         engine.setProject(p);
@@ -275,7 +275,7 @@ public class BugLoader {
      * @param p
      * @return the bugs from the reanalysis, or null if cancelled
      */
-    public static @Nullable BugCollection doAnalysis(@Nonnull Project p) {
+    public static @Nullable BugCollection doAnalysis(@NonNull Project p) {
         requireNonNull(p, "null project");
 
         RedoAnalysisCallback ac = new RedoAnalysisCallback();
@@ -297,7 +297,7 @@ public class BugLoader {
      * @param p
      * @return the bugs from the reanalysis, or null if canceled
      */
-    public static @Nullable BugCollection redoAnalysisKeepComments(@Nonnull Project p) {
+    public static @Nullable BugCollection redoAnalysisKeepComments(@NonNull Project p) {
         requireNonNull(p, "null project");
 
         BugCollection current = MainFrame.getInstance().getBugCollection();

@@ -49,7 +49,7 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -127,7 +127,7 @@ public class Project implements XMLWriteable, AutoCloseable {
 
     private IGuiCallback guiCallback;
 
-    @Nonnull
+    @NonNull
     private Filter suppressionFilter = new Filter();
 
     private SourceFinder sourceFinder;
@@ -165,7 +165,7 @@ public class Project implements XMLWriteable, AutoCloseable {
     /**
      * @param configuration The configuration to set, non null
      */
-    public void setConfiguration(@Nonnull UserPreferences configuration) {
+    public void setConfiguration(@NonNull UserPreferences configuration) {
         requireNonNull(configuration);
         this.configuration = configuration;
     }
@@ -966,12 +966,12 @@ public class Project implements XMLWriteable, AutoCloseable {
         return projectName;
     }
 
-    public void setSuppressionFilter(@Nonnull Filter suppressionFilter) {
+    public void setSuppressionFilter(@NonNull Filter suppressionFilter) {
         requireNonNull(suppressionFilter);
         this.suppressionFilter = suppressionFilter;
     }
 
-    @Nonnull
+    @NonNull
     public Filter getSuppressionFilter() {
         return suppressionFilter;
     }

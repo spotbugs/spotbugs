@@ -41,14 +41,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import org.dom4j.DocumentException;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.asm.FBClassReader;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
@@ -281,7 +280,7 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
                     bugReporter = new DelegatingBugReporter(bugReporter) {
 
                         @Override
-                        public void reportBug(@Nonnull BugInstance bugInstance) {
+                        public void reportBug(@NonNull BugInstance bugInstance) {
                             String className = bugInstance.getPrimaryClass().getClassName();
                             String resourceName = ClassName.toSlashedClassName(className) + ".class";
                             if (classScreener.matches(resourceName)) {
@@ -1265,10 +1264,10 @@ public class FindBugs2 implements IFindBugsEngine, AutoCloseable {
         }
     }
 
-    @Nonnull
+    @NonNull
     Set<String> explicitlyEnabledBugReporterDecorators = Collections.emptySet();
 
-    @Nonnull
+    @NonNull
     Set<String> explicitlyDisabledBugReporterDecorators = Collections.emptySet();
 
     @Override

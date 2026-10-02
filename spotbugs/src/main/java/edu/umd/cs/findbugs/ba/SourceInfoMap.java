@@ -28,7 +28,7 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import javax.annotation.WillClose;
 
 import org.jspecify.annotations.Nullable;
@@ -171,7 +171,7 @@ public class SourceInfoMap {
         /**
          * Constructor for a single line.
          */
-        public SourceLineRange(@Nonnull Integer line) {
+        public SourceLineRange(@NonNull Integer line) {
             this.start = this.end = line;
         }
 
@@ -183,7 +183,7 @@ public class SourceInfoMap {
          * @param end
          *            end line in range
          */
-        public SourceLineRange(@Nonnull Integer start, @Nonnull Integer end) {
+        public SourceLineRange(@NonNull Integer start, @NonNull Integer end) {
             this.start = start;
             this.end = end;
         }
@@ -191,14 +191,14 @@ public class SourceInfoMap {
         /**
          * @return Returns the start.
          */
-        public @Nonnull Integer getStart() {
+        public @NonNull Integer getStart() {
             return start;
         }
 
         /**
          * @return Returns the end.
          */
-        public @Nonnull Integer getEnd() {
+        public @NonNull Integer getEnd() {
             return end;
         }
 

@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ACONST_NULL;
@@ -93,7 +93,7 @@ public abstract class ValueNumberSourceInfo {
      *            TODO
      * @return the annotation
      */
-    public static @Nonnull BugAnnotation findRequiredAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber,
+    public static @NonNull BugAnnotation findRequiredAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber,
             ValueNumberFrame vnaFrame, @Nullable String partialRole) {
         BugAnnotation result = findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame, partialRole);
         if (result != null) {

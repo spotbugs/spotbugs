@@ -35,8 +35,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
-import jakarta.annotation.Nonnull;
-
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -62,9 +61,9 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
- * Checks that overriding methods do not relax {@link Nonnull} (made
+ * Checks that overriding methods do not relax {@link NonNull} (made
  * {@link Nullable}) on return values or {@link Nullable} (made
- * {@link Nonnull}) on parameters.
+ * {@link NonNull}) on parameters.
  *
  * The code accepts also old (deprecated) nullness annotations from
  * {@code edu.umd.cs.findbugs.annotations} package.
@@ -159,7 +158,7 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
             }
         }
 
-        private final boolean checkMethod(@Nonnull XMethod method) {
+        private final boolean checkMethod(@NonNull XMethod method) {
             boolean foundAny = false;
             if (relaxedNullReturn && containsNullness(method.getAnnotations(), NONNULL)) {
                 BugInstance bug = new BugInstance(CheckRelaxingNullnessAnnotation.this, "NP_METHOD_RETURN_RELAXING_ANNOTATION",
@@ -206,7 +205,7 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
         private Queue<ClassDescriptor> interfacesToVisit;
         private final Set<ClassDescriptor> visited;
 
-        public HierarchyIterator(@Nonnull XClass xclass) {
+        public HierarchyIterator(@NonNull XClass xclass) {
             interfacesToVisit = new LinkedList<>(Arrays.asList(xclass.getInterfaceDescriptorList()));
             visited = new HashSet<>();
             superclass = getClassInfo(xclass.getSuperclassDescriptor());

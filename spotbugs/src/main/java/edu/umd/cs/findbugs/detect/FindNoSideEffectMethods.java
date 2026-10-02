@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
@@ -245,7 +245,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             map.put(m, s);
         }
 
-        public @Nonnull MethodSideEffectStatus status(MethodDescriptor m) {
+        public @NonNull MethodSideEffectStatus status(MethodDescriptor m) {
             MethodSideEffectStatus s = map.get(m);
             return s == null ? MethodSideEffectStatus.SE : s;
         }
