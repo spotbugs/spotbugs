@@ -6,6 +6,15 @@ public class Issue4305 {
         return (Long) value;
     }
 
+    public void assertReceiver() {
+        assert this instanceof Runnable;
+    }
+
+    public static Long convertStatic(Object value) {
+        assert value instanceof Long;
+        return (Long) value;
+    }
+
     public Object convertOther(Object value) {
         CharSequence other = "x";
         assert other instanceof String;

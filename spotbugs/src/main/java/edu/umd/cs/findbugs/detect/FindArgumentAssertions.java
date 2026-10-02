@@ -69,6 +69,17 @@ public class FindArgumentAssertions extends AbstractAssertDetector {
     }
 
     /**
+     * Instance methods also mark the receiver as an initial parameter.
+     * Slot 0 is an argument only when the method is static.
+     */
+    private boolean isMethodArgument(Item item) {
+        if (!item.isInitialParameter()) {
+            return false;
+        }
+        return getXMethod().isStatic() || item.getRegisterNumber() != 0;
+    }
+
+    /**
      * Returns true if the opcode is a method invocation false otherwise
      */
     private boolean isMethodCall(int seen) {
@@ -133,7 +144,7 @@ public class FindArgumentAssertions extends AbstractAssertDetector {
             return;
         }
 
-        if (seen == Const.INSTANCEOF && stack.getStackDepth() > 0 && stack.getStackItem(0).isInitialParameter()) {
+        if (seen == Const.INSTANCEOF && stack.getStackDepth() > 0 && isMethodArgument(stack.getStackItem(0))) {
             // assert value instanceof T leaves an int, not the parameter, for the following ifeq/ifne.
             wasArg = true;
         } else if (isMethodCall(seen)) {

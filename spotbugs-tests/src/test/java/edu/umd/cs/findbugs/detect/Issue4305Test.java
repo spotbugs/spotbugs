@@ -14,6 +14,8 @@ class Issue4305Test extends AbstractIntegrationTest {
                 "ghIssues/Issue4305Outer$Subject.class");
 
         assertBugInMethod(BUG_TYPE, "Issue4305", "convert");
+        assertBugInMethod(BUG_TYPE, "Issue4305", "convertStatic");
+        assertNoBugInMethod(BUG_TYPE, "Issue4305", "assertReceiver");
         assertNoBugInMethod(BUG_TYPE, "Issue4305", "convertOther");
         assertNoBugInMethod(BUG_TYPE, "Issue4305", "privateConvert");
         assertBugInMethod(BUG_TYPE, "Issue4305Outer$Subject", "convert");
