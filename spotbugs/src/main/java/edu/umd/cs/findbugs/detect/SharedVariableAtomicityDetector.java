@@ -53,13 +53,6 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
     private LockDataflow currentLockDataFlow;
     private boolean isFirstVisit = true;
     private boolean hadOperation = false;
-    // Field reads and inner-method call edges are accumulated across every
-    // analyzed multi-threaded class for the lifetime of the detector: a field
-    // owned by an enclosing class can be read in another method of the
-    // enclosing class (or a sibling inner class), and that "is this shared
-    // field actually read elsewhere?" signal must survive the per-class visit
-    // boundary. Bug emission is deferred to report() so the shared/read
-    // evaluation sees the fully accumulated map regardless of class visit order.
     private final Map<XMethod, Set<XField>> readFieldsByMethods = new HashMap<>();
     private final Set<XField> relevantFields = new HashSet<>();
     private final Map<XMethod, Set<XMethod>> nonSyncedMethodCallsByCallingMethods = new HashMap<>();
