@@ -990,16 +990,21 @@ public class UnreadFields extends OpcodeStackDetector {
             }
         }
 
-        reportReflectivelyAccessedFields(declaredFields);
+        reflectiveAccessTracker.resolve();
 
         // Don't report anything about ejb3Fields
         HashSet<XField> unknownAnotationAndUnwritten = new HashSet<>(data.unknownAnnotation.keySet());
         unknownAnotationAndUnwritten.removeAll(data.writtenFields);
+        // A write through an accessor is a write, so such a field is not assumed to be injected.
+        unknownAnotationAndUnwritten.removeAll(reflectiveAccessTracker.getWrittenFields());
         declaredFields.removeAll(unknownAnotationAndUnwritten);
         declaredFields.removeAll(data.containerFields);
         declaredFields.removeAll(data.reflectiveFields);
         declaredFields.removeIf(f -> f.isSynthetic() && !f.getName().startsWith("this$") || f.getName()
                 .startsWith("_"));
+
+        // After the filters above, so reflective reports cover only the fields the ordinary analysis would report.
+        reportReflectivelyAccessedFields(declaredFields);
 
         TreeSet<XField> notInitializedInConstructors = new TreeSet<>(declaredFields);
         notInitializedInConstructors.retainAll(data.readFields);
@@ -1369,11 +1374,12 @@ public class UnreadFields extends OpcodeStackDetector {
     }
 
     private void reportReflectivelyAccessedFields(final Set<XField> declaredFields) {
-        reflectiveAccessTracker.resolve();
         reportUnusedReflectiveAccessors(declaredFields);
-        reportUnwrittenReflectiveFields();
-        reportUnreadReflectiveFields();
+        reportUnwrittenReflectiveFields(declaredFields);
+        reportUnreadReflectiveFields(declaredFields);
+        // Remove only after reporting, so the eligibility checks above all see the same set.
         declaredFields.removeAll(reflectiveAccessTracker.getAllAccessedFields());
+        declaredFields.removeAll(reflectiveAccessTracker.getUnusedAccessorDeclarationLines().keySet());
     }
 
     private void reportUnusedReflectiveAccessors(final Set<XField> declaredFields) {
@@ -1381,10 +1387,12 @@ public class UnreadFields extends OpcodeStackDetector {
                 reflectiveAccessTracker.getUnusedAccessorDeclarationLines();
         XFactory xFactory = AnalysisContext.currentXFactory();
         for (XField actualField : unusedAccessorLines.keySet()) {
-            if (!actualField.isResolved()) {
+            if (!actualField.isResolved()
+                    || !declaredFields.contains(actualField)
+                    || data.fieldsOfSerializableOrNativeClassed.contains(actualField)
+                    || dontComplainAbout.matcher(actualField.getName()).find()) {
                 continue;
             }
-            declaredFields.remove(actualField);
             for (SourceLineAnnotation line : unusedAccessorLines.get(actualField)) {
                 int priority = NORMAL_PRIORITY;
                 if (xFactory.isReflectiveClass(actualField.getClassDescriptor())) {
@@ -1403,12 +1411,15 @@ public class UnreadFields extends OpcodeStackDetector {
         }
     }
 
-    private void reportUnwrittenReflectiveFields() {
+    private void reportUnwrittenReflectiveFields(final Set<XField> declaredFields) {
         XFactory xFactory = AnalysisContext.currentXFactory();
         for (Map.Entry<XField, SourceLineAnnotation> entry : reflectiveAccessTracker.getFieldsNeverWritten().entrySet()) {
             XField f = entry.getKey();
             // A field written directly, e.g. by its initializer, is not unwritten even if no setter accessor is used.
-            if (!f.isResolved() || data.writtenFields.contains(f)) {
+            if (!f.isResolved()
+                    || !declaredFields.contains(f)
+                    || data.fieldsOfNativeClasses.contains(f)
+                    || data.writtenFields.contains(f)) {
                 continue;
             }
 
@@ -1433,13 +1444,16 @@ public class UnreadFields extends OpcodeStackDetector {
         }
     }
 
-    private void reportUnreadReflectiveFields() {
+    private void reportUnreadReflectiveFields(final Set<XField> declaredFields) {
         XFactory xFactory = AnalysisContext.currentXFactory();
         for (Map.Entry<XField, SourceLineAnnotation> entry : reflectiveAccessTracker.getFieldsNeverRead().entrySet()) {
             XField f = entry.getKey();
             // A field read directly is not unread even if no getter accessor is used.
             if (!f.isResolved()
+                    || !declaredFields.contains(f)
                     || data.readFields.contains(f)
+                    || data.fieldsOfSerializableOrNativeClassed.contains(f)
+                    || dontComplainAbout.matcher(f.getName()).find()
                     || containsSpecialAnnotation(f.getAnnotations())
                     || f.getName().toLowerCase().contains("guardian")) {
                 continue;

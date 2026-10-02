@@ -21,6 +21,8 @@ import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class Issue2749Test extends AbstractIntegrationTest {
     @Test
@@ -339,6 +341,36 @@ class Issue2749Test extends AbstractIntegrationTest {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithMethodHandleSetterAndDirectRead.class",
                 "../java11/ghIssues/issue2749/WithMethodHandleSetterAndDirectRead$Value.class");
+
+        assertNoBugType("UUF_UNUSED_FIELD");
+        assertNoBugType("UWF_UNWRITTEN_FIELD");
+        assertNoBugType("URF_UNREAD_FIELD");
+    }
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_8)
+    void testMethodHandleSetterOnAnnotatedField() {
+        performAnalysis("../java11/ghIssues/issue2749/WithMethodHandleSetterOnAnnotatedField.class");
+
+        assertNoBugType("UUF_UNUSED_FIELD");
+        assertNoBugType("UWF_UNWRITTEN_FIELD");
+
+        assertBugTypeCount("URF_UNREAD_FIELD", 1);
+        assertBugAtFieldAtLine("URF_UNREAD_FIELD", "WithMethodHandleSetterOnAnnotatedField", "reflectiveField", 15);
+    }
+
+    @ParameterizedTest
+    @DisabledOnJre(JRE.JAVA_8)
+    @ValueSource(strings = {
+        "WithMethodHandlesOnExcludedField",
+        "WithMethodHandleSetterInSerializable",
+        "WithMethodHandleGetterNotInvokedInSerializable",
+        "WithMethodHandleSetterOnExcludedField",
+        "WithMethodHandleGetterInNativeClass",
+        "WithMethodHandlesOnClassDollarField"
+    })
+    void testMethodHandlesOnIneligibleField(String className) {
+        performAnalysis("../java11/ghIssues/issue2749/" + className + ".class");
 
         assertNoBugType("UUF_UNUSED_FIELD");
         assertNoBugType("UWF_UNWRITTEN_FIELD");

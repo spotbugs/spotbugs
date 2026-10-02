@@ -22,6 +22,7 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.util.MultiMap;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -42,7 +43,7 @@ import java.util.function.Predicate;
  * <li>the accessor is stored into a <em>static</em> field by the instruction immediately following
  * the creating call.</li>
  * <li>the accessor is invoked directly on the value loaded from that static field.</li>
- * <li>that static field is assigned exactly once.</li>
+ * <li>that static field is assigned at a single creation site (see the known limitation below).</li>
  * </ul>
  * <p>
  * Everything else is invisible here, so such a field keeps whatever {@code UUF}/{@code URF}/
@@ -52,6 +53,10 @@ import java.util.function.Predicate;
  * constant at the creation site; accessors obtained from {@code Lookup.unreflect*}, {@code java.lang.reflect.Field} or
  * {@code Unsafe}; and invocations made on a derived accessor such as the result of {@code MethodHandle.asType},
  * {@code bindTo} or {@code VarHandle.toMethodHandle}.
+ * <p>
+ * Known limitation: if the same static field is assigned at several creation sites, for example in
+ * the branches of an {@code if}, every invocation is attributed to the first assignment only. The
+ * targets of the other assignments are then reported as if their accessors were never used.
  */
 class ReflectiveAccessTracker {
 
@@ -110,6 +115,10 @@ class ReflectiveAccessTracker {
         Set<XField> accessedFields = new HashSet<>(gettersInvoked);
         accessedFields.addAll(settersInvoked);
         return accessedFields;
+    }
+
+    Set<XField> getWrittenFields() {
+        return Collections.unmodifiableSet(settersInvoked);
     }
 
     private Map<XField, SourceLineAnnotation> selectFieldsWithLines(final Predicate<XField> filter) {
