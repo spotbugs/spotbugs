@@ -40,6 +40,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix CLI launcher scripts intercepting `-conserveSpace` with a JVM system property instead passing it to Java Application as equivalent to `-effort:min` ([#4268](https://github.com/spotbugs/spotbugs/pull/4289))
 - Fix `USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` false positive when `clone()` assigns a newly created lock object to the copy ([#4320](https://github.com/spotbugs/spotbugs/issues/4320))
 - Fix `CT_CONSTRUCTOR_THROW` false positive with sealed classes ([#4259](https://github.com/spotbugs/spotbugs/issues/4259))
+- Fix `JrtfsCodeBase` resolving JDK classes from the module image of the running JVM instead of the JDK the given `jrt-fs.jar` belongs to, so that `-auxclasspath <other-jdk>/lib/jrt-fs.jar` is honoured ([#4329](https://github.com/spotbugs/spotbugs/pull/4329))
 - Fix `USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` false positive when a lock is assigned to a newly allocated object ([#4331](https://github.com/spotbugs/spotbugs/issues/4331))
 
 ## 4.10.4 - 2026-08-19
