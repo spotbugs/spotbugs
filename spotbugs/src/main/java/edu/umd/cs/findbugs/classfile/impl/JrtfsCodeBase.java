@@ -76,7 +76,7 @@ public final class JrtfsCodeBase extends AbstractScannableCodeBase {
     public JrtfsCodeBase(ICodeBaseLocator codeBaseLocator, @NonNull String fileName) throws IOException {
         super(codeBaseLocator);
         this.fileName = fileName;
-        
+
         FileSystem newFs = null;
         try {
             newFs = openJrtFileSystem(fileName);
