@@ -641,7 +641,7 @@ public class FindNullDeref implements Detector, UseAnnotationDatabase, NullDeref
         // If a parameter is already marked as nonnull, don't complain about it here.
         nullArgSet = (BitSet) nullArgSet.clone();
         definitelyNullArgSet = (BitSet) definitelyNullArgSet.clone();
-        ClassDescriptor nonnullClassDesc = DescriptorFactory.createClassDescriptor(edu.umd.cs.findbugs.annotations.NonNull.class);
+        ClassDescriptor nonnullClassDesc = DescriptorFactory.createClassDescriptor(javax.annotation.Nonnull.class);
         TypeQualifierValue<?> nonnullTypeQualifierValue = TypeQualifierValue.getValue(nonnullClassDesc, null);
         for (int i = nullArgSet.nextSetBit(0); i >= 0; i = nullArgSet.nextSetBit(i + 1)) {
             TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(calledMethod, i,
