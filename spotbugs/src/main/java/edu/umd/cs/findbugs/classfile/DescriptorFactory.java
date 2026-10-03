@@ -23,13 +23,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
-
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ObjectType;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
@@ -93,7 +92,7 @@ public class DescriptorFactory {
         }
     }
 
-    public @Nonnull ClassDescriptor getClassDescriptor(Class<?> actualClass) {
+    public @NonNull ClassDescriptor getClassDescriptor(Class<?> actualClass) {
         return getClassDescriptorForDottedClassName(actualClass.getName());
     }
 
@@ -104,7 +103,7 @@ public class DescriptorFactory {
      *            a class name in VM (slashed) format
      * @return ClassDescriptor for that class
      */
-    public @Nonnull ClassDescriptor getClassDescriptor(@SlashedClassName String className) {
+    public @NonNull ClassDescriptor getClassDescriptor(@SlashedClassName String className) {
         assert className.indexOf('.') == -1;
         ClassDescriptor classDescriptor = classDescriptorMap.get(className);
         if (classDescriptor == null) {
@@ -274,7 +273,7 @@ public class DescriptorFactory {
      * Create a class descriptor from a field signature
      *
      */
-    public static @CheckForNull ClassDescriptor createClassDescriptorFromFieldSignature(String signature) {
+    public static @Nullable ClassDescriptor createClassDescriptorFromFieldSignature(String signature) {
         int start = signature.indexOf('L');
         if (start < 0) {
             return null;
@@ -331,7 +330,7 @@ public class DescriptorFactory {
         return instance().getClassDescriptor(ClassName.toSlashedClassName(aClass.getName()));
     }
 
-    public static @Nonnull ClassDescriptor createClassDescriptor(@SlashedClassName String className) {
+    public static @NonNull ClassDescriptor createClassDescriptor(@SlashedClassName String className) {
         return instance().getClassDescriptor(className);
     }
 

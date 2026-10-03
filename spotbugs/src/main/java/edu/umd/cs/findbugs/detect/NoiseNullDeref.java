@@ -26,9 +26,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedSet;
 
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
-
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
@@ -42,6 +39,8 @@ import org.apache.bcel.generic.InstructionTargeter;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ReturnInstruction;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugAnnotation;
@@ -305,7 +304,7 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
     }
 
     private void reportNullDeref(WarningPropertySet<WarningProperty> propertySet, Location location, String type, int priority,
-            BugAnnotation cause, @CheckForNull BugAnnotation variable) {
+            BugAnnotation cause, @Nullable BugAnnotation variable) {
 
         BugInstance bugInstance = new BugInstance(this, type, priority).addClassAndMethod(classContext.getJavaClass(), method);
         bugInstance.add(cause);
@@ -351,9 +350,9 @@ public class NoiseNullDeref implements Detector, UseAnnotationDatabase, NullDere
     }
 
     @Override
-    public void foundGuaranteedNullDeref(@Nonnull Set<Location> assignedNullLocationSet, @Nonnull Set<Location> derefLocationSet,
+    public void foundGuaranteedNullDeref(@NonNull Set<Location> assignedNullLocationSet, @NonNull Set<Location> derefLocationSet,
             SortedSet<Location> doomedLocations, ValueNumberDataflow vna, ValueNumber refValue,
-            @CheckForNull BugAnnotation variableAnnotation, NullValueUnconditionalDeref deref, boolean npeIfStatementCovered) {
+            @Nullable BugAnnotation variableAnnotation, NullValueUnconditionalDeref deref, boolean npeIfStatementCovered) {
     }
 
     private void addPropertiesForDereferenceLocations(WarningPropertySet<WarningProperty> propertySet,

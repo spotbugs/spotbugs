@@ -127,4 +127,39 @@ class TextUICommandLineTest {
         String xml = Files.readString(file, StandardCharsets.UTF_8);
         assertThat(xml, containsString("BugCollection"));
     }
+
+    /**
+     * Regression test for Issue 4268:
+     * {@code -conserveSpace} must set the same analysis effort settings as
+     * {@code -effort:min}.
+     */
+    @Test
+    void conserveSpaceSetsMinEffort() {
+        TextUICommandLine conserveSpace = new TextUICommandLine();
+        conserveSpace.handleOption("-conserveSpace", "");
+
+        TextUICommandLine effortMin = new TextUICommandLine();
+        effortMin.handleOption("-effort", "min");
+
+        assertThat("Both flags must resolve to the same MIN_EFFORT setting array",
+                conserveSpace.getSettingList(), is(effortMin.getSettingList()));
+    }
+
+    /**
+     * Regression test for Issue 4268:
+     * {@code -conserveSpace} starts from {@link FindBugs#MIN_EFFORT} and must
+     * not interfere with the default effort level.
+     */
+    @Test
+    void conserveSpaceDoesNotUseDefaultEffort() {
+        TextUICommandLine commandLine = new TextUICommandLine();
+
+        assertThat("Default settingList should be DEFAULT_EFFORT before any option",
+                commandLine.getSettingList(), is(FindBugs.DEFAULT_EFFORT));
+
+        commandLine.handleOption("-conserveSpace", "");
+
+        assertThat("After -conserveSpace, settingList must be MIN_EFFORT",
+                commandLine.getSettingList(), is(FindBugs.MIN_EFFORT));
+    }
 }

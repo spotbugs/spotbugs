@@ -29,10 +29,10 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -115,7 +115,7 @@ public class CovariantArrayAssignment extends OpcodeStackDetector {
                 } else if (seen == Const.ARETURN) {
                     if (getXMethod().bridgeFrom() == null) {
                         pattern = "CAA_COVARIANT_ARRAY_RETURN";
-                        arraySignature = new SignatureParser(getMethodSig()).getReturnTypeSignature();
+                        arraySignature = new GenericSignatureParser(getMethodSig()).getReturnTypeSignature();
                         if (!arraySignature.equals("[Ljava/lang/Object;")
                                 && (getXMethod().isPublic() || getXMethod().isProtected()) && getXClass().isPublic()) {
                             priority = NORMAL_PRIORITY;

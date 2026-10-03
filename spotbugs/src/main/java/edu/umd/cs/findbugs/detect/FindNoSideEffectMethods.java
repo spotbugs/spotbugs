@@ -29,8 +29,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import jakarta.annotation.Nonnull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -38,6 +36,7 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.NonReportingDetector;
@@ -45,11 +44,11 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -245,7 +244,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             map.put(m, s);
         }
 
-        public @Nonnull MethodSideEffectStatus status(MethodDescriptor m) {
+        public @NonNull MethodSideEffectStatus status(MethodDescriptor m) {
             MethodSideEffectStatus s = map.get(m);
             return s == null ? MethodSideEffectStatus.SE : s;
         }
@@ -864,7 +863,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         for (Entry<MethodDescriptor, SideEffectStatus> entry : statusMap.entrySet()) {
             MethodDescriptor m = entry.getKey();
             if (entry.getValue() == SideEffectStatus.NO_SIDE_EFFECT) {
-                String returnType = new SignatureParser(m.getSignature()).getReturnTypeSignature();
+                String returnType = new GenericSignatureParser(m.getSignature()).getReturnTypeSignature();
                 if (!returnType.equals("V") || m.getName().equals(Const.CONSTRUCTOR_NAME)) {
                     if (m.equals(GET_CLASS)) {
                         /* We do not mark getClass() call as pure, because it can appear in code like this:

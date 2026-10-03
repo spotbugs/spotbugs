@@ -22,8 +22,8 @@ package edu.umd.cs.findbugs.ba.npe;
 import java.util.Set;
 import java.util.SortedSet;
 
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.ba.Location;
@@ -112,7 +112,7 @@ public interface NullDerefAndRedundantComparisonCollector {
      * @param npeIfStatementCovered
      *            true if doom location is a statement
      */
-    public void foundGuaranteedNullDeref(@Nonnull Set<Location> assignedNullLocationSet, @Nonnull Set<Location> derefLocationSet,
+    public void foundGuaranteedNullDeref(@NonNull Set<Location> assignedNullLocationSet, @NonNull Set<Location> derefLocationSet,
             SortedSet<Location> doomedLocations, ValueNumberDataflow vna, ValueNumber refValue,
-            @CheckForNull BugAnnotation variableAnnotation, NullValueUnconditionalDeref deref, boolean npeIfStatementCovered);
+            @Nullable BugAnnotation variableAnnotation, NullValueUnconditionalDeref deref, boolean npeIfStatementCovered);
 }

@@ -29,8 +29,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -39,6 +37,7 @@ import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -921,7 +920,7 @@ public class Subtypes2 {
 
         Set<ClassDescriptor> seen;
 
-        public SupertypeTraversalPath(@CheckForNull ClassVertex next) {
+        public SupertypeTraversalPath(@Nullable ClassVertex next) {
             this.next = next;
             this.seen = new HashSet<>();
         }
@@ -1073,7 +1072,7 @@ public class Subtypes2 {
         workList.addLast(newPath);
     }
 
-    private boolean traverseEdge(ClassVertex vertex, @CheckForNull ClassDescriptor supertypeDescriptor, boolean isInterfaceEdge,
+    private boolean traverseEdge(ClassVertex vertex, @Nullable ClassDescriptor supertypeDescriptor, boolean isInterfaceEdge,
             InheritanceGraphVisitor visitor) {
         if (supertypeDescriptor == null) {
             // We reached java.lang.Object
@@ -1348,7 +1347,7 @@ public class Subtypes2 {
      *            edges added (null if no further work will be generated)
      */
     private void addInheritanceEdge(ClassVertex vertex, ClassDescriptor superclassDescriptor, boolean isInterfaceEdge,
-            @CheckForNull LinkedList<XClass> workList) {
+            @Nullable LinkedList<XClass> workList) {
         if (superclassDescriptor == null) {
             return;
         }

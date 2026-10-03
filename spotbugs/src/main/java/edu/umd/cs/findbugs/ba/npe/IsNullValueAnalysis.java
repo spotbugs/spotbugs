@@ -23,8 +23,6 @@ import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ATHROW;
@@ -34,7 +32,10 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.apache.bcel.generic.TypedInstruction;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -47,6 +48,7 @@ import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
+import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
@@ -56,6 +58,7 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
@@ -86,6 +89,8 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 
     private final ValueNumberDataflow vnaDataflow;
 
+    private final TypeDataflow typeDataflow;
+
     private final CFG cfg;
 
     private final Set<LocationWhereValueBecomesNull> locationWhereValueBecomesNullSet;
@@ -100,7 +105,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
 
     private JavaClassAndMethod classAndMethod;
 
-    private final @CheckForNull PointerEqualityCheck pointerEqualityCheck;
+    private final @Nullable PointerEqualityCheck pointerEqualityCheck;
 
     public IsNullValueAnalysis(MethodDescriptor descriptor, MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow,
             TypeDataflow typeDataflow, DepthFirstSearch dfs, AssertionMethods assertionMethods) {
@@ -113,6 +118,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         this.visitor = new IsNullValueFrameModelingVisitor(methodGen.getConstantPool(), assertionMethods, vnaDataflow,
                 typeDataflow, trackValueNumbers);
         this.vnaDataflow = vnaDataflow;
+        this.typeDataflow = typeDataflow;
         this.cfg = cfg;
         this.locationWhereValueBecomesNullSet = new HashSet<>();
         this.pointerEqualityCheck = getForPointerEqualityCheck(cfg, vnaDataflow);
@@ -127,7 +133,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         INIT, START, SAW1, SAW2, IFEQUAL, IFNOTEQUAL;
     }
 
-    public static @CheckForNull PointerEqualityCheck getForPointerEqualityCheck(CFG cfg, ValueNumberDataflow vna) {
+    public static @Nullable PointerEqualityCheck getForPointerEqualityCheck(CFG cfg, ValueNumberDataflow vna) {
         PointerEqualityCheckState state = PointerEqualityCheckState.INIT;
         int target = Integer.MAX_VALUE;
         Location test = null;
@@ -186,7 +192,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         return null;
     }
 
-    private @CheckForNull ValueNumber getKnownNonnullDueToPointerDisequality(ValueNumber knownNull, int pc) {
+    private @Nullable ValueNumber getKnownNonnullDueToPointerDisequality(ValueNumber knownNull, int pc) {
         if (pointerEqualityCheck == null || pc < pointerEqualityCheck.firstValuePC) {
             return null;
         }
@@ -253,7 +259,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
                 XMethodParameter methodParameter = new XMethodParameter(xm, paramIndex);
                 NullnessAnnotation n = db.getResolvedAnnotation(methodParameter, false);
                 if (n == NullnessAnnotation.CHECK_FOR_NULL) {
-                    // Parameter declared @CheckForNull
+                    // Parameter declared @Nullable
                     value = IsNullValue.parameterMarkedAsMightBeNull(methodParameter);
                 } else if (n == NullnessAnnotation.NONNULL) {
                     // Parameter declared @NonNull
@@ -275,7 +281,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
     }
 
     @Override
-    public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, IsNullValueFrame start,
+    public void transfer(BasicBlock basicBlock, @Nullable InstructionHandle end, IsNullValueFrame start,
             IsNullValueFrame result) throws DataflowAnalysisException {
         startTransfer();
         super.transfer(basicBlock, end, start, result);
@@ -296,7 +302,7 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         instanceOfFrame = null;
     }
 
-    public void endTransfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, IsNullValueFrame result)
+    public void endTransfer(BasicBlock basicBlock, @Nullable InstructionHandle end, IsNullValueFrame result)
             throws DataflowAnalysisException {
         // Determine if this basic block ends in a redundant branch.
         if (end == null) {
@@ -686,12 +692,49 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
                     // ifnonnull
                     fallThroughDecision = tos;
                 }
-            } else if (tos.isDefinitelyNotNull()) {
-                return null;
             } else {
-                // As far as we know, both branches feasible
-                ifcmpDecision = isNotInstanceOf ? tos : IsNullValue.pathSensitiveNonNullValue();
-                fallThroughDecision = isNotInstanceOf ? IsNullValue.pathSensitiveNonNullValue() : tos;
+                // Check if the static type of the value is a subtype of the instanceof check type.
+                // If so, "not instanceof" can only happen when the value is null.
+                boolean notInstanceOfImpliesNull = false;
+                // secondToLastOpcode == Const.INSTANCEOF is already verified above,
+                // and BCEL's INSTANCEOF implements TypedInstruction; guard defensively.
+                Instruction prevIns = prev.getInstruction();
+                if (!(prevIns instanceof TypedInstruction)) {
+                    return null;
+                }
+                try {
+                    TypeFrame typeFrame = typeDataflow.getFactAtLocation(atInstanceOf);
+                    if (typeFrame.isValid()) {
+                        Type tosType = typeFrame.getTopValue();
+                        Type instanceofType = ((TypedInstruction) prevIns).getType(methodGen.getConstantPool());
+                        if (tosType instanceof ReferenceType && instanceofType instanceof ReferenceType) {
+                            notInstanceOfImpliesNull = Hierarchy.isSubtype((ReferenceType) tosType, (ReferenceType) instanceofType);
+                        }
+                    }
+                } catch (ClassNotFoundException e) {
+                    AnalysisContext.reportMissingClass(e);
+                } catch (DataflowAnalysisException e) {
+                    // Failed to obtain type dataflow information; fall back to conservative defaults.
+                }
+                if (tos.isDefinitelyNotNull() && notInstanceOfImpliesNull) {
+                    // Value is known non-null and its static type is a subtype of the check type,
+                    // so instanceof is always true — the "not instanceof" branch is infeasible.
+                    if (isNotInstanceOf) {
+                        fallThroughDecision = tos; // only the instanceof (fall-through) branch is reachable
+                    } else {
+                        ifcmpDecision = tos; // only the instanceof (jump) branch is reachable
+                    }
+                } else if (tos.isDefinitelyNotNull()) {
+                    return null;
+                } else if (notInstanceOfImpliesNull) {
+                    // "not instanceof" branch: value must be null; "instanceof" branch: value is non-null
+                    ifcmpDecision = isNotInstanceOf ? IsNullValue.pathSensitiveNullValue() : IsNullValue.pathSensitiveNonNullValue();
+                    fallThroughDecision = isNotInstanceOf ? IsNullValue.pathSensitiveNonNullValue() : IsNullValue.pathSensitiveNullValue();
+                } else {
+                    // As far as we know, both branches feasible
+                    ifcmpDecision = isNotInstanceOf ? tos : IsNullValue.pathSensitiveNonNullValue();
+                    fallThroughDecision = isNotInstanceOf ? IsNullValue.pathSensitiveNonNullValue() : tos;
+                }
             }
             if (DEBUG) {
                 System.out.println("Checking..." + tos + " -> " + ifcmpDecision + " or " + fallThroughDecision);
@@ -700,6 +743,18 @@ public class IsNullValueAnalysis extends FrameDataflowAnalysis<IsNullValue, IsNu
         }
 
         if (!nullComparisonInstructionSet.get(lastInSourceOpcode)) {
+            if (lastInSourceOpcode == Const.IF_ICMPEQ || lastInSourceOpcode == Const.IF_ICMPNE) {
+                ValueNumberFrame prevVnaFrame = vnaDataflow
+                        .getFactAtLocation(new Location(lastInSourceHandle, basicBlock));
+                ValueNumber tos = prevVnaFrame.getStackValue(0);
+                ValueNumber nextToTos = prevVnaFrame.getStackValue(1);
+                if (tos.equals(nextToTos)) {
+                    boolean comparisonIsTrue = lastInSourceOpcode == Const.IF_ICMPEQ;
+                    IsNullValue feasibleDecision = IsNullValue.pathSensitiveNonNullValue();
+                    return new IsNullConditionDecision(null, comparisonIsTrue ? feasibleDecision : null,
+                            comparisonIsTrue ? null : feasibleDecision);
+                }
+            }
             return null; // doesn't end in null comparison
         }
 

@@ -45,7 +45,7 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.junit.buildpath.BuildPathSupport;
+import org.eclipse.jdt.junit.JUnitCore;
 import org.eclipse.jdt.testplugin.JavaProjectHelper;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
@@ -106,7 +106,7 @@ public abstract class AbstractPluginTest {
     }
 
     protected static void addJUnitToProjectClasspath() throws JavaModelException {
-        IClasspathEntry cpe = BuildPathSupport.getJUnit4ClasspathEntry();
+        IClasspathEntry cpe = JavaCore.newContainerEntry(JUnitCore.JUNIT4_CONTAINER_PATH);
         JavaProjectHelper.addToClasspath(getJavaProject(), cpe);
     }
 
@@ -201,16 +201,21 @@ public abstract class AbstractPluginTest {
     protected static void processUiEvents(long delayInMilliseconds) {
         long start = System.currentTimeMillis();
         long sleepTime = delayInMilliseconds > 10 ? 10 : delayInMilliseconds;
+        boolean interrupted = false;
         while (true) {
             try {
                 Thread.sleep(sleepTime);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                interrupted = true;
             }
             processUiEvents();
             if (System.currentTimeMillis() - start > delayInMilliseconds) {
                 break;
             }
+        }
+
+        if (interrupted) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -392,13 +397,19 @@ public abstract class AbstractPluginTest {
      */
     protected void joinJobFamily(Object family) {
         boolean finished = false;
+        boolean interrupted = false;
         while (!finished) {
             try {
                 getJobManager().join(family, null);
                 finished = true;
             } catch (InterruptedException e) {
                 // continue waiting
+                interrupted = true;
             }
+        }
+
+        if (interrupted) {
+            Thread.currentThread().interrupt();
         }
     }
 

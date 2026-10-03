@@ -7,14 +7,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.annotations.NoWarning;
 
 public class Bug3019763 {
     ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
 
     ReentrantLock lock = new ReentrantLock();
 
-    @NoWarning("UL_UNRELEASED_LOCK")
+    @ExpectWarning("UL_UNRELEASED_LOCK")
     public void doTest() {
         rwLock.readLock().lock();
         try {
@@ -24,7 +23,7 @@ public class Bug3019763 {
         }
     }
 
-    @NoWarning("UL_UNRELEASED_LOCK")
+    @ExpectWarning("UL_UNRELEASED_LOCK")
     public void doTestA() {
         ReadLock readLock = rwLock.readLock();
         readLock.lock();

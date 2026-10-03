@@ -37,9 +37,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import javax.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.Const;
@@ -68,6 +65,8 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.OpcodeStack.Item.SpecialKind;
 import edu.umd.cs.findbugs.StackMapAnalyzer.JumpInfoFromStackMap;
@@ -75,11 +74,11 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ClassMember;
 import edu.umd.cs.findbugs.ba.FieldSummary;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -315,7 +314,7 @@ public class OpcodeStack {
 
         private Object constValue = UNKNOWN;
 
-        private @CheckForNull ClassMember source;
+        private @Nullable ClassMember source;
 
         private int pc = -1;
 
@@ -323,8 +322,7 @@ public class OpcodeStack {
 
         private int registerNumber = -1;
 
-        @Nullable
-        private Object userValue;
+        private @Nullable Object userValue;
 
         private HttpParameterInjection injection;
 
@@ -722,7 +720,7 @@ public class OpcodeStack {
             this.registerNumber = -1;
         }
 
-        public @CheckForNull String getHttpParameterName() {
+        public @Nullable String getHttpParameterName() {
             if (!isServletParameterTainted()) {
                 throw new IllegalStateException();
             }
@@ -800,7 +798,7 @@ public class OpcodeStack {
         }
 
         /** Returns null for primitive and arrays */
-        public @CheckForNull JavaClass getJavaClass() throws ClassNotFoundException {
+        public @Nullable JavaClass getJavaClass() throws ClassNotFoundException {
             String baseSig;
 
             if (isPrimitive() || isArray()) {
@@ -906,7 +904,7 @@ public class OpcodeStack {
          * @return if this value is the return value of a method, give the
          *         method invoked
          */
-        public @CheckForNull XMethod getReturnValueOf() {
+        public @Nullable XMethod getReturnValueOf() {
             if (source instanceof XMethod) {
                 return (XMethod) source;
             }
@@ -927,8 +925,7 @@ public class OpcodeStack {
          *
          * @return the custom value
          */
-        @Nullable
-        public Object getUserValue() {
+        public @Nullable Object getUserValue() {
             return userValue;
         }
 
@@ -1470,18 +1467,32 @@ public class OpcodeStack {
                 push(new Item("I"));
                 break;
 
-            case Const.IFNONNULL:
-            case Const.IFNULL:
-                // {
-                // Item topItem = pop();
-                // if (seen == IFNONNULL && topItem.isNull())
-                // break;
-                // seenTransferOfControl = true;
-                // addJumpValue(dbc.getPC(), dbc.getBranchTarget());
-                //
-                // break;
-                // }
-
+            case Const.IFNONNULL: {
+                seenTransferOfControl = true;
+                Item topItem = pop();
+                addJumpValue(dbc.getPC(), dbc.getBranchTarget());
+                // On fall-through the tested value is null; propagate that to the local variable
+                // so that a subsequent IFNULL on the same variable can detect the dead fall-through.
+                int reg = topItem.registerNumber;
+                if (reg >= 0 && reg < lvValues.size()) {
+                    lvValues.set(reg, Item.nullItem(topItem.getSignature()));
+                }
+                break;
+            }
+            case Const.IFNULL: {
+                seenTransferOfControl = true;
+                Item topItem = pop();
+                addJumpValue(dbc.getPC(), dbc.getBranchTarget());
+                // If the item is a local variable definitely set to null (e.g. ACONST_NULL or null-propagated
+                // through IFNONNULL fall-through), the jump always happens and the fall-through is dead code.
+                // Only apply when registerNumber >= 0 (local variable); field-summary nulls (registerNumber == -1)
+                // reflect initial state and may not be null at every call site.
+                if (topItem.isNull() && topItem.registerNumber >= 0) {
+                    setReachOnlyByBranch(true);
+                    setTop(true);
+                }
+                break;
+            }
             case Const.IFEQ:
             case Const.IFNE:
             case Const.IFLT:
@@ -2501,7 +2512,7 @@ public class OpcodeStack {
                 && ("valueOf".equals(method) && !signature.contains("String") || method.equals(boxedTypes.get(clsName) + "Value"))) {
             // boxing/unboxing conversion
             Item value = pop();
-            String newSignature = new SignatureParser(signature).getReturnTypeSignature();
+            String newSignature = new GenericSignatureParser(signature).getReturnTypeSignature();
             Item newValue = new Item(value, newSignature);
             if (newValue.source == null) {
                 newValue.source = XFactory.createReferencedXMethod(dbc);
@@ -2661,7 +2672,7 @@ public class OpcodeStack {
             }
             String returnTypeName = IMMUTABLE_RETURNER_MAP.get(Pair.of(clsName, method));
             if (returnTypeName != null) {
-                SignatureParser sp = new SignatureParser(signature);
+                GenericSignatureParser sp = new GenericSignatureParser(signature);
                 for (int i = 0; i < sp.getNumParameters(); ++i) {
                     pop();
                 }
@@ -2807,7 +2818,7 @@ public class OpcodeStack {
         String signature = dbc.getSigConstantOperand();
 
         if ("makeConcatWithConstants".equals(dbc.getNameConstantOperand())) {
-            String[] args = new SignatureParser(signature).getArguments();
+            String[] args = new GenericSignatureParser(signature).getArguments();
             if (args.length == 1) {
                 Item i = getStackItem(0);
                 if (i.isServletParameterTainted()) {
@@ -2842,7 +2853,7 @@ public class OpcodeStack {
         int numberArguments = PreorderVisitor.getNumberArguments(signature);
 
         pop(numberArguments);
-        pushBySignature(new SignatureParser(signature).getReturnTypeSignature(), dbc);
+        pushBySignature(new GenericSignatureParser(signature).getReturnTypeSignature(), dbc);
 
         if ((appenderValue != null || servletRequestParameterTainted) && getStackDepth() > 0) {
             Item i = this.getStackItem(0);
@@ -2957,7 +2968,7 @@ public class OpcodeStack {
         }
 
         @Override
-        public @CheckForNull JumpInfo analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
+        public @Nullable JumpInfo analyze(IAnalysisCache analysisCache, MethodDescriptor descriptor) throws CheckedAnalysisException {
             Method method = analysisCache.getMethodAnalysis(Method.class, descriptor);
             JavaClass jclass = getJavaClass(analysisCache, descriptor.getClassDescriptor());
             Code code = method.getCode();
@@ -3015,7 +3026,7 @@ public class OpcodeStack {
             }
         }
 
-        public static @CheckForNull JumpInfo computeJumpInfo(JavaClass jclass, Method method,
+        public static @Nullable JumpInfo computeJumpInfo(JavaClass jclass, Method method,
                 JumpStackComputation branchAnalysis) {
             branchAnalysis.setupVisitorForClass(jclass);
             XMethod createXMethod = XFactory.createXMethod(jclass, method);
@@ -3154,7 +3165,7 @@ public class OpcodeStack {
 
     }
 
-    int nullSafeSize(@CheckForNull Collection<?> c) {
+    int nullSafeSize(@Nullable Collection<?> c) {
         if (c == null) {
             return 0;
         }
@@ -3652,7 +3663,7 @@ public class OpcodeStack {
             return;
         }
         pop(PreorderVisitor.getNumberArguments(signature) + (popThis ? 1 : 0));
-        pushBySignature(new SignatureParser(signature).getReturnTypeSignature(), dbc);
+        pushBySignature(new GenericSignatureParser(signature).getReturnTypeSignature(), dbc);
     }
 
     public Item getItemMethodInvokedOn(DismantleBytecode dbc) {
@@ -3748,8 +3759,7 @@ public class OpcodeStack {
         lvValues.set(index, value);
     }
 
-    @Nonnull
-    public Item getLVValue(int index) {
+    public @NonNull Item getLVValue(int index) {
         if (index >= lvValues.size()) {
             return new Item();
         }
