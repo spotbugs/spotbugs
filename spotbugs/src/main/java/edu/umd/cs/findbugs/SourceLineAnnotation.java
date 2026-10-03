@@ -210,7 +210,8 @@ public class SourceLineAnnotation implements BugAnnotation {
      *            the source file name
      * @return the SourceLineAnnotation
      */
-    public static @NonNull SourceLineAnnotation createUnknown(@DottedClassName String className, String sourceFile, int startBytecode, int endBytecode) {
+    public static @NonNull SourceLineAnnotation createUnknown(@DottedClassName String className, String sourceFile, int startBytecode,
+            int endBytecode) {
         return new SourceLineAnnotation(className, sourceFile, -1, -1, startBytecode, endBytecode);
         // result.setDescription("SOURCE_LINE_UNKNOWN");
     }
