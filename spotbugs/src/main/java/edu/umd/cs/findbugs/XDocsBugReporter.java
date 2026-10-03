@@ -23,13 +23,12 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
 
-import org.jspecify.annotations.NonNull;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 

@@ -32,10 +32,9 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jspecify.annotations.NonNull;
-
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.AbstractBugReporter;

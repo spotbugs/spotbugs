@@ -23,12 +23,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jspecify.annotations.NonNull;
-
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ObjectType;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.FieldAnnotation;

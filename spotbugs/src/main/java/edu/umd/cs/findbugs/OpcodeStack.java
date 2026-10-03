@@ -37,7 +37,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.jspecify.annotations.NonNull;
 import javax.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.Const;
@@ -66,6 +65,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.OpcodeStack.Item.SpecialKind;
@@ -3759,8 +3759,7 @@ public class OpcodeStack {
         lvValues.set(index, value);
     }
 
-    @NonNull
-    public Item getLVValue(int index) {
+    public @NonNull Item getLVValue(int index) {
         if (index >= lvValues.size()) {
             return new Item();
         }

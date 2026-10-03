@@ -41,7 +41,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.jspecify.annotations.NonNull;
-
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -209,8 +208,7 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
         return new JrtfsCodeBaseIterator();
     }
 
-    @NonNull
-    static String fileName(Path p) {
+    static @NonNull String fileName(Path p) {
         Path name = p.getFileName();
         return name != null ? name.toString() : "";
     }

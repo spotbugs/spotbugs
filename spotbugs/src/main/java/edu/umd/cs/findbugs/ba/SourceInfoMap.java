@@ -28,9 +28,9 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-import org.jspecify.annotations.NonNull;
 import javax.annotation.WillClose;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;

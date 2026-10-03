@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jspecify.annotations.NonNull;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -49,8 +50,7 @@ import edu.umd.cs.findbugs.Project;
 public final class AnalyzingDialog extends FBDialog implements FindBugsProgress {
     private volatile boolean analysisFinished = false;
 
-    @NonNull
-    private final Project project;
+    private final @NonNull Project project;
 
     private final AnalysisCallback callback;
 
@@ -66,7 +66,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress 
 
     private final JButton cancelButton;
 
-    public static void show(@NonNull final Project project) {
+    public static void show(final @NonNull Project project) {
         AnalysisCallback callback = new AnalysisCallback() {
             @Override
             public void analysisFinished(BugCollection results) {

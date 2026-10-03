@@ -23,7 +23,6 @@ import java.io.IOException;
 
 import org.jspecify.annotations.NonNull;
 
-
 /**
  * Quote metacharacters in a String.
  *

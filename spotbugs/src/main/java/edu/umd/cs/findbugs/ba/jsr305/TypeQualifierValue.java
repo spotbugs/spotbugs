@@ -29,10 +29,10 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Set;
 
-import org.jspecify.annotations.NonNull;
 import javax.annotation.meta.TypeQualifierValidator;
 import javax.annotation.meta.When;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;

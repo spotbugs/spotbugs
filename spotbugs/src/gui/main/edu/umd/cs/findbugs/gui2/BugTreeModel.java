@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.jspecify.annotations.NonNull;
+
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;

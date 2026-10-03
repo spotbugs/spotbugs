@@ -26,10 +26,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.jspecify.annotations.NonNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;

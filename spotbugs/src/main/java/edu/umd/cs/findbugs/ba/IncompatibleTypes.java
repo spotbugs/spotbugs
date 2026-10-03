@@ -23,13 +23,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jspecify.annotations.NonNull;
-
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;

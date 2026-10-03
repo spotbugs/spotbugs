@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs;
 import java.io.PrintWriter;
 
 import org.jspecify.annotations.NonNull;
-
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.Debug;

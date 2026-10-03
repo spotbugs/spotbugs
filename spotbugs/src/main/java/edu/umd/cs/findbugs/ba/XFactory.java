@@ -27,8 +27,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import org.jspecify.annotations.NonNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -38,6 +36,7 @@ import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
 

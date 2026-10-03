@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs;
 import java.util.Objects;
 
 import org.jspecify.annotations.NonNull;
-
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -34,8 +33,8 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * @since 4.0
  */
 class SynchronizedBugReporter implements BugReporter {
-    @NonNull
-    private final BugReporter delegate;
+
+    private final @NonNull BugReporter delegate;
 
     SynchronizedBugReporter(@NonNull BugReporter delegate) {
         this.delegate = Objects.requireNonNull(delegate);

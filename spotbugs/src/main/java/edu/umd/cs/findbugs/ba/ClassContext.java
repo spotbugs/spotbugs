@@ -30,8 +30,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.jspecify.annotations.NonNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -41,6 +39,7 @@ import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.MethodGen;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.AnalysisLocal;
@@ -457,8 +456,7 @@ public class ClassContext {
         return cachedBitsets_AL.get();
     }
 
-    @NonNull
-    public static Set<Integer> getLoopExitBranches(Method method, MethodGen methodGen) {
+    public static @NonNull Set<Integer> getLoopExitBranches(Method method, MethodGen methodGen) {
 
         XMethod xmethod = XFactory.createXMethod(methodGen);
         if (cachedLoopExits().containsKey(xmethod)) {
@@ -542,8 +540,7 @@ public class ClassContext {
      * @return map of bytecode offsets to opcodes, empty if the method has no
      *         code
      */
-    @NonNull
-    public short[] getOffsetToOpcodeMap(Method method) {
+    public short @NonNull [] getOffsetToOpcodeMap(Method method) {
         UnpackedCode unpackedCode = getMethodAnalysisNoException(UnpackedCode.class, method);
         return unpackedCode == null ? new short[0] : unpackedCode.getOffsetToBytecodeMap();
     }

@@ -25,10 +25,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 import java.util.Set;
 
-import org.jspecify.annotations.NonNull;
 import javax.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.generic.InstructionHandle;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.graph.AbstractEdge;
 

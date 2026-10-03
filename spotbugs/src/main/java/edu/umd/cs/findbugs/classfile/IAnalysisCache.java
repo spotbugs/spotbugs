@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.classfile;
 import java.util.Map;
 
 import org.jspecify.annotations.NonNull;
-
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.log.Profiler;

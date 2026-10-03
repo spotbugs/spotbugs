@@ -40,7 +40,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.jspecify.annotations.NonNull;
-
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;

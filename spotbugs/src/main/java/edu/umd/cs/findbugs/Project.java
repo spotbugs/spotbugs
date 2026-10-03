@@ -49,12 +49,12 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import org.jspecify.annotations.NonNull;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,8 +127,7 @@ public class Project implements XMLWriteable, AutoCloseable {
 
     private IGuiCallback guiCallback;
 
-    @NonNull
-    private Filter suppressionFilter = new Filter();
+    private @NonNull Filter suppressionFilter = new Filter();
 
     private SourceFinder sourceFinder;
 
@@ -971,8 +970,7 @@ public class Project implements XMLWriteable, AutoCloseable {
         this.suppressionFilter = suppressionFilter;
     }
 
-    @NonNull
-    public Filter getSuppressionFilter() {
+    public @NonNull Filter getSuppressionFilter() {
         return suppressionFilter;
     }
 

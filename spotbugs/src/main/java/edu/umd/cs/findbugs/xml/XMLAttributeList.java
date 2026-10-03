@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.jspecify.annotations.NonNull;
-
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.util.Strings;

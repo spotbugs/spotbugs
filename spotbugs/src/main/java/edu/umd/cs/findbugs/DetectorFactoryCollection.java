@@ -38,9 +38,9 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jspecify.annotations.NonNull;
 import javax.swing.JOptionPane;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.util.ClassPathUtil;
@@ -186,8 +186,7 @@ public class DetectorFactoryCollection {
         return pluginByIdMap.values();
     }
 
-    @NonNull
-    public Plugin getCorePlugin() {
+    public @NonNull Plugin getCorePlugin() {
         if (corePlugin == null) {
             throw new IllegalStateException("No core plugin");
         }

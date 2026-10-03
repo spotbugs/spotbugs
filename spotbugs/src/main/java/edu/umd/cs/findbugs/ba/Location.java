@@ -21,10 +21,8 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.Objects;
 
-import org.jspecify.annotations.NonNull;
-
 import org.apache.bcel.generic.InstructionHandle;
-
+import org.jspecify.annotations.NonNull;
 
 /**
  * <p>A class representing a location in the CFG for a method. Essentially, it
@@ -87,16 +85,14 @@ public class Location implements Comparable<Location> {
     /**
      * Get the instruction handle.
      */
-    @NonNull
-    public InstructionHandle getHandle() {
+    public @NonNull InstructionHandle getHandle() {
         return handle;
     }
 
     /**
      * Get the basic block.
      */
-    @NonNull
-    public BasicBlock getBasicBlock() {
+    public @NonNull BasicBlock getBasicBlock() {
         return basicBlock;
     }
 

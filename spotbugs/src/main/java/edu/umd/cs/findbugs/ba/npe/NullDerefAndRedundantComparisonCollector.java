@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.jspecify.annotations.NonNull;
-
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugAnnotation;

@@ -29,7 +29,6 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import org.jspecify.annotations.NonNull;
-
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.charsets.UTF8;

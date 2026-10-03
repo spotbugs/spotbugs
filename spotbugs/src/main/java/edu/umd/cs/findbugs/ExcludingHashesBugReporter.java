@@ -23,9 +23,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.jspecify.annotations.NonNull;
-
 import org.dom4j.DocumentException;
+import org.jspecify.annotations.NonNull;
 
 /**
  * @author pugh

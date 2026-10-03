@@ -23,11 +23,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.jspecify.annotations.NonNull;
 import javax.annotation.meta.When;
 
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 /**

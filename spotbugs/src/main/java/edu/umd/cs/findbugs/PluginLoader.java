@@ -53,7 +53,6 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.jspecify.annotations.NonNull;
 import javax.annotation.WillClose;
 
 import edu.umd.cs.findbugs.util.SecurityManagerHandler;
@@ -62,6 +61,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -443,8 +443,7 @@ public class PluginLoader implements AutoCloseable {
         plugin = null;
     }
 
-    @NonNull
-    private static URL computeCoreUrl() {
+    private static @NonNull URL computeCoreUrl() {
         URL from;
         String findBugsClassFile = ClassName.toSlashedClassName(FindBugs.class) + ".class";
         URL me = FindBugs.class.getClassLoader().getResource(findBugsClassFile);
@@ -1352,8 +1351,7 @@ public class PluginLoader implements AutoCloseable {
         return new PluginLoader(url, uri, parent, isInitial, optional);
     }
 
-    @NonNull
-    public static synchronized PluginLoader getCorePluginLoader() {
+    public static synchronized @NonNull PluginLoader getCorePluginLoader() {
         Plugin plugin = Plugin.getPlugin(null);
         if (plugin != null) {
             return plugin.getPluginLoader();

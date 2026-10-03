@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs;
 
 import org.jspecify.annotations.NonNull;
-
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;

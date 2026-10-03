@@ -19,11 +19,10 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
-import org.jspecify.annotations.NonNull;
-
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ACONST_NULL;
 import org.apache.bcel.generic.InstructionHandle;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugAnnotation;

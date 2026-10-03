@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.jspecify.annotations.NonNull;
-
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.Frame;

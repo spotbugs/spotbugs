@@ -44,11 +44,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import org.jspecify.annotations.NonNull;
 import javax.annotation.WillClose;
 
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.charsets.UTF8;

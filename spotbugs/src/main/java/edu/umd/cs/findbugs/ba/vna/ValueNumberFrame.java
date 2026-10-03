@@ -32,7 +32,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.jspecify.annotations.NonNull;
-
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -138,7 +137,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
      * @param value
      *            the value(s) loaded
      */
-    public void addAvailableLoad(AvailableLoad availableLoad, @NonNull ValueNumber[] value) {
+    public void addAvailableLoad(AvailableLoad availableLoad, ValueNumber @NonNull [] value) {
         Objects.requireNonNull(value);
         getUpdateableAvailableLoadMap().put(availableLoad, value);
 

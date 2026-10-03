@@ -28,7 +28,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 
-import org.jspecify.annotations.NonNull;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -36,6 +35,7 @@ import javax.swing.JTextArea;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.dom4j.DocumentException;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.xml.sax.SAXException;
 

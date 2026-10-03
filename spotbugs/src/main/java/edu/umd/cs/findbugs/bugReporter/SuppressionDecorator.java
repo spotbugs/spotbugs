@@ -26,8 +26,9 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.HashSet;
 
-import org.jspecify.annotations.NonNull;
 import javax.annotation.WillClose;
+
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;

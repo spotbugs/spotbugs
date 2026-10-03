@@ -20,11 +20,9 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
-import org.jspecify.annotations.NonNull;
-
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
-
+import org.jspecify.annotations.NonNull;
 
 /**
  * Eases access to a BCEL LocalVariable object

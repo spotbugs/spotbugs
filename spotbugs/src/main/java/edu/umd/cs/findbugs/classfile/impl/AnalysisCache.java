@@ -26,10 +26,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jspecify.annotations.NonNull;
-
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugReporter;

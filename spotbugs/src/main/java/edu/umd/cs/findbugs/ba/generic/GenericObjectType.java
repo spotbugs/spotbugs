@@ -23,11 +23,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.jspecify.annotations.NonNull;
 
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;

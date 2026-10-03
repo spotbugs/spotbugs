@@ -26,8 +26,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.jspecify.annotations.NonNull;
-
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
@@ -41,6 +39,7 @@ import org.apache.bcel.generic.InstructionTargeter;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ReturnInstruction;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugAccumulator;

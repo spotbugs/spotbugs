@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs;
 import java.util.Set;
 
 import org.jspecify.annotations.NonNull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
