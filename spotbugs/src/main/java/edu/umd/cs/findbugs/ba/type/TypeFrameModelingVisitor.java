@@ -28,13 +28,13 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.util.ClassName;
+
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTypeTable;
 import org.apache.bcel.generic.*;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -46,7 +46,6 @@ import edu.umd.cs.findbugs.ba.FieldSummary;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Hierarchy2;
 import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -508,7 +507,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         String signature = obj.getSignature(cpg);
         String className = obj.getClassName(cpg);
 
-        String returnValueSignature = new SignatureParser(signature).getReturnTypeSignature();
+        String returnValueSignature = new GenericSignatureParser(signature).getReturnTypeSignature();
         if ("V".equals(returnValueSignature)) {
             consumeStack(obj);
             return;
@@ -694,7 +693,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
                 }
 
                 if (m == m2) {
-                    SignatureParser p = new SignatureParser(m.getSignature());
+                    GenericSignatureParser p = new GenericSignatureParser(m.getSignature());
                     String rv = p.getReturnTypeSignature();
 
                     Type t = Type.getType(rv);
@@ -812,7 +811,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
         }
     }
 
-    @CheckForNull
+    @Nullable
     GenericObjectType getLocalVariable(int index, int pos) {
         if (genericLocalVariables == null || !genericLocalVariables.get(index)) {
             return null;

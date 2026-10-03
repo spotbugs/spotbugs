@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
@@ -297,7 +297,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
         }
     }
 
-    public void checkAnnotation(@CheckForNull String bugCode, Collection<BugInstance> warnings, boolean expectWarnings, int priority,
+    public void checkAnnotation(@Nullable String bugCode, Collection<BugInstance> warnings, boolean expectWarnings, int priority,
             Integer rank, Integer num, Object methodDescriptor, int minPriority, ClassDescriptor cd) {
 
         String bugCodeMessage = bugCode != null ? bugCode : "any bug";
@@ -347,8 +347,7 @@ public class CheckExpectedWarnings implements Detector2, NonReportingDetector {
     }
 
     private static Collection<SourceLineAnnotation> countWarnings(Collection<BugInstance> warnings,
-            @CheckForNull String bugCode,
-            int desiredPriority, int rank) {
+            @Nullable String bugCode, int desiredPriority, int rank) {
 
         Collection<SourceLineAnnotation> matching = new HashSet<>();
         DetectorFactoryCollection i18n = DetectorFactoryCollection.instance();

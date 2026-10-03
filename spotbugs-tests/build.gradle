@@ -48,6 +48,7 @@ tasks.named('jacocoTestReport', JacocoReport).configure {
 test {
   dependsOn ':spotbugsTestCases:build'
   useJUnitPlatform()
+  maxParallelForks = 8
 }
 
 spotbugs {

@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.classfile.IClassObserver;
@@ -76,7 +76,7 @@ public interface BugReporter extends RepositoryLookupFailureCallback, IClassObse
      * @param bugInstance
      *            object describing the bug instance
      */
-    void reportBug(@Nonnull BugInstance bugInstance);
+    void reportBug(@NonNull BugInstance bugInstance);
 
     /**
      * Finish reporting bugs. If any bug reports have been queued, calling this
@@ -106,14 +106,13 @@ public interface BugReporter extends RepositoryLookupFailureCallback, IClassObse
     /**
      * Get the bug collection (if any) associated with this bug reporter
      */
-    @CheckForNull
+    @Nullable
     BugCollection getBugCollection();
 
     /**
      * @return the PriorityAdjuster set for this BugReporter, or null if none was set
      */
-    @CheckForNull
-    default PriorityAdjuster getPriorityAdjuster() {
+    default @Nullable PriorityAdjuster getPriorityAdjuster() {
         return null;
     }
 }

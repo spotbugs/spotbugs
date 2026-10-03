@@ -21,14 +21,13 @@ package de.tobject.findbugs.view.explorer;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ui.IActionFilter;
 import org.eclipse.ui.views.tasklist.ITaskListResourceAdapter;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * @author Andrei
@@ -41,16 +40,13 @@ public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup>
 
     private Set<IMarker> allMarkers;
 
-    @CheckForNull
-    private Object parent;
+    private @Nullable Object parent;
 
-    @CheckForNull
-    private final Object identifier;
+    private final @Nullable Object identifier;
 
-    @Nonnull
-    private final GroupType type;
+    private final @NonNull GroupType type;
 
-    public BugGroup(Object parent, Object identifier, @Nonnull GroupType type) {
+    public BugGroup(Object parent, Object identifier, @NonNull GroupType type) {
         super();
         this.parent = parent;
         Assert.isNotNull(type, "Group type cannot be null");
@@ -213,13 +209,11 @@ public class BugGroup implements IAdaptable, IActionFilter, Comparable<BugGroup>
         return null;
     }
 
-    @Nonnull
-    public GroupType getType() {
+    public @NonNull GroupType getType() {
         return type;
     }
 
-    @CheckForNull
-    public Object getData() {
+    public @Nullable Object getData() {
         return identifier;
     }
 

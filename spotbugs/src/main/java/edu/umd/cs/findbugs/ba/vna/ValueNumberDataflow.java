@@ -22,13 +22,12 @@ package edu.umd.cs.findbugs.ba.vna;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.classfile.Method;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.AbstractDataflow;
 import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, ValueNumberAnalysis> {
@@ -63,7 +62,7 @@ public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, Valu
 
         ValueNumberFrame frameAtEntry = getStartFact(getCFG().getEntry());
 
-        int numParams = new SignatureParser(methodSignature).getNumParameters();
+        int numParams = new GenericSignatureParser(methodSignature).getNumParameters();
         int shift = isStatic ? 0 : 1;
         for (int i = 0; i < numParams; ++i) {
             valueNumberToParamMap.put(frameAtEntry.getValue(i + shift), i);
@@ -72,7 +71,7 @@ public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, Valu
         return valueNumberToParamMap;
     }
 
-    public @CheckForNull @DottedClassName String getClassName(ValueNumber v) {
+    public @Nullable @DottedClassName String getClassName(ValueNumber v) {
         return getAnalysis().getClassName(v);
 
     }

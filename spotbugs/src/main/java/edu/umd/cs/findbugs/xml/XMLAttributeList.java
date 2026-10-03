@@ -23,8 +23,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.util.Strings;
 
@@ -72,7 +72,7 @@ public class XMLAttributeList {
      *            the attribute value
      * @return this object (so calls to addAttribute() can be chained)
      */
-    public XMLAttributeList addAttribute(@Nonnull String name, @Nonnull String value) {
+    public XMLAttributeList addAttribute(@NonNull String name, @NonNull String value) {
         if (name == null) {
             throw new NullPointerException("name must be nonnull");
         }
@@ -92,7 +92,7 @@ public class XMLAttributeList {
      *            the attribute value
      * @return this object (so calls to addAttribute() can be chained)
      */
-    public XMLAttributeList addOptionalAttribute(@Nonnull String name, @CheckForNull String value) {
+    public XMLAttributeList addOptionalAttribute(@NonNull String name, @Nullable String value) {
         if (value == null) {
             return this;
         }
@@ -131,7 +131,7 @@ public class XMLAttributeList {
      *            the raw value of the attribute
      * @return a properly quoted representation of the value
      */
-    public static String getQuotedAttributeValue(@Nonnull String rawValue) {
+    public static String getQuotedAttributeValue(@NonNull String rawValue) {
         return Strings.escapeXml(rawValue);
     }
 }
