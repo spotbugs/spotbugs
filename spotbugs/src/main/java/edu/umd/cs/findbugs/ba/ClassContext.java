@@ -30,8 +30,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import jakarta.annotation.Nonnull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -41,6 +39,7 @@ import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.MethodGen;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.AnalysisLocal;
@@ -241,7 +240,7 @@ public class ClassContext {
         return getClassDescriptor().getDottedClassName() + "." + method.getName() + method.getSignature();
     }
 
-    public @Nonnull List<Method> getMethodsInCallOrder() {
+    public @NonNull List<Method> getMethodsInCallOrder() {
         Map<XMethod, Method> map = new HashMap<>();
         for (Method m : getJavaClass().getMethods()) {
             XMethod xMethod = classInfo.findMethod(m.getName(), m.getSignature(), m.isStatic());
@@ -308,7 +307,7 @@ public class ClassContext {
      *
      * @return the ConstantPoolGen
      */
-    public @Nonnull ConstantPoolGen getConstantPoolGen() {
+    public @NonNull ConstantPoolGen getConstantPoolGen() {
         return getClassAnalysisNoException(ConstantPoolGen.class);
     }
 
@@ -457,8 +456,7 @@ public class ClassContext {
         return cachedBitsets_AL.get();
     }
 
-    @Nonnull
-    public static Set<Integer> getLoopExitBranches(Method method, MethodGen methodGen) {
+    public static @NonNull Set<Integer> getLoopExitBranches(Method method, MethodGen methodGen) {
 
         XMethod xmethod = XFactory.createXMethod(methodGen);
         if (cachedLoopExits().containsKey(xmethod)) {
@@ -542,8 +540,7 @@ public class ClassContext {
      * @return map of bytecode offsets to opcodes, empty if the method has no
      *         code
      */
-    @Nonnull
-    public short[] getOffsetToOpcodeMap(Method method) {
+    public short @NonNull [] getOffsetToOpcodeMap(Method method) {
         UnpackedCode unpackedCode = getMethodAnalysisNoException(UnpackedCode.class, method);
         return unpackedCode == null ? new short[0] : unpackedCode.getOffsetToBytecodeMap();
     }

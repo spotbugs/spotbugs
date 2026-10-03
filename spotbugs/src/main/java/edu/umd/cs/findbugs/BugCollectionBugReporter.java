@@ -21,8 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.PrintWriter;
 
-import jakarta.annotation.Nonnull;
-
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.Debug;
@@ -53,7 +52,7 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
     }
 
     @Override
-    public @Nonnull BugCollection getBugCollection() {
+    public @NonNull BugCollection getBugCollection() {
         return bugCollection;
     }
 

@@ -29,10 +29,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jakarta.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import org.dom4j.DocumentException;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -189,7 +189,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 
     // Subclasses must override doReportBug(), not this method.
     @Override
-    public final void reportBug(@Nonnull BugInstance bugInstance) {
+    public final void reportBug(@NonNull BugInstance bugInstance) {
         if (isRelaxed()) {
             doReportBug(bugInstance);
             return;

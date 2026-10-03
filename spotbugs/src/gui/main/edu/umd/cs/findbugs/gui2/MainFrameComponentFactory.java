@@ -22,7 +22,6 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import jakarta.annotation.Nonnull;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -42,6 +41,7 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugAnnotation;
@@ -306,7 +306,7 @@ public class MainFrameComponentFactory implements Serializable {
         return label;
     }
 
-    private boolean sourceCodeExists(@Nonnull SourceLineAnnotation note) {
+    private boolean sourceCodeExists(@NonNull SourceLineAnnotation note) {
         try {
             mainFrame.getProject().getSourceFinder().findSourceFile(note);
         } catch (IOException e) {
@@ -424,7 +424,7 @@ public class MainFrameComponentFactory implements Serializable {
 
         private final SourceLineAnnotation note;
 
-        BugSummaryMouseListener(@Nonnull BugInstance bugInstance, @Nonnull JLabel label, @Nonnull SourceLineAnnotation link) {
+        BugSummaryMouseListener(@NonNull BugInstance bugInstance, @NonNull JLabel label, @NonNull SourceLineAnnotation link) {
             this.bugInstance = bugInstance;
             this.label = label;
             this.note = link;

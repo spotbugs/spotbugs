@@ -38,9 +38,9 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jakarta.annotation.Nonnull;
 import javax.swing.JOptionPane;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.util.ClassPathUtil;
@@ -96,8 +96,8 @@ public class DetectorFactoryCollection {
     }
 
     private DetectorFactoryCollection(boolean loadCore, boolean forceLoad,
-            @Nonnull Collection<Plugin> pluginsToLoad,
-            @Nonnull Collection<Plugin> enabledPlugins) {
+            @NonNull Collection<Plugin> pluginsToLoad,
+            @NonNull Collection<Plugin> enabledPlugins) {
         if (loadCore) {
             loadCorePlugin();
         }
@@ -186,8 +186,7 @@ public class DetectorFactoryCollection {
         return pluginByIdMap.values();
     }
 
-    @Nonnull
-    public Plugin getCorePlugin() {
+    public @NonNull Plugin getCorePlugin() {
         if (corePlugin == null) {
             throw new IllegalStateException("No core plugin");
         }
@@ -507,7 +506,7 @@ public class DetectorFactoryCollection {
      *            the short bug type code
      * @return the description of that short bug type code means
      */
-    public @Nonnull BugCode getBugCode(String shortBugType) {
+    public @NonNull BugCode getBugCode(String shortBugType) {
         BugCode bugCode = lookupBugCode(shortBugType);
         if (bugCode == null) {
             throw new IllegalArgumentException("Error: missing bug code for key" + shortBugType);

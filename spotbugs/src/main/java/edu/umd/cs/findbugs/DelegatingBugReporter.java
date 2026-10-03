@@ -19,8 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import jakarta.annotation.Nonnull;
-
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
@@ -76,7 +75,7 @@ public class DelegatingBugReporter implements BugReporter {
     }
 
     @Override
-    public void reportBug(@Nonnull BugInstance bugInstance) {
+    public void reportBug(@NonNull BugInstance bugInstance) {
         delegate.reportBug(bugInstance);
     }
 

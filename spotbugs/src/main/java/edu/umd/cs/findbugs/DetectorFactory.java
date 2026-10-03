@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -51,11 +51,11 @@ public class DetectorFactory {
 
     private static final Class<?>[] constructorArgTypes = new Class<?>[] { BugReporter.class };
 
-    private final @Nonnull Plugin plugin;
+    private final @NonNull Plugin plugin;
 
     private final ReflectionDetectorCreator detectorCreator;
 
-    private final @Nonnull @DottedClassName String className;
+    private final @NonNull @DottedClassName String className;
 
     private int positionSpecifiedInPluginDescriptor;
 
@@ -158,7 +158,7 @@ public class DetectorFactory {
      *            string describing JRE version required to run the
      *            detector: e.g., "1.5"
      */
-    public DetectorFactory(@Nonnull Plugin plugin, @Nonnull String className,
+    public DetectorFactory(@NonNull Plugin plugin, @NonNull String className,
             Class<?> detectorClass, boolean enabled, String speed,
             String reports, String requireJRE) {
         this.plugin = plugin;
@@ -381,7 +381,7 @@ public class DetectorFactory {
      * Get the full name of the detector. This is the name of the detector
      * class, with package qualification.
      */
-    public @Nonnull @DottedClassName String getFullName() {
+    public @NonNull @DottedClassName String getFullName() {
         return className;
     }
 

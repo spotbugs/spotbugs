@@ -29,7 +29,8 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
+
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
@@ -89,8 +90,7 @@ public final class SourceCodeDisplay implements Runnable {
         map.clear();
     }
 
-    @Nonnull
-    private JavaSourceDocument getDocument(SourceLineAnnotation source) {
+    private @NonNull JavaSourceDocument getDocument(SourceLineAnnotation source) {
         try {
             SourceFile sourceFile = frame.getProject().getSourceFinder().findSourceFile(source);
             String fullFileName = sourceFile.getFullFileName();

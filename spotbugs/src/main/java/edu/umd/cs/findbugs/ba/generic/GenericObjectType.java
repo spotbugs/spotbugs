@@ -23,11 +23,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import jakarta.annotation.Nonnull;
 
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
@@ -175,7 +175,7 @@ public class GenericObjectType extends ObjectType {
      * @param variable
      *            the type variable e.g. <code>T</code>
      */
-    GenericObjectType(@Nonnull String variable) {
+    GenericObjectType(@NonNull String variable) {
         this(variable, (ReferenceType) null);
     }
 
@@ -183,7 +183,7 @@ public class GenericObjectType extends ObjectType {
      * Create a GenericObjectType that represents a Wildcard with extensions
      *
      */
-    GenericObjectType(@Nonnull String wildcard, @Nullable ReferenceType extension) {
+    GenericObjectType(@NonNull String wildcard, @Nullable ReferenceType extension) {
         super(Type.OBJECT.getClassName());
         this.variable = wildcard;
         this.extension = extension;

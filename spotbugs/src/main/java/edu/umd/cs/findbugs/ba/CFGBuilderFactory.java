@@ -19,9 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import jakarta.annotation.Nonnull;
-
 import org.apache.bcel.generic.MethodGen;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
@@ -45,7 +44,7 @@ public class CFGBuilderFactory {
      *            the method
      * @return a CFGBuilder for the method
      */
-    public static CFGBuilder create(@Nonnull MethodDescriptor descriptor, @Nonnull MethodGen methodGen) {
+    public static CFGBuilder create(@NonNull MethodDescriptor descriptor, @NonNull MethodGen methodGen) {
         return new BetterCFGBuilder2(descriptor, methodGen);
     }
 }
