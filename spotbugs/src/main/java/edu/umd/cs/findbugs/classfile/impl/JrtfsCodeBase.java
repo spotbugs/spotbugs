@@ -85,6 +85,11 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
         }
     }
 
+    @Override
+    public final void finalize() {
+        // do nothing to prevent finalizer attack when constructor throws exception
+    }
+
     /**
      * Opens the module image of the JDK the given {@code jrt-fs.jar} belongs to, which is not
      * necessarily the JDK running SpotBugs.
