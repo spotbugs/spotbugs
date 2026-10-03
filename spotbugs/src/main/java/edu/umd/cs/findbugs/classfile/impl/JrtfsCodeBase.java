@@ -89,8 +89,8 @@ public final class JrtfsCodeBase extends AbstractScannableCodeBase {
             }
     
             IOException cause = e instanceof UncheckedIOException
-                ? ((UncheckedIOException) e).getCause()
-                : (IOException) e;
+                    ? ((UncheckedIOException) e).getCause()
+                    : (IOException) e;
             throw new IOException("Could not initialize jrt-fs for " + fileName, cause);
         }
     }
