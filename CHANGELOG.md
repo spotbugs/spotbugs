@@ -10,6 +10,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Replace deprecated calls to 'SignatureParser' to 'GenericSignatureParser' where feasible ([#4336](https://github.com/spotbugs/spotbugs/pull/4337))
 
 ### Fixed
+- Fix `SS_SHOULD_BE_STATIC` false negative for final fields initialized in initializer blocks ([#4136](https://github.com/spotbugs/spotbugs/issues/4136))
 - Fix `PT_ABSOLUTE_PATH_TRAVERSAL` false negative for `new File(parent, child)`, where the attacker controlled segment is the second argument ([#4340](https://github.com/spotbugs/spotbugs/pull/4340))
 - Fix 'DM_USELESS_THREAD' false negative for Thread subclasses that do not override run() ([#4306](https://github.com/spotbugs/spotbugs/issues/4306))
 - Fix `UL_UNRELEASED_LOCK` false negative when a method acquires a lock and never calls `unlock` ([#4310](https://github.com/spotbugs/spotbugs/issues/4310))

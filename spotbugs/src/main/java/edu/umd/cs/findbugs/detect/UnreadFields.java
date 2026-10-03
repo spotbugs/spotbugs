@@ -734,6 +734,9 @@ public class UnreadFields extends OpcodeStackDetector {
                     data.nullTested.add(f);
                 }
             }
+            if (f.isFinal() && item != null && item.getConstant() != null) {
+                data.constantFields.add(f);
+            }
             data.writtenFields.add(f);
 
             boolean definitelyNullValue = item != null && item.isNull();
