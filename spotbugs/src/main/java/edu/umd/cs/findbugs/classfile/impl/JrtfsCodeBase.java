@@ -83,11 +83,15 @@ public final class JrtfsCodeBase extends AbstractScannableCodeBase {
             root = newFs.getPath("modules");
             packageToModuleMap = createPackageToModuleMap(newFs);
             fs = newFs;
-        } catch (IOException e) {
+        } catch (IOException | UncheckedIOException e) {
             if (newFs != null) {
                 newFs.close();
             }
-            throw new IOException("Could not initialize jrt-fs for " + fileName, e);
+    
+            IOException cause = e instanceof UncheckedIOException
+                ? ((UncheckedIOException) e).getCause()
+                : (IOException) e;
+            throw new IOException("Could not initialize jrt-fs for " + fileName, cause);
         }
     }
 
