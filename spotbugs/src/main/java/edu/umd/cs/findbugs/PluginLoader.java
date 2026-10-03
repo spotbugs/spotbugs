@@ -324,7 +324,7 @@ public class PluginLoader implements AutoCloseable {
      *         in the array.
      * @throws PluginException
      */
-    private static @NonNull URL[] createClassloaderUrls(@NonNull URL url) throws PluginException {
+    private static URL @NonNull [] createClassloaderUrls(@NonNull URL url) throws PluginException {
         List<URL> urls = new ArrayList<>();
         urls.add(url);
 
