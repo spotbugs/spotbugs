@@ -39,8 +39,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import jakarta.annotation.Nonnull;
-
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -115,7 +114,7 @@ public class Plugin implements AutoCloseable {
      * @param pluginId
      *            the plugin's unique identifier
      */
-    public Plugin(String pluginId, String version, Date releaseDate, @Nonnull PluginLoader pluginLoader, boolean enabled, boolean cannotDisable) {
+    public Plugin(String pluginId, String version, Date releaseDate, @NonNull PluginLoader pluginLoader, boolean enabled, boolean cannotDisable) {
         this.pluginId = pluginId;
         if (version == null) {
             version = "";

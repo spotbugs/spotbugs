@@ -178,7 +178,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
     @Override
     public boolean parameterMustBeNonNull(XMethod m, int param) {
         if (DEBUG) {
-            System.out.print("Checking " + m + " param " + param + " for @Nonnull...");
+            System.out.print("Checking " + m + " param " + param + " for @NonNull...");
         }
         TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(m, param,
                 nonnullTypeQualifierValue);

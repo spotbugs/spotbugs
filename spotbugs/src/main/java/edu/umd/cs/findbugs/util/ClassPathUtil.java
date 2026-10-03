@@ -24,7 +24,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Some utility methods for working with the Java class path.
@@ -43,7 +43,7 @@ public class ClassPathUtil {
      * @return full path of named codebase, or null if the codebase couldn't be
      *         found
      */
-    public static String findCodeBaseInClassPath(@Nonnull String codeBaseName, String classPath) {
+    public static String findCodeBaseInClassPath(@NonNull String codeBaseName, String classPath) {
         if (classPath == null) {
             return null;
         }

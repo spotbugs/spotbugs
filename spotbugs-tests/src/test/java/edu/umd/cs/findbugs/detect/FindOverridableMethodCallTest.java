@@ -20,6 +20,11 @@ class FindOverridableMethodCallTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void testDirectCaseWithArguments() {
+        testCase("DirectCaseWithArguments", 13, 25);
+    }
+
+    @Test
     void testIndirectCase1() {
         testCase("IndirectCase1", 9, 22);
     }
@@ -241,6 +246,18 @@ class FindOverridableMethodCallTest extends AbstractIntegrationTest {
     @Test
     void testOverridableMethodCallsInReadObjectCase2() {
         testReadObject("OverridableMethodCallsInReadObjectCase2", 11);
+    }
+
+    @Test
+    void testAppletGetParameter() {
+        performAnalysis("overridableMethodCall/AppletGetParameterCase.class");
+
+        assertBugTypeCount("MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", 1);
+        assertBugInMethodAtLine(
+                "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR",
+                "AppletGetParameterCase",
+                Const.CONSTRUCTOR_NAME,
+                11);
     }
 
     void testCase(String className, int constructorLine, int cloneLine) {

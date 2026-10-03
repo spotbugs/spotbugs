@@ -28,7 +28,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import jakarta.annotation.Nonnull;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
@@ -62,6 +61,7 @@ import edu.umd.cs.findbugs.log.Logger;
 import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
 import edu.umd.cs.findbugs.util.Multiset;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 @SuppressWarnings("serial")
@@ -235,7 +235,7 @@ public class MainFrame extends FBFrame implements LogSync {
         return mainFrameTree.getBugTreeModel();
     }
 
-    public synchronized @Nonnull Project getProject() {
+    public synchronized @NonNull Project getProject() {
         if (curProject == null) {
             curProject = new Project();
         }

@@ -21,8 +21,9 @@ package edu.umd.cs.findbugs;
 
 import java.lang.reflect.Method;
 
-import jakarta.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+
+import org.jspecify.annotations.NonNull;
 
 /**
  * @author pugh
@@ -40,15 +41,15 @@ public class FindBugsMain implements Comparable<FindBugsMain> {
         this.analysis = analysis;
     }
 
-    final @Nonnull Class<?> mainClass;
+    final @NonNull Class<?> mainClass;
 
     final Method mainMethod;
 
-    public final @Nonnull String cmd;
+    public final @NonNull String cmd;
 
     public final String description;
 
-    public final @Nonnull String kind;
+    public final @NonNull String kind;
 
     final boolean analysis;
 

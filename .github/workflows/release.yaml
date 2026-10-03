@@ -56,10 +56,11 @@ jobs:
             exit 1
           fi
         shell: bash
-      - name: Set up JDK 25
+      - name: Set up JDK 21
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
-          java-version: '25'
+          # keep java '21' until eclipse updated past security manager inclusion
+          java-version: '21'
           distribution: temurin
           cache: gradle
       - uses: gradle/actions/wrapper-validation@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0

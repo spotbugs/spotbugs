@@ -28,8 +28,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
-import jakarta.annotation.Nonnull;
-
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.charsets.UTF8;
@@ -87,7 +86,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
             addSwitch("-exitcode", "set exit code of process");
         }
 
-        public @Nonnull Project getProject() {
+        public @NonNull Project getProject() {
             return project;
         }
 

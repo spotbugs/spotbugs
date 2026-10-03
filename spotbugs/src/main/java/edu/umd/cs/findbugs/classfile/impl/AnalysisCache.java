@@ -26,10 +26,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import jakarta.annotation.Nonnull;
-
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugReporter;
@@ -241,7 +240,7 @@ public class AnalysisCache implements IAnalysisCache {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <E> E getClassAnalysis(Class<E> analysisClass, @Nonnull ClassDescriptor classDescriptor) throws CheckedAnalysisException {
+    public <E> E getClassAnalysis(Class<E> analysisClass, @NonNull ClassDescriptor classDescriptor) throws CheckedAnalysisException {
         requireNonNull(classDescriptor, "classDescriptor is null");
         // Get the descriptor->result map for this analysis class,
         // creating if necessary
@@ -303,7 +302,7 @@ public class AnalysisCache implements IAnalysisCache {
     }
 
     @Override
-    public <E> E probeClassAnalysis(Class<E> analysisClass, @Nonnull ClassDescriptor classDescriptor) {
+    public <E> E probeClassAnalysis(Class<E> analysisClass, @NonNull ClassDescriptor classDescriptor) {
         Map<ClassDescriptor, Object> descriptorMap = classAnalysisMap.get(analysisClass);
         if (descriptorMap == null) {
             return null;
@@ -316,7 +315,7 @@ public class AnalysisCache implements IAnalysisCache {
     }
 
     @Override
-    public <E> E getMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
+    public <E> E getMethodAnalysis(Class<E> analysisClass, @NonNull MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
         requireNonNull(methodDescriptor, "methodDescriptor is null");
         ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
         Object object = classContext.getMethodAnalysis(analysisClass, methodDescriptor);
@@ -377,7 +376,7 @@ public class AnalysisCache implements IAnalysisCache {
     }
 
     @Override
-    public <E> void eagerlyPutMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor, E analysisObject) {
+    public <E> void eagerlyPutMethodAnalysis(Class<E> analysisClass, @NonNull MethodDescriptor methodDescriptor, E analysisObject) {
         try {
             ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());
             assert analysisClass.isInstance(analysisObject);
@@ -391,7 +390,7 @@ public class AnalysisCache implements IAnalysisCache {
     }
 
     @Override
-    public void purgeMethodAnalyses(@Nonnull MethodDescriptor methodDescriptor) {
+    public void purgeMethodAnalyses(@NonNull MethodDescriptor methodDescriptor) {
         try {
 
             ClassContext classContext = getClassAnalysis(ClassContext.class, methodDescriptor.getClassDescriptor());

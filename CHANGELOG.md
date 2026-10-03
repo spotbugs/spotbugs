@@ -10,6 +10,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Replace deprecated calls to 'SignatureParser' to 'GenericSignatureParser' where feasible ([#4336](https://github.com/spotbugs/spotbugs/pull/4337))
 
 ### Fixed
+- Fix `PT_ABSOLUTE_PATH_TRAVERSAL` false negative for `new File(parent, child)`, where the attacker controlled segment is the second argument ([#4340](https://github.com/spotbugs/spotbugs/pull/4340))
 - Fix 'DM_USELESS_THREAD' false negative for Thread subclasses that do not override run() ([#4306](https://github.com/spotbugs/spotbugs/issues/4306))
 - Fix `UL_UNRELEASED_LOCK` false negative when a method acquires a lock and never calls `unlock` ([#4310](https://github.com/spotbugs/spotbugs/issues/4310))
 - Fix `TLW_TWO_LOCK_WAIT` false negatives when a class waits while holding two monitors but has no matching `notify()` call ([#4323](https://github.com/spotbugs/spotbugs/issues/4323))
@@ -30,10 +31,15 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix SARIF output writing source-location URI syntax exceptions to stderr when source filenames are unknown ([#1412](https://github.com/spotbugs/spotbugs/issues/1412))
 - Narrow the definition of singletons ([#2985](https://github.com/spotbugs/spotbugs/issues/2985))
 - Fix `NP_LOAD_OF_KNOWN_NULL_VALUE` false negative when null check uses `instanceof` ([#3916](https://github.com/spotbugs/spotbugs/issues/3916))
+- Fix `MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR` false negative when a constructor calls an overridable method that takes arguments, such as a setter (e.g. `setValue(value)`) ([#4309](https://github.com/spotbugs/spotbugs/issues/4309))
 - Fix CLI launcher scripts intercepting `-conserveSpace` with a JVM system property instead passing it to Java Application as equivalent to `-effort:min` ([#4268](https://github.com/spotbugs/spotbugs/pull/4289))
+- Fix `USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` false positive when `clone()` assigns a newly created lock object to the copy ([#4320](https://github.com/spotbugs/spotbugs/issues/4320))
 - Fix `CT_CONSTRUCTOR_THROW` false positive with sealed classes ([#4259](https://github.com/spotbugs/spotbugs/issues/4259))
 - Fix `JrtfsCodeBase` resolving JDK classes from the module image of the running JVM instead of the JDK the given `jrt-fs.jar` belongs to, so that `-auxclasspath <other-jdk>/lib/jrt-fs.jar` is honoured ([#4329](https://github.com/spotbugs/spotbugs/pull/4329))
 - Fix `USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` false positive when a lock is assigned to a newly allocated object ([#4331](https://github.com/spotbugs/spotbugs/issues/4331))
+
+### Added
+- Add automatic completion of class names in GUI class filter ([#749](https://github.com/spotbugs/spotbugs/issues/749))
 
 ## 4.10.4 - 2026-08-19
 ### Fixed

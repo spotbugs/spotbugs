@@ -23,8 +23,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.annotation.Nonnull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Field;
@@ -39,6 +37,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;
@@ -782,7 +781,7 @@ public class Hierarchy {
      * @return an XField object representing the field, or null if no such field
      *         could be found
      */
-    public static @Nullable XField findXField(FieldInstruction fins, @Nonnull ConstantPoolGen cpg) {
+    public static @Nullable XField findXField(FieldInstruction fins, @NonNull ConstantPoolGen cpg) {
 
         String className = fins.getClassName(cpg);
         String fieldName = fins.getFieldName(cpg);
