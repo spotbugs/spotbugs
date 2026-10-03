@@ -77,7 +77,7 @@ public final class JrtfsCodeBase extends AbstractScannableCodeBase {
         super(codeBaseLocator);
         this.fileName = fileName;
         
-        JrtFileSystem newFs = null;
+        FileSystem newFs = null;
         try {
             newFs = openJrtFileSystem(fileName);
             root = newFs.getPath("modules");
