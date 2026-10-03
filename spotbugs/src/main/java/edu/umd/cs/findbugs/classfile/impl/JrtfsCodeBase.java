@@ -58,7 +58,7 @@ import edu.umd.cs.findbugs.util.ClassName;
  *
  * @author andrey
  */
-public class JrtfsCodeBase extends AbstractScannableCodeBase {
+public final class JrtfsCodeBase extends AbstractScannableCodeBase {
     private static final int PRIME = 31;
 
     private FileSystem fs;
@@ -76,18 +76,19 @@ public class JrtfsCodeBase extends AbstractScannableCodeBase {
     public JrtfsCodeBase(ICodeBaseLocator codeBaseLocator, @NonNull String fileName) throws IOException {
         super(codeBaseLocator);
         this.fileName = fileName;
+        
+        JrtFileSystem newFs = null;
         try {
-            fs = openJrtFileSystem(fileName);
-            root = fs.getPath("modules");
-            packageToModuleMap = createPackageToModuleMap(fs);
+            newFs = openJrtFileSystem(fileName);
+            root = newFs.getPath("modules");
+            packageToModuleMap = createPackageToModuleMap(newFs);
+            fs = newFs;
         } catch (IOException e) {
+            if (newFs != null) {
+                newFs.close();
+            }
             throw new IOException("Could not initialize jrt-fs for " + fileName, e);
         }
-    }
-
-    @Override
-    public final void finalize() {
-        // do nothing to prevent finalizer attack when constructor throws exception
     }
 
     /**
