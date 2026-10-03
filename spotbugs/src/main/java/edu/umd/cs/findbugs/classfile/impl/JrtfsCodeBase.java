@@ -85,7 +85,20 @@ public final class JrtfsCodeBase extends AbstractScannableCodeBase {
             fs = newFs;
         } catch (IOException | UncheckedIOException e) {
             if (newFs != null) {
-                newFs.close();
+                try {
+                    newFs.close();
+                } catch (IOException closeException) {
+                    e.addSuppressed(closeException);
+                }
+
+                ClassLoader classLoader = newFs.getClass().getClassLoader();
+                if (classLoader instanceof URLClassLoader) {
+                    try {
+                        ((URLClassLoader) classLoader).close();
+                    } catch (IOException closeException) {
+                        e.addSuppressed(closeException);
+                    }
+                }
             }
 
             IOException cause = e instanceof UncheckedIOException
