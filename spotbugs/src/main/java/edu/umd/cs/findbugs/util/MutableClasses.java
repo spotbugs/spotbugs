@@ -354,11 +354,17 @@ public class MutableClasses {
         }
 
         private boolean computeSerializable() {
-            // We are considering directly-implemented interfaces for now
             for (String iface : cls.getInterfaceNames()) {
                 if (iface.equals("java.io.Serializable")) {
                     return true;
                 }
+                 try {
+                     if (load(Repository.lookupClass(iface), null).isSerializable()) {
+                         return true;
+                     }
+                 } catch (ClassNotFoundException e) {
+                     AnalysisContext.reportMissingClass(e);
+                 }
             }
 
             final ClassAnalysis maybeSuper = getSuperAnalysis();
