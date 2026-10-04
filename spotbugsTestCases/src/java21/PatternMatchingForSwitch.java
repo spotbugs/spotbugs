@@ -11,7 +11,7 @@ class Triangle extends Shape {
 }
 
 /**
- * @see <a href="https://openjdk.java.net/jeps/406">JEP 406: Pattern Matching for switch (Preview)</a>
+ * @see <a href="https://openjdk.org/jeps/441">JEP 441: Pattern Matching for switch</a>
  */
 public class PatternMatchingForSwitch {
     String formatterPatternSwitch(Object o) {
