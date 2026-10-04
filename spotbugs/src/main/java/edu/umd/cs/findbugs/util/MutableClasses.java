@@ -358,13 +358,13 @@ public class MutableClasses {
                 if (iface.equals("java.io.Serializable")) {
                     return true;
                 }
-                 try {
-                     if (load(Repository.lookupClass(iface), null).isSerializable()) {
-                         return true;
-                     }
-                 } catch (ClassNotFoundException e) {
-                     AnalysisContext.reportMissingClass(e);
-                 }
+                try {
+                    if (load(Repository.lookupClass(iface), null).isSerializable()) {
+                        return true;
+                    }
+                } catch (ClassNotFoundException e) {
+                    AnalysisContext.reportMissingClass(e);
+                }
             }
 
             final ClassAnalysis maybeSuper = getSuperAnalysis();
