@@ -1,10 +1,10 @@
-class Shape {
+class MyShape {
 }
 
-class Rectangle extends Shape {
+class MyRectangle extends MyShape {
 }
 
-class Triangle extends Shape {
+class MyTriangle extends MyShape {
     int calculateArea() {
         return 0;
     }
@@ -25,11 +25,11 @@ public class PatternMatchingForSwitch {
         };
     }
 
-    void testTriangle(Shape s) {
+    void testTriangle(MyShape s) {
         switch (s) {
-            case Triangle t when t.calculateArea() > 100 ->
+            case MyTriangle t when t.calculateArea() > 100 ->
                 System.out.println("Large triangle");
-            case Triangle t ->
+            case MyTriangle t ->
                 System.out.println("Small triangle");
             default -> System.out.println("Non-triangle");
         }

@@ -7,7 +7,7 @@ import java.nio.file.Path;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnJreRange;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
