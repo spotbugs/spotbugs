@@ -1,6 +1,5 @@
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.test.SpotBugsExtension;
 import edu.umd.cs.findbugs.test.SpotBugsRunner;
 
