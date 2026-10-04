@@ -66,7 +66,9 @@ jobs:
       - uses: gradle/actions/wrapper-validation@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
       - name: Download Eclipse
         run: |
-          curl --continue-at - --create-dirs --location 'https://archive.eclipse.org/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-linux-gtk-x86_64.tar.gz' --output eclipse-sdk/eclipse.tar.gz
+          curl --continue-at - --create-dirs --location --proto =https --proto-redir =https \
+          'https://archive.eclipse.org/eclipse/downloads/drops4/R-${{ env.eclipse-version }}-${{ env.eclipse-date }}/eclipse-SDK-${{ env.eclipse-version }}-linux-gtk-x86_64.tar.gz' \
+          --output eclipse-sdk/eclipse.tar.gz
           tar xzf eclipse-sdk/eclipse.tar.gz eclipse
           echo "eclipseRoot.dir=$(pwd)/eclipse" | tee eclipsePlugin/local.properties
       - name: Build on tag
