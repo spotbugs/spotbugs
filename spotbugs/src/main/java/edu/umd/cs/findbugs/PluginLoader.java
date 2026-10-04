@@ -55,7 +55,6 @@ import java.util.zip.ZipFile;
 
 import javax.annotation.WillClose;
 
-import edu.umd.cs.findbugs.util.SecurityManagerHandler;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -80,6 +79,7 @@ import edu.umd.cs.findbugs.plugins.DuplicatePluginIdError;
 import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.JavaWebStart;
+import edu.umd.cs.findbugs.util.SecurityManagerHandler;
 import edu.umd.cs.findbugs.xml.XMLUtil;
 
 /**

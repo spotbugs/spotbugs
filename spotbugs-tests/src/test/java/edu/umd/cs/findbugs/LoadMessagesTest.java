@@ -28,7 +28,9 @@ import java.net.URL;
 
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.xml.sax.XMLReader;
 
 import edu.umd.cs.findbugs.charsets.UTF8;
 import edu.umd.cs.findbugs.io.IO;
@@ -38,6 +40,17 @@ import edu.umd.cs.findbugs.xml.XMLUtil;
  * @author gtoison
  */
 class LoadMessagesTest {
+
+    @Test
+    void buildSAXReaderDisablesExternalEntities() throws Exception {
+        SAXReader reader = XMLUtil.buildSAXReader();
+        XMLReader xmlReader = reader.getXMLReader();
+
+        Assertions.assertTrue(xmlReader.getFeature("http://apache.org/xml/features/disallow-doctype-decl"));
+        Assertions.assertFalse(xmlReader.getFeature("http://xml.org/sax/features/external-general-entities"));
+        Assertions.assertFalse(xmlReader.getFeature("http://xml.org/sax/features/external-parameter-entities"));
+        Assertions.assertFalse(xmlReader.getFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd"));
+    }
 
     @Test
     void loadMessages() {
