@@ -42,6 +42,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `CT_CONSTRUCTOR_THROW` false positive with sealed classes ([#4259](https://github.com/spotbugs/spotbugs/issues/4259))
 - Fix `JrtfsCodeBase` resolving JDK classes from the module image of the running JVM instead of the JDK the given `jrt-fs.jar` belongs to, so that `-auxclasspath <other-jdk>/lib/jrt-fs.jar` is honoured ([#4329](https://github.com/spotbugs/spotbugs/pull/4329))
 - Fix `USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` false positive when a lock is assigned to a newly allocated object ([#4331](https://github.com/spotbugs/spotbugs/issues/4331))
+- Do not flag `writeReplace()` and `writeExternal()` as mutators ([#1719](https://github.com/spotbugs/spotbugs/pull/1719))
 
 ## 4.10.4 - 2026-08-19
 ### Fixed
