@@ -7,7 +7,7 @@ import java.nio.file.Path;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.EnabledOnJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -18,7 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 class PatternMatchingForSwitchTest {
 
     @Test
-    @EnabledOnJre(JRE.JAVA_21)
+    @EnabledForJreRange(min = JRE.JAVA_21)
     public void test(SpotBugsRunner spotbugs) {
         BugCollection bugCollection = spotbugs.performAnalysis(
                 Path.of("../spotbugsTestCases/build/classes/java/java21/PatternMatchingForSwitch.class"),
