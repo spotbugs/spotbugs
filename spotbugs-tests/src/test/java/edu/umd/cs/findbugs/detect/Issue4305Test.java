@@ -19,5 +19,6 @@ class Issue4305Test extends AbstractIntegrationTest {
         assertNoBugInMethod(BUG_TYPE, "Issue4305", "convertOther");
         assertNoBugInMethod(BUG_TYPE, "Issue4305", "privateConvert");
         assertBugInMethod(BUG_TYPE, "Issue4305Outer$Subject", "convert");
+        assertBugTypeCount(BUG_TYPE, 3);
     }
 }
