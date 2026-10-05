@@ -31,8 +31,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
@@ -96,6 +94,8 @@ import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.util.Values;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+
+import org.jspecify.annotations.Nullable;
 
 public class UnreadFields extends OpcodeStackDetector {
     private static final boolean DEBUG = SystemProperties.getBoolean("unreadfields.debug");
@@ -838,7 +838,7 @@ public class UnreadFields extends OpcodeStackDetector {
     }
 
     /** Returns the access type granted by the given {@code MethodHandles.Lookup} method, or null if it is not a field lookup. */
-    private static @CheckForNull AccessType lookupAccessType(final String methodName, final String signature) {
+    private static @Nullable AccessType lookupAccessType(final String methodName, final String signature) {
         switch (methodName) {
         case "findGetter":
         case "findStaticGetter":
@@ -854,7 +854,7 @@ public class UnreadFields extends OpcodeStackDetector {
         }
     }
 
-    private @CheckForNull String resolveFieldSignature(final Item fieldStackItem) {
+    private @Nullable String resolveFieldSignature(final Item fieldStackItem) {
         XField xField = fieldStackItem.getXField();
         if (xField != null) {
             // Primitive field is already resolved. Get signature from it.
