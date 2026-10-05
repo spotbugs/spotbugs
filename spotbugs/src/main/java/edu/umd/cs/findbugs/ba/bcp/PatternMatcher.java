@@ -28,7 +28,7 @@ import java.util.LinkedList;
 // nullable parameters on this nested constructor. Currently it reports
 // false NP_NONNULL_PARAM_VIOLATION findings for the null parent and
 // bindingSet arguments.
-import jakarta.annotation.Nullable;
+import javax.annotation.Nullable;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
