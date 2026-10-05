@@ -13,8 +13,6 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +35,9 @@ import java.util.function.Consumer;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 /**
  * <p>
  * This class runs analysis with SpotBugs. The target class files and
@@ -53,8 +54,7 @@ public class AnalysisRunner {
      * SpotBugs stores relation between plugin-id and {@link Plugin} instance in a static field ({@code Plugin.allPlugins}),
      * so we need to store Plugin information in static field too, to avoid duplicated plugin loading.
      */
-    @Nullable
-    private static final File PLUGIN_JAR;
+    private static final @Nullable File PLUGIN_JAR;
 
     static {
         File jarFile;
@@ -71,8 +71,7 @@ public class AnalysisRunner {
         PLUGIN_JAR = jarFile;
     }
 
-    @Nonnull
-    public AnalysisRunner addAuxClasspathEntry(Path path) {
+    public @NonNull AnalysisRunner addAuxClasspathEntry(Path path) {
         Objects.requireNonNull(path);
         if (!path.toFile().canRead()) {
             throw new IllegalArgumentException("Cannot read " + path.toAbsolutePath());
@@ -81,14 +80,12 @@ public class AnalysisRunner {
         return this;
     }
 
-    @Nonnull
-    public BugCollectionBugReporter run(UserPreferences userPreferences, Path... files) {
+    public @NonNull BugCollectionBugReporter run(UserPreferences userPreferences, Path... files) {
         return this.run(engine -> {
         }, userPreferences, files);
     }
 
-    @Nonnull
-    public BugCollectionBugReporter run(Consumer<IFindBugsEngine> engineCustomization, UserPreferences userPreferences, Path... files) {
+    public @NonNull BugCollectionBugReporter run(Consumer<IFindBugsEngine> engineCustomization, UserPreferences userPreferences, Path... files) {
         DetectorFactoryCollection.resetInstance(new DetectorFactoryCollection());
 
         try (FindBugs2 engine = new FindBugs2(); Project project = createProject(files)) {
