@@ -43,10 +43,10 @@ final class Rule {
 
     final @NonNull List<String> tags;
 
-    final @NonNull int cweid;
+    final int cweid;
 
     Rule(@NonNull String id, @NonNull String shortDescription, @NonNull String fullDescription, @NonNull String defaultText, @Nullable URI helpUri,
-            @NonNull List<String> tags, @NonNull int cweid) {
+            @NonNull List<String> tags, int cweid) {
         this.id = Objects.requireNonNull(id);
         this.shortDescription = Objects.requireNonNull(shortDescription);
         this.fullDescription = Objects.requireNonNull(fullDescription).trim();

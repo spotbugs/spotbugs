@@ -23,7 +23,7 @@ class Notification {
 
     final @NonNull Level level;
 
-    final @NonNull SarifException exception;
+    final @Nullable SarifException exception;
 
     Notification(@NonNull String id, @NonNull String message, @NonNull Level level, @Nullable SarifException exception) {
         this.id = Objects.requireNonNull(id);

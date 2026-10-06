@@ -49,7 +49,7 @@ public class ProfileSummary implements IProfiler, XMLWriteable {
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ProfileSummary.class);
     private final Profiler[] profilers;
 
-    public ProfileSummary(@NonNull Profiler... profilers) {
+    public ProfileSummary(Profiler @NonNull ... profilers) {
         this.profilers = Objects.requireNonNull(profilers);
     }
 

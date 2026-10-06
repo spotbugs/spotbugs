@@ -17,7 +17,7 @@ class Extension {
 
     final @NonNull String name;
 
-    final @NonNull String shortDescription;
+    final @Nullable String shortDescription;
 
     final @Nullable String fullDescription;
 
