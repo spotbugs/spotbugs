@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.google.gson.JsonObject;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * A taxon SARIF element (see: §3.19.3).

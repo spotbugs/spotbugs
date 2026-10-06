@@ -1,27 +1,29 @@
 package edu.umd.cs.findbugs.sarif;
 
 import edu.umd.cs.findbugs.Plugin;
-import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
+
 import com.google.gson.JsonObject;
-import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 class Extension {
-    @NonNull
-    final String version;
-    @NonNull
-    final String name;
-    @Nullable
-    final String shortDescription;
-    @Nullable
-    final String fullDescription;
-    @Nullable
-    final URI informationUri;
-    @Nullable
-    final String organization;
+
+    final @NonNull String version;
+
+    final @NonNull String name;
+
+    final @NonNull String shortDescription;
+
+    final @Nullable String fullDescription;
+
+    final @Nullable URI informationUri;
+
+    final @Nullable String organization;
 
     Extension(@NonNull String version, @NonNull String name, @Nullable String shortDescription, @Nullable String fullDescription,
             @Nullable URI informationUri, @Nullable String organization) {

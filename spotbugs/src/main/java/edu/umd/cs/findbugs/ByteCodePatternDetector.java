@@ -29,10 +29,10 @@ import java.util.stream.StreamSupport;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.MethodGen;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -104,8 +104,7 @@ public abstract class ByteCodePatternDetector implements Detector {
         }
     }
 
-    @NonNull
-    private static <T> Stream<T> createStream(@NonNull Iterator<T> iter) {
+    private static <T> @NonNull Stream<T> createStream(@NonNull Iterator<T> iter) {
         Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED);
         return StreamSupport.stream(spliterator, false);
     }

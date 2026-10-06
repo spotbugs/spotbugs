@@ -1,7 +1,7 @@
 package edu.umd.cs.findbugs.sarif;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 
@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.jspecify.annotations.NonNull;
 
 /**
  * A class representing {@code stack} object (§3.44)
@@ -57,8 +59,8 @@ class Stack {
      * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/cs01/sarif-v2.1.0-cs01.html#_Toc16012758">3.45 stackFrame object</a>
      */
     static class StackFrame {
-        @NonNull
-        final Location location;
+
+        final @NonNull Location location;
 
         StackFrame(@NonNull Location location) {
             this.location = Objects.requireNonNull(location);

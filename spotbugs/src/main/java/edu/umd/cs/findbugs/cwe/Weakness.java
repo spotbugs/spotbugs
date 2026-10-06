@@ -1,6 +1,6 @@
 package edu.umd.cs.findbugs.cwe;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * A weakness represents a single weakness of the Common Weakness Enumeration (CWE). The Common Weakness Enumeration is

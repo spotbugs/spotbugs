@@ -37,9 +37,10 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.graph.DepthFirstSearch;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+
+import org.jspecify.annotations.NonNull;
 
 /**
  * A plan for executing Detectors on an application. Automatically assigns
@@ -532,8 +533,7 @@ public class ExecutionPlan {
     /**
      * @return Returns the factoryChooser used during analysis.
      */
-    @NonNull
-    public DetectorFactoryChooser getFactoryChooser() {
+    public @NonNull DetectorFactoryChooser getFactoryChooser() {
         return factoryChooser;
     }
 }

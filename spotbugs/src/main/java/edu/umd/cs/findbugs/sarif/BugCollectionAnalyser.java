@@ -18,28 +18,28 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugRanker;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.cwe.Weakness;
 import edu.umd.cs.findbugs.cwe.WeaknessCatalog;
 
+import org.jspecify.annotations.NonNull;
+
 class BugCollectionAnalyser {
-    @NonNull
-    private final List<Rule> rules = new ArrayList<>();
-    @NonNull
-    private final List<Result> results = new ArrayList<>();
-    @NonNull
-    private final Map<String, Integer> typeToIndex = new HashMap<>();
-    @NonNull
-    private final List<List<Placeholder>> indexToPlaceholders = new ArrayList<>();
-    @NonNull
-    private final SortedSet<Taxon> taxa = new TreeSet<>();
+
+    private final @NonNull List<Rule> rules = new ArrayList<>();
+
+    private final @NonNull List<Result> results = new ArrayList<>();
+
+    private final @NonNull Map<String, Integer> typeToIndex = new HashMap<>();
+
+    private final @NonNull List<List<Placeholder>> indexToPlaceholders = new ArrayList<>();
+
+    private final @NonNull SortedSet<Taxon> taxa = new TreeSet<>();
 
     /**
      * Map baseURI to uriBaseId. e.g. {@code "/user/ubuntu/github/spotbugs/" -> "8736793520"}
      */
-    @NonNull
-    private final Map<URI, String> baseToId = new HashMap<>();
+    private final @NonNull Map<URI, String> baseToId = new HashMap<>();
 
     BugCollectionAnalyser(@NonNull BugCollection bugCollection) {
         SourceFinder sourceFinder = bugCollection.getProject().getSourceFinder();
