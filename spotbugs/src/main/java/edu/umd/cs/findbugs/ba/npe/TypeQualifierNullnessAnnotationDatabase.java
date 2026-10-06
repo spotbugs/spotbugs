@@ -19,10 +19,9 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.meta.When;
 
-import edu.umd.cs.findbugs.bytecode.MemberUtils;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Type;
 
@@ -33,17 +32,18 @@ import edu.umd.cs.findbugs.ba.AnnotationDatabase.Target;
 import edu.umd.cs.findbugs.ba.DefaultNullnessAnnotations;
 import edu.umd.cs.findbugs.ba.INullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.jsr305.FindBugsDefaultAnnotations;
 import edu.umd.cs.findbugs.ba.jsr305.JSR305NullnessAnnotations;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierAnnotation;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierApplications;
 import edu.umd.cs.findbugs.ba.jsr305.TypeQualifierValue;
+import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -107,7 +107,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         }
     }
 
-    public @CheckForNull NullnessAnnotation getInheritedAnnotation(XMethod m, int parameter) {
+    public @Nullable NullnessAnnotation getInheritedAnnotation(XMethod m, int parameter) {
         Profiler profiler = Global.getAnalysisCache().getProfiler();
         profiler.start(this.getClass());
         try {
@@ -119,7 +119,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         }
     }
 
-    public @CheckForNull NullnessAnnotation getInheritedAnnotation(XMethod m) {
+    public @Nullable NullnessAnnotation getInheritedAnnotation(XMethod m) {
         Profiler profiler = Global.getAnalysisCache().getProfiler();
         profiler.start(this.getClass());
         try {
@@ -130,7 +130,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         }
     }
 
-    public @CheckForNull NullnessAnnotation getDirectAnnotation(Object o) {
+    public @Nullable NullnessAnnotation getDirectAnnotation(Object o) {
         Profiler profiler = Global.getAnalysisCache().getProfiler();
         profiler.start(this.getClass());
         try {
@@ -178,7 +178,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
     @Override
     public boolean parameterMustBeNonNull(XMethod m, int param) {
         if (DEBUG) {
-            System.out.print("Checking " + m + " param " + param + " for @Nonnull...");
+            System.out.print("Checking " + m + " param " + param + " for @NonNull...");
         }
         TypeQualifierAnnotation tqa = TypeQualifierApplications.getEffectiveTypeQualifierAnnotation(m, param,
                 nonnullTypeQualifierValue);
@@ -318,7 +318,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         ((FieldInfo) xfield).addAnnotation(annotationValue);
     }
 
-    public @CheckForNull XMethod getXMethod(String cName, String mName, String sig, boolean isStatic) {
+    public @Nullable XMethod getXMethod(String cName, String mName, String sig, boolean isStatic) {
         ClassDescriptor classDesc = DescriptorFactory.instance().getClassDescriptorForDottedClassName(cName);
         ClassInfo xclass;
 
@@ -393,7 +393,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
         }
 
         if (SystemProperties.ASSERTIONS_ENABLED) {
-            SignatureParser parser = new SignatureParser(sig);
+            GenericSignatureParser parser = new GenericSignatureParser(sig);
             int numParams = parser.getNumParameters();
             assert param < numParams;
         }
@@ -416,7 +416,7 @@ public class TypeQualifierNullnessAnnotationDatabase implements INullnessAnnotat
      *            Nonnull-based TypeQualifierAnnotation
      * @return corresponding NullnessAnnotation
      */
-    private @CheckForNull NullnessAnnotation toNullnessAnnotation(@CheckForNull TypeQualifierAnnotation tqa) {
+    private @Nullable NullnessAnnotation toNullnessAnnotation(@Nullable TypeQualifierAnnotation tqa) {
         if (tqa == null || tqa == TypeQualifierAnnotation.OVERRIDES_BUT_NO_ANNOTATION) {
             return null;
         }

@@ -23,9 +23,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Field;
@@ -40,6 +37,8 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
@@ -319,12 +318,12 @@ public class Hierarchy {
      * @return the JavaClassAndMethod, or null if no matching method can be
      *         found
      */
-    public static @CheckForNull JavaClassAndMethod findInvocationLeastUpperBound(InvokeInstruction inv, ConstantPoolGen cpg)
+    public static @Nullable JavaClassAndMethod findInvocationLeastUpperBound(InvokeInstruction inv, ConstantPoolGen cpg)
             throws ClassNotFoundException {
         return findInvocationLeastUpperBound(inv, cpg, ANY_METHOD);
     }
 
-    public static @CheckForNull JavaClassAndMethod findInvocationLeastUpperBound(InvokeInstruction inv, ConstantPoolGen cpg,
+    public static @Nullable JavaClassAndMethod findInvocationLeastUpperBound(InvokeInstruction inv, ConstantPoolGen cpg,
             JavaClassAndMethodChooser methodChooser) throws ClassNotFoundException {
 
         if (DEBUG_METHOD_LOOKUP) {
@@ -370,7 +369,7 @@ public class Hierarchy {
                 opcode == Const.INVOKEINTERFACE);
     }
 
-    public static @CheckForNull JavaClassAndMethod findInvocationLeastUpperBound(JavaClass jClass, String methodName, String methodSig,
+    public static @Nullable JavaClassAndMethod findInvocationLeastUpperBound(JavaClass jClass, String methodName, String methodSig,
             JavaClassAndMethodChooser methodChooser, boolean invokeInterface) throws ClassNotFoundException {
         JavaClassAndMethod result = findMethod(jClass, methodName, methodSig, methodChooser);
         if (result != null) {
@@ -405,11 +404,11 @@ public class Hierarchy {
      * @return the JavaClassAndMethod, or null if no such method exists in the
      *         class
      */
-    public static @CheckForNull JavaClassAndMethod findMethod(JavaClass javaClass, String methodName, String methodSig) {
+    public static @Nullable JavaClassAndMethod findMethod(JavaClass javaClass, String methodName, String methodSig) {
         return findMethod(javaClass, methodName, methodSig, ANY_METHOD);
     }
 
-    public static @CheckForNull JavaClassAndMethod findMethod(JavaClass javaClass, String methodName, String methodSig,
+    public static @Nullable JavaClassAndMethod findMethod(JavaClass javaClass, String methodName, String methodSig,
             JavaClassAndMethodChooser chooser) {
         if (DEBUG_METHOD_LOOKUP) {
             System.out.println("Check " + javaClass.getClassName());
@@ -446,7 +445,7 @@ public class Hierarchy {
      * @return the JavaClassAndMethod, or null if no such method exists in the
      *         class
      */
-    public static @CheckForNull XMethod findMethod(ClassDescriptor classDesc, String methodName, String methodSig, boolean isStatic) {
+    public static @Nullable XMethod findMethod(ClassDescriptor classDesc, String methodName, String methodSig, boolean isStatic) {
         if (DEBUG_METHOD_LOOKUP) {
             System.out.println("Check " + classDesc.getClassName());
         }
@@ -782,7 +781,7 @@ public class Hierarchy {
      * @return an XField object representing the field, or null if no such field
      *         could be found
      */
-    public static @CheckForNull XField findXField(FieldInstruction fins, @Nonnull ConstantPoolGen cpg) {
+    public static @Nullable XField findXField(FieldInstruction fins, @NonNull ConstantPoolGen cpg) {
 
         String className = fins.getClassName(cpg);
         String fieldName = fins.getFieldName(cpg);

@@ -327,6 +327,9 @@ public class BuildObligationPolicyDatabase implements Detector2, NonReportingDet
         database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Connection")),
                 new ExactStringMatcher("prepareStatement"), new RegexStringMatcher("^.*\\)Ljava/sql/PreparedStatement;$"), false,
                 ObligationPolicyDatabaseActionType.ADD, ObligationPolicyDatabaseEntryType.STRONG, statement));
+        database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Connection")),
+                new ExactStringMatcher("prepareCall"), new RegexStringMatcher("^.*\\)Ljava/sql/CallableStatement;$"), false,
+                ObligationPolicyDatabaseActionType.ADD, ObligationPolicyDatabaseEntryType.STRONG, statement));
         database.addEntry(new MatchMethodEntry(new SubtypeTypeMatcher(BCELUtil.getObjectTypeInstance("java.sql.Statement")),
                 new ExactStringMatcher("executeQuery"), new RegexStringMatcher("^.*\\)Ljava/sql/ResultSet;$"), false,
                 ObligationPolicyDatabaseActionType.ADD, ObligationPolicyDatabaseEntryType.STRONG, resultSet));

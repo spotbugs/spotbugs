@@ -20,11 +20,14 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import edu.umd.cs.findbugs.bytecode.MemberUtils;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 import org.apache.bcel.Const;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -61,10 +64,10 @@ import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -82,6 +85,9 @@ public class DumbMethods extends OpcodeStackDetector {
         }
 
         public abstract void sawOpcode(int seen);
+
+        public void afterMethod(Method method) {
+        }
     }
 
     private final class InvalidMinMaxSubDetector extends SubDetector {
@@ -494,9 +500,14 @@ public class DumbMethods extends OpcodeStackDetector {
 
         private boolean freshRandomOneBelowTos = false;
 
+        private int randomInitPC;
+
+        private final Map<Integer, BugInstance> pcToBugInstanceMap = new HashMap<>();
+
         @Override
         public void initMethod(Method method) {
             freshRandomOnTos = false;
+            randomInitPC = 0;
         }
 
         @Override
@@ -507,17 +518,38 @@ public class DumbMethods extends OpcodeStackDetector {
                 if ((CLASS_NAME_RANDOM.equals(classConstantOperand) || "java/security/SecureRandom".equals(classConstantOperand))
                         && !("doubles".equals(nameConstantOperand) || "ints".equals(nameConstantOperand) || "longs".equals(nameConstantOperand))
                         && (freshRandomOnTos || freshRandomOneBelowTos)) {
-                    accumulator.accumulateBug(new BugInstance(DumbMethods.this, "DMI_RANDOM_USED_ONLY_ONCE", HIGH_PRIORITY)
-                            .addClassAndMethod(DumbMethods.this).addCalledMethod(DumbMethods.this), DumbMethods.this);
 
+                    pcToBugInstanceMap.put(getPC(), new BugInstance(DumbMethods.this, "DMI_RANDOM_USED_ONLY_ONCE", HIGH_PRIORITY)
+                            .addClassAndMethod(DumbMethods.this).addCalledMethod(DumbMethods.this).addSourceLine(DumbMethods.this));
                 }
             }
             if (seen == Const.INVOKESPECIAL) {
                 String classConstantOperand = getClassConstantOperand();
                 freshRandomOneBelowTos = freshRandomOnTos && isRegisterLoad();
-                freshRandomOnTos = (CLASS_NAME_RANDOM.equals(classConstantOperand) || "java/security/SecureRandom".equals(classConstantOperand))
-                        && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand());
+                if ((CLASS_NAME_RANDOM.equals(classConstantOperand) || "java/security/SecureRandom".equals(classConstantOperand))
+                        && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())) {
+                    freshRandomOnTos = true;
+                    randomInitPC = getPC();
+                } else {
+                    freshRandomOnTos = false;
+                }
             }
+            if (isBranch(seen)) {
+                int loopstart = getBranchTarget();
+                int loopend = getPC();
+                // if the Random init is before the loop, but the usage is inside
+                if (loopstart < loopend && randomInitPC < loopstart && randomInitPC > 0) {
+                    pcToBugInstanceMap.keySet().removeIf(pc -> pc >= loopstart && pc <= loopend);
+                }
+            }
+        }
+
+        @Override
+        public void afterMethod(Method method) {
+            for (Map.Entry<Integer, BugInstance> entry : pcToBugInstanceMap.entrySet()) {
+                bugReporter.reportBug(entry.getValue());
+            }
+            pcToBugInstanceMap.clear();
         }
     }
 
@@ -600,6 +632,13 @@ public class DumbMethods extends OpcodeStackDetector {
     }
 
     @Override
+    public void visitAfter(Method method) {
+        for (SubDetector subDetector : subDetectors) {
+            subDetector.afterMethod(method);
+        }
+    }
+
+    @Override
     public void visitAfter(JavaClass obj) {
         accumulator.reportAccumulatedBugs();
     }
@@ -651,7 +690,6 @@ public class DumbMethods extends OpcodeStackDetector {
         sawCheckForNonNegativeSignedByte = -1000;
         sawLoadOfMinValue = false;
         previousMethodCall = null;
-
     }
 
     int opcodesSincePendingAbsoluteValueBug;
@@ -736,7 +774,7 @@ public class DumbMethods extends OpcodeStackDetector {
                     XField field = stack.getStackItem(1).getXField();
                     String signature;
                     if (rvo != null) {
-                        signature = new SignatureParser(rvo.getSignature()).getReturnTypeSignature();
+                        signature = new GenericSignatureParser(rvo.getSignature()).getReturnTypeSignature();
                     } else if (field != null) {
                         signature = field.getSignature();
                     } else {
@@ -866,7 +904,7 @@ public class DumbMethods extends OpcodeStackDetector {
 
         if ((seen == Const.INVOKESTATIC || seen == Const.INVOKEVIRTUAL || seen == Const.INVOKESPECIAL || seen == Const.INVOKEINTERFACE)
                 && getSigConstantOperand().contains("Ljava/lang/Runnable;")) {
-            SignatureParser parser = new SignatureParser(getSigConstantOperand());
+            GenericSignatureParser parser = new GenericSignatureParser(getSigConstantOperand());
             int count = 0;
             for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext(); count++) {
                 String parameter = i.next();
@@ -1377,15 +1415,15 @@ public class DumbMethods extends OpcodeStackDetector {
                 checkMonitorWait();
             }
 
-            if ((seen == Const.INVOKESPECIAL) && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())
-                    && "java/lang/Thread".equals(getClassConstantOperand())) {
+            if (seen == Const.INVOKESPECIAL && Const.CONSTRUCTOR_NAME.equals(getNameConstantOperand())
+                    && usesDefaultThreadRun(getDottedClassConstantOperand())) {
                 String sig = getSigConstantOperand();
-                if ("()V".equals(sig) || "(Ljava/lang/String;)V".equals(sig) || "(Ljava/lang/ThreadGroup;Ljava/lang/String;)V".equals(sig)) {
+                if ("()V".equals(sig) || "(Ljava/lang/String;)V".equals(sig)
+                        || "(Ljava/lang/ThreadGroup;Ljava/lang/String;)V".equals(sig)) {
                     OpcodeStack.Item invokedOn = stack.getItemMethodInvokedOn(this);
                     if (!Const.CONSTRUCTOR_NAME.equals(getMethodName()) || invokedOn.getRegisterNumber() != 0) {
                         accumulator.accumulateBug(
                                 new BugInstance(this, "DM_USELESS_THREAD", LOW_PRIORITY).addClassAndMethod(this), this);
-
                     }
                 }
             }
@@ -1412,6 +1450,44 @@ public class DumbMethods extends OpcodeStackDetector {
 
         } finally {
             prevOpcode = seen;
+        }
+    }
+
+    /**
+     * Returns true if the given class is java.lang.Thread itself, or a Thread subclass
+     * that neither declares nor inherits (below Thread) a run()V override.
+     */
+    private boolean usesDefaultThreadRun(String dottedClassName) {
+        try {
+            if ("java.lang.Thread".equals(dottedClassName)) {
+                return true;
+            }
+
+            JavaClass cls = Repository.lookupClass(dottedClassName);
+            JavaClass threadClass = Repository.lookupClass("java.lang.Thread");
+
+            if (!cls.instanceOf(threadClass)) {
+                return false;
+            }
+
+            while (cls != null && !"java.lang.Thread".equals(cls.getClassName())) {
+                for (Method m : cls.getMethods()) {
+                    if ("run".equals(m.getName()) && "()V".equals(m.getSignature())) {
+                        return false;
+                    }
+                }
+
+                String superClassName = cls.getSuperclassName();
+                if (superClassName == null) {
+                    break;
+                }
+
+                cls = Repository.lookupClass(superClassName);
+            }
+
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
         }
     }
 

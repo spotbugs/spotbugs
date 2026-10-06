@@ -15,7 +15,6 @@ set launcher=java.exe
 set start=start "SpotBugs"
 set jvmargs=
 set debugArg=
-set conserveSpaceArg=
 set workHardArg=
 set args=
 set javaProps=
@@ -186,9 +185,6 @@ if "%firstArg%"=="-jvmArgs" goto shift2
 
 if "%firstArg%"=="-maxHeap" set maxheap=%secondArg%
 if "%firstArg%"=="-maxHeap" goto shift2
-
-if "%firstArg%"=="-conserveSpace" set conserveSpaceArg=-Dfindbugs.conserveSpace=true
-if "%firstArg%"=="-conserveSpace" goto shift1
 
 if "%firstArg%"=="-workHard" set workHardArg=-Dfindbugs.workHard=true
 if "%firstArg%"=="-workHard" goto shift1

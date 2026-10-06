@@ -1,5 +1,10 @@
 package edu.umd.cs.findbugs.util;
 
+import java.io.Externalizable;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import javax.annotation.concurrent.Immutable;
 
 import edu.umd.cs.findbugs.FindBugs2;
@@ -109,7 +114,7 @@ class MutableClassesTest {
     }
 
     public static class Immutable {
-        private int n;
+        private final int n;
         private static Immutable immutable;
 
         public Immutable(int n) {
@@ -186,5 +191,77 @@ class MutableClassesTest {
                 "Ledu/umd/cs/findbugs/util/MutableClassesTest$ErrorProneImmutable;"));
         Assertions.assertFalse(MutableClasses.mutableSignature(
                 "Ledu/umd/cs/findbugs/util/MutableClassesTest$ErrorProneImmutableSubclass;"));
+    }
+
+    public static final class MutableWriteReplace {
+        Object writeReplace() throws ObjectStreamException {
+            return null;
+        }
+    }
+
+    @Test
+    void testMutableWriteReplace() {
+        Assertions.assertTrue(MutableClasses.mutableSignature(
+                "Ledu/umd/cs/findbugs/util/MutableClassesTest$MutableWriteReplace;"));
+    }
+
+    public static final class ImmutableWriteReplace implements Serializable {
+        Object writeReplace() throws ObjectStreamException {
+            return null;
+        }
+    }
+
+    @Test
+    void testImmutableWriteReplace() {
+        Assertions.assertFalse(MutableClasses.mutableSignature(
+                "Ledu/umd/cs/findbugs/util/MutableClassesTest$ImmutableWriteReplace;"));
+    }
+
+    public static final class MutableWriteExternal {
+        void writeExternal(ObjectOutput out) {
+            // Does not matter
+        }
+    }
+
+    public static class MutableWriteExternalSig implements Externalizable {
+        @Override
+        public void writeExternal(ObjectOutput out) {
+            // Does not matter
+        }
+
+        @Override
+        public void readExternal(ObjectInput in) {
+            // Does not matter
+        }
+
+        void writeExternal() {
+            // Does not match signature
+        }
+    }
+
+    @Test
+    void testMutableWriteExternal() {
+        Assertions.assertTrue(MutableClasses.mutableSignature(
+                "Ledu/umd/cs/findbugs/util/MutableClassesTest$MutableWriteExternal;"));
+        Assertions.assertTrue(MutableClasses.mutableSignature(
+                "Ledu/umd/cs/findbugs/util/MutableClassesTest$MutableWriteExternalSig;"));
+    }
+
+    public static final class ImmutableWriteExternal implements Externalizable {
+        @Override
+        public void writeExternal(ObjectOutput out) {
+            // Does not matter
+        }
+
+        @Override
+        public void readExternal(ObjectInput in) {
+            // Does not matter
+        }
+    }
+
+    @Test
+    void testImmutableWriteExternal() {
+        Assertions.assertFalse(MutableClasses.mutableSignature(
+                "Ledu/umd/cs/findbugs/util/MutableClassesTest$ImmutableWriteExternal;"));
     }
 }

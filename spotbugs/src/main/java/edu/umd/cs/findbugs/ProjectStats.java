@@ -44,13 +44,14 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.WillClose;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -202,7 +203,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
      *            a normalized class size value; see
      *            detect/FindBugsSummaryStats.
      */
-    public void addClass(@DottedClassName String className, @CheckForNull String sourceFile, boolean isInterface, int size) {
+    public void addClass(@DottedClassName String className, @Nullable String sourceFile, boolean isInterface, int size) {
         addClass(className, sourceFile, isInterface, size, true);
     }
 
@@ -220,7 +221,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
      *            detect/FindBugsSummaryStats.
      * @param updatePackageStats TODO
      */
-    public void addClass(@DottedClassName String className, @CheckForNull String sourceFile, boolean isInterface, int size,
+    public void addClass(@DottedClassName String className, @Nullable String sourceFile, boolean isInterface, int size,
             boolean updatePackageStats) {
         if (!hasClassStats) {
             // totalClasses/totalSize might be set from FindBugsSummary before when parsing XML: reset them
@@ -249,7 +250,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
      * @param className
      *            the full name of the class
      */
-    public @CheckForNull ClassStats getClassStats(@DottedClassName String className) {
+    public @Nullable ClassStats getClassStats(@DottedClassName String className) {
         if (hasClassStats) {
             return null;
         }

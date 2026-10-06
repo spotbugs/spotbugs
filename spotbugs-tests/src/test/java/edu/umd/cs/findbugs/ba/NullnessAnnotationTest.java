@@ -34,12 +34,12 @@ class NullnessAnnotationTest {
                 Arguments.of("org.checkerframework.checker.nullness.qual.Nullable", NullnessAnnotation.CHECK_FOR_NULL),
                 Arguments.of("org.checkerframework.checker.nullness.compatqual.NullableDecl", NullnessAnnotation.CHECK_FOR_NULL),
 
-                Arguments.of(edu.umd.cs.findbugs.annotations.CheckForNull.class.getName(), NullnessAnnotation.CHECK_FOR_NULL),
-                Arguments.of(edu.umd.cs.findbugs.annotations.PossiblyNull.class.getName(), NullnessAnnotation.CHECK_FOR_NULL),
+                Arguments.of("edu.umd.cs.findbugs.annotations.CheckForNull", NullnessAnnotation.CHECK_FOR_NULL),
+                Arguments.of("edu.umd.cs.findbugs.annotations.PossiblyNull", NullnessAnnotation.CHECK_FOR_NULL),
 
-                Arguments.of(javax.annotation.CheckForNull.class.getName(), NullnessAnnotation.CHECK_FOR_NULL),
-                Arguments.of(jakarta.annotation.Nonnull.class.getName(), NullnessAnnotation.NONNULL),
-                Arguments.of(jakarta.annotation.Nullable.class.getName(), NullnessAnnotation.CHECK_FOR_NULL),
+                Arguments.of("javax.annotation.CheckForNull", NullnessAnnotation.CHECK_FOR_NULL),
+                Arguments.of("jakarta.annotation.Nonnull", NullnessAnnotation.NONNULL),
+                Arguments.of("jakarta.annotation.Nullable", NullnessAnnotation.CHECK_FOR_NULL),
 
                 Arguments.of("org.jspecify.annotations.Nullable", NullnessAnnotation.CHECK_FOR_NULL),
                 Arguments.of("org.jspecify.annotations.NonNull", NullnessAnnotation.NONNULL),

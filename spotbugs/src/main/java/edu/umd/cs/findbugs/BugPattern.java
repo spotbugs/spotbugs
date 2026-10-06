@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs;
 import java.net.URI;
 import java.util.Optional;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.util.HTML;
 
@@ -117,7 +117,7 @@ public class BugPattern implements Comparable<BugPattern> {
     /**
      * Get the BugCode
      */
-    public @Nonnull BugCode getBugCode() {
+    public @NonNull BugCode getBugCode() {
         return DetectorFactoryCollection.instance().getBugCode(abbrev);
 
     }

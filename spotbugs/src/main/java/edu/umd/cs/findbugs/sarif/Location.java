@@ -7,9 +7,7 @@ import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -30,12 +28,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317670">3.28 location object</a>
  */
 class Location {
-    @Nullable
-    private final PhysicalLocation physicalLocation;
+    private final @Nullable PhysicalLocation physicalLocation;
     @NonNull
     private final List<LogicalLocation> logicalLocations;
 
@@ -48,7 +47,7 @@ class Location {
         this.logicalLocations = new ArrayList<>(logicalLocations);
     }
 
-    @CheckForNull
+    @Nullable
     PhysicalLocation getPhysicalLocation() {
         return physicalLocation;
     }
@@ -89,8 +88,7 @@ class Location {
         return new Location(physicalLocation.orElse(null), Collections.singleton(logicalLocation));
     }
 
-    @CheckForNull
-    private static PhysicalLocation findPhysicalLocation(@NonNull BugInstance bugInstance, @NonNull SourceFinder sourceFinder,
+    private static @Nullable PhysicalLocation findPhysicalLocation(@NonNull BugInstance bugInstance, @NonNull SourceFinder sourceFinder,
             Map<URI, String> baseToId) {
         try {
             return PhysicalLocation.fromBugAnnotation(bugInstance, sourceFinder, baseToId).orElse(null);
@@ -100,8 +98,7 @@ class Location {
         }
     }
 
-    @CheckForNull
-    private static Optional<PhysicalLocation> findPhysicalLocation(@NonNull StackTraceElement element, @NonNull SourceFinder sourceFinder,
+    private static @Nullable Optional<PhysicalLocation> findPhysicalLocation(@NonNull StackTraceElement element, @NonNull SourceFinder sourceFinder,
             Map<URI, String> baseToId) {
         Optional<Region> region = Optional.of(element.getLineNumber())
                 .filter(line -> line > 0)
@@ -116,8 +113,7 @@ class Location {
     static final class ArtifactLocation {
         @NonNull
         final URI uri;
-        @Nullable
-        final String uriBaseId;
+        final @Nullable String uriBaseId;
 
         ArtifactLocation(@NonNull URI uri, @Nullable String uriBaseId) {
             this.uri = Objects.requireNonNull(uri);
@@ -152,14 +148,23 @@ class Location {
                 return location;
             }
 
-            try {
-                String path = bugAnnotation.format("full", classAnnotation);
-                String pathWithoutLine = path.contains(":") ? path.split(":")[0] : path;
-                return Optional.of(new ArtifactLocation(new URI(pathWithoutLine), null));
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
+            if (!bugAnnotation.isSourceFileKnown()) {
                 return Optional.empty();
             }
+
+            try {
+                String path = bugAnnotation.format("full", classAnnotation);
+                String pathWithoutLine = removeLineSuffix(path);
+                return Optional.of(new ArtifactLocation(new URI(pathWithoutLine), null));
+            } catch (URISyntaxException ignored) {
+                // Omit invalid physical locations; logical locations remain available.
+                return Optional.empty();
+            }
+        }
+
+        private static String removeLineSuffix(String path) {
+            int lineSuffixIndex = path.indexOf(":[");
+            return lineSuffixIndex >= 0 ? path.substring(0, lineSuffixIndex) : path;
         }
 
         static Optional<ArtifactLocation> fromStackTraceElement(StackTraceElement element, SourceFinder sourceFinder, Map<URI, String> baseToId) {
@@ -232,8 +237,7 @@ class Location {
     static final class PhysicalLocation {
         @NonNull
         final ArtifactLocation artifactLocation;
-        @Nullable
-        final Region region;
+        final @Nullable Region region;
 
         PhysicalLocation(@NonNull ArtifactLocation artifactLocation, @Nullable Region region) {
             this.artifactLocation = Objects.requireNonNull(artifactLocation);
@@ -266,12 +270,10 @@ class Location {
     static final class LogicalLocation {
         @NonNull
         final String name;
-        @Nullable
-        final String decoratedName;
+        final @Nullable String decoratedName;
         @NonNull
         final String kind;
-        @Nullable
-        final String fullyQualifiedName;
+        final @Nullable String fullyQualifiedName;
         @NonNull
         final Map<String, String> properties = new HashMap<>();
 
@@ -361,8 +363,7 @@ class Location {
             return Optional.of(new LogicalLocation(name, null, kind, fullyQualifiedName, null));
         }
 
-        @CheckForNull
-        static String findKind(@NonNull BugAnnotation annotation) {
+        static @Nullable String findKind(@NonNull BugAnnotation annotation) {
             if (annotation instanceof ClassAnnotation) {
                 return "type";
             } else if (annotation instanceof MethodAnnotation) {
