@@ -50,10 +50,10 @@ import java.net.URLConnection;
 import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.util.Util;
 
 public class IO {
@@ -291,8 +291,7 @@ public class IO {
      * @see <a href="https://github.com/spotbugs/spotbugs/issues/589">related GitHub issue</a>
      */
     @CheckReturnValue
-    @NonNull
-    public static URLConnection openNonCachedConnection(@NonNull URL u) throws IOException {
+    public static @NonNull URLConnection openNonCachedConnection(@NonNull URL u) throws IOException {
         URLConnection uc = u.openConnection();
         if (uc instanceof JarURLConnection) {
             uc.setUseCaches(false);
@@ -308,8 +307,7 @@ public class IO {
      * @see <a href="https://github.com/spotbugs/spotbugs/issues/589">related GitHub issue</a>
      */
     @CheckReturnValue
-    @NonNull
-    public static InputStream openNonCachedStream(@NonNull URL u) throws IOException {
+    public static @NonNull InputStream openNonCachedStream(@NonNull URL u) throws IOException {
         return openNonCachedConnection(u).getInputStream();
     }
 

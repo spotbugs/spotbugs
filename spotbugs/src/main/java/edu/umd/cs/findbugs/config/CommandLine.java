@@ -38,10 +38,11 @@ import java.util.Objects;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.charsets.UTF8;
+
+import org.jspecify.annotations.NonNull;
 
 /**
  * Helper class for parsing command line arguments.
@@ -344,8 +345,8 @@ public abstract class CommandLine {
         return arg;
     }
 
-    @NonNull
-    /* visible for testing */ static Option splitOption(String option) {
+    /* visible for testing */
+    static @NonNull Option splitOption(String option) {
         String optionExtraPart = "";
         int colon = option.indexOf(':');
         if (colon >= 0) {
@@ -365,10 +366,10 @@ public abstract class CommandLine {
     }
 
     static final class Option {
-        @NonNull
-        final String option;
-        @NonNull
-        final String extraPart;
+
+        final @NonNull String option;
+
+        final @NonNull String extraPart;
 
         Option(@NonNull String option, @NonNull String extraPart) {
             this.option = Objects.requireNonNull(option);

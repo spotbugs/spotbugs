@@ -21,10 +21,10 @@ package edu.umd.cs.findbugs.ba;
 
 import javax.annotation.meta.When;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * @author pugh
