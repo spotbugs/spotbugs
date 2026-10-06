@@ -28,13 +28,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.annotation.Nonnull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.*;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;
@@ -572,7 +571,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
      * @param methodGen
      *            the method to build a CFG for
      */
-    public BetterCFGBuilder2(@Nonnull MethodDescriptor descriptor, @Nonnull MethodGen methodGen) {
+    public BetterCFGBuilder2(@NonNull MethodDescriptor descriptor, @NonNull MethodGen methodGen) {
         this.methodGen = methodGen;
         this.cpg = methodGen.getConstantPool();
         IAnalysisCache analysisCache = Global.getAnalysisCache();

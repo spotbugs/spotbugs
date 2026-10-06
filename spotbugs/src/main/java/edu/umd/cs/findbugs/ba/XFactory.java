@@ -27,8 +27,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import jakarta.annotation.Nonnull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -38,6 +36,7 @@ import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
 
@@ -520,12 +519,12 @@ public class XFactory {
         return getExactXField(fieldDesc);
     }
 
-    public static @Nonnull XField getExactXField(@SlashedClassName String className, Field f) {
+    public static @NonNull XField getExactXField(@SlashedClassName String className, Field f) {
         FieldDescriptor fd = DescriptorFactory.instance().getFieldDescriptor(className, f);
         return getExactXField(fd);
     }
 
-    public static @Nonnull XField getExactXField(FieldDescriptor desc) {
+    public static @NonNull XField getExactXField(FieldDescriptor desc) {
         XFactory xFactory = AnalysisContext.currentXFactory();
 
         XField f = xFactory.fields.get(desc);

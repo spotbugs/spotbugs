@@ -30,8 +30,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import jakarta.annotation.Nonnull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
@@ -56,6 +54,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.BugAccumulator;
@@ -237,9 +236,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
     public static class FinalConstant extends ObjectType {
         private static final long serialVersionUID = 1L;
 
-        final @Nonnull XField field;
+        final @NonNull XField field;
 
-        public FinalConstant(@DottedClassName String type, @Nonnull XField field) {
+        public FinalConstant(@DottedClassName String type, @NonNull XField field) {
             super(type);
             this.field = field;
         }

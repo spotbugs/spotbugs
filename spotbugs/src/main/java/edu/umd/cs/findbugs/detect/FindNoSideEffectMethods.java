@@ -29,8 +29,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import jakarta.annotation.Nonnull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -38,6 +36,7 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.NonReportingDetector;
@@ -245,7 +244,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             map.put(m, s);
         }
 
-        public @Nonnull MethodSideEffectStatus status(MethodDescriptor m) {
+        public @NonNull MethodSideEffectStatus status(MethodDescriptor m) {
             MethodSideEffectStatus s = map.get(m);
             return s == null ? MethodSideEffectStatus.SE : s;
         }

@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Smaller value is scarier
@@ -33,8 +33,7 @@ public enum BugRankCategory {
 
     public final int maxRank;
 
-    @Nonnull
-    public static BugRankCategory getRank(int rank) {
+    public static @NonNull BugRankCategory getRank(int rank) {
         for (BugRankCategory c : values()) {
             if (rank <= c.maxRank) {
                 return c;

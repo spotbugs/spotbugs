@@ -5,12 +5,17 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2026-??-??
+### Added
+- Add `ReflectiveAccessTracker` to track fields accessed via reflection - such as VarHandle, MethodHandle or AtomicFieldUpdaters ([#3954](https://github.com/spotbugs/spotbugs/pull/3954)) to fix issue ([#2749](https://github.com/spotbugs/spotbugs/issues/2749))
+- Add automatic completion of class names in GUI class filter ([#749](https://github.com/spotbugs/spotbugs/issues/749))
+
 ### Changed
 - `@SuppressFBWarnings` annotation on a method or a constructor now suppresses warnings reported in their lambdas too ([#724](https://github.com/spotbugs/spotbugs/issues/724))
 - Replace deprecated calls to 'SignatureParser' to 'GenericSignatureParser' where feasible ([#4336](https://github.com/spotbugs/spotbugs/pull/4337))
 
 ### Fixed
 - Fix `SS_SHOULD_BE_STATIC` false negative for final fields initialized in initializer blocks ([#4136](https://github.com/spotbugs/spotbugs/issues/4136))
+- Fix `AA_ASSERTION_OF_ARGUMENTS` false negative when a public method validates a parameter with `assert` and `instanceof` ([#4305](https://github.com/spotbugs/spotbugs/issues/4305))
 - Fix `PT_ABSOLUTE_PATH_TRAVERSAL` false negative for `new File(parent, child)`, where the attacker controlled segment is the second argument ([#4340](https://github.com/spotbugs/spotbugs/pull/4340))
 - Fix 'DM_USELESS_THREAD' false negative for Thread subclasses that do not override run() ([#4306](https://github.com/spotbugs/spotbugs/issues/4306))
 - Fix `UL_UNRELEASED_LOCK` false negative when a method acquires a lock and never calls `unlock` ([#4310](https://github.com/spotbugs/spotbugs/issues/4310))
@@ -20,6 +25,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `NP_NULL_ON_SOME_PATH` false positive when `instanceof` check is always true because the value was created with `new` and its exact type is a subtype of the checked type (e.g. `Base value = new Derived(); if (value instanceof Derived) result = new Object(); result.toString()`) ([#4273](https://github.com/spotbugs/spotbugs/issues/4273))
 - Fix `NN_NAKED_NOTIFY` false positive when guarded state is updated before the synchronized block that calls `notify`/`notifyAll` ([#3786](https://github.com/spotbugs/spotbugs/issues/3786))
 - Fix `SA_LOCAL_SELF_ASSIGNMENT` false positive in methods with `++`/`--` inside a switch nested in a try-catch block ([#3929](https://github.com/spotbugs/spotbugs/issues/3929))
+- Fix `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE` false negative for non-atomic read-modify-write in inner classes accessing enclosing shared fields ([#4236](https://github.com/spotbugs/spotbugs/pull/4236))
 - Fix `OS_OPEN_STREAM` false positive when the result of `PrintWriter.append()` is reassigned before closing the writer ([#4274](https://github.com/spotbugs/spotbugs/issues/4274))
 - Fix `OS_OPEN_STREAM` false positive when a stream is wrapped (e.g. in a `PrintStream`, `BufferedOutputStream` or `PrintWriter`) and the wrapped stream is closed instead of the wrapper ([#4304](https://github.com/spotbugs/spotbugs/issues/4304))
 - Fix `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` false negative when lazy init uses a ternary assignment instead of an `if` statement ([#4154](https://github.com/spotbugs/spotbugs/issues/4154))
@@ -36,10 +42,10 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix CLI launcher scripts intercepting `-conserveSpace` with a JVM system property instead passing it to Java Application as equivalent to `-effort:min` ([#4268](https://github.com/spotbugs/spotbugs/pull/4289))
 - Fix `USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` false positive when `clone()` assigns a newly created lock object to the copy ([#4320](https://github.com/spotbugs/spotbugs/issues/4320))
 - Fix `CT_CONSTRUCTOR_THROW` false positive with sealed classes ([#4259](https://github.com/spotbugs/spotbugs/issues/4259))
+- Fix `JrtfsCodeBase` resolving JDK classes from the module image of the running JVM instead of the JDK the given `jrt-fs.jar` belongs to, so that `-auxclasspath <other-jdk>/lib/jrt-fs.jar` is honoured ([#4329](https://github.com/spotbugs/spotbugs/pull/4329))
 - Fix `USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` false positive when a lock is assigned to a newly allocated object ([#4331](https://github.com/spotbugs/spotbugs/issues/4331))
-
-### Added
-- Add automatic completion of class names in GUI class filter ([#749](https://github.com/spotbugs/spotbugs/issues/749))
+- Do not flag `writeReplace()` and `writeExternal()` as mutators ([#1719](https://github.com/spotbugs/spotbugs/pull/1719))
+- Prevent XML external entity resolution in user-controlled data ([#4365](https://github.com/spotbugs/spotbugs/pull/4365))
 
 ## 4.10.4 - 2026-08-19
 ### Fixed

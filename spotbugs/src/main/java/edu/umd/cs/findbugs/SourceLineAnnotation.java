@@ -24,8 +24,6 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
-import jakarta.annotation.Nonnull;
-
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumber;
@@ -33,6 +31,7 @@ import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -141,7 +140,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      * @param endBytecode
      *            the end bytecode offset (inclusive)
      */
-    public SourceLineAnnotation(@Nonnull @DottedClassName String className, @Nonnull String sourceFile, int startLine, int endLine,
+    public SourceLineAnnotation(@NonNull @DottedClassName String className, @NonNull String sourceFile, int startLine, int endLine,
             int startBytecode, int endBytecode) {
         Objects.requireNonNull(className, "class name is null");
         Objects.requireNonNull(sourceFile, "source file is null");
@@ -211,8 +210,8 @@ public class SourceLineAnnotation implements BugAnnotation {
      *            the source file name
      * @return the SourceLineAnnotation
      */
-    @Nonnull
-    public static SourceLineAnnotation createUnknown(@DottedClassName String className, String sourceFile, int startBytecode, int endBytecode) {
+    public static @NonNull SourceLineAnnotation createUnknown(@DottedClassName String className, String sourceFile, int startBytecode,
+            int endBytecode) {
         return new SourceLineAnnotation(className, sourceFile, -1, -1, startBytecode, endBytecode);
         // result.setDescription("SOURCE_LINE_UNKNOWN");
     }
@@ -525,7 +524,7 @@ public class SourceLineAnnotation implements BugAnnotation {
      * @return the SourceLineAnnotation, or null if we do not have line number
      *         information for the instruction
      */
-    public static @Nonnull SourceLineAnnotation fromVisitedInstructionRange(ClassContext classContext, PreorderVisitor visitor,
+    public static @NonNull SourceLineAnnotation fromVisitedInstructionRange(ClassContext classContext, PreorderVisitor visitor,
             int startPC, int endPC) {
         if (startPC > endPC) {
             throw new IllegalArgumentException("Start pc " + startPC + " greater than end pc " + endPC);
@@ -579,9 +578,8 @@ public class SourceLineAnnotation implements BugAnnotation {
      * @return the SourceLineAnnotation, or null if we do not have line number
      *         information for the instruction
      */
-    @Nonnull
-    public static SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, MethodGen methodGen, String sourceFile,
-            @Nonnull InstructionHandle handle) {
+    public static @NonNull SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, MethodGen methodGen, String sourceFile,
+            @NonNull InstructionHandle handle) {
         LineNumberTable table = methodGen.getLineNumberTable(methodGen.getConstantPool());
         String className = methodGen.getClassName();
 
@@ -630,17 +628,15 @@ public class SourceLineAnnotation implements BugAnnotation {
         return code.getLineNumberTable();
     }
 
-    @Nonnull
     @DottedClassName
-    public String getClassName() {
+    public @NonNull String getClassName() {
         return className;
     }
 
     /**
      * Get the source file name.
      */
-    @Nonnull
-    public String getSourceFile() {
+    public @NonNull String getSourceFile() {
         return sourceFile;
     }
 

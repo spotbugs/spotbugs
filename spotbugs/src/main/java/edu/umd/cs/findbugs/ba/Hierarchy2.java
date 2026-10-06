@@ -28,8 +28,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import jakarta.annotation.Nonnull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -39,6 +37,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;
@@ -296,7 +295,7 @@ public class Hierarchy2 {
      * @throws DataflowAnalysisException
      * @throws ClassNotFoundException
      */
-    public static @Nonnull Set<XMethod> resolveMethodCallTargets(InvokeInstruction invokeInstruction, TypeFrame typeFrame, ConstantPoolGen cpg)
+    public static @NonNull Set<XMethod> resolveMethodCallTargets(InvokeInstruction invokeInstruction, TypeFrame typeFrame, ConstantPoolGen cpg)
             throws DataflowAnalysisException, ClassNotFoundException {
 
         short opcode = invokeInstruction.getOpcode();

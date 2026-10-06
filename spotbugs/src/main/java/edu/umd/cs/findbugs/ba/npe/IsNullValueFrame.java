@@ -26,8 +26,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
-import jakarta.annotation.Nonnull;
-
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.Frame;
@@ -147,7 +146,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
         return decision;
     }
 
-    public void setKnownValue(@Nonnull ValueNumber valueNumber, @Nonnull IsNullValue knownValue) {
+    public void setKnownValue(@NonNull ValueNumber valueNumber, @NonNull IsNullValue knownValue) {
         assert trackValueNumbers;
         if (valueNumber == null || knownValue == null) {
             throw new NullPointerException();

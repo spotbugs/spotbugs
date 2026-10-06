@@ -20,8 +20,7 @@ package edu.umd.cs.findbugs.classfile;
 
 import java.util.Map;
 
-import jakarta.annotation.Nonnull;
-
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.log.Profiler;
@@ -74,7 +73,7 @@ public interface IAnalysisCache {
      * @throws CheckedAnalysisException
      *             if an error occurs performing the analysis
      */
-    public <E> E getClassAnalysis(Class<E> analysisClass, @Nonnull ClassDescriptor classDescriptor)
+    public <E> E getClassAnalysis(Class<E> analysisClass, @NonNull ClassDescriptor classDescriptor)
             throws CheckedAnalysisException;
 
     /**
@@ -88,7 +87,7 @@ public interface IAnalysisCache {
      * @return a cached analysis result, or null if there is no cached analysis
      *         result
      */
-    public <E> E probeClassAnalysis(Class<E> analysisClass, @Nonnull ClassDescriptor classDescriptor);
+    public <E> E probeClassAnalysis(Class<E> analysisClass, @NonNull ClassDescriptor classDescriptor);
 
     /**
      * Get an analysis of the given method.
@@ -104,7 +103,7 @@ public interface IAnalysisCache {
      * @throws CheckedAnalysisException
      *             if an error occurs performing the analysis
      */
-    public <E> E getMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor)
+    public <E> E getMethodAnalysis(Class<E> analysisClass, @NonNull MethodDescriptor methodDescriptor)
             throws CheckedAnalysisException;
 
     /**
@@ -120,7 +119,7 @@ public interface IAnalysisCache {
      *            the descriptor of the method to analyze
      * @param analysisObject
      */
-    public <E> void eagerlyPutMethodAnalysis(Class<E> analysisClass, @Nonnull MethodDescriptor methodDescriptor,
+    public <E> void eagerlyPutMethodAnalysis(Class<E> analysisClass, @NonNull MethodDescriptor methodDescriptor,
             E analysisObject);
 
     /**
@@ -131,7 +130,7 @@ public interface IAnalysisCache {
      * @param methodDescriptor
      *            method whose analysis results should be purged
      */
-    public void purgeMethodAnalyses(@Nonnull MethodDescriptor methodDescriptor);
+    public void purgeMethodAnalyses(@NonNull MethodDescriptor methodDescriptor);
 
     /**
      * Purge all method analysis results for all methods.

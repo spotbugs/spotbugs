@@ -53,15 +53,14 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import jakarta.annotation.Nonnull;
 import javax.annotation.WillClose;
 
-import edu.umd.cs.findbugs.util.SecurityManagerHandler;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +79,7 @@ import edu.umd.cs.findbugs.plugins.DuplicatePluginIdError;
 import edu.umd.cs.findbugs.plugins.DuplicatePluginIdException;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.JavaWebStart;
+import edu.umd.cs.findbugs.util.SecurityManagerHandler;
 import edu.umd.cs.findbugs.xml.XMLUtil;
 
 /**
@@ -168,7 +168,7 @@ public class PluginLoader implements AutoCloseable {
      * @param optional
      *          is this an optional plugin
      */
-    private PluginLoader(@Nonnull URL url, URI uri, ClassLoader parent, boolean isInitial, boolean optional) throws PluginException {
+    private PluginLoader(@NonNull URL url, URI uri, ClassLoader parent, boolean isInitial, boolean optional) throws PluginException {
         URL[] loaderURLs = createClassloaderUrls(url);
         classLoaderForResources = buildURLClassLoader(loaderURLs);
         loadedFrom = url;
@@ -324,7 +324,7 @@ public class PluginLoader implements AutoCloseable {
      *         in the array.
      * @throws PluginException
      */
-    private static @Nonnull URL[] createClassloaderUrls(@Nonnull URL url) throws PluginException {
+    private static URL @NonNull [] createClassloaderUrls(@NonNull URL url) throws PluginException {
         List<URL> urls = new ArrayList<>();
         urls.add(url);
 
@@ -360,8 +360,8 @@ public class PluginLoader implements AutoCloseable {
         return urls.toArray(new URL[0]);
     }
 
-    private static void addClassPathFromManifest(@Nonnull URL url, @Nonnull List<URL> urls,
-            @Nonnull Manifest mf) throws MalformedURLException {
+    private static void addClassPathFromManifest(@NonNull URL url, @NonNull List<URL> urls,
+            @NonNull Manifest mf) throws MalformedURLException {
         Attributes atts = mf.getMainAttributes();
         if (atts == null) {
             return;
@@ -382,7 +382,7 @@ public class PluginLoader implements AutoCloseable {
      * Trying to find the manifest of "exploded plugin" in the current dir, "standard jar" manifest
      * location or "standard" Eclipse location (sibling to the current classpath)
      */
-    private static @Nullable File guessManifest(@Nonnull File parent) {
+    private static @Nullable File guessManifest(@NonNull File parent) {
         File file = new File(parent, "MANIFEST.MF");
         if (!file.isFile()) {
             file = new File(parent, "META-INF/MANIFEST.MF");
@@ -443,8 +443,7 @@ public class PluginLoader implements AutoCloseable {
         plugin = null;
     }
 
-    @Nonnull
-    private static URL computeCoreUrl() {
+    private static @NonNull URL computeCoreUrl() {
         URL from;
         String findBugsClassFile = ClassName.toSlashedClassName(FindBugs.class) + ".class";
         URL me = FindBugs.class.getClassLoader().getResource(findBugsClassFile);
@@ -1352,8 +1351,7 @@ public class PluginLoader implements AutoCloseable {
         return new PluginLoader(url, uri, parent, isInitial, optional);
     }
 
-    @Nonnull
-    public static synchronized PluginLoader getCorePluginLoader() {
+    public static synchronized @NonNull PluginLoader getCorePluginLoader() {
         Plugin plugin = Plugin.getPlugin(null);
         if (plugin != null) {
             return plugin.getPluginLoader();

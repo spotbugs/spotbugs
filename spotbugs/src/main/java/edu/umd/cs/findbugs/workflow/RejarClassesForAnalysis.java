@@ -44,11 +44,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import jakarta.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.charsets.UTF8;
@@ -225,7 +225,7 @@ public class RejarClassesForAnalysis {
 
     SortedMap<String, ZipOutputStream> analysisOutputFiles = new TreeMap<>();
 
-    public @Nonnull ZipOutputStream getZipOutputFile(String path) {
+    public @NonNull ZipOutputStream getZipOutputFile(String path) {
         ZipOutputStream result = analysisOutputFiles.get(path);
         if (result != null) {
             return result;

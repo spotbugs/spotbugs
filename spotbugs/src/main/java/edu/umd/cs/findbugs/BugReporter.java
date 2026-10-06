@@ -19,8 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import jakarta.annotation.Nonnull;
-
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
@@ -77,7 +76,7 @@ public interface BugReporter extends RepositoryLookupFailureCallback, IClassObse
      * @param bugInstance
      *            object describing the bug instance
      */
-    void reportBug(@Nonnull BugInstance bugInstance);
+    void reportBug(@NonNull BugInstance bugInstance);
 
     /**
      * Finish reporting bugs. If any bug reports have been queued, calling this

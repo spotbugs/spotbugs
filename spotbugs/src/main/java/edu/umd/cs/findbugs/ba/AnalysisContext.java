@@ -32,10 +32,9 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.annotation.Nonnull;
-
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.AbstractBugReporter;
@@ -174,7 +173,7 @@ public class AnalysisContext implements AutoCloseable {
     private final Map<MethodInfo, MethodInfo> bridgeFrom;
 
 
-    public AnalysisContext(@Nonnull Project project) {
+    public AnalysisContext(@NonNull Project project) {
         requireNonNull(project);
         this.project = project;
         this.boolPropertySet = new BitSet();
@@ -212,7 +211,7 @@ public class AnalysisContext implements AutoCloseable {
         return classBeingAnalyzed;
     }
 
-    public void setClassBeingAnalyzed(@Nonnull ClassDescriptor classBeingAnalyzed) {
+    public void setClassBeingAnalyzed(@NonNull ClassDescriptor classBeingAnalyzed) {
         this.classBeingAnalyzed = classBeingAnalyzed;
     }
 
@@ -227,7 +226,7 @@ public class AnalysisContext implements AutoCloseable {
         return classSummary;
     }
 
-    public void setClassSummary(@Nonnull ClassSummary classSummary) {
+    public void setClassSummary(@NonNull ClassSummary classSummary) {
         if (this.classSummary != null) {
             throw new IllegalStateException("ClassSummary already set");
         }
@@ -246,18 +245,18 @@ public class AnalysisContext implements AutoCloseable {
         return fieldSummary;
     }
 
-    public void setFieldSummary(@Nonnull FieldSummary fieldSummary) {
+    public void setFieldSummary(@NonNull FieldSummary fieldSummary) {
         if (this.fieldSummary != null) {
             AnalysisContext.logError("Field Summary already set", new IllegalStateException());
         }
         this.fieldSummary = fieldSummary;
     }
 
-    public @Nonnull UnreadFieldsData getUnreadFieldsData() {
+    public @NonNull UnreadFieldsData getUnreadFieldsData() {
         return unreadFieldsData;
     }
 
-    public @Nonnull UnreadFields getUnreadFields() {
+    public @NonNull UnreadFields getUnreadFields() {
         if (!unreadFieldsAvailable()) {
             throw new IllegalStateException();
         }
@@ -268,7 +267,7 @@ public class AnalysisContext implements AutoCloseable {
         return unreadFields != null;
     }
 
-    public void setUnreadFields(@Nonnull UnreadFields unreadFields) {
+    public void setUnreadFields(@NonNull UnreadFields unreadFields) {
         if (this.unreadFields != null) {
             throw new IllegalStateException("UnreadFields detector already set");
         }
@@ -520,7 +519,7 @@ public class AnalysisContext implements AutoCloseable {
      * @throws ClassNotFoundException
      *             if the class can't be found
      */
-    public JavaClass lookupClass(@Nonnull ClassDescriptor classDescriptor) throws ClassNotFoundException {
+    public JavaClass lookupClass(@NonNull ClassDescriptor classDescriptor) throws ClassNotFoundException {
         return lookupClass(classDescriptor.getDottedClassName());
     }
 
@@ -537,7 +536,7 @@ public class AnalysisContext implements AutoCloseable {
      * @return the JavaClass representing the class
      * @throws ClassNotFoundException
      */
-    public static JavaClass lookupSystemClass(@Nonnull String className) throws ClassNotFoundException {
+    public static JavaClass lookupSystemClass(@NonNull String className) throws ClassNotFoundException {
         // TODO: eventually we should move to our own thread-safe repository implementation
         requireNonNull(className, "className is null");
         if (originalRepository == null) {
@@ -562,7 +561,7 @@ public class AnalysisContext implements AutoCloseable {
      *         {@link SourceLineAnnotation#UNKNOWN_SOURCE_FILE} if unable to
      *         determine
      */
-    public final String lookupSourceFile(@Nonnull @DottedClassName String dottedClassName) {
+    public final String lookupSourceFile(@NonNull @DottedClassName String dottedClassName) {
         requireNonNull(dottedClassName, "className is null");
         try {
             XClass xClass = Global.getAnalysisCache().getClassAnalysis(XClass.class,
@@ -944,7 +943,7 @@ public class AnalysisContext implements AutoCloseable {
      * @throws ClassNotFoundException
      *             (but not really)
      */
-    public JavaClass lookupClass(@Nonnull @DottedClassName String className) throws ClassNotFoundException {
+    public JavaClass lookupClass(@NonNull @DottedClassName String className) throws ClassNotFoundException {
         try {
             if (className.isEmpty()) {
                 throw new IllegalArgumentException("Class name is empty");
