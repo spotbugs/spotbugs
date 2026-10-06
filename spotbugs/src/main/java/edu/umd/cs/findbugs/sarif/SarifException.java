@@ -36,7 +36,8 @@ class SarifException {
         this.innerExceptions = Collections.unmodifiableList(Objects.requireNonNull(innerExceptions));
     }
 
-    static @NonNull SarifException fromThrowable(@NonNull Throwable throwable, @NonNull SourceFinder sourceFinder, @NonNull Map<URI, String> baseToId) {
+    static @NonNull SarifException fromThrowable(@NonNull Throwable throwable, @NonNull SourceFinder sourceFinder,
+            @NonNull Map<URI, String> baseToId) {
         String message = throwable.getMessage();
         List<Throwable> innerThrowables = new ArrayList<>();
         innerThrowables.add(throwable.getCause());
