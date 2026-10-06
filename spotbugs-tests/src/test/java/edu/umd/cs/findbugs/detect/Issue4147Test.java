@@ -10,8 +10,9 @@ class Issue4147Test extends AbstractIntegrationTest {
     void testOperandOrderDoesNotChangeNullVerdict() {
         performAnalysis("ghIssues/Issue4147.class");
 
+        assertBugTypeCount("NP_NULL_ON_SOME_PATH", 1);
         assertNoBugInMethod("NP_NULL_ON_SOME_PATH", "Issue4147", "directForm");
         assertNoBugInMethod("NP_NULL_ON_SOME_PATH", "Issue4147", "yodaForm");
-        assertBugInMethod("NP_NULL_ON_SOME_PATH", "Issue4147", "dereferencedWhenNull");
+        assertBugInMethodCount("NP_NULL_ON_SOME_PATH", "Issue4147", "dereferencedWhenNull", 1);
     }
 }

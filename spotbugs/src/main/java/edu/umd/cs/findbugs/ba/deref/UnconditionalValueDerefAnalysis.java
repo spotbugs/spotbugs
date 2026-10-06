@@ -214,12 +214,7 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
             throws DataflowAnalysisException {
         if (reportPotentialDereference(location, invDataflow.getFactAtLocation(location))) {
             ValueNumber vn = vnaFrame.getTopValue();
-            // A field read shares one value number across every getfield of that field.
-            // Treating "if (field == null) throw new NullPointerException()" as a deref of
-            // that number also covers earlier reads, so a preceding null path becomes a
-            // false NP_NULL_ON_SOME_PATH. The yoda form (null == field) is IF_ACMPNE and
-            // never reaches this check. Locals and parameters keep a value number of their
-            // own, so they still need the deref to recognize an explicit null guard.
+            // Field loads share one value number, so a field null-guard is not a deref.
             if (vnaFrame.getLoad(vn) != null) {
                 return;
             }
