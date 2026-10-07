@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.filter.Matcher;
 
@@ -37,7 +37,7 @@ public class FilterBugReporter extends DelegatingBugReporter {
     }
 
     @Override
-    public void reportBug(@Nonnull BugInstance bugInstance) {
+    public void reportBug(@NonNull BugInstance bugInstance) {
         if (DEBUG) {
             System.out.print("Match ==> ");
         }

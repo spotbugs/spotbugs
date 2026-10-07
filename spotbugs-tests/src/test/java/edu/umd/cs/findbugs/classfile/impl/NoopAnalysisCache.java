@@ -29,9 +29,11 @@ import edu.umd.cs.findbugs.classfile.IErrorLogger;
 import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.log.Profiler;
+
 import java.util.Map;
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class NoopAnalysisCache implements IAnalysisCache {
     @Override
@@ -48,31 +50,31 @@ public class NoopAnalysisCache implements IAnalysisCache {
 
     @Override
     public <E> E getClassAnalysis(Class<E> analysisClass,
-            @Nonnull ClassDescriptor classDescriptor)
+            @NonNull ClassDescriptor classDescriptor)
             throws CheckedAnalysisException {
         return null;
     }
 
     @Override
     public <E> E probeClassAnalysis(Class<E> analysisClass,
-            @Nonnull ClassDescriptor classDescriptor) {
+            @NonNull ClassDescriptor classDescriptor) {
         return null;
     }
 
     @Override
     public <E> E getMethodAnalysis(Class<E> analysisClass,
-            @Nonnull MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
+            @NonNull MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
         return null;
     }
 
     @Override
     public <E> void eagerlyPutMethodAnalysis(Class<E> analysisClass,
-            @Nonnull MethodDescriptor methodDescriptor, E analysisObject) {
+            @NonNull MethodDescriptor methodDescriptor, E analysisObject) {
 
     }
 
     @Override
-    public void purgeMethodAnalyses(@Nonnull MethodDescriptor methodDescriptor) {
+    public void purgeMethodAnalyses(@NonNull MethodDescriptor methodDescriptor) {
 
     }
 
@@ -97,9 +99,8 @@ public class NoopAnalysisCache implements IAnalysisCache {
         return null;
     }
 
-    @CheckForNull
     @Override
-    public <E> E getOptionalDatabase(Class<E> databaseClass) {
+    public @Nullable <E> E getOptionalDatabase(Class<E> databaseClass) {
         return null;
     }
 

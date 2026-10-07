@@ -5,28 +5,47 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2026-??-??
+### Added
+- Add `ReflectiveAccessTracker` to track fields accessed via reflection - such as VarHandle, MethodHandle or AtomicFieldUpdaters ([#3954](https://github.com/spotbugs/spotbugs/pull/3954)) to fix issue ([#2749](https://github.com/spotbugs/spotbugs/issues/2749))
+- Add automatic completion of class names in GUI class filter ([#749](https://github.com/spotbugs/spotbugs/issues/749))
+
 ### Changed
 - `@SuppressFBWarnings` annotation on a method or a constructor now suppresses warnings reported in their lambdas too ([#724](https://github.com/spotbugs/spotbugs/issues/724))
 - Replace deprecated calls to 'SignatureParser' to 'GenericSignatureParser' where feasible ([#4336](https://github.com/spotbugs/spotbugs/pull/4337))
 
 ### Fixed
+- Fix `RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT` false negative when the ignored result comes from `Arrays.copyOf`, `Arrays.copyOfRange` or any pure static method or constructor of a class using `assert` ([#3900](https://github.com/spotbugs/spotbugs/issues/3900))
+- Fix `AA_ASSERTION_OF_ARGUMENTS` false negative when a public method validates a parameter with `assert` and `instanceof` ([#4305](https://github.com/spotbugs/spotbugs/issues/4305))
+- Fix `PT_ABSOLUTE_PATH_TRAVERSAL` false negative for `new File(parent, child)`, where the attacker controlled segment is the second argument ([#4340](https://github.com/spotbugs/spotbugs/pull/4340))
+- Fix 'DM_USELESS_THREAD' false negative for Thread subclasses that do not override run() ([#4306](https://github.com/spotbugs/spotbugs/issues/4306))
+- Fix `UL_UNRELEASED_LOCK` false negative when a method acquires a lock and never calls `unlock` ([#4310](https://github.com/spotbugs/spotbugs/issues/4310))
+- Fix `TLW_TWO_LOCK_WAIT` false negatives when a class waits while holding two monitors but has no matching `notify()` call ([#4323](https://github.com/spotbugs/spotbugs/issues/4323))
 - Fix `NP_ALWAYS_NULL` false positives when a non-null value is known to satisfy an `instanceof` check ([#4272](https://github.com/spotbugs/spotbugs/issues/4272))
 - Fix `RANGE_ARRAY_INDEX` false positive when the array access is inside unreachable code caused by an impossible null condition (e.g. `if (x == null && x != null)`) ([#4275](https://github.com/spotbugs/spotbugs/issues/4275))
 - Fix `NP_NULL_ON_SOME_PATH` false positive when `instanceof` check is always true because the value was created with `new` and its exact type is a subtype of the checked type (e.g. `Base value = new Derived(); if (value instanceof Derived) result = new Object(); result.toString()`) ([#4273](https://github.com/spotbugs/spotbugs/issues/4273))
 - Fix `NN_NAKED_NOTIFY` false positive when guarded state is updated before the synchronized block that calls `notify`/`notifyAll` ([#3786](https://github.com/spotbugs/spotbugs/issues/3786))
 - Fix `SA_LOCAL_SELF_ASSIGNMENT` false positive in methods with `++`/`--` inside a switch nested in a try-catch block ([#3929](https://github.com/spotbugs/spotbugs/issues/3929))
+- Fix `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE` false negative for non-atomic read-modify-write in inner classes accessing enclosing shared fields ([#4236](https://github.com/spotbugs/spotbugs/pull/4236))
 - Fix `OS_OPEN_STREAM` false positive when the result of `PrintWriter.append()` is reassigned before closing the writer ([#4274](https://github.com/spotbugs/spotbugs/issues/4274))
+- Fix `OS_OPEN_STREAM` false positive when a stream is wrapped (e.g. in a `PrintStream`, `BufferedOutputStream` or `PrintWriter`) and the wrapped stream is closed instead of the wrapper ([#4304](https://github.com/spotbugs/spotbugs/issues/4304))
 - Fix `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED` false negative when lazy init uses a ternary assignment instead of an `if` statement ([#4154](https://github.com/spotbugs/spotbugs/issues/4154))
 - Fix `UR_UNINIT_READ` false negative for compound assignment to a field (e.g. `m_iType |= e`) ([#4233](https://github.com/spotbugs/spotbugs/pull/4233))
 - Fix `NP_BOOLEAN_RETURN_NULL` false negative when `null` is returned via a local variable ([#4234](https://github.com/spotbugs/spotbugs/pull/4234))
 - Fix `MS_EXPOSE_BUF` and `EI_EXPOSE_BUF` false negative when returning `Buffer.array()` ([#4235](https://github.com/spotbugs/spotbugs/pull/4235))
 - Fix `OBL_UNSATISFIED_OBLIGATION` false negatives for unclosed `CallableStatement`s returned by `Connection.prepareCall` ([#4148](https://github.com/spotbugs/spotbugs/issues/4148))
 - Fix `LI_LAZY_INIT_STATIC` false negative when field is lazily initialized using a method call ([#4276](https://github.com/spotbugs/spotbugs/issues/4276))
+- Fix `DMI_RANDOM_USED_ONLY_ONCE` FP when Random is used inside loop but created before ([#3937](https://github.com/spotbugs/spotbugs/pull/3937))
 - Fix SARIF output writing source-location URI syntax exceptions to stderr when source filenames are unknown ([#1412](https://github.com/spotbugs/spotbugs/issues/1412))
 - Narrow the definition of singletons ([#2985](https://github.com/spotbugs/spotbugs/issues/2985))
 - Fix `NP_LOAD_OF_KNOWN_NULL_VALUE` false negative when null check uses `instanceof` ([#3916](https://github.com/spotbugs/spotbugs/issues/3916))
-- Fix CLI launcher scripts intercepting `-conserveSpace` with a JVM system property instead passing it to Java Application as equivalent to `-effort:min` ([#4268](https://github.com/spotbugs/spotbugs/pull/4289)) 
+- Fix `MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR` false negative when a constructor calls an overridable method that takes arguments, such as a setter (e.g. `setValue(value)`) ([#4309](https://github.com/spotbugs/spotbugs/issues/4309))
+- Fix CLI launcher scripts intercepting `-conserveSpace` with a JVM system property instead passing it to Java Application as equivalent to `-effort:min` ([#4268](https://github.com/spotbugs/spotbugs/pull/4289))
+- Fix `USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` false positive when `clone()` assigns a newly created lock object to the copy ([#4320](https://github.com/spotbugs/spotbugs/issues/4320))
 - Fix `CT_CONSTRUCTOR_THROW` false positive with sealed classes ([#4259](https://github.com/spotbugs/spotbugs/issues/4259))
+- Fix `JrtfsCodeBase` resolving JDK classes from the module image of the running JVM instead of the JDK the given `jrt-fs.jar` belongs to, so that `-auxclasspath <other-jdk>/lib/jrt-fs.jar` is honoured ([#4329](https://github.com/spotbugs/spotbugs/pull/4329))
+- Fix `USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` false positive when a lock is assigned to a newly allocated object ([#4331](https://github.com/spotbugs/spotbugs/issues/4331))
+- Do not flag `writeReplace()` and `writeExternal()` as mutators ([#1719](https://github.com/spotbugs/spotbugs/pull/1719))
+- Prevent XML external entity resolution in user-controlled data ([#4365](https://github.com/spotbugs/spotbugs/pull/4365))
 
 ## 4.10.4 - 2026-08-19
 ### Fixed

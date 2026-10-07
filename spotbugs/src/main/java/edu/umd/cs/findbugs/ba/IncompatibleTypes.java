@@ -23,13 +23,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jakarta.annotation.Nonnull;
-
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ba.ch.Subtypes2;
@@ -114,7 +113,7 @@ public class IncompatibleTypes {
     public static final IncompatibleTypes UNRELATED_TYPES_BUT_MATCHES_TYPE_PARAMETER = new IncompatibleTypes(
             "Unrelated types but one type matches type parameter of the other", Priorities.HIGH_PRIORITY);
 
-    public static @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(GenericObjectType genericType, Type plainType) {
+    public static @NonNull IncompatibleTypes getPriorityForAssumingCompatible(GenericObjectType genericType, Type plainType) {
         IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(genericType.getObjectType(), plainType);
         List<? extends ReferenceType> parameters = genericType.getParameters();
         if (result.getPriority() == Priorities.NORMAL_PRIORITY && parameters != null && parameters.contains(plainType)) {
@@ -124,11 +123,11 @@ public class IncompatibleTypes {
 
     }
 
-    public static @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(Type lhsType, Type rhsType) {
+    public static @NonNull IncompatibleTypes getPriorityForAssumingCompatible(Type lhsType, Type rhsType) {
         return getPriorityForAssumingCompatible(lhsType, rhsType, false);
     }
 
-    public static @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(Type expectedType, Type actualType, boolean pointerEquality) {
+    public static @NonNull IncompatibleTypes getPriorityForAssumingCompatible(Type expectedType, Type actualType, boolean pointerEquality) {
         if (expectedType.equals(actualType)) {
             return SEEMS_OK;
         }
@@ -185,7 +184,7 @@ public class IncompatibleTypes {
         return ARRAY_AND_NON_ARRAY;
     }
 
-    static @Nonnull XMethod getInvokedMethod(XClass xClass, String name, String sig, boolean isStatic) throws CheckedAnalysisException {
+    static @NonNull XMethod getInvokedMethod(XClass xClass, String name, String sig, boolean isStatic) throws CheckedAnalysisException {
         IAnalysisCache cache = Global.getAnalysisCache();
         while (true) {
             XMethod result = xClass.findMethod(name, sig, isStatic);
@@ -204,7 +203,7 @@ public class IncompatibleTypes {
 
     }
 
-    public static @Nonnull IncompatibleTypes getPriorityForAssumingCompatible(ObjectType expectedType, ObjectType actualType,
+    public static @NonNull IncompatibleTypes getPriorityForAssumingCompatible(ObjectType expectedType, ObjectType actualType,
             boolean pointerEquality) {
         if (expectedType.equals(actualType)) {
             return SEEMS_OK;

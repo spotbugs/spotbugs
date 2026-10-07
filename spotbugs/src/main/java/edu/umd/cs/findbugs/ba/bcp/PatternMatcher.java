@@ -24,11 +24,16 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import jakarta.annotation.Nullable;
+// TODO: Switch to JSpecify @Nullable once SpotBugs correctly handles
+// nullable parameters on this nested constructor. Currently it reports
+// false NP_NONNULL_PARAM_VIOLATION findings for the null parent and
+// bindingSet arguments.
+import javax.annotation.Nullable;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
+// import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -390,6 +395,7 @@ public class PatternMatcher implements DFSEdgeTypes {
                 PatternElementMatch dominator = currentMatch.getFirstLabeledMatch(patternElement.getDominatedBy());
                 BasicBlock domBlock = dominator.getBasicBlock();
                 InstructionHandle domInstruction = dominator.getMatchedInstructionInstructionHandle();
+
                 // Find all basic blocks dominated by the dominator block.
                 for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext();) {
                     BasicBlock block = i.next();
@@ -399,8 +405,8 @@ public class PatternMatcher implements DFSEdgeTypes {
                     if (block == domBlock || dominators.get(domBlock.getLabel())) {
                         // This block is dominated by the dominator block.
                         // Each instruction in the block which matches the
-                        // current pattern
-                        // element is a new state continuing the match.
+                        // current pattern element is a new state continuing
+                        // the match.
                         for (Iterator<InstructionHandle> j = block.instructionIterator(); j.hasNext();) {
                             InstructionHandle next = j.next();
                             if (includeInstructions) {
@@ -436,6 +442,7 @@ public class PatternMatcher implements DFSEdgeTypes {
             if (debug) {
                 debug("\t" + ((matchResult != null) ? " ==> MATCH" : " ==> NOT A MATCH"));
             }
+
             if (matchResult != null) {
                 // Successful match!
                 // Update state to reflect that the match has occurred.
@@ -445,6 +452,7 @@ public class PatternMatcher implements DFSEdgeTypes {
                         location.getBasicBlock(), matchCount, currentMatch);
                 bindingSet = matchResult.getBindingSet();
             }
+
             return matchResult;
         }
     }
@@ -483,12 +491,11 @@ public class PatternMatcher implements DFSEdgeTypes {
             if (LOG.isDebugEnabled()) {
                 debug("Matching " + state.getPatternElement() + " against " + state.currentMatch);
             }
+
             // If we've reached the minimum number of occurrences for this
             // pattern element, we can advance to the next pattern element
-            // without trying
-            // to match this instruction again. We make sure that we only
-            // advance to
-            // the next element once for this matchCount.
+            // without trying to match this instruction again. We make sure
+            // that we only advance to the next element once for this matchCount.
             State advance = state.advanceToNextElement();
             if (advance != null) {
                 work(advance);
@@ -561,6 +568,5 @@ public class PatternMatcher implements DFSEdgeTypes {
         } finally {
             depth--;
         }
-
     }
 }

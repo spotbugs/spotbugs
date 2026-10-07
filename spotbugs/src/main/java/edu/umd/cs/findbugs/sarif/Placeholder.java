@@ -2,11 +2,12 @@ package edu.umd.cs.findbugs.sarif;
 
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.ClassAnnotation;
-import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 class Placeholder {
     /**
@@ -18,8 +19,7 @@ class Placeholder {
      * Key to formatting {@link edu.umd.cs.findbugs.BugAnnotation}.
      * @see edu.umd.cs.findbugs.BugAnnotation#format(String, ClassAnnotation)
      */
-    @NonNull
-    final String key;
+    final @NonNull String key;
 
     Placeholder(int index, @NonNull String key) {
         this.index = index;

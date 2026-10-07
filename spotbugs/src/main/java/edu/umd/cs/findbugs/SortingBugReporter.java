@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
@@ -53,7 +53,7 @@ public class SortingBugReporter extends TextUIBugReporter {
     }
 
     @Override
-    public @Nonnull BugCollection getBugCollection() {
+    public @NonNull BugCollection getBugCollection() {
         return bugCollection;
     }
 }

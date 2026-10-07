@@ -23,12 +23,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import javax.annotation.meta.When;
 
-import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.util.DualKeyHashMap;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A type qualifier applied to a field, method, parameter, or return value.
@@ -119,7 +119,7 @@ public class TypeQualifierAnnotation {
      *         both <code>a</code> or <code>b</code>, or null if no such
      *         TypeQualifierAnnotation exists
      */
-    public static @CheckForNull TypeQualifierAnnotation combineReturnTypeAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
+    public static @Nullable TypeQualifierAnnotation combineReturnTypeAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
         return combineAnnotations(a, b, combineReturnValueMatrix);
     }
 
@@ -132,7 +132,7 @@ public class TypeQualifierAnnotation {
      * @return combined parameter annotation that is at least as wide as both a
      *         and b
      */
-    public static @Nonnull TypeQualifierAnnotation combineParameterAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
+    public static @NonNull TypeQualifierAnnotation combineParameterAnnotations(TypeQualifierAnnotation a, TypeQualifierAnnotation b) {
         return combineAnnotations(a, b, combineParameterMatrix);
     }
 
@@ -156,7 +156,7 @@ public class TypeQualifierAnnotation {
         }
     }
 
-    public static @Nonnull Collection<TypeQualifierAnnotation> getValues(Map<TypeQualifierValue<?>, When> map) {
+    public static @NonNull Collection<TypeQualifierAnnotation> getValues(Map<TypeQualifierValue<?>, When> map) {
         Collection<TypeQualifierAnnotation> result = new LinkedList<>();
         for (Map.Entry<TypeQualifierValue<?>, When> e : map.entrySet()) {
             result.add(getValue(e.getKey(), e.getValue()));
@@ -164,7 +164,7 @@ public class TypeQualifierAnnotation {
         return result;
     }
 
-    public static @Nonnull TypeQualifierAnnotation getValue(TypeQualifierValue<?> desc, When when) {
+    public static @NonNull TypeQualifierAnnotation getValue(TypeQualifierValue<?> desc, When when) {
         DualKeyHashMap<TypeQualifierValue<?>, When, TypeQualifierAnnotation> map = instance.get();
         TypeQualifierAnnotation result = map.get(desc, when);
         if (result != null) {

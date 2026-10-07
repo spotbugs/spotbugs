@@ -8,6 +8,6 @@
  * edu.umd.cs.findbugs.classfile.impl package.  Instances should be created
  * using the ClassFactory singleton in that package.
  */
-@javax.annotation.ParametersAreNonnullByDefault
+@org.jspecify.annotations.NullMarked
 @edu.umd.cs.findbugs.internalAnnotations.AnalysisContextContained
 package edu.umd.cs.findbugs.classfile;

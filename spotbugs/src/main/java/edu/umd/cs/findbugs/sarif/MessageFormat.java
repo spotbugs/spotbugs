@@ -1,9 +1,9 @@
 package edu.umd.cs.findbugs.sarif;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 import java.util.Objects;
 import java.util.function.BiFunction;
+
+import org.jspecify.annotations.NonNull;
 
 /**
  * Class to parse longDescription to generate formatted test for SARIF.

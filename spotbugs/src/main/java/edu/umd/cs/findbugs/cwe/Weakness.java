@@ -1,6 +1,6 @@
 package edu.umd.cs.findbugs.cwe;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * A weakness represents a single weakness of the Common Weakness Enumeration (CWE). The Common Weakness Enumeration is
@@ -32,7 +32,7 @@ public class Weakness {
      * @param severity
      * @return Weakness
      */
-    public static Weakness of(@NonNull int cweid, @NonNull String name, @NonNull String description,
+    public static Weakness of(int cweid, @NonNull String name, @NonNull String description,
             @NonNull WeaknessSeverity severity) {
         return new Weakness(cweid, name, description, severity);
     }

@@ -1,6 +1,8 @@
 package edu.umd.cs.findbugs.util;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import edu.umd.cs.findbugs.ba.XClass;
@@ -81,6 +83,25 @@ public class MutableClasses {
             "set", "put", "add", "insert", "delete", "remove", "erase", "clear", "push", "pop",
             "enqueue", "dequeue", "write", "append", "replace");
 
+    private static final MethodChecker[] METHOD_CHECKERS = {
+        new MethodChecker("add"),
+        new MethodChecker("append"),
+        new MethodChecker("clear"),
+        new MethodChecker("delete"),
+        new MethodChecker("enqueue"),
+        new MethodChecker("erase"),
+        new MethodChecker("insert"),
+        new MethodChecker("pop"),
+        new MethodChecker("push"),
+        new MethodChecker("put"),
+        new MethodChecker("remove"),
+        new MethodChecker("replace"),
+        new MethodChecker("set"),
+        new MethodChecker("dequeue"),
+        new WriteMethodChecker()
+    };
+
+
     public static boolean mutableSignature(String sig) {
         if (sig.charAt(0) == '[') {
             return true;
@@ -144,7 +165,7 @@ public class MutableClasses {
      *            the return type signature
      * @return true if the method name looks like a setter
      */
-    public static boolean looksLikeASetter(String methodName, String classSig, String retSig) {
+    private static boolean looksLikeASetter(String methodName, String classSig, String retSig) {
         if (Objects.equals(classSig, retSig)) {
             return false;
         }
@@ -166,7 +187,7 @@ public class MutableClasses {
         return looksLikeASetter(xClass.getSourceSignature(), xmethod);
     }
 
-    public static boolean looksLikeASetter(String classSig, String clsName, Method method) {
+    private static boolean looksLikeASetter(String classSig, String clsName, Method method) {
         XMethod xMethod = XFactory.createXMethod(clsName, method);
         if (xMethod.isResolved()) {
             return MutableClasses.looksLikeASetter(classSig, xMethod);
@@ -177,6 +198,17 @@ public class MutableClasses {
             return MutableClasses.looksLikeASetter(method.getName(), classSig,
                     new GenericSignatureParser(method.getSignature()).getReturnTypeSignature());
         }
+    }
+
+    private static boolean looksLikeASetter(ClassAnalysis cls, String classSig, String clsName, Method method) {
+        if (looksLikeASetter(classSig, clsName, method)) {
+            for (MethodChecker checker : METHOD_CHECKERS) {
+                if (checker.isMutableMethod(cls, method)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static boolean isSingleLineUnsupportedOperationThrower(Method method) {
@@ -220,7 +252,7 @@ public class MutableClasses {
         return cnst.equals(cp.constantToString(cp.getConstant((high << 8) + Byte.toUnsignedInt(low))));
     }
 
-    public static boolean looksLikeASetter(String classSig, XMethod xmethod) {
+    private static boolean looksLikeASetter(String classSig, XMethod xmethod) {
         // If the method throws an UnsupportedOperationException then we ignore it.
         if (xmethod.isUnsupported()) {
             return false;
@@ -234,6 +266,7 @@ public class MutableClasses {
      * Analytic information about a {@link JavaClass} relevant to determining its mutability properties.
      */
     private static final class ClassAnalysis {
+
         /**
          * Class under analysis.
          */
@@ -247,6 +280,8 @@ public class MutableClasses {
         private String sig;
         private Boolean mutable;
         private Boolean immutableByContract;
+        private Boolean externalizable;
+        private Boolean serializable;
 
         private ClassAnalysis(JavaClass cls, String sig) {
             this.cls = cls;
@@ -283,11 +318,65 @@ public class MutableClasses {
             return maybeSuper != null && maybeSuper.isMutable();
         }
 
-        private boolean looksLikeASetter(String clsName, Method method) {
-            return MutableClasses.looksLikeASetter(getSig(), clsName, method);
+        boolean isExternalizable() {
+            Boolean local = externalizable;
+            if (local == null) {
+                externalizable = local = computeExternalizable();
+            }
+            return local;
         }
 
-        private String getSig() {
+        private boolean computeExternalizable() {
+            for (String iface : cls.getInterfaceNames()) {
+                if (iface.equals("java.io.Externalizable")) {
+                    return true;
+                }
+                try {
+                    if (load(Repository.lookupClass(iface), null).isExternalizable()) {
+                        return true;
+                    }
+                } catch (ClassNotFoundException e) {
+                    AnalysisContext.reportMissingClass(e);
+                }
+            }
+
+            final ClassAnalysis maybeSuper = getSuperAnalysis();
+            return maybeSuper != null && maybeSuper.isExternalizable();
+        }
+
+        boolean isSerializable() {
+            Boolean local = serializable;
+            if (local == null) {
+                // Externalizable implies Serializable
+                serializable = local = computeSerializable() || isExternalizable();
+            }
+            return local;
+        }
+
+        private boolean computeSerializable() {
+            for (String iface : cls.getInterfaceNames()) {
+                if (iface.equals("java.io.Serializable")) {
+                    return true;
+                }
+                try {
+                    if (load(Repository.lookupClass(iface), null).isSerializable()) {
+                        return true;
+                    }
+                } catch (ClassNotFoundException e) {
+                    AnalysisContext.reportMissingClass(e);
+                }
+            }
+
+            final ClassAnalysis maybeSuper = getSuperAnalysis();
+            return maybeSuper != null && maybeSuper.isSerializable();
+        }
+
+
+        private boolean looksLikeASetter(String clsName, Method method) {
+            return MutableClasses.looksLikeASetter(this, getSig(), clsName, method);
+        }
+
+        String getSig() {
             String local = sig;
             if (local == null) {
                 sig = local = "L" + ClassName.toSlashedClassName(cls.getClassName()) + ";";
@@ -350,6 +439,49 @@ public class MutableClasses {
             }
 
             return load(superClass, null);
+        }
+    }
+
+    private static class MethodChecker {
+        private final String prefix;
+
+        MethodChecker(String prefix) {
+            this.prefix = prefix;
+        }
+
+        boolean isMutableMethod(ClassAnalysis cls, Method method) {
+            return method.getName().startsWith(prefix)
+                    // If setter-like methods returns an object of the same type then we suppose that it
+                    // is not a setter but creates a new instance instead.
+                    && !Objects.equals(cls.getSig(), method.getReturnType().getSignature());
+        }
+    }
+
+    private static final class WriteMethodChecker extends MethodChecker {
+        WriteMethodChecker() {
+            super("write");
+        }
+
+        @Override
+        boolean isMutableMethod(ClassAnalysis cls, Method method) {
+            if (!super.isMutableMethod(cls, method)) {
+                return false;
+            }
+
+            final String name = method.getName();
+            final String sig = method.getSignature();
+
+            // writeReplace() is a special case for java.io.Serializable contract
+            if (name.equals("writeReplace") && sig.equals("()Ljava/lang/Object;") && cls.isSerializable()) {
+                return false;
+            }
+            // writeExternal(ObjectOutput) is part of the java.io.Externalizable contract
+            if (name.equals("writeExternal") && method.isPublic()
+                    && sig.equals("(Ljava/io/ObjectOutput;)V") && cls.isExternalizable()) {
+                return false;
+            }
+
+            return true;
         }
     }
 }

@@ -26,10 +26,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import jakarta.annotation.Nonnull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -46,7 +45,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
 
     ArrayList<BitSet> regModifiedAt = new ArrayList<>();
 
-    @Nonnull
+    @NonNull
     BitSet getModifiedBitSet(int reg) {
         while (regModifiedAt.size() <= reg) {
             regModifiedAt.add(new BitSet());

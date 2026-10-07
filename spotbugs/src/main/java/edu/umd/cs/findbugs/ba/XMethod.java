@@ -20,7 +20,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.Collection;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
@@ -87,14 +87,14 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod 
      * method it bridges to, which is a method with an identical name but possibly co-variant arguments and
      * return values.
      */
-    public @CheckForNull XMethod bridgeTo();
+    public @Nullable XMethod bridgeTo();
 
-    public @CheckForNull XMethod bridgeFrom();
+    public @Nullable XMethod bridgeFrom();
 
-    public @CheckForNull MethodDescriptor getAccessMethodForMethod();
+    public @Nullable MethodDescriptor getAccessMethodForMethod();
 
 
-    public @CheckForNull FieldDescriptor getAccessMethodForField();
+    public @Nullable FieldDescriptor getAccessMethodForField();
 
 
     public XMethod resolveAccessMethodForMethod();
@@ -143,7 +143,7 @@ public interface XMethod extends ClassMember, AnnotatedObject, ComparableMethod 
      * @return AnnotationValue annotating the parameter, or null if parameter is
      *         not annotated with this kind of annotation
      */
-    public @CheckForNull AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc);
+    public @Nullable AnnotationValue getParameterAnnotation(int param, ClassDescriptor desc);
 
     /**
      * Get collection of all AnnotationValues applied directly to given

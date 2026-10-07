@@ -23,7 +23,7 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 
 /**
@@ -67,7 +67,7 @@ public class I18N {
      * @param key
      *            which short message to retrieve
      */
-    public @Nonnull String getShortMessage(String key) {
+    public @NonNull String getShortMessage(String key) {
         BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(key);
         if (bugPattern == null) {
             return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
@@ -75,7 +75,7 @@ public class I18N {
         return bugPattern.getAbbrev() + ": " + bugPattern.getShortDescription();
     }
 
-    public @Nonnull String getShortMessageWithoutCode(String key) {
+    public @NonNull String getShortMessageWithoutCode(String key) {
         BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(key);
         if (bugPattern == null) {
             return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
@@ -89,7 +89,7 @@ public class I18N {
      * @param key
      *            which HTML details for retrieve
      */
-    public @Nonnull String getDetailHTML(String key) {
+    public @NonNull String getDetailHTML(String key) {
         BugPattern bugPattern = DetectorFactoryCollection.instance().lookupBugPattern(key);
         if (bugPattern == null) {
             return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
@@ -131,7 +131,7 @@ public class I18N {
      *            the short bug type code
      * @return the description of that short bug type code means
      */
-    public @Nonnull String getBugTypeDescription(String shortBugType) {
+    public @NonNull String getBugTypeDescription(String shortBugType) {
         BugCode bugCode = DetectorFactoryCollection.instance().lookupBugCode(shortBugType);
         if (bugCode == null) {
             return L10N.getLocalString("err.missing_code", "Error: missing bug code for key") + " " + shortBugType;

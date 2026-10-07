@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.util.ClassName;
  * @author pugh
  * @author Kosta Zaikin
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation> {
     public static final NullnessAnnotation CHECK_FOR_NULL = new NullnessAnnotation("CheckForNull", 3) {
         @Override
@@ -78,8 +78,7 @@ public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation
     private static final NullnessAnnotation[] myValues = { UNKNOWN_NULLNESS, NONNULL, NULLABLE, CHECK_FOR_NULL };
 
     public static class Parser {
-        @CheckForNull
-        public static NullnessAnnotation parse(@DottedClassName String className) {
+        public static @Nullable NullnessAnnotation parse(@DottedClassName String className) {
             className = ClassName.toDottedClassName(className);
             if (UNKNOWN_NULLNESS.match(className)) {
                 return UNKNOWN_NULLNESS;
