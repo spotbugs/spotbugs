@@ -1,6 +1,6 @@
 package sfBugs;
 
-import javax.annotation.concurrent.Immutable;
+import net.jcip.annotations.Immutable;
 
 @Immutable
 public class Bug3149714 {

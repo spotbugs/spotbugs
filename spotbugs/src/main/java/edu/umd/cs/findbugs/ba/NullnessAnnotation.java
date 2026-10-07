@@ -19,8 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -32,7 +31,7 @@ import edu.umd.cs.findbugs.util.ClassName;
  * @author pugh
  * @author Kosta Zaikin
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation> {
     public static final NullnessAnnotation CHECK_FOR_NULL = new NullnessAnnotation("CheckForNull", 3) {
         @Override

@@ -2,7 +2,7 @@ package ghIssues;
 
 public class Issue3530 {
 
-	// Issue 3530
+    // Issue 3530
     public String switchForLoop(int value) {
         String valueType = null;
         switch (value % 2) {

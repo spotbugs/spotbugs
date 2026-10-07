@@ -25,8 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+
 import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
@@ -53,8 +54,7 @@ public class AccessMethodDatabase {
      * @param accessMethod The method descriptor for the access method
      * @return The locations of the access method caller(s) i.e. the "real" methods in the inner class
      */
-    @NonNull
-    public List<AccessMethodLocation> getAccessMethodLocations(MethodDescriptor accessMethod) {
+    public @NonNull List<AccessMethodLocation> getAccessMethodLocations(MethodDescriptor accessMethod) {
         return map.getOrDefault(accessMethod, Collections.emptyList());
     }
 

@@ -5,7 +5,6 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
-import javax.annotation.concurrent.Immutable;
 
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.PrintingBugReporter;
@@ -15,6 +14,9 @@ import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.classfile.impl.ClassPathImpl;
+
+import net.jcip.annotations.Immutable;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.util.SyntheticRepository;
 import org.junit.jupiter.api.AfterEach;

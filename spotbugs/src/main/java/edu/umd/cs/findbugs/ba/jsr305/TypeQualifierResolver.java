@@ -51,7 +51,7 @@ public class TypeQualifierResolver {
     static final ClassDescriptor elementTypeDescriptor = DescriptorFactory
             .createClassDescriptor(ElementType.class);
 
-    // javax.annotations.ParametersAreNonnullByDefault ?
+    // org.jspecify.annotations.NullMarked ?
     static final ClassDescriptor eclipseNonNullByDefault = DescriptorFactory.createClassDescriptor("org/eclipse/jdt/annotation/NonNullByDefault");
 
     private static final ClassDescriptor[] NON_NULL_CLASS_DESCRIPTORS = new ClassDescriptor[] {

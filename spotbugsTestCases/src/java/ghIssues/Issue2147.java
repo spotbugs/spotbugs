@@ -12,7 +12,7 @@ public class Issue2147 {
             .unmodifiableList(Arrays.asList("1", "2", "3", "4"));
 
     public static void fillConstantAssignments(Map<String, String> map, Issue2147A state) {
-    	Issue2147B[] assignments = state.info.getAssignments();
+        Issue2147B[] assignments = state.info.getAssignments();
 
         for (Issue2147B assignment : assignments) {
             StringBuilder key = new StringBuilder();
@@ -33,17 +33,17 @@ public class Issue2147 {
 }
 
 class Issue2147A {
-	Issue2147C info = new Issue2147C();
+    Issue2147C info = new Issue2147C();
 }
 
 class Issue2147B {
-	public String getId() {
-		return "";
-	}
+    public String getId() {
+        return "";
+    }
 }
 
 class Issue2147C {
-	Issue2147B[] getAssignments() {
-		return new Issue2147B[0];
-	}
+    Issue2147B[] getAssignments() {
+        return new Issue2147B[0];
+    }
 }

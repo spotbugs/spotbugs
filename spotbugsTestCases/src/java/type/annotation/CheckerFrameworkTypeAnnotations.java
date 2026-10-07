@@ -27,7 +27,7 @@ public class CheckerFrameworkTypeAnnotations {
     
     // Expecting NP_NONNULL_PARAM_VIOLATION to be thrown here
     public void usingNullForNonNullParameter() {
-    	nonNullParameter(null);
+        nonNullParameter(null);
     }
     
     public void nonNullParameter(@NonNull Object o) {
@@ -36,7 +36,7 @@ public class CheckerFrameworkTypeAnnotations {
     // We should NOT get a NP_NONNULL_RETURN_VIOLATION here: the list contains non null elements
     // but it can be null itself
     public void usingNullParameterWithNonNullOnGenerics() {
-    	parameterWithNonNullOnGenerics(null);
+        parameterWithNonNullOnGenerics(null);
     }
     
     public <V extends @NonNull Object> void parameterWithNonNullOnGenerics(List<@NonNull V> list) {
@@ -44,7 +44,7 @@ public class CheckerFrameworkTypeAnnotations {
 
     // Expecting NP_NONNULL_PARAM_VIOLATION to be thrown here
     public void usingNullOnNonNullParameterWithNonNullOnGenerics() {
-    	nonNullParameterWithNonNullOnGenerics(null);
+        nonNullParameterWithNonNullOnGenerics(null);
     }
     
     public <V extends @NonNull Object> void nonNullParameterWithNonNullOnGenerics(@NonNull List<@NonNull V> list) {
@@ -52,11 +52,11 @@ public class CheckerFrameworkTypeAnnotations {
     
     // We should NOT get a NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE here
     public int usingNonNullArrayOfNullable() {
-    	return returningNonNullArrayOfNullable().hashCode();
+        return returningNonNullArrayOfNullable().hashCode();
     }
     
     // The elements are nullable but the array itself is not, see https://github.com/spotbugs/spotbugs/issues/1938
     public @Nullable String @NonNull [] returningNonNullArrayOfNullable() {
-    	return new String[5];
+        return new String[5];
     }
 }

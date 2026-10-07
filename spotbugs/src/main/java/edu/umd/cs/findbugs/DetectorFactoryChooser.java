@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
+
+import org.jspecify.annotations.NonNull;
 
 /**
  * Predicate for choosing DetectorFactory objects.

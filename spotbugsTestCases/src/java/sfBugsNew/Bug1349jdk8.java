@@ -30,7 +30,7 @@ public class Bug1349jdk8 {
 
     @NoWarning("RV_RETURN_VALUE_OF_PUTIFABSENT_IGNORED")
     public Calendar hashMapUpdate(String key, Calendar newValue) {
-    	hashMapCalendars.putIfAbsent(key, newValue);
+        hashMapCalendars.putIfAbsent(key, newValue);
         newValue.add(Calendar.DAY_OF_MONTH, 2);
         return newValue;
     }
