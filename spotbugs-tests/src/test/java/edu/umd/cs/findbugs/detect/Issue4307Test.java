@@ -11,5 +11,6 @@ class Issue4307Test extends AbstractIntegrationTest {
 
         assertBugInMethod("IL_INFINITE_LOOP", "Issue4307", "testInfiniteFloatLoop");
         assertBugInMethod("IL_INFINITE_LOOP", "Issue4307", "testInfiniteDoubleLoop");
+        assertBugTypeCount("IL_INFINITE_LOOP", 2);
     }
 }
