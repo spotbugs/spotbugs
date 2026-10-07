@@ -7,7 +7,6 @@ import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -28,6 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -35,8 +35,8 @@ import org.jspecify.annotations.Nullable;
  */
 class Location {
     private final @Nullable PhysicalLocation physicalLocation;
-    @NonNull
-    private final List<LogicalLocation> logicalLocations;
+
+    private final @NonNull List<LogicalLocation> logicalLocations;
 
     Location(@Nullable PhysicalLocation physicalLocation, @NonNull Collection<LogicalLocation> logicalLocations) {
         if (physicalLocation == null && (Objects.requireNonNull(logicalLocations).isEmpty())) {
@@ -111,8 +111,9 @@ class Location {
      * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317427">3.4 artifactLocation object</a>
      */
     static final class ArtifactLocation {
-        @NonNull
-        final URI uri;
+
+        final @NonNull URI uri;
+
         final @Nullable String uriBaseId;
 
         ArtifactLocation(@NonNull URI uri, @Nullable String uriBaseId) {
@@ -235,8 +236,9 @@ class Location {
      * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317678">3.29 physicalLocation object</a>
      */
     static final class PhysicalLocation {
-        @NonNull
-        final ArtifactLocation artifactLocation;
+
+        final @NonNull ArtifactLocation artifactLocation;
+
         final @Nullable Region region;
 
         PhysicalLocation(@NonNull ArtifactLocation artifactLocation, @Nullable Region region) {
@@ -268,14 +270,16 @@ class Location {
      * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317719">3.33 logicalLocation object</a>
      */
     static final class LogicalLocation {
-        @NonNull
-        final String name;
+
+        final @NonNull String name;
+
         final @Nullable String decoratedName;
-        @NonNull
-        final String kind;
+
+        final @NonNull String kind;
+
         final @Nullable String fullyQualifiedName;
-        @NonNull
-        final Map<String, String> properties = new HashMap<>();
+
+        final @NonNull Map<String, String> properties = new HashMap<>();
 
         LogicalLocation(@NonNull String name, @Nullable String decoratedName, @NonNull String kind, @Nullable String fullyQualifiedName,
                 @Nullable Map<String, String> properties) {
@@ -306,16 +310,14 @@ class Location {
             return locationJson;
         }
 
-        @NonNull
-        static LogicalLocation fromStackTraceElement(@NonNull StackTraceElement element) {
+        static @NonNull LogicalLocation fromStackTraceElement(@NonNull StackTraceElement element) {
             String fullyQualifiedName = String.format("%s.%s", element.getClassName(), element.getMethodName());
             Map<String, String> properties = new HashMap<>();
             properties.put("line-number", Integer.toString(element.getLineNumber()));
             return new LogicalLocation(element.getMethodName(), null, "function", fullyQualifiedName, properties);
         }
 
-        @NonNull
-        static Optional<LogicalLocation> fromBugInstance(@NonNull BugInstance bugInstance) {
+        static @NonNull Optional<LogicalLocation> fromBugInstance(@NonNull BugInstance bugInstance) {
             Objects.requireNonNull(bugInstance);
             ClassAnnotation classAnnotation = null;
             MethodAnnotation methodAnnotation = null;

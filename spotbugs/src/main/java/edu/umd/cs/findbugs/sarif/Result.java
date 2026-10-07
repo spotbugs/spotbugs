@@ -1,11 +1,13 @@
 package edu.umd.cs.findbugs.sarif;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
+import org.jspecify.annotations.NonNull;
 
 /**
  * Object which represents result object in {@code run.results} property. (§3.14.23)
@@ -16,8 +18,7 @@ final class Result {
     final int ruleIndex;
     final Message message;
     final List<Location> locations;
-    @NonNull
-    final Level level;
+    final @NonNull Level level;
 
     Result(@NonNull String ruleId, int ruleIndex, Message message, List<Location> locations, @NonNull Level level) {
         this.ruleId = Objects.requireNonNull(ruleId);

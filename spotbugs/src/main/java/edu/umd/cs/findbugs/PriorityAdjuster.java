@@ -22,9 +22,10 @@ package edu.umd.cs.findbugs;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
+
+import org.jspecify.annotations.NonNull;
 
 public class PriorityAdjuster {
     Map<String, PriorityAdjustment> adjustments;

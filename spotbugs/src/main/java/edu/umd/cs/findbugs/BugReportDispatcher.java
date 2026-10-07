@@ -1,6 +1,5 @@
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
@@ -12,6 +11,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -19,8 +19,8 @@ import org.jspecify.annotations.Nullable;
  * It is designed to output multiple reports in batch.
  */
 public class BugReportDispatcher implements ConfigurableBugReporter {
-    @NonNull
-    private final List<TextUIBugReporter> reporters;
+
+    private final @NonNull List<TextUIBugReporter> reporters;
 
     public BugReportDispatcher(Collection<TextUIBugReporter> reporters) {
         if (reporters == null || reporters.isEmpty()) {

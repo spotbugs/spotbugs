@@ -22,8 +22,9 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.ExitCodes;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.Version;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.cwe.WeaknessCatalog;
+
+import org.jspecify.annotations.NonNull;
 
 public class SarifBugReporter extends BugCollectionBugReporter {
     private final Gson gson = new Gson();
