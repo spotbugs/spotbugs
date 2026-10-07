@@ -4,5 +4,5 @@
  * layer.
  */
 
-@javax.annotation.ParametersAreNonnullByDefault
+@org.jspecify.annotations.NullMarked
 package edu.umd.cs.findbugs.classfile.impl;

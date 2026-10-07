@@ -57,7 +57,7 @@ import edu.umd.cs.findbugs.util.Values;
  *
  * @author David Hovemeyer
  */
-@javax.annotation.ParametersAreNonnullByDefault
+@org.jspecify.annotations.NullMarked
 public class Subtypes2 {
     public static final boolean ENABLE_SUBTYPES2_FOR_COMMON_SUPERCLASS_QUERIES = true; // SystemProperties.getBoolean("findbugs.subtypes2.superclass");
 

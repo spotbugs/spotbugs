@@ -2,5 +2,5 @@
  * Support for analyses based on the <a href="http://asm.objectweb.org/">ASM bytecode framework</a>.
  */
 
-@javax.annotation.ParametersAreNonnullByDefault
+@org.jspecify.annotations.NullMarked
 package edu.umd.cs.findbugs.classfile.engine.asm;
