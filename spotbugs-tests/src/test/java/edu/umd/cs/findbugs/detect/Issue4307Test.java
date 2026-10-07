@@ -8,6 +8,8 @@ class Issue4307Test extends AbstractIntegrationTest {
     @Test
     void testIssue() {
         performAnalysis("infiniteLoop/Issue4307.class");
-        assertBugTypeCount("IL_INFINITE_LOOP", 0);
+
+        assertBugInMethod("IL_INFINITE_LOOP", "Issue4307", "testInfiniteFloatLoop");
+        assertBugInMethod("IL_INFINITE_LOOP", "Issue4307", "testInfiniteDoubleLoop");
     }
 }
