@@ -745,7 +745,9 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
         if ("java/lang/Character".equals(className)) {
             return !methodName.equals("toChars");
         }
-        if ("java/lang/Class".equals(className) && methodName.startsWith("is")) {
+        if ("java/lang/Class".equals(className) && (methodName.startsWith("is") || methodName.equals("desiredAssertionStatus"))) {
+            // desiredAssertionStatus() is called by the static initializer javac generates for classes using assert.
+            // Taking it for a side effect would exclude every static method and constructor of such classes (SE_CLINIT).
             return true;
         }
         if ("java/awt/Color".equals(className) && methodName.equals(Const.CONSTRUCTOR_NAME)) {
@@ -774,6 +776,9 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                 return true;
             }
         }
+        if (isArrayCopy(className, methodName)) {
+            return true;
+        }
         if ((methodName.equals("binarySearch") && (className.equals("java/util/Arrays") || className.equals("java/util/Collections")))
                 || methodName.startsWith("$SWITCH_TABLE$")
                 || (methodName.equals(Const.CONSTRUCTOR_NAME) && isObjectOnlyClass(className))
@@ -787,6 +792,17 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                 && methodName.equals("equals")
                 && methodSig.equals("(Ljava/lang/Object;)Z"))
                 || NO_SIDE_EFFECT_METHODS.contains(m);
+    }
+
+    /**
+     * @param className slashed name of the class declaring the method
+     * @param methodName name of the method
+     * @return true if the method is {@code Arrays.copyOf} or {@code Arrays.copyOfRange}. They are listed explicitly because
+     *         {@code copyOfRange} rejects an invalid range with an {@code IllegalArgumentException}, which the bytecode
+     *         analysis would take for a side effect
+     */
+    private static boolean isArrayCopy(String className, String methodName) {
+        return "java/util/Arrays".equals(className) && (methodName.equals("copyOf") || methodName.equals("copyOfRange"));
     }
 
     /**

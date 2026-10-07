@@ -14,6 +14,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Replace deprecated calls to 'SignatureParser' to 'GenericSignatureParser' where feasible ([#4336](https://github.com/spotbugs/spotbugs/pull/4337))
 
 ### Fixed
+- Fix `RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT` false negative when the ignored result comes from `Arrays.copyOf`, `Arrays.copyOfRange` or any pure static method or constructor of a class using `assert` ([#3900](https://github.com/spotbugs/spotbugs/issues/3900))
 - Fix `AA_ASSERTION_OF_ARGUMENTS` false negative when a public method validates a parameter with `assert` and `instanceof` ([#4305](https://github.com/spotbugs/spotbugs/issues/4305))
 - Fix `PT_ABSOLUTE_PATH_TRAVERSAL` false negative for `new File(parent, child)`, where the attacker controlled segment is the second argument ([#4340](https://github.com/spotbugs/spotbugs/pull/4340))
 - Fix 'DM_USELESS_THREAD' false negative for Thread subclasses that do not override run() ([#4306](https://github.com/spotbugs/spotbugs/issues/4306))
