@@ -26,6 +26,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -51,7 +52,7 @@ public class SorterDialog extends FBDialog {
 
     private JTableHeader preview;
 
-    private final ArrayList<SortableCheckBox> checkBoxSortList = new ArrayList<>();
+    private final List<SortableCheckBox> checkBoxSortList = new ArrayList<>();
 
     JButton sortApply;
 

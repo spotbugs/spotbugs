@@ -57,15 +57,15 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class SorterTableColumnModel implements TableColumnModel {
 
-    private ArrayList<Sortables> order = new ArrayList<>();
+    private List<Sortables> order = new ArrayList<>();
 
     private final Set<Sortables> shown = new HashSet<>();
 
-    private final ArrayList<TableColumn> columnList = new ArrayList<>();
+    private final List<TableColumn> columnList = new ArrayList<>();
 
     private DefaultListSelectionModel dlsm;
 
-    private final ArrayList<TableColumnModelListener> watchers = new ArrayList<>();
+    private final List<TableColumnModelListener> watchers = new ArrayList<>();
 
     private boolean frozen = false;
 
@@ -378,7 +378,7 @@ public class SorterTableColumnModel implements TableColumnModel {
         throw new UnsupportedOperationException("columnSelectionChangedBAH");
     }
 
-    ArrayList<Sortables> getOrder() {
+    List<Sortables> getOrder() {
         return order;
     }
 

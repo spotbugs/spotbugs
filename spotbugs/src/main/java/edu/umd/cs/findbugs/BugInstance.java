@@ -126,7 +126,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteable, Clone
 
     private int priority;
 
-    private final ArrayList<BugAnnotation> annotationList;
+    private final List<BugAnnotation> annotationList;
 
     private int cachedHashCode;
 

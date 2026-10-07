@@ -190,7 +190,7 @@ public class FindInconsistentSync2 implements Detector {
         }
 
         public static Collection<SourceLineAnnotation> asSourceLineAnnotation(Collection<FieldAccess> c) {
-            ArrayList<SourceLineAnnotation> result = new ArrayList<>(c.size());
+            List<SourceLineAnnotation> result = new ArrayList<>(c.size());
             for (FieldAccess f : c) {
                 result.add(f.asSourceLineAnnotation());
             }

@@ -92,7 +92,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
     static final StreamFactory[] streamFactoryList;
 
     static {
-        ArrayList<StreamFactory> streamFactoryCollection = new ArrayList<>();
+        List<StreamFactory> streamFactoryCollection = new ArrayList<>();
 
         // Examine InputStreams, OutputStreams, Readers, and Writers,
         // ignoring byte array, char array, and String variants.

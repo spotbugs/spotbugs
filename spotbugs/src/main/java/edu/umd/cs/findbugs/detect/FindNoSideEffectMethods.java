@@ -286,7 +286,7 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
     private final Set<MethodDescriptor> uselessVoidCandidates = new HashSet<>();
 
     private SideEffectStatus status;
-    private ArrayList<MethodCall> calledMethods;
+    private List<MethodCall> calledMethods;
     private Set<ClassDescriptor> subtypes;
     private Set<Integer> finallyTargets;
     private Set<Integer> finallyExceptionRegisters;
@@ -412,7 +412,6 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
                 statusMap.put(method, status);
             }
             if (status.unsure()) {
-                calledMethods.trimToSize();
                 callGraph.put(method, calledMethods);
             } else {
                 callGraph.remove(method);
@@ -425,7 +424,6 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
             superClinitCall();
             statusMap.put(clinit, status);
             if (status == SideEffectStatus.UNSURE || status == SideEffectStatus.UNSURE_OBJECT_ONLY) {
-                calledMethods.trimToSize();
                 callGraph.put(clinit, calledMethods);
             }
         }
@@ -442,7 +440,6 @@ public class FindNoSideEffectMethods extends OpcodeStackDetector implements NonR
     private void handleStatus() {
         statusMap.put(getMethodDescriptor(), status);
         if (status == SideEffectStatus.UNSURE || status == SideEffectStatus.UNSURE_OBJECT_ONLY) {
-            calledMethods.trimToSize();
             callGraph.put(getMethodDescriptor(), calledMethods);
         } else {
             fieldsModifyingMethods.remove(getMethodDescriptor());

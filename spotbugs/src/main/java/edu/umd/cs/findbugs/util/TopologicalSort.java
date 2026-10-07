@@ -181,8 +181,8 @@ public class TopologicalSort {
 
         @Override
         public List<E> compute() {
-            ArrayList<E> doFirst = new ArrayList<>(consider.size());
-            ArrayList<E> doLast = new ArrayList<>(consider.size());
+            List<E> doFirst = new ArrayList<>(consider.size());
+            List<E> doLast = new ArrayList<>(consider.size());
 
             HashSet<E> remaining = new HashSet<>(consider);
             iEdges = new MultiMap<>(LinkedList.class);

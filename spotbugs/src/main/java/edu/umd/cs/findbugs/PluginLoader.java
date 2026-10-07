@@ -1202,7 +1202,7 @@ public class PluginLoader implements AutoCloseable {
 
     private List<Document> getMessageDocuments() throws PluginException {
         // List of message translation files in decreasing order of precedence
-        ArrayList<Document> messageCollectionList = new ArrayList<>();
+        List<Document> messageCollectionList = new ArrayList<>();
         PluginException caught = null;
         for (String m : getPotentialMessageFiles()) {
             try {

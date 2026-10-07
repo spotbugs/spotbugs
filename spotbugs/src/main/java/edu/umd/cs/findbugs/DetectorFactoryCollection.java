@@ -543,7 +543,7 @@ public class DetectorFactoryCollection {
      * @return Collection of bug category keys.
      */
     public Collection<String> getBugCategories() {
-        ArrayList<String> result = new ArrayList<>(categoryDescriptionMap.size());
+        List<String> result = new ArrayList<>(categoryDescriptionMap.size());
         for (BugCategory c : categoryDescriptionMap.values()) {
             if (!c.isHidden()) {
                 result.add(c.getCategory());

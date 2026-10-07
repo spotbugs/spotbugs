@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -72,7 +73,7 @@ public class Plugin implements AutoCloseable {
     private String shortDescription;
     private String detailedDescription;
 
-    private final ArrayList<DetectorFactory> detectorFactoryList;
+    private final List<DetectorFactory> detectorFactoryList;
     private final Map<String, FindBugsMain> mainPlugins;
 
     private final LinkedHashSet<BugPattern> bugPatterns;
@@ -88,9 +89,9 @@ public class Plugin implements AutoCloseable {
     private BugRanker bugRanker;
 
     // Ordering constraints
-    private final ArrayList<DetectorOrderingConstraint> interPassConstraintList;
+    private final List<DetectorOrderingConstraint> interPassConstraintList;
 
-    private final ArrayList<DetectorOrderingConstraint> intraPassConstraintList;
+    private final List<DetectorOrderingConstraint> intraPassConstraintList;
 
     // Optional: engine registrar class
     private Class<? extends IAnalysisEngineRegistrar> engineRegistrarClass;
@@ -505,7 +506,7 @@ public class Plugin implements AutoCloseable {
     }
 
     public static synchronized Collection<String> getAllPluginIds() {
-        ArrayList<String> result = new ArrayList<>();
+        List<String> result = new ArrayList<>();
         for (Plugin p : allPlugins.values()) {
             result.add(p.getPluginId());
         }

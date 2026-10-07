@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Abstract base class for BlockOrder variants. It allows the subclass to
@@ -32,7 +33,7 @@ import java.util.Iterator;
  * @see BlockOrder
  */
 public abstract class AbstractBlockOrder implements BlockOrder {
-    private final ArrayList<BasicBlock> blockList;
+    private final List<BasicBlock> blockList;
     private final Comparator<BasicBlock> comparator;
 
     protected AbstractBlockOrder(CFG cfg, Comparator<BasicBlock> comparator) {

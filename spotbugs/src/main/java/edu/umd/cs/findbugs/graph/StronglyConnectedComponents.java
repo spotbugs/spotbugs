@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.graph;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -30,7 +31,7 @@ import java.util.TreeSet;
  */
 public class StronglyConnectedComponents<GraphType extends Graph<EdgeType, VertexType>, EdgeType extends GraphEdge<EdgeType, VertexType>, VertexType extends GraphVertex<VertexType>> {
 
-    private final ArrayList<SearchTree<VertexType>> m_stronglyConnectedSearchTreeList;
+    private final List<SearchTree<VertexType>> m_stronglyConnectedSearchTreeList;
 
     private VertexChooser<VertexType> m_vertexChooser;
 

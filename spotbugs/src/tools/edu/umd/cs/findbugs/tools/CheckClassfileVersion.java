@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.tools;
 
 import java.io.DataInputStream;
 import java.io.File;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
@@ -41,7 +42,7 @@ public class CheckClassfileVersion {
     public static void main(String args[]) throws Exception {
 
         boolean fail = false;
-        ArrayList<File> s = new ArrayList<File>(args.length);
+        List<File> s = new ArrayList<File>(args.length);
         for (String f : args) {
             File file = new File(f);
             if (!file.canRead()) {

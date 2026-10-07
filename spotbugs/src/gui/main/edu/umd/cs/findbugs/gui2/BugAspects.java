@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import edu.umd.cs.findbugs.filter.Matcher;
 
@@ -50,7 +51,7 @@ public class BugAspects implements Iterable<BugAspects.SortableValue> {
 
     private int count = -1;
 
-    private ArrayList<BugAspects.SortableValue> lst = new ArrayList<>();
+    private List<BugAspects.SortableValue> lst = new ArrayList<>();
 
     public SortableValue last() {
         return lst.get(lst.size() - 1);
