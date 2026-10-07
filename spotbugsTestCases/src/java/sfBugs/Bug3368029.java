@@ -46,7 +46,7 @@ public class Bug3368029 {
         for (final String thing : things) {
             new Runnable() {
                 @Override
-				public void run() {
+                public void run() {
                     countOne2(thing);
                 }
             }.run();
