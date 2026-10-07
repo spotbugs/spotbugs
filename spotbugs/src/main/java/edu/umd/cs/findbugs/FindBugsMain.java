@@ -21,14 +21,13 @@ package edu.umd.cs.findbugs;
 
 import java.lang.reflect.Method;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * @author pugh
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class FindBugsMain implements Comparable<FindBugsMain> {
 
     public FindBugsMain(Class<?> mainClass, String cmd, String description, String kind, boolean analysis)
