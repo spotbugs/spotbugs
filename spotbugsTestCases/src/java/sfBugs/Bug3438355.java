@@ -69,7 +69,7 @@ public class Bug3438355 extends JFrame {
 
         deleteButton.addActionListener(new ActionListener() {
             @Override
-			public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {
                 try {
                     statusText.setText("Work in progress ...");
                     int records = deleteDeclaration1(deklarationNr.getText(), spediteurNr.getText());

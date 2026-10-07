@@ -11,7 +11,7 @@ public class Bug3097362 {
     }
 
     @Override
-	public int hashCode() {
+    public int hashCode() {
         return x;
 
     }

@@ -14,5 +14,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 @Target({ PACKAGE, TYPE, METHOD, CONSTRUCTOR })
 public @interface NonNullByDefault {
-	boolean value() default true;
+    boolean value() default true;
 }

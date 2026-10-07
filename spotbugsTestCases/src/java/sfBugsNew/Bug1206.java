@@ -28,7 +28,7 @@ public class Bug1206 {
     // B.java
     class B extends A {
         @Override
-		@Description("Something B")
+        @Description("Something B")
         int getSomething() {
             return super.getSomething();
         }

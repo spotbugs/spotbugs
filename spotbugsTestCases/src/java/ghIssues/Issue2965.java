@@ -24,8 +24,8 @@ public class Issue2965 {
     final String bar = getString("bar");
     // Getting an NPE here is the point of requireNonNull(), we should not report NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE
     Objects.requireNonNull(
-    		bar, 
-    		"Bar must not be null");
+            bar, 
+            "Bar must not be null");
   }
 
   public void checkForNullRequireNonNullWithMessageSupplier() {
