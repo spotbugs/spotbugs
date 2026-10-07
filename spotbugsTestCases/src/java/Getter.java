@@ -24,20 +24,6 @@ public class Getter {
 
     @NoWarning("IS2_INCONSISTENT_SYNC")
     @ExpectWarning("IS_FIELD_NOT_GUARDED")
-    @javax.annotation.concurrent.GuardedBy("this")
-    int y;
-
-    public synchronized int getY(){
-        return y;
-    }
-
-
-    public void setY(int y){
-        this.y = y;
-    }
-
-    @NoWarning("IS2_INCONSISTENT_SYNC")
-    @ExpectWarning("IS_FIELD_NOT_GUARDED")
     @net.jcip.annotations.GuardedBy("this")
     int z;
 
