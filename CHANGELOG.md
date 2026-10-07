@@ -6,6 +6,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2026-??-??
 ### Added
+- New detector `IllegalServletOutputOperationAfterCommit` for new bug type `ISOOAC_ILLEGAL_SERVLET_OUTPUT_OPERATION_AFTER_COMMIT`. This detector reports a bug if a method modifies a `HttpServletResponse` object's headers or status code after the response is committed, resets the response after it is committed, calls `sendError` or `sendRedirect` after the output builder object has been initialized, or repeatedly flushes the buffer. (See [SEI CERT rule FIO15-J](https://cmu-sei.github.io/secure-coding-standards/sei-cert-oracle-coding-standard-for-java/rules/input-output-fio/fio15-j/))
 - Add `ReflectiveAccessTracker` to track fields accessed via reflection - such as VarHandle, MethodHandle or AtomicFieldUpdaters ([#3954](https://github.com/spotbugs/spotbugs/pull/3954)) to fix issue ([#2749](https://github.com/spotbugs/spotbugs/issues/2749))
 - Add automatic completion of class names in GUI class filter ([#749](https://github.com/spotbugs/spotbugs/issues/749))
 
