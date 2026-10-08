@@ -679,7 +679,7 @@ public class MainFrame extends FBFrame implements LogSync {
                 total++;
             }
         }
-        if (projects.size() == 0) {
+        if (projects.isEmpty()) {
             JOptionPane.showMessageDialog(this, "No issues in current view");
             return;
         }
