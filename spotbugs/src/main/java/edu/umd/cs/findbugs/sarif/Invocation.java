@@ -1,6 +1,5 @@
 package edu.umd.cs.findbugs.sarif;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 
@@ -8,19 +7,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import org.jspecify.annotations.NonNull;
+
 /**
  * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317567">3.20 invocation object</a>
  */
 class Invocation {
     private final int exitCode;
 
-    @NonNull
-    private final String exitCodeDescription;
+    private final @NonNull String exitCodeDescription;
+
     private final boolean executionSuccessful;
-    @NonNull
-    private final List<Notification> toolExecutionNotifications;
-    @NonNull
-    private final List<Notification> toolConfigurationNotifications;
+
+    private final @NonNull List<Notification> toolExecutionNotifications;
+
+    private final @NonNull List<Notification> toolConfigurationNotifications;
 
     Invocation(int exitCode, @NonNull String exitCodeDescription, boolean executionSuccessful, @NonNull List<Notification> toolExecutionNotifications,
             @NonNull List<Notification> toolConfigurationNotifications) {

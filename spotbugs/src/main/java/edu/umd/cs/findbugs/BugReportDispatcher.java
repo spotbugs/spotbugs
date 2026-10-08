@@ -1,10 +1,8 @@
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
-import javax.annotation.CheckForNull;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,13 +11,16 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 /**
  * Bug reporter delegate actual operation to each bug reporter in the list.
  * It is designed to output multiple reports in batch.
  */
 public class BugReportDispatcher implements ConfigurableBugReporter {
-    @NonNull
-    private final List<TextUIBugReporter> reporters;
+
+    private final @NonNull List<TextUIBugReporter> reporters;
 
     public BugReportDispatcher(Collection<TextUIBugReporter> reporters) {
         if (reporters == null || reporters.isEmpty()) {
@@ -68,9 +69,8 @@ public class BugReportDispatcher implements ConfigurableBugReporter {
         forEach(reporter -> reporter.reportBug(bugInstance));
     }
 
-    @CheckForNull
     @Override
-    public BugCollection getBugCollection() {
+    public @Nullable BugCollection getBugCollection() {
         return reporters.get(0).getBugCollection();
     }
 

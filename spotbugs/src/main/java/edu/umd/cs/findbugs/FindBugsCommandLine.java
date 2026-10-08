@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine;
@@ -92,7 +92,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
         return settingList;
     }
 
-    public @Nonnull Project getProject() {
+    public @NonNull Project getProject() {
         return project;
     }
 

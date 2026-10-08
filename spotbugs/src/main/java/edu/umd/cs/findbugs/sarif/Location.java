@@ -7,9 +7,6 @@ import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.util.ClassName;
@@ -30,14 +27,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 /**
  * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317670">3.28 location object</a>
  */
 class Location {
-    @Nullable
-    private final PhysicalLocation physicalLocation;
-    @NonNull
-    private final List<LogicalLocation> logicalLocations;
+    private final @Nullable PhysicalLocation physicalLocation;
+
+    private final @NonNull List<LogicalLocation> logicalLocations;
 
     Location(@Nullable PhysicalLocation physicalLocation, @NonNull Collection<LogicalLocation> logicalLocations) {
         if (physicalLocation == null && (Objects.requireNonNull(logicalLocations).isEmpty())) {
@@ -48,7 +47,7 @@ class Location {
         this.logicalLocations = new ArrayList<>(logicalLocations);
     }
 
-    @CheckForNull
+    @Nullable
     PhysicalLocation getPhysicalLocation() {
         return physicalLocation;
     }
@@ -89,8 +88,7 @@ class Location {
         return new Location(physicalLocation.orElse(null), Collections.singleton(logicalLocation));
     }
 
-    @CheckForNull
-    private static PhysicalLocation findPhysicalLocation(@NonNull BugInstance bugInstance, @NonNull SourceFinder sourceFinder,
+    private static @Nullable PhysicalLocation findPhysicalLocation(@NonNull BugInstance bugInstance, @NonNull SourceFinder sourceFinder,
             Map<URI, String> baseToId) {
         try {
             return PhysicalLocation.fromBugAnnotation(bugInstance, sourceFinder, baseToId).orElse(null);
@@ -100,8 +98,7 @@ class Location {
         }
     }
 
-    @CheckForNull
-    private static Optional<PhysicalLocation> findPhysicalLocation(@NonNull StackTraceElement element, @NonNull SourceFinder sourceFinder,
+    private static @Nullable Optional<PhysicalLocation> findPhysicalLocation(@NonNull StackTraceElement element, @NonNull SourceFinder sourceFinder,
             Map<URI, String> baseToId) {
         Optional<Region> region = Optional.of(element.getLineNumber())
                 .filter(line -> line > 0)
@@ -114,10 +111,10 @@ class Location {
      * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317427">3.4 artifactLocation object</a>
      */
     static final class ArtifactLocation {
-        @NonNull
-        final URI uri;
-        @Nullable
-        final String uriBaseId;
+
+        final @NonNull URI uri;
+
+        final @Nullable String uriBaseId;
 
         ArtifactLocation(@NonNull URI uri, @Nullable String uriBaseId) {
             this.uri = Objects.requireNonNull(uri);
@@ -239,10 +236,10 @@ class Location {
      * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317678">3.29 physicalLocation object</a>
      */
     static final class PhysicalLocation {
-        @NonNull
-        final ArtifactLocation artifactLocation;
-        @Nullable
-        final Region region;
+
+        final @NonNull ArtifactLocation artifactLocation;
+
+        final @Nullable Region region;
 
         PhysicalLocation(@NonNull ArtifactLocation artifactLocation, @Nullable Region region) {
             this.artifactLocation = Objects.requireNonNull(artifactLocation);
@@ -273,16 +270,16 @@ class Location {
      * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317719">3.33 logicalLocation object</a>
      */
     static final class LogicalLocation {
-        @NonNull
-        final String name;
-        @Nullable
-        final String decoratedName;
-        @NonNull
-        final String kind;
-        @Nullable
-        final String fullyQualifiedName;
-        @NonNull
-        final Map<String, String> properties = new HashMap<>();
+
+        final @NonNull String name;
+
+        final @Nullable String decoratedName;
+
+        final @NonNull String kind;
+
+        final @Nullable String fullyQualifiedName;
+
+        final @NonNull Map<String, String> properties = new HashMap<>();
 
         LogicalLocation(@NonNull String name, @Nullable String decoratedName, @NonNull String kind, @Nullable String fullyQualifiedName,
                 @Nullable Map<String, String> properties) {
@@ -313,16 +310,14 @@ class Location {
             return locationJson;
         }
 
-        @NonNull
-        static LogicalLocation fromStackTraceElement(@NonNull StackTraceElement element) {
+        static @NonNull LogicalLocation fromStackTraceElement(@NonNull StackTraceElement element) {
             String fullyQualifiedName = String.format("%s.%s", element.getClassName(), element.getMethodName());
             Map<String, String> properties = new HashMap<>();
             properties.put("line-number", Integer.toString(element.getLineNumber()));
             return new LogicalLocation(element.getMethodName(), null, "function", fullyQualifiedName, properties);
         }
 
-        @NonNull
-        static Optional<LogicalLocation> fromBugInstance(@NonNull BugInstance bugInstance) {
+        static @NonNull Optional<LogicalLocation> fromBugInstance(@NonNull BugInstance bugInstance) {
             Objects.requireNonNull(bugInstance);
             ClassAnnotation classAnnotation = null;
             MethodAnnotation methodAnnotation = null;
@@ -370,8 +365,7 @@ class Location {
             return Optional.of(new LogicalLocation(name, null, kind, fullyQualifiedName, null));
         }
 
-        @CheckForNull
-        static String findKind(@NonNull BugAnnotation annotation) {
+        static @Nullable String findKind(@NonNull BugAnnotation annotation) {
             if (annotation instanceof ClassAnnotation) {
                 return "type";
             } else if (annotation instanceof MethodAnnotation) {

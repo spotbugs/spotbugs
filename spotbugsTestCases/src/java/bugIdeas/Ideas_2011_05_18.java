@@ -27,7 +27,7 @@ public class Ideas_2011_05_18 implements Comparable<Ideas_2011_05_18> {
     }
 
     @Override
-	public boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (!(o instanceof Ideas_2011_05_18))
             return false;
         return this.x == ((Ideas_2011_05_18)o).x;

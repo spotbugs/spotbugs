@@ -17,35 +17,36 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.cwe.WeaknessCatalog;
 import edu.umd.cs.findbugs.util.HTML;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Object which represents reportingDescriptor in {@code run.driver.rules} property. (§3.19.23)
  * @see <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317836">3.49 reportingDescriptor object</a>
  */
 final class Rule {
+
     private static final Logger LOGGER = Logger.getLogger(Rule.class.getName());
 
-    @NonNull
-    final String id;
-    @NonNull
-    final String shortDescription;
-    @NonNull
-    final String fullDescription;
-    @NonNull
-    final String defaultText;
-    @Nullable
-    final URI helpUri;
-    @NonNull
-    final List<String> tags;
-    @NonNull
+    final @NonNull String id;
+
+    final @NonNull String shortDescription;
+
+    final @NonNull String fullDescription;
+
+    final @NonNull String defaultText;
+
+    final @Nullable URI helpUri;
+
+    final @NonNull List<String> tags;
+
     final int cweid;
 
     Rule(@NonNull String id, @NonNull String shortDescription, @NonNull String fullDescription, @NonNull String defaultText, @Nullable URI helpUri,
-            @NonNull List<String> tags, @NonNull int cweid) {
+            @NonNull List<String> tags, int cweid) {
         this.id = Objects.requireNonNull(id);
         this.shortDescription = Objects.requireNonNull(shortDescription);
         this.fullDescription = Objects.requireNonNull(fullDescription).trim();
@@ -145,8 +146,7 @@ final class Rule {
         }
     }
 
-    @NonNull
-    static Rule fromBugPattern(BugPattern bugPattern, String formattedMessage) {
+    static @NonNull Rule fromBugPattern(BugPattern bugPattern, String formattedMessage) {
         URI helpUri = bugPattern.getUri().orElse(null);
 
         String category = bugPattern.getCategory();

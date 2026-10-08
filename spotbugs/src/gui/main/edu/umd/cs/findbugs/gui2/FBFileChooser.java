@@ -28,6 +28,7 @@ import java.lang.reflect.Method;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 
 import edu.umd.cs.findbugs.SystemProperties;
 
@@ -83,8 +84,8 @@ public class FBFileChooser extends JFileChooser {
         // Travis McLeskey
         // http://www.mcleskey.org/bugs.html
         try {
-            Object o = javax.swing.UIManager.getBorder("TableHeader.cellBorder");
-            Method m = o.getClass().getMethod("setHorizontalShift", new Class[] { int.class });
+            Object o = UIManager.getBorder("TableHeader.cellBorder");
+            Method m = o.getClass().getMethod("setHorizontalShift", int.class);
             m.invoke(o, 0);
         } catch (NoSuchMethodException e) {
             assert true;

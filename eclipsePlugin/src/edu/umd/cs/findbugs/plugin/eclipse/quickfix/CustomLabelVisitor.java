@@ -17,7 +17,7 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This visitor should traverse the AST as much as needed to determine if a proposed resolution
@@ -36,6 +36,6 @@ public interface CustomLabelVisitor {
      *
      * @return the string that should replace YYY in the label to make a complete message.
      */
-    @CheckForNull
+    @Nullable
     String getLabelReplacement();
 }

@@ -45,11 +45,11 @@ public class NBug1167
 //        }
 //    }
 
-	private static class StackTracePrinter
-	{
-		public static String toString(Exception e) {
-			return "";
-		}
-	}
+    private static class StackTracePrinter
+    {
+        public static String toString(Exception e) {
+            return "";
+        }
+    }
 }
 

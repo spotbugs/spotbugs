@@ -1,6 +1,6 @@
 package ghIssues;
 
-import javax.annotation.concurrent.NotThreadSafe;
+import net.jcip.annotations.NotThreadSafe;
 
 @NotThreadSafe
 public class Issue3390NotThreadSafe implements Runnable {

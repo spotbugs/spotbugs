@@ -1,10 +1,10 @@
 package edu.umd.cs.findbugs;
 
-import javax.annotation.CheckForNull;
-
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -121,9 +121,8 @@ class AbstractBugReporterTest {
         public void finish() {
         }
 
-        @CheckForNull
         @Override
-        public BugCollection getBugCollection() {
+        public @Nullable BugCollection getBugCollection() {
             return null;
         }
 

@@ -30,9 +30,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.LoggerFactory;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.log.Profiler.Profile;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
@@ -49,7 +49,7 @@ public class ProfileSummary implements IProfiler, XMLWriteable {
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ProfileSummary.class);
     private final Profiler[] profilers;
 
-    public ProfileSummary(@NonNull Profiler... profilers) {
+    public ProfileSummary(Profiler @NonNull... profilers) {
         this.profilers = Objects.requireNonNull(profilers);
     }
 

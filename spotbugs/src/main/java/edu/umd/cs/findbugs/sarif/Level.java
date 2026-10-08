@@ -3,8 +3,9 @@ package edu.umd.cs.findbugs.sarif;
 import com.google.gson.annotations.SerializedName;
 
 import edu.umd.cs.findbugs.BugRankCategory;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.cwe.WeaknessSeverity;
+
+import org.jspecify.annotations.NonNull;
 
 /**
  * An enum representing {@code level} property.
@@ -37,8 +38,7 @@ enum Level {
         return name().toLowerCase();
     }
 
-    @NonNull
-    static Level fromBugRank(int bugRank) {
+    static @NonNull Level fromBugRank(int bugRank) {
         BugRankCategory category = BugRankCategory.getRank(bugRank);
         switch (category) {
         case SCARIEST:
@@ -53,8 +53,7 @@ enum Level {
         }
     }
 
-    @NonNull
-    static Level fromWeaknessSeverity(WeaknessSeverity severity) {
+    static @NonNull Level fromWeaknessSeverity(WeaknessSeverity severity) {
         switch (severity) {
         case HIGH:
             return ERROR;

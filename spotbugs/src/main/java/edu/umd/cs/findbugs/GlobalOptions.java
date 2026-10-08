@@ -1,11 +1,11 @@
 package edu.umd.cs.findbugs;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 public interface GlobalOptions {
-    @CheckForNull
+    @Nullable
     String getGlobalOption(String key);
 
-    @CheckForNull
+    @Nullable
     Plugin getGlobalOptionSetter(String key);
 }

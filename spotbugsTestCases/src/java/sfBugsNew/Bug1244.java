@@ -11,7 +11,7 @@ public class Bug1244 {
     }
 
     @Override
-	public int hashCode() {
+    public int hashCode() {
         return a;
     }
 
@@ -38,7 +38,7 @@ public class Bug1244 {
         }
 
         @Override
-		public int hashCode() {
+        public int hashCode() {
             return a;
         }
 

@@ -17,7 +17,7 @@ public class Ideas_2011_08_07 {
     }
 
     @Override
-	public String toString() {
+    public String toString() {
         return Integer.toString(x);
     }
 
@@ -100,7 +100,7 @@ public class Ideas_2011_08_07 {
 
 
         @Override
-		public String toString() {
+        public String toString() {
             return Integer.toString(x);
         }
 

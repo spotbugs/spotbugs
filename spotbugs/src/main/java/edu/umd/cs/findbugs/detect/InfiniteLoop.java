@@ -26,10 +26,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import jakarta.annotation.Nonnull;
-
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -46,7 +45,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
 
     ArrayList<BitSet> regModifiedAt = new ArrayList<>();
 
-    @Nonnull
+    @NonNull
     BitSet getModifiedBitSet(int reg) {
         while (regModifiedAt.size() <= reg) {
             regModifiedAt.add(new BitSet());
@@ -172,6 +171,10 @@ public class InfiniteLoop extends OpcodeStackDetector {
 
     LinkedList<Jump> forwardJumps = new LinkedList<>();
 
+    private OpcodeStack.Item pendingComparisonItem0;
+    private OpcodeStack.Item pendingComparisonItem1;
+    private boolean pendingComparison;
+
     void addForwardJump(int from, int to) {
         if (from >= to) {
             return;
@@ -206,6 +209,9 @@ public class InfiniteLoop extends OpcodeStackDetector {
         forwardConditionalBranches.clear();
         forwardJumps.clear();
         backwardReach.clear();
+        pendingComparisonItem0 = null;
+        pendingComparisonItem1 = null;
+        pendingComparison = false;
         super.visit(obj);
         backwardBranchLoop: for (BackwardsBranch bb : backwardBranches) {
             LinkedList<ForwardConditionalBranch> myForwardBranches = new LinkedList<>();
@@ -302,6 +308,15 @@ public class InfiniteLoop extends OpcodeStackDetector {
             regModifiedAt(getRegisterOperand(), getPC());
         }
         switch (seen) {
+        case Const.FCMPG:
+        case Const.FCMPL:
+        case Const.DCMPG:
+        case Const.DCMPL:
+            pendingComparisonItem0 = stack.getStackItem(0);
+            pendingComparisonItem1 = stack.getStackItem(1);
+            pendingComparison = true;
+            break;
+
         case Const.GOTO:
             if (getBranchOffset() < 0) {
                 BackwardsBranch bb = new BackwardsBranch(stack, getPC(), getBranchTarget());
@@ -357,10 +372,18 @@ public class InfiniteLoop extends OpcodeStackDetector {
         case Const.IFNONNULL:
         case Const.IFNULL: {
             addBackwardsReach();
+
             OpcodeStack.Item item0 = stack.getStackItem(0);
+            OpcodeStack.Item item1 = item0;
+
+            if (pendingComparison) {
+                item0 = pendingComparisonItem0;
+                item1 = pendingComparisonItem1;
+            }
+
             int target = getBranchTarget();
             if (getBranchOffset() > 0) {
-                forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), target));
+                forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item1, getPC(), target));
                 break;
             }
             if (getFurthestJump(target) > getPC()) {
@@ -463,6 +486,14 @@ public class InfiniteLoop extends OpcodeStackDetector {
             break;
         }
 
+        if (seen != Const.FCMPG
+                && seen != Const.FCMPL
+                && seen != Const.DCMPG
+                && seen != Const.DCMPL) {
+            pendingComparisonItem0 = null;
+            pendingComparisonItem1 = null;
+            pendingComparison = false;
+        }
     }
 
     /**

@@ -2,7 +2,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class Issue3645 {
-	public void completePhaseActions(List<ProgressSource> sourcesToProgress) throws IOException  {
+    public void completePhaseActions(List<ProgressSource> sourcesToProgress) throws IOException  {
         boolean progressing = true;
         while (progressing) {
             // We reset progressing to false.
@@ -29,15 +29,15 @@ public class Issue3645 {
                 }
             }
         }
-	}
-	
-	private interface ProgressSource {
-		SourceProgress tryToCompletePhase();
-	}
-	
-	private enum SourceProgress {
-		FINISHED,
-		PROGRESS,
-		NO_PROGRESS
-	}
+    }
+
+    private interface ProgressSource {
+        SourceProgress tryToCompletePhase();
+    }
+
+    private enum SourceProgress {
+        FINISHED,
+        PROGRESS,
+        NO_PROGRESS
+    }
 }

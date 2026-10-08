@@ -30,14 +30,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
@@ -78,7 +78,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
 
     private final boolean hasStubs;
 
-    @CheckForNull
+    @Nullable
     AnnotatedObject containingScope;
 
     private boolean containingScopeCached;
@@ -131,12 +131,12 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
                         System.out.println("Have bridge method:" + m);
                     }
 
-                    String[] mArguments = new SignatureParser(m.getSignature()).getArguments();
+                    String[] mArguments = new GenericSignatureParser(m.getSignature()).getArguments();
 
                     for (MethodInfo to : methodInfoList) {
                         if (m != to && !to.isBridge()
                                 && m.getName().equals(to.getName())
-                                && Arrays.equals(mArguments, new SignatureParser(to.getSignature()).getArguments())) {
+                                && Arrays.equals(mArguments, new GenericSignatureParser(to.getSignature()).getArguments())) {
                             if (DEBUG) {
                                 System.out.println("  to method:" + to);
                             }
@@ -452,12 +452,12 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
     }
 
     @Override
-    public @CheckForNull String getSource() {
+    public @Nullable String getSource() {
         return source;
     }
 
     @Override
-    public @CheckForNull AnnotatedObject getContainingScope() {
+    public @Nullable AnnotatedObject getContainingScope() {
         if (!containingScopeCached) {
             containingScope = getContainingScope0();
             containingScopeCached = true;
@@ -465,7 +465,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo implements XClass {
         return containingScope;
     }
 
-    public @CheckForNull AnnotatedObject getContainingScope0() {
+    public @Nullable AnnotatedObject getContainingScope0() {
         try {
             if (immediateEnclosingClass != null) {
                 return Global.getAnalysisCache().getClassAnalysis(XClass.class, getImmediateEnclosingClass());

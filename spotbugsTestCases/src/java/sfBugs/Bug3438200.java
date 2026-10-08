@@ -13,7 +13,7 @@ public class Bug3438200 {
 
     Comparator<UsageDataEventWrapper> comparator = new Comparator<UsageDataEventWrapper>() {
         @Override
-		public int compare(UsageDataEventWrapper event1, UsageDataEventWrapper event2) {
+        public int compare(UsageDataEventWrapper event1, UsageDataEventWrapper event2) {
             if (usageDataColumnProvider == null)
                 return 0;
             String text1 = usageDataColumnProvider.get(event1);

@@ -135,7 +135,7 @@ public class URLClassPathRepository implements Repository {
      * @see org.apache.bcel.util.Repository#findClass(java.lang.String)
      */
     @Override
-    public JavaClass findClass(/*@Nonnull*/ String className) {
+    public JavaClass findClass(/*@NonNull*/ String className) {
         // Make sure we handle class names with slashes.
         // If we don't, we can get into serious trouble: a previously
         // loaded class will appear to be missing (because we're using the
@@ -152,7 +152,7 @@ public class URLClassPathRepository implements Repository {
      * @see org.apache.bcel.util.Repository#loadClass(java.lang.String)
      */
     @Override
-    public JavaClass loadClass(/*@Nonnull*/ String className) throws ClassNotFoundException {
+    public JavaClass loadClass(/*@NonNull*/ String className) throws ClassNotFoundException {
         if (className == null) {
             throw new IllegalArgumentException("className is null");
         }

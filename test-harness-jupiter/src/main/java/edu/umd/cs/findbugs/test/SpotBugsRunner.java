@@ -3,11 +3,10 @@ package edu.umd.cs.findbugs.test;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
-import jakarta.annotation.Nonnull;
-
-import edu.umd.cs.findbugs.IFindBugsEngine;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.IFindBugsEngine;
 
 /**
  * <p>
@@ -18,8 +17,8 @@ import edu.umd.cs.findbugs.BugCollection;
  * @since 3.1
  */
 public class SpotBugsRunner {
-    @Nonnull
-    private final AnalysisRunner runner = new AnalysisRunner();
+
+    private final @NonNull AnalysisRunner runner = new AnalysisRunner();
 
     /**
      * <p>
@@ -32,8 +31,7 @@ public class SpotBugsRunner {
      * @return callee itself, so caller can chain another method in fluent interface.
      */
     // TODO let users specify "groupId:artifactId:packaging:version:classifier" like Grape in Groovy
-    @Nonnull
-    public SpotBugsRunner addAuxClasspathEntry(Consumer<IFindBugsEngine> engineCustomization, Path path) {
+    public @NonNull SpotBugsRunner addAuxClasspathEntry(Consumer<IFindBugsEngine> engineCustomization, Path path) {
         if (runner == null) {
             throw new IllegalStateException(
                     "Please call this addAuxClasspathEntry() method in @Before method or test method");
@@ -53,8 +51,7 @@ public class SpotBugsRunner {
      * @return a {@link BugCollection} which contains all detected bugs.
      */
     // TODO let users specify SlashedClassName, then find its file path automatically
-    @Nonnull
-    public BugCollection performAnalysis(Consumer<IFindBugsEngine> engineCustomization, Path... paths) {
+    public @NonNull BugCollection performAnalysis(Consumer<IFindBugsEngine> engineCustomization, Path... paths) {
         if (runner == null) {
             throw new IllegalStateException("Please call this performAnalysis() method in test method");
         }
@@ -70,9 +67,9 @@ public class SpotBugsRunner {
      * @return a {@link BugCollection} which contains all detected bugs.
      */
     // TODO let users specify SlashedClassName, then find its file path automatically
-    @Nonnull
-    public BugCollection performAnalysis(Path... paths) {
+    public @NonNull BugCollection performAnalysis(Path... paths) {
         return performAnalysis(e -> {
         }, paths);
     }
+
 }

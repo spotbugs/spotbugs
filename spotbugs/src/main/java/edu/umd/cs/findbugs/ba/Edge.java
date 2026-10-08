@@ -25,10 +25,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 import java.util.Set;
 
-import jakarta.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifier;
 
 import org.apache.bcel.generic.InstructionHandle;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.graph.AbstractEdge;
 
@@ -172,7 +172,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 
     }
 
-    public boolean sourceIsTopOfLoop(@Nonnull Set<Integer> positions) {
+    public boolean sourceIsTopOfLoop(@NonNull Set<Integer> positions) {
         if (positions == null) {
             AnalysisContext.logError("Null positions", new NullPointerException("positions can't be null"));
             return false;
