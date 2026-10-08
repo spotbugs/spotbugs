@@ -48,6 +48,8 @@ import org.jspecify.annotations.Nullable;
  * @since 3.1
  */
 public class AnalysisRunner {
+
+    /** The aux classpath entries. */
     private final List<Path> auxClasspathEntries = new ArrayList<>();
 
     /**
@@ -71,6 +73,12 @@ public class AnalysisRunner {
         PLUGIN_JAR = jarFile;
     }
 
+    /**
+     * Adds the aux classpath entry.
+     *
+     * @param path the path
+     * @return the analysis runner
+     */
     public @NonNull AnalysisRunner addAuxClasspathEntry(Path path) {
         Objects.requireNonNull(path);
         if (!path.toFile().canRead()) {
@@ -80,11 +88,26 @@ public class AnalysisRunner {
         return this;
     }
 
+    /**
+     * Run.
+     *
+     * @param userPreferences the user preferences
+     * @param files the files
+     * @return the bug collection bug reporter
+     */
     public @NonNull BugCollectionBugReporter run(UserPreferences userPreferences, Path... files) {
         return this.run(engine -> {
         }, userPreferences, files);
     }
 
+    /**
+     * Run.
+     *
+     * @param engineCustomization the engine customization
+     * @param userPreferences the user preferences
+     * @param files the files
+     * @return the bug collection bug reporter
+     */
     public @NonNull BugCollectionBugReporter run(Consumer<IFindBugsEngine> engineCustomization, UserPreferences userPreferences, Path... files) {
         DetectorFactoryCollection.resetInstance(new DetectorFactoryCollection());
 
@@ -124,6 +147,12 @@ public class AnalysisRunner {
         }
     }
 
+    /**
+     * Creates the project.
+     *
+     * @param files the files
+     * @return the project
+     */
     @CheckReturnValue
     private Project createProject(Path[] files) {
         final Project project = new Project();
@@ -152,8 +181,8 @@ public class AnalysisRunner {
      * test.
      *
      * @return a {@link File} instance which represent generated jar file
-     * @throws IOException
-     * @throws URISyntaxException
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws URISyntaxException the URI syntax exception
      */
     private static File createTempJar() throws IOException, URISyntaxException {
         ClassLoader cl = AnalysisRunner.class.getClassLoader();

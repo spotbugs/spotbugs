@@ -62,12 +62,25 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class SmapParser {
 
+    /** The java filename. */
     private final String javaFilename;
+
+    /** The fileinfo. */
     private final Map<Integer, FileInfo> fileinfo = new HashMap<>();
+
+    /** The java 2 jsp. */
     private final Map<Integer, int[]> java2jsp = new HashMap<>();
 
+    /** The Constant LINE_INFO_PATTERN. */
     private static final Pattern LINE_INFO_PATTERN = Pattern.compile("(\\d+)(?:#(\\d+))?(?:,(\\d+))?:(\\d+)(?:,(\\d+))?");
 
+    /**
+     * Gets the line.
+     *
+     * @param reader the reader
+     * @return the line
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     private static String getLine(BufferedReader reader) throws IOException {
         String s = reader.readLine();
         if (s == null) {
@@ -76,6 +89,12 @@ public class SmapParser {
         return s;
     }
 
+    /**
+     * Instantiates a new smap parser.
+     *
+     * @param smap the smap
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @SuppressFBWarnings(value = "DM_DEFAULT_ENCODING", justification = "To keep backward compatibility")
     public SmapParser(String smap) throws IOException {
         //BufferedReader is use to support multiple types of line return
@@ -137,19 +156,42 @@ public class SmapParser {
         }
     }
 
+    /**
+     * Gets the java filename.
+     *
+     * @return the java filename
+     */
     public String getJavaFilename() {
         return javaFilename;
     }
 
+    /**
+     * Gets the script filename.
+     *
+     * @param fileIndex the file index
+     * @return the script filename
+     */
     public String getScriptFilename(int fileIndex) {
         FileInfo f = fileinfo.get(fileIndex);
         return f.name;
     }
 
+    /**
+     * Gets the script line number.
+     *
+     * @param lineNo the line no
+     * @return the script line number
+     */
     public int[] getScriptLineNumber(Integer lineNo) {
         return java2jsp.get(lineNo);
     }
 
+    /**
+     * Gets the java line numbers.
+     *
+     * @param jspLineNo the jsp line no
+     * @return the java line numbers
+     */
     public List<Integer> getJavaLineNumbers(Integer jspLineNo) {
         final List<Integer> javaLines = new ArrayList<>();
         for (final Map.Entry<Integer, int[]> lineMap : java2jsp.entrySet()) {
@@ -160,27 +202,62 @@ public class SmapParser {
         return javaLines;
     }
 
+    /**
+     * Gets the smap location.
+     *
+     * @param lineNo the line no
+     * @return the smap location
+     */
     public SmapLocation getSmapLocation(Integer lineNo) {
         int[] origSource = java2jsp.get(lineNo);
         FileInfo info = fileinfo.get(origSource[0]);
         return new SmapLocation(info, origSource[1], origSource[0] == 0);
     }
 
+    /**
+     * The Class FileInfo.
+     */
     public static class FileInfo {
+
+        /** The name. */
         public final String name;
+
+        /** The path. */
         public final String path;
 
+        /**
+         * Instantiates a new file info.
+         *
+         * @param name the name
+         * @param path the path
+         */
         public FileInfo(String name, String path) {
             this.name = name;
             this.path = path;
         }
     }
 
+    /**
+     * The Class SmapLocation.
+     */
     public static class SmapLocation {
+
+        /** The file info. */
         public final FileInfo fileInfo;
+
+        /** The line. */
         public final int line;
+
+        /** The is primary file. */
         public final boolean isPrimaryFile;
 
+        /**
+         * Instantiates a new smap location.
+         *
+         * @param fileInfo the file info
+         * @param line the line
+         * @param isPrimaryFile the is primary file
+         */
         public SmapLocation(FileInfo fileInfo, int line, boolean isPrimaryFile) {
             this.fileInfo = fileInfo;
             this.line = line;
