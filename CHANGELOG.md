@@ -15,6 +15,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Declaring to the interface lists/maps ([#4381](https://github.com/spotbugs/spotbugs/pull/4381))
 
 ### Fixed
+- Fix `NP_NULL_ON_SOME_PATH` false positive when a field null check that throws uses `field == null` but not `null == field` ([#4147](https://github.com/spotbugs/spotbugs/issues/4147))
 - Fix `RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT` false negative when the ignored result comes from `Arrays.copyOf`, `Arrays.copyOfRange` or any pure static method or constructor of a class using `assert` ([#3900](https://github.com/spotbugs/spotbugs/issues/3900))
 - Fix `AA_ASSERTION_OF_ARGUMENTS` false negative when a public method validates a parameter with `assert` and `instanceof` ([#4305](https://github.com/spotbugs/spotbugs/issues/4305))
 - Fix `PT_ABSOLUTE_PATH_TRAVERSAL` false negative for `new File(parent, child)`, where the attacker controlled segment is the second argument ([#4340](https://github.com/spotbugs/spotbugs/pull/4340))

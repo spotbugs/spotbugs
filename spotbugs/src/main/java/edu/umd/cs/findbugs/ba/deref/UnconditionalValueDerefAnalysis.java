@@ -29,6 +29,8 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ARETURN;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.GETFIELD;
+import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.IFNONNULL;
 import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.Instruction;
@@ -214,8 +216,22 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
             throws DataflowAnalysisException {
         if (reportPotentialDereference(location, invDataflow.getFactAtLocation(location))) {
             ValueNumber vn = vnaFrame.getTopValue();
+            // A field null-guard is not a deref. getLoad() is also set when a
+            // local is stored into a field that is loaded in this method, so
+            // require the field load instruction itself.
+            if (isFieldLoad(location.getHandle().getPrev())) {
+                return;
+            }
             fact.addDeref(vn, location);
         }
+    }
+
+    private static boolean isFieldLoad(InstructionHandle handle) {
+        if (handle == null) {
+            return false;
+        }
+        Instruction instruction = handle.getInstruction();
+        return instruction instanceof GETFIELD || instruction instanceof GETSTATIC;
     }
 
     public static boolean reportPotentialDereference(Location location, IsNullValueFrame invFrame)
