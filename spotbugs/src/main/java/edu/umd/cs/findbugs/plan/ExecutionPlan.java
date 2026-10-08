@@ -149,7 +149,7 @@ public class ExecutionPlan {
      */
     public void build() throws OrderingConstraintException {
 
-        ArrayList<DetectorOrderingConstraint> allConstraints = new ArrayList<>(
+        List<DetectorOrderingConstraint> allConstraints = new ArrayList<>(
                 interPassConstraintList.size() + intraPassConstraintList.size());
         allConstraints.addAll(interPassConstraintList);
         allConstraints.addAll(intraPassConstraintList);

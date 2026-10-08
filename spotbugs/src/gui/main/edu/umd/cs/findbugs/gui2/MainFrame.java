@@ -23,6 +23,7 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -682,7 +683,7 @@ public class MainFrame extends FBFrame implements LogSync {
             JOptionPane.showMessageDialog(this, "No issues in current view");
             return;
         }
-        ArrayList<ProjectSelector> selectors = new ArrayList<>(projects.size() + 1);
+        List<ProjectSelector> selectors = new ArrayList<>(projects.size() + 1);
         ProjectSelector everything = new ProjectSelector("all projects", "", total);
         selectors.add(everything);
         for (String projectName : projects) {

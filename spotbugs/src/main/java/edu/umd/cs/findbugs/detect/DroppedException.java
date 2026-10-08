@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
@@ -418,7 +419,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
             // Read the tokens into an ArrayList,
             // keeping track of where the catch block is reported
             // to start
-            ArrayList<Token> tokenList = new ArrayList<>(40);
+            List<Token> tokenList = new ArrayList<>(40);
             int eolOfCatchBlockStart = -1;
             for (int line = scanStartLine; line < scanStartLine + MAX_LINES;) {
                 Token token = tokenizer.next();

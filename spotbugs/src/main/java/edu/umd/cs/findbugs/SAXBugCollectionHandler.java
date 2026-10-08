@@ -87,7 +87,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
     private final MapCache<String, String> cache = new MapCache<>(2000);
 
-    private final ArrayList<String> elementStack;
+    private final List<String> elementStack;
 
     private final StringBuilder textBuffer;
 
@@ -100,7 +100,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
     // private ClassHash classHash;
     private ClassFeatureSet classFeatureSet;
 
-    private final ArrayList<String> stackTrace;
+    private final List<String> stackTrace;
 
     private int nestingOfIgnoredElements = 0;
 

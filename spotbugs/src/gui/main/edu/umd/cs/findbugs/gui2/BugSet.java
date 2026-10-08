@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
@@ -58,11 +59,11 @@ import edu.umd.cs.findbugs.gui2.BugAspects.SortableValue;
  */
 public class BugSet implements Iterable<BugLeafNode> {
 
-    private ArrayList<BugLeafNode> mainList;
+    private List<BugLeafNode> mainList;
 
-    private final HashMap<SortableValue, BugSet> doneMap;
+    private final Map<SortableValue, BugSet> doneMap;
 
-    private final HashMap<SortableValue, Boolean> doneContainsMap;
+    private final Map<SortableValue, Boolean> doneContainsMap;
 
     private HashMap<Sortables, String[]> sortablesToStrings;
 
@@ -219,7 +220,7 @@ public class BugSet implements Iterable<BugLeafNode> {
         if (doneMap.containsKey(keyValuePair)) {
             return doneMap.get(keyValuePair);
         }
-        ArrayList<BugLeafNode> bugs = new ArrayList<>();
+        List<BugLeafNode> bugs = new ArrayList<>();
 
         for (BugLeafNode b : mainList) {
             if (b.matches(keyValuePair)) {
@@ -291,7 +292,7 @@ public class BugSet implements Iterable<BugLeafNode> {
 
             }
         };
-        ArrayList<BugLeafNode> copy = new ArrayList<>(mainList);
+        List<BugLeafNode> copy = new ArrayList<>(mainList);
         Collections.sort(copy, comparator);
         mainList = copy;
 
@@ -367,7 +368,7 @@ public class BugSet implements Iterable<BugLeafNode> {
 
     // //////Filtered API
 
-    BugSet(ArrayList<BugLeafNode> filteredSet, boolean cacheSortables) {
+    BugSet(List<BugLeafNode> filteredSet, boolean cacheSortables) {
         this.mainList = new ArrayList<>(filteredSet);
         doneMap = new HashMap<>();
         doneContainsMap = new HashMap<>();
@@ -378,7 +379,7 @@ public class BugSet implements Iterable<BugLeafNode> {
 
     private BugSet filteredBugsNoCache() {
 
-        ArrayList<BugLeafNode> people = new ArrayList<>();
+        List<BugLeafNode> people = new ArrayList<>();
         for (BugLeafNode p : mainList) {
             if (!suppress(p)) {
                 people.add(p);
@@ -401,7 +402,7 @@ public class BugSet implements Iterable<BugLeafNode> {
     }
 
     public BugSet getBugsMatchingFilter(Matcher m) {
-        ArrayList<BugLeafNode> people = new ArrayList<>();
+        List<BugLeafNode> people = new ArrayList<>();
         for (BugLeafNode p : mainList) {
             if (!(m.match(p.getBug()))) {
                 people.add(p);

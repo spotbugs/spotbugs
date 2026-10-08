@@ -64,7 +64,7 @@ public class ProjectSettings implements Serializable {
     /**
      * The list of all defined filters
      */
-    private final ArrayList<FilterMatcher> filters;
+    private final List<FilterMatcher> filters;
 
     /**
      * The CompoundMatcher enveloping all enabled matchers.
@@ -127,13 +127,13 @@ public class ProjectSettings implements Serializable {
         } else {
             StackedFilterMatcher theSame = (StackedFilterMatcher) filter;
             FilterMatcher[] filtersInStack = theSame.getFilters();
-            ArrayList<Sortables> order = MainFrame.getInstance().getSorter().getOrder();
+            List<Sortables> order = MainFrame.getInstance().getSorter().getOrder();
             int sizeToCheck = filtersInStack.length;
             List<Sortables> sortablesToCheck = order.subList(0, sizeToCheck);
             Debug.println("Size to check" + sizeToCheck + " checking list" + sortablesToCheck);
             Debug.println("checking filters");
-            ArrayList<String> almostPath = new ArrayList<>();
-            ArrayList<Sortables> almostPathSortables = new ArrayList<>();
+            List<String> almostPath = new ArrayList<>();
+            List<Sortables> almostPathSortables = new ArrayList<>();
             for (int x = 0; x < sortablesToCheck.size(); x++) {
                 Sortables s = sortablesToCheck.get(x);
                 for (FilterMatcher fm : filtersInStack) {
@@ -144,7 +144,7 @@ public class ProjectSettings implements Serializable {
                 }
             }
             if (almostPath.size() == filtersInStack.length) {
-                ArrayList<String> finalPath = new ArrayList<>();
+                List<String> finalPath = new ArrayList<>();
                 for (int x = 0; x < almostPath.size(); x++) {
                     Sortables s = almostPathSortables.get(x);
                     if (MainFrame.getInstance().getSorter().getOrderBeforeDivider().contains(s)) {
@@ -192,7 +192,7 @@ public class ProjectSettings implements Serializable {
         return result;
     }
 
-    ArrayList<FilterMatcher> getAllFilters() {
+    List<FilterMatcher> getAllFilters() {
         return filters;
     }
 

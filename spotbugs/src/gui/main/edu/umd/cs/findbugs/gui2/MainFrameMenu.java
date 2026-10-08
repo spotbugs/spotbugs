@@ -9,8 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 import javax.swing.ActionMap;
@@ -409,7 +409,7 @@ public class MainFrameMenu {
      * storing is the location of the file.
      */
     public void addFileToRecent(File xmlFile) {
-        ArrayList<File> xmlFiles = GUISaveState.getInstance().getRecentFiles();
+        List<File> xmlFiles = GUISaveState.getInstance().getRecentFiles();
         if (!xmlFiles.contains(xmlFile)) {
             GUISaveState.getInstance().addRecentFile(xmlFile);
         }

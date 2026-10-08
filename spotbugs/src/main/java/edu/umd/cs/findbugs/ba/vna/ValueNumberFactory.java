@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba.vna;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
@@ -39,7 +40,7 @@ public class ValueNumberFactory {
     /**
      * Store all allocated value numbers.
      */
-    private ArrayList<ValueNumber> allocatedValueList = new ArrayList<>();
+    private List<ValueNumber> allocatedValueList = new ArrayList<>();
 
     private final HashMap<String, ValueNumber> classObjectValueMap = new HashMap<>();
 

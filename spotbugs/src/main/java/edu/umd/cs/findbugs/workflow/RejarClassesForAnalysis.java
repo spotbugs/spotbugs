@@ -322,7 +322,7 @@ public class RejarClassesForAnalysis {
 
     public void execute() throws IOException {
 
-        ArrayList<String> fileList = new ArrayList<>();
+        List<String> fileList = new ArrayList<>();
 
         if (commandLine.inputFileList != null) {
             readFrom(fileList, UTF8.fileReader(commandLine.inputFileList));
@@ -331,7 +331,7 @@ public class RejarClassesForAnalysis {
         } else {
             fileList.addAll(Arrays.asList(args).subList(argCount, args.length));
         }
-        ArrayList<String> auxFileList = new ArrayList<>();
+        List<String> auxFileList = new ArrayList<>();
         if (commandLine.auxFileList != null) {
             readFrom(auxFileList, UTF8.fileReader(commandLine.auxFileList));
             auxFileList.removeAll(fileList);

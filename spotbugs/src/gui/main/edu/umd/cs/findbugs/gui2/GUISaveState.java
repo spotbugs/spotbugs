@@ -119,9 +119,9 @@ public class GUISaveState {
 
     private Sortables[] sortColumns;
 
-    private ArrayList<File> recentFiles;
+    private List<File> recentFiles;
 
-    // private ArrayList<File> recentAnalyses;
+    // private List<File> recentAnalyses;
     private byte[] dockingLayout;
 
     private Rectangle frameBounds;
@@ -180,7 +180,7 @@ public class GUISaveState {
 
         int sorterSize = p.getInt(GUISaveState.SORTERTABLELENGTH, -1);
         if (sorterSize != -1) {
-            ArrayList<Sortables> sortColumns = new ArrayList<>();
+            List<Sortables> sortColumns = new ArrayList<>();
             String[] sortKeys = GUISaveState.generateSorterKeys(sorterSize);
             for (int x = 0; x < sorterSize; x++) {
                 Sortables s = Sortables.getSortableByPrettyName(p.get(sortKeys[x], "*none*"));
@@ -340,7 +340,7 @@ public class GUISaveState {
      *
      * @return the list of recent files
      */
-    public ArrayList<File> getRecentFiles() {
+    public List<File> getRecentFiles() {
         return recentFiles;
     }
 
@@ -388,7 +388,7 @@ public class GUISaveState {
             Debug.println(e);
         }
         int sorterLength = MainFrame.getInstance().getSorter().getColumnCount();
-        ArrayList<Sortables> sortables = MainFrame.getInstance().getSorter().getOrder();
+        List<Sortables> sortables = MainFrame.getInstance().getSorter().getOrder();
         p.putInt(GUISaveState.SORTERTABLELENGTH, sorterLength);
 
         String[] sorterKeys = GUISaveState.generateSorterKeys(sorterLength);

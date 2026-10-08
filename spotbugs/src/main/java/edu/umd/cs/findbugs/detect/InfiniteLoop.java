@@ -43,7 +43,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
 
     //    private static final boolean active = true;
 
-    ArrayList<BitSet> regModifiedAt = new ArrayList<>();
+    List<BitSet> regModifiedAt = new ArrayList<>();
 
     @NonNull
     BitSet getModifiedBitSet(int reg) {
@@ -171,6 +171,10 @@ public class InfiniteLoop extends OpcodeStackDetector {
 
     LinkedList<Jump> forwardJumps = new LinkedList<>();
 
+    private OpcodeStack.Item pendingComparisonItem0;
+    private OpcodeStack.Item pendingComparisonItem1;
+    private boolean pendingComparison;
+
     void addForwardJump(int from, int to) {
         if (from >= to) {
             return;
@@ -205,6 +209,9 @@ public class InfiniteLoop extends OpcodeStackDetector {
         forwardConditionalBranches.clear();
         forwardJumps.clear();
         backwardReach.clear();
+        pendingComparisonItem0 = null;
+        pendingComparisonItem1 = null;
+        pendingComparison = false;
         super.visit(obj);
         backwardBranchLoop: for (BackwardsBranch bb : backwardBranches) {
             LinkedList<ForwardConditionalBranch> myForwardBranches = new LinkedList<>();
@@ -301,6 +308,15 @@ public class InfiniteLoop extends OpcodeStackDetector {
             regModifiedAt(getRegisterOperand(), getPC());
         }
         switch (seen) {
+        case Const.FCMPG:
+        case Const.FCMPL:
+        case Const.DCMPG:
+        case Const.DCMPL:
+            pendingComparisonItem0 = stack.getStackItem(0);
+            pendingComparisonItem1 = stack.getStackItem(1);
+            pendingComparison = true;
+            break;
+
         case Const.GOTO:
             if (getBranchOffset() < 0) {
                 BackwardsBranch bb = new BackwardsBranch(stack, getPC(), getBranchTarget());
@@ -356,10 +372,18 @@ public class InfiniteLoop extends OpcodeStackDetector {
         case Const.IFNONNULL:
         case Const.IFNULL: {
             addBackwardsReach();
+
             OpcodeStack.Item item0 = stack.getStackItem(0);
+            OpcodeStack.Item item1 = item0;
+
+            if (pendingComparison) {
+                item0 = pendingComparisonItem0;
+                item1 = pendingComparisonItem1;
+            }
+
             int target = getBranchTarget();
             if (getBranchOffset() > 0) {
-                forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), target));
+                forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item1, getPC(), target));
                 break;
             }
             if (getFurthestJump(target) > getPC()) {
@@ -403,8 +427,45 @@ public class InfiniteLoop extends OpcodeStackDetector {
             }
 
             if (constantSince(item0, target) && constantSince(item1, target)) {
-                // int since0 = constantSince(item0);
-                // int since1 = constantSince(item1);
+                // When both operands have known constant integer values, evaluate the actual
+                // comparison. If the backward-branch condition is always false the loop exits
+                // after its first (and only) iteration - it is not an infinite loop.
+                // item0 is the top-of-stack operand (value2) and item1 is below it (value1);
+                // the branch is taken when: value1 <op> value2, i.e., item1 <op> item0.
+                Object rawConst0 = item0.getConstant();
+                Object rawConst1 = item1.getConstant();
+                if (rawConst0 instanceof Integer && rawConst1 instanceof Integer) {
+                    int v0 = (Integer) rawConst0;
+                    int v1 = (Integer) rawConst1;
+                    boolean branchTaken;
+                    switch (seen) {
+                    case Const.IF_ICMPLT:
+                        branchTaken = v1 < v0;
+                        break;
+                    case Const.IF_ICMPLE:
+                        branchTaken = v1 <= v0;
+                        break;
+                    case Const.IF_ICMPGT:
+                        branchTaken = v1 > v0;
+                        break;
+                    case Const.IF_ICMPGE:
+                        branchTaken = v1 >= v0;
+                        break;
+                    case Const.IF_ICMPEQ:
+                        branchTaken = v1 == v0;
+                        break;
+                    case Const.IF_ICMPNE:
+                        branchTaken = v1 != v0;
+                        break;
+                    default:
+                        branchTaken = true;
+                        break;
+                    }
+                    if (!branchTaken) {
+                        // Backward branch never taken: loop exits immediately - not infinite.
+                        break;
+                    }
+                }
                 BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP", HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
                         this, getPC());
                 int reg0 = item0.getRegisterNumber();
@@ -425,6 +486,14 @@ public class InfiniteLoop extends OpcodeStackDetector {
             break;
         }
 
+        if (seen != Const.FCMPG
+                && seen != Const.FCMPL
+                && seen != Const.DCMPG
+                && seen != Const.DCMPL) {
+            pendingComparisonItem0 = null;
+            pendingComparisonItem1 = null;
+            pendingComparison = false;
+        }
     }
 
     /**

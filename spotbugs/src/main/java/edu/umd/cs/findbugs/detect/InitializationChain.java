@@ -81,7 +81,7 @@ public class InitializationChain extends BytecodeScanningDetector {
 
     @Override
     protected Iterable<Method> getMethodVisitOrder(JavaClass obj) {
-        ArrayList<Method> visitOrder = new ArrayList<>();
+        List<Method> visitOrder = new ArrayList<>();
         Method staticInitializer = null;
         for (Method m : obj.getMethods()) {
             String name = m.getName();

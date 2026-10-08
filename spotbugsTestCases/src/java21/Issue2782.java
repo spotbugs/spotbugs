@@ -57,11 +57,11 @@ public class Issue2782 {
     public static int deadStore(int value) {
         switch (value) {
             case 0:
-            	int x = 0;
+                int x = 0;
                 --x; // DLS_DEAD_LOCAL_STORE
-            	return value;
+                return value;
             default:
-            	return 42;
+                return 42;
         }
     }
     

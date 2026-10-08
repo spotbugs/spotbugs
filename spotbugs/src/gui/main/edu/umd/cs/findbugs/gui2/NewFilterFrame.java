@@ -28,6 +28,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -138,7 +139,7 @@ public class NewFilterFrame extends FBDialog {
             Sortables key = (Sortables) comboBox.getSelectedItem();
             String[] values = key.getAllSorted();
 
-            ArrayList<SortableValue> filterMe = new ArrayList<>();
+            List<SortableValue> filterMe = new ArrayList<>();
             for (int i : list.getSelectedIndices()) {
                 filterMe.add(new BugAspects.SortableValue(key, values[i]));
             }

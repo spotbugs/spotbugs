@@ -19,7 +19,7 @@ public class Bug3073124 {
         boolean condition;
 
         @Override
-		@ExpectWarning("IL_INFINITE_RECURSIVE_LOOP")
+        @ExpectWarning("IL_INFINITE_RECURSIVE_LOOP")
         void methodA() {
 
             if (condition) {
@@ -29,7 +29,7 @@ public class Bug3073124 {
 
         // Corrected code
         @Override
-		@NoWarning("IL_INFINITE_RECURSIVE_LOOP")
+        @NoWarning("IL_INFINITE_RECURSIVE_LOOP")
         void methodB() {
 
             if (condition) {
@@ -38,7 +38,7 @@ public class Bug3073124 {
         }
 
         @Override
-		void testLoop(String b) {
+        void testLoop(String b) {
             boolean test = evaluate();
             if (test) {
                 testLoop("dfdsfsd");

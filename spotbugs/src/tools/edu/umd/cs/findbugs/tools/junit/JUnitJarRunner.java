@@ -74,7 +74,7 @@ public class JUnitJarRunner {
     public TestSuite buildTestSuite() throws Exception {
         TestSuite suite = new TestSuite();
 
-        final ArrayList<URL> urlList = new ArrayList<URL>();
+        final List<URL> urlList = new ArrayList<URL>();
         urlList.add(new URL("file:" + jarFileName));
         if (classpath != null) {
             StringTokenizer tok = new StringTokenizer(classpath, File.pathSeparator);

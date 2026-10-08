@@ -249,8 +249,8 @@ public class Util {
 
     }
 
-    public static <K> ArrayList<K> makeSmallArrayList(List<K> m) {
-        ArrayList<K> result = new ArrayList<>(m.size() + 2);
+    public static <K> List<K> makeSmallArrayList(List<K> m) {
+        List<K> result = new ArrayList<>(m.size() + 2);
         result.addAll(m);
         return result;
 
