@@ -25,5 +25,7 @@ class Issue3904Test extends AbstractIntegrationTest {
         // singleLoopAlwaysTrue: do-while condition (i < 5 with i == 1) is always true.
         // The loop is truly infinite — should be reported.
         assertBugInMethod("IL_INFINITE_LOOP", "ghIssues.Issue3904", "singleLoopAlwaysTrue");
+
+        assertBugTypeCount("IL_INFINITE_LOOP", 3);
     }
 }
