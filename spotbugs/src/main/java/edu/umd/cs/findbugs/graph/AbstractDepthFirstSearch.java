@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -302,7 +303,7 @@ public abstract class AbstractDepthFirstSearch<GraphType extends Graph<EdgeType,
                 searchTreeCallback.startSearchTree(searchTreeRoot);
             }
 
-            ArrayList<Visit> stack = new ArrayList<>(graph.getNumVertexLabels());
+            List<Visit> stack = new ArrayList<>(graph.getNumVertexLabels());
             stack.add(new Visit(searchTreeRoot));
 
             while (!stack.isEmpty()) {
@@ -325,7 +326,7 @@ public abstract class AbstractDepthFirstSearch<GraphType extends Graph<EdgeType,
         }
     }
 
-    private void visitSuccessor(ArrayList<Visit> stack, EdgeType edge) {
+    private void visitSuccessor(List<Visit> stack, EdgeType edge) {
         // Get the successor
         VertexType succ = getTarget(edge);
         int succColor = getColor(succ);

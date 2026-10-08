@@ -183,8 +183,8 @@ public abstract class CommandLine {
         // -adjustPriority
         // must always come after -pluginList).
         int lastOptionIndex = parse(argv, true);
-        ArrayList<String> resultList = new ArrayList<>();
-        ArrayList<String> expandedOptionsList = getAnalysisOptionProperties(ignoreComments, ignoreBlankLines);
+        List<String> resultList = new ArrayList<>();
+        List<String> expandedOptionsList = getAnalysisOptionProperties(ignoreComments, ignoreBlankLines);
         for (int i = 0; i < lastOptionIndex; i++) {
             String arg = argv[i];
             if (!arg.startsWith("@")) {
@@ -205,8 +205,8 @@ public abstract class CommandLine {
         return resultList.toArray(new String[0]);
     }
 
-    public static ArrayList<String> getAnalysisOptionProperties(boolean ignoreComments, boolean ignoreBlankLines) {
-        ArrayList<String> resultList = new ArrayList<>();
+    public static List<String> getAnalysisOptionProperties(boolean ignoreComments, boolean ignoreBlankLines) {
+        List<String> resultList = new ArrayList<>();
         URL u = DetectorFactoryCollection.getCoreResource("analysisOptions.properties");
         if (u != null) {
             try (BufferedReader reader = UTF8.bufferedReader(u.openStream())) {
@@ -218,7 +218,7 @@ public abstract class CommandLine {
         return resultList;
     }
 
-    private static void addCommandLineOptions(ArrayList<String> resultList, BufferedReader reader, boolean ignoreComments,
+    private static void addCommandLineOptions(List<String> resultList, BufferedReader reader, boolean ignoreComments,
             boolean ignoreBlankLines) throws IOException {
         String line;
         while ((line = reader.readLine()) != null) {

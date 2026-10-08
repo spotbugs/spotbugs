@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.model;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -52,7 +53,7 @@ public class RegenerateClassFeatures {
         bugCollection.clearClassFeatures();
 
 
-        ArrayList<JavaClass> classList = new ArrayList<>();
+        List<JavaClass> classList = new ArrayList<>();
 
         try (ZipFile zipFile = new ZipFile(jarFile)) {
 

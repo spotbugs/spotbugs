@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba.type;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.bcel.generic.ObjectType;
 
@@ -28,7 +29,7 @@ public class ExceptionSetFactory {
 
     private final HashMap<ObjectType, Integer> typeIndexMap;
 
-    private final ArrayList<ObjectType> typeList;
+    private final List<ObjectType> typeList;
 
     public ExceptionSetFactory() {
         this.typeIndexMap = new HashMap<>();

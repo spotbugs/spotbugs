@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.workflow;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.BugCollection;
@@ -79,8 +80,8 @@ public class TestingGround {
         } else {
             bugCollection.readXML(System.in);
         }
-        ArrayList<Bag<String>> live = new ArrayList<>();
-        ArrayList<Bag<String>> died = new ArrayList<>();
+        List<Bag<String>> live = new ArrayList<>();
+        List<Bag<String>> died = new ArrayList<>();
         Bag<String> allBugs = new Bag<>();
         for (int i = 0; i <= bugCollection.getSequenceNumber(); i++) {
             live.add(new Bag<>());

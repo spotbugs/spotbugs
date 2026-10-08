@@ -12,6 +12,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ### Changed
 - `@SuppressFBWarnings` annotation on a method or a constructor now suppresses warnings reported in their lambdas too ([#724](https://github.com/spotbugs/spotbugs/issues/724))
 - Replace deprecated calls to 'SignatureParser' to 'GenericSignatureParser' where feasible ([#4336](https://github.com/spotbugs/spotbugs/pull/4337))
+- Declaring to the interface lists/maps ([#4381](https://github.com/spotbugs/spotbugs/pull/4381))
 
 ### Fixed
 - Fix `RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT` false negative when the ignored result comes from `Arrays.copyOf`, `Arrays.copyOfRange` or any pure static method or constructor of a class using `assert` ([#3900](https://github.com/spotbugs/spotbugs/issues/3900))

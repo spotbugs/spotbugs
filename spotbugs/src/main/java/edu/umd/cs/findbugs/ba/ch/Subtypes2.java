@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -744,8 +745,8 @@ public class Subtypes2 {
         if (aSuperTypes.contains(bDesc)) {
             return b;
         }
-        ArrayList<ClassVertex> aSuperList = getAllSuperclassVertices(aVertex);
-        ArrayList<ClassVertex> bSuperList = getAllSuperclassVertices(bVertex);
+        List<ClassVertex> aSuperList = getAllSuperclassVertices(aVertex);
+        List<ClassVertex> bSuperList = getAllSuperclassVertices(bVertex);
 
         // Work backwards until the lists diverge.
         // The last element common to both lists is the first
@@ -813,8 +814,8 @@ public class Subtypes2 {
      *            a ClassVertex
      * @return list of all superclass vertices in order
      */
-    private ArrayList<ClassVertex> getAllSuperclassVertices(ClassVertex vertex) throws ClassNotFoundException {
-        ArrayList<ClassVertex> result = new ArrayList<>();
+    private List<ClassVertex> getAllSuperclassVertices(ClassVertex vertex) throws ClassNotFoundException {
+        List<ClassVertex> result = new ArrayList<>();
         ClassVertex cur = vertex;
         while (cur != null) {
             if (!cur.isResolved()) {

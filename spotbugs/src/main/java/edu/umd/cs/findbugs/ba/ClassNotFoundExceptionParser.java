@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,7 +49,7 @@ public class ClassNotFoundExceptionParser {
     private static final Pattern[] patternList;
 
     static {
-        ArrayList<Pattern> list = new ArrayList<>();
+        List<Pattern> list = new ArrayList<>();
         list.add(BCEL_MISSING_CLASS_PATTERN);
         list.add(TYPE_REPOSITORY_MISSING_CLASS_PATTERN);
 

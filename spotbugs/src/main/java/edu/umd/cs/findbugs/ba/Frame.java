@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -77,7 +78,7 @@ public abstract class Frame<ValueType> {
     /**
      * Array storing the values of local variables and operand stack slots.
      */
-    private ArrayList<ValueType> slotList;
+    private List<ValueType> slotList;
 
     /**
      * Flag marking this frame as a special "TOP" value. Such Frames serve as

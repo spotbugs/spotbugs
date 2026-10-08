@@ -2,6 +2,7 @@ package edu.umd.cs.findbugs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -87,7 +88,7 @@ public class AnalysisError {
 
     private String[] getStackTraceAsStringArray(Throwable exception) {
         StackTraceElement[] exceptionStackTrace = exception.getStackTrace();
-        ArrayList<String> arr = new ArrayList<>();
+        List<String> arr = new ArrayList<>();
         for (StackTraceElement aExceptionStackTrace : exceptionStackTrace) {
             arr.add(aExceptionStackTrace.toString());
         }

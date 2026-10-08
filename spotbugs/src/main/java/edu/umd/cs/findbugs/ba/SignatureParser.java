@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -54,7 +55,7 @@ public class SignatureParser {
         if (parameterOffset != null) {
             return parameterOffset;
         }
-        ArrayList<Integer> offsets = new ArrayList<>();
+        List<Integer> offsets = new ArrayList<>();
         Iterator<String> i = parameterSignatureIterator();
         int totalSize = 0;
 
@@ -167,7 +168,7 @@ public class SignatureParser {
     }
 
     public String[] getArguments() {
-        ArrayList<String> result = new ArrayList<>();
+        List<String> result = new ArrayList<>();
         for (Iterator<String> i = parameterSignatureIterator(); i.hasNext();) {
             result.add(i.next());
         }

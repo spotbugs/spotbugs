@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.graph;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -31,7 +32,7 @@ public class SearchTree<VertexType extends GraphVertex<VertexType>> {
 
     private final VertexType m_vertex;
 
-    private final ArrayList<SearchTree<VertexType>> m_childList;
+    private final List<SearchTree<VertexType>> m_childList;
 
     /**
      * Create a new search tree.

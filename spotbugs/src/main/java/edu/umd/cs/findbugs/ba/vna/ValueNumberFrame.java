@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -50,7 +51,7 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberAnalysisFeatures {
 
-    private ArrayList<ValueNumber> mergedValueList;
+    private List<ValueNumber> mergedValueList;
 
     private AvailableLoadBiMap availableLoadMap;
 

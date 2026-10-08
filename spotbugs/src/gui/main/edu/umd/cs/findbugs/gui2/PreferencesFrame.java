@@ -687,7 +687,7 @@ public class PreferencesFrame extends FBDialog {
     }
 
     void updateFilterPanel() {
-        ArrayList<MatchBox> boxes = new ArrayList<>();
+        List<MatchBox> boxes = new ArrayList<>();
         final Filter f = MainFrame.getInstance().getProject().getSuppressionFilter();
 
         for (final Matcher m : f.getChildren()) {
