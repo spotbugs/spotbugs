@@ -22,6 +22,9 @@ class Issue4147Test extends AbstractIntegrationTest {
 
         assertNoBugInMethod("NP_NULL_ON_SOME_PATH", "Issue4147StoreBeforeGuard", "storeThenGuardField");
         assertNoBugInMethod("NP_NULL_ON_SOME_PATH", "Issue4147StoreBeforeGuard", "guardThroughLocal");
+        assertBugTypeCount("NP_NULL_ON_SOME_PATH", 0);
+        
         assertBugInMethod("NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS", "Issue4147StoreBeforeGuard", "callerPassesNull");
+        assertBugTypeCount("NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS", 1);
     }
 }
