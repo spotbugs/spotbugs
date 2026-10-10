@@ -50,6 +50,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Do not flag `writeReplace()` and `writeExternal()` as mutators ([#1719](https://github.com/spotbugs/spotbugs/pull/1719))
 - Prevent XML external entity resolution in user-controlled data ([#4365](https://github.com/spotbugs/spotbugs/pull/4365))
 
+### Refactor
+- Replace deprecated/internal PDE APIs in classpath generation ([#4297](https://github.com/spotbugs/spotbugs/pull/4297))
+
 ## 4.10.4 - 2026-08-19
 ### Fixed
 - Fix `NN_NAKED_NOTIFY` false negatives when a field read is stored in a local variable before `notify()` or `notifyAll()` ([#3884](https://github.com/spotbugs/spotbugs/issues/3884))
