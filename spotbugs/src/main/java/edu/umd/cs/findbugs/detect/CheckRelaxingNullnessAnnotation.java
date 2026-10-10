@@ -38,9 +38,11 @@ import java.util.Set;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.TypeReference;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.TypeAnnotationNode;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -113,6 +115,12 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
             relaxedNullReturn = containsRelaxedNonNull(visibleAnnotations);
             if (!relaxedNullReturn) {
                 relaxedNullReturn = containsRelaxedNonNull(invisibleAnnotations);
+            }
+            if (!relaxedNullReturn) {
+                relaxedNullReturn = containsRelaxedNonNullTypeUse(visibleTypeAnnotations);
+            }
+            if (!relaxedNullReturn) {
+                relaxedNullReturn = containsRelaxedNonNullTypeUse(invisibleTypeAnnotations);
             }
             boolean needsCheck = relaxedNullReturn;
             if (invisibleParameterAnnotations != null || visibleParameterAnnotations != null) {
@@ -241,6 +249,22 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
             return false;
         }
         for (AnnotationNode annotation : methodAnnotations) {
+            NullnessAnnotation nullness = getNullness(annotation.desc);
+            if (nullness == CHECK_FOR_NULL || nullness == NULLABLE) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static boolean containsRelaxedNonNullTypeUse(@Nullable List<TypeAnnotationNode> typeAnnotations) {
+        if (typeAnnotations == null) {
+            return false;
+        }
+        for (TypeAnnotationNode annotation : typeAnnotations) {
+            if (new TypeReference(annotation.typeRef).getSort() != TypeReference.METHOD_RETURN) {
+                continue;
+            }
             NullnessAnnotation nullness = getNullness(annotation.desc);
             if (nullness == CHECK_FOR_NULL || nullness == NULLABLE) {
                 return true;
