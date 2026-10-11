@@ -49,7 +49,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION` false positive when a lock is assigned to a newly allocated object ([#4331](https://github.com/spotbugs/spotbugs/issues/4331))
 - Do not flag `writeReplace()` and `writeExternal()` as mutators ([#1719](https://github.com/spotbugs/spotbugs/pull/1719))
 - Prevent XML external entity resolution in user-controlled data ([#4365](https://github.com/spotbugs/spotbugs/pull/4365))
-- Fix handling of JSpecify type-use annotations in `CheckRelaxingNullnessAnnotation` ([#xxxx](https://github.com/spotbugs/spotbugs/pull/xxxx))
+- Fix handling of JSpecify type-use annotations in `CheckRelaxingNullnessAnnotation` ([#4389](https://github.com/spotbugs/spotbugs/pull/4389))
 
 ## 4.10.4 - 2026-08-19
 ### Fixed
