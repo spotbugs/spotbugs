@@ -404,9 +404,9 @@ smokeTest.configure {
     TaskProvider<JavaCompile> compileJava = tasks.named('compileJava', JavaCompile)
 
     def taskdefOptions = [
-        name: 'spotbugs',
-        classname: 'edu.umd.cs.findbugs.anttask.FindBugsTask',
-        classpath: jarTask.get().outputs.files.asPath
+      name: 'spotbugs',
+      classname: 'edu.umd.cs.findbugs.anttask.FindBugsTask',
+      classpath: jarTask.get().outputs.files.asPath
     ]
 
     ant.taskdef(taskdefOptions)
