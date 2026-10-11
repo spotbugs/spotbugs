@@ -467,15 +467,16 @@ ext.signJar = { File dir ->
   dir.traverse(type: FILES, nameFilter: ~/.*\.jar$/) { File jarFile ->
     String relativePath = rootDir.toPath().relativize(jarFile.toPath()).toString()
     logger.lifecycle("signing ${relativePath}")
-    ant.signjar(
-        destDir: jarFile.parentFile,
-        jar: jarFile,
-        alias: 'eclipse-plugin',
-        keystore: "${rootDir}/spotbugs.jks",
-        storepass: keystorepass,
-        tsaurl: 'http://timestamp.digicert.com',
-        verbose: true
-    )
+    def signjarOptions = [
+      destDir: jarFile.parentFile,
+      jar: jarFile,
+      alias: 'eclipse-plugin',
+      keystore: "${rootDir}/spotbugs.jks",
+      storepass: keystorepass,
+      tsaurl: 'http://timestamp.digicert.com',
+      verbose: true
+    ]
+    ant.signjar(signjarOptions)
   }
 }
 
