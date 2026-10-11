@@ -407,7 +407,7 @@ smokeTest.configure {
         name: 'spotbugs',
         classname: 'edu.umd.cs.findbugs.anttask.FindBugsTask',
         classpath: jarTask.get().outputs.files.asPath
-        )
+    )
 
     ant.spotbugs(
         home: "${resolvedBuildDir}/smoketest/",

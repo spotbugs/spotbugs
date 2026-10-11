@@ -475,7 +475,7 @@ ext.signJar = { File dir ->
         storepass: keystorepass,
         tsaurl: 'http://timestamp.digicert.com',
         verbose: true
-        )
+    )
   }
 }
 
