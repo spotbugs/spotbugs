@@ -403,11 +403,13 @@ smokeTest.configure {
     TaskProvider<Jar> jarTask = project(':spotbugs-ant').tasks.named('jar')
     TaskProvider<JavaCompile> compileJava = tasks.named('compileJava', JavaCompile)
 
-    ant.taskdef(
+    def taskdefOptions = [
         name: 'spotbugs',
         classname: 'edu.umd.cs.findbugs.anttask.FindBugsTask',
         classpath: jarTask.get().outputs.files.asPath
-    )
+    ]
+
+    ant.taskdef(taskdefOptions)
 
     ant.spotbugs(
         home: "${resolvedBuildDir}/smoketest/",
