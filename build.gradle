@@ -85,7 +85,7 @@ subprojects {
 
       doLast {
         int maxAllowedMajorVersion = 55 // Java 11
-        Map<String, List<String>> illegalDependencies = [:]
+        Map<String, List<String>> illegalDependencies = new HashMap<>()
 
         Configuration config = runtimeClasspath.get()
 

@@ -109,7 +109,7 @@ public class Bug1181 {
         methodThatTakesAStringArgumentButNotNull2(classA2.methodThatMightReturnNull());
 
 
-     // No warning, since method argument is flagged as @Nullable
+        // No warning, since method argument is flagged as @Nullable
         methodThatTakesAStringArgumentButNotNull(classA2.methodThatAlwaysReturnsNull());
 
         // Warning expected
