@@ -1,7 +1,6 @@
 package bugIdeas;
 
-import jakarta.annotation.Nonnull;
-
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +10,7 @@ public class Ideas_2010_01_22 {
         return x.hashCode();
     }
 
-    public int needsNonnull2(@Nonnull Object x) {
+    public int needsNonnull2(@NonNull Object x) {
         return 17;
     }
 

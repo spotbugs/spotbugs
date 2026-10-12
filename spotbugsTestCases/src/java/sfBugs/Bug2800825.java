@@ -1,6 +1,6 @@
 package sfBugs;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Generates a false redundant null check warning.
@@ -10,8 +10,7 @@ import jakarta.annotation.Nonnull;
 
 public class Bug2800825 {
 
-    public @Nonnull
-    Object getNonNullValue() {
+    public @NonNull Object getNonNullValue() {
         return "dummy";
     }
 

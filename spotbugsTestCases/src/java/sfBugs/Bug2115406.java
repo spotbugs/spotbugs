@@ -1,17 +1,16 @@
 package sfBugs;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 public class Bug2115406 {
 
     private final String name;
 
-    public Bug2115406(@Nonnull String name) {
+    public Bug2115406(@NonNull String name) {
         this.name = name;
     }
 
-    @Nonnull
-    public String getName() {
+    public @NonNull String getName() {
         return name;
     }
 

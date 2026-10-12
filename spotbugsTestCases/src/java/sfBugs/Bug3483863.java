@@ -1,7 +1,8 @@
 package sfBugs;
 
 import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
+
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.annotations.Confidence;
 import edu.umd.cs.findbugs.annotations.DesireNoWarning;
@@ -10,8 +11,7 @@ import edu.umd.cs.findbugs.annotations.DesireWarning;
 public class Bug3483863 {
 
     interface IInterface1 {
-        @Nonnull
-        public Object get();
+        public @NonNull Object get();
     }
 
     class CClass2 {

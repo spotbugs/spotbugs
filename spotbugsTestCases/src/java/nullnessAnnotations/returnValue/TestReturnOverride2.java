@@ -3,7 +3,8 @@ package nullnessAnnotations.returnValue;
 import java.util.Collection;
 
 import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
+
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
@@ -37,7 +38,7 @@ public class TestReturnOverride2 {
         T get();
 
         @CheckForNull
-        T get(@Nonnull K k);
+        T get(@NonNull K k);
 
         interface N {
         }
@@ -49,9 +50,8 @@ public class TestReturnOverride2 {
     }
 
     static interface CSI<K, T> extends SI<K, Collection<T>> {
-        @Nonnull
         @Override
-        public Collection<T> get();
+        public @NonNull Collection<T> get();
     }
 
     static class ACSI implements CSI<Object, String> {

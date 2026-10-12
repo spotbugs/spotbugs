@@ -6,8 +6,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifierDefault;
+
+import jakarta.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;

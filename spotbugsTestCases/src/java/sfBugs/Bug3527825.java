@@ -1,7 +1,8 @@
 package sfBugs;
 
 import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
+
+import org.jspecify.annotations.NonNull;
 
 public class Bug3527825 {
     public interface GenericFindBugsParameterChecking<T> {
@@ -10,7 +11,7 @@ public class Bug3527825 {
 
     public static class GenericFindBugsParameterCheckingImpl implements GenericFindBugsParameterChecking<String> {
         @Override
-        public void doSomething(@Nonnull String theParameter) {
+        public void doSomething(@NonNull String theParameter) {
             // do something
         }
     }
@@ -21,7 +22,7 @@ public class Bug3527825 {
 
     public static class FindBugsParameterCheckingImpl implements FindBugsParameterChecking {
         @Override
-        public void doSomething(@Nonnull String theParameter) {
+        public void doSomething(@NonNull String theParameter) {
             // do something
         }
     }

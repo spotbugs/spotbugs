@@ -1,9 +1,9 @@
 package nullnessAnnotations;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 public class UncheckedJakartaNonnullReturn {
-    @Nonnull
+    @NonNull
     String foo() {
         return null; // This should trigger the SpotBugs rule since @Nonnull is violated
     }

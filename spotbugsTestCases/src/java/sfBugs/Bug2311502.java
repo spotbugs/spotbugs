@@ -6,18 +6,18 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifierDefault;
+
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug2311502 {
 
     @Documented
-    @Nonnull
     @TypeQualifierDefault(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface ReturnValuesAreNonnullByDefault {
+    public @NonNull @interface ReturnValuesAreNonnullByDefault {
     }
 
     /**

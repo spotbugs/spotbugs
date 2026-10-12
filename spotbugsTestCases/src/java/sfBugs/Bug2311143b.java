@@ -8,16 +8,16 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifierDefault;
+
+import org.jspecify.annotations.NonNull;
 
 @Bug2311143b.ReturnValueIsNonnullByDefault
 public class Bug2311143b {
     @Documented
-    @Nonnull
     @TypeQualifierDefault(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface ReturnValueIsNonnullByDefault {
+    public @NonNull @interface ReturnValueIsNonnullByDefault {
     }
 
     @CheckForNull

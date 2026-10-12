@@ -3,11 +3,11 @@ package sfBugs;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 public class Bug3598833 {
-    @Nonnull
-    public static BigDecimal numberToBigDecimal(@Nonnull Number number) {
+
+    public static @NonNull BigDecimal numberToBigDecimal(@NonNull Number number) {
         BigDecimal bigDecimal = null;
 
         if (number instanceof BigDecimal)
@@ -38,7 +38,7 @@ public class Bug3598833 {
         return bigDecimal;
     }
 
-    public static @Nonnull BigDecimal numberToBigDecimal2(@Nonnull Number number) {
+    public static @NonNull BigDecimal numberToBigDecimal2(@NonNull Number number) {
 
         if (number instanceof BigDecimal)
             return (BigDecimal) number;
