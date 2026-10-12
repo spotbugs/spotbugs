@@ -50,6 +50,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Do not flag `writeReplace()` and `writeExternal()` as mutators ([#1719](https://github.com/spotbugs/spotbugs/pull/1719))
 - Prevent XML external entity resolution in user-controlled data ([#4365](https://github.com/spotbugs/spotbugs/pull/4365))
 - Fix handling of JSpecify type-use annotations in `CheckRelaxingNullnessAnnotation` ([#4389](https://github.com/spotbugs/spotbugs/pull/4389))
+- Stop reporting missing java.applet at java 26 or higher ([#4390](https://github.com/spotbugs/spotbugs/pull/4390))
 
 ## 4.10.4 - 2026-08-19
 ### Fixed
