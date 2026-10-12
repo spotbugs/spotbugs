@@ -8,9 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
+
+import org.jspecify.annotations.NonNull;
 
 @ThreadSafe
 public class Bug1871376 implements Serializable {

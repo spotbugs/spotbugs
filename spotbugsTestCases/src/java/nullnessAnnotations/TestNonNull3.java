@@ -1,7 +1,8 @@
 package nullnessAnnotations;
 
 import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
-import edu.umd.cs.findbugs.annotations.NonNull;
+
+import org.jspecify.annotations.NonNull;
 
 @DefaultAnnotationForParameters(NonNull.class)
 public class TestNonNull3 {

@@ -1,7 +1,8 @@
 package nonnull;
 
+import org.jspecify.annotations.NonNull;
+
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
 
 interface A {
     public void f(@NonNull Object obj, @NonNull Object obj2);

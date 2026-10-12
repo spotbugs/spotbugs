@@ -1,6 +1,6 @@
 package nullnessAnnotations;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
+import org.jspecify.annotations.NonNull;
 
 class Test6 {
 

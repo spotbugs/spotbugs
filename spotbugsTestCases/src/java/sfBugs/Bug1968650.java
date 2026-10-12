@@ -1,14 +1,13 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
+import org.jspecify.annotations.NonNull;
 
 public class Bug1968650 {
     public void nonNullArgsMethod(@NonNull Object any) {
 
     }
 
-    @NonNull
-    public Object nonNullReturnValue() {
+    public @NonNull Object nonNullReturnValue() {
         nonNullArgsMethod(null);
         return null;
     }

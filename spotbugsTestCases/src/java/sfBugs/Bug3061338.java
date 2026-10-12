@@ -1,7 +1,8 @@
 package sfBugs;
 
+import org.jspecify.annotations.NonNull;
+
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class Bug3061338 {
 

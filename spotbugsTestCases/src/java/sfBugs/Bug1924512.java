@@ -1,10 +1,10 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
+import org.jspecify.annotations.NonNull;
 
 public class Bug1924512 {
-    @NonNull
-    public static String nonNullLoop(String[] args) {
+
+    public static @NonNull String nonNullLoop(String[] args) {
         String ret = null;
         for (String s : args) {
             ret = s;
@@ -12,8 +12,7 @@ public class Bug1924512 {
         return ret; // no warning reported here
     }
 
-    @NonNull
-    public static String nonNullIf(String[] args) {
+    public static @NonNull String nonNullIf(String[] args) {
         String ret = null;
         if (args.length > 0) {
             ret = args[0];
