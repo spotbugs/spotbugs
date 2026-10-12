@@ -44,7 +44,10 @@ public class BadAppletConstructor extends BytecodeScanningDetector {
         try {
             appletCls = Repository.lookupClass("java.applet.Applet");
         } catch (ClassNotFoundException cnfe) {
-            bugReporter.reportMissingClass(cnfe);
+            // Applets removed java 26 and above, do not mention its missing
+            if (Runtime.version().feature() < 26) {
+                bugReporter.reportMissingClass(cnfe);
+            }
         }
         this.appletClass = appletCls;
     }
