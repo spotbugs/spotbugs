@@ -1,7 +1,8 @@
 package nullnessAnnotations;
 
+import org.jspecify.annotations.NonNull;
+
 import edu.umd.cs.findbugs.annotations.NoWarning;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 
 /**

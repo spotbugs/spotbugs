@@ -1,6 +1,6 @@
 package npe;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
+import org.jspecify.annotations.NonNull;
 
 public class SinksRequiringNonNull {
 

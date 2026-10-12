@@ -1,8 +1,9 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
+import org.jspecify.annotations.NonNull;
 
 public class Bug1678228 {
+
     @NonNull
     String str;
 

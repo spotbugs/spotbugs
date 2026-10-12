@@ -1,11 +1,11 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
+import org.jspecify.annotations.NonNull;
 
 public class Bug3502202 {
     static class Foo {
-        @NonNull
-        private String bar; // <=== Not initialized by constructor
+
+        private @NonNull String bar; // <=== Not initialized by constructor
 
         public int getBarLength() {
             return bar.length();
@@ -17,7 +17,7 @@ public class Bug3502202 {
     }
 
     // Furthermore, the following 'getBarLenght()' method will throw a
-    // NullPointerException because the 'bar' field is not initialised. This is
+    // NullPointerException because the 'bar' field is not initialized. This is
     // not detected either.
 
     static class Baz {

@@ -5,9 +5,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 
+import org.jspecify.annotations.NonNull;
+
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.DesireWarning;
-import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * Test cases extracted from

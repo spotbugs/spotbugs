@@ -1,7 +1,7 @@
 package ghIssues;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class Issue3243 {
 
@@ -12,8 +12,7 @@ public class Issue3243 {
         System.out.println(hoge);
     }
 
-    @Nullable
-    private String getHoge() {
+    private @Nullable String getHoge() {
         return "sample";
     }
 }

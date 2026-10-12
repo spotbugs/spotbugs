@@ -19,10 +19,11 @@
 
 package nullnessAnnotations.relax;
 
+import org.jspecify.annotations.NonNull;
+
 import annotations.DetectorUnderTest;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.detect.CheckRelaxingNullnessAnnotation;
 
 /**
