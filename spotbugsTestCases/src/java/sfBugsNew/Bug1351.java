@@ -1,7 +1,8 @@
 package sfBugsNew;
 
 import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
+
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
@@ -49,7 +50,7 @@ public final class Bug1351 {
         private final String a;
         private final String b;
 
-        StringPair(@Nonnull String a, @Nonnull String b) {
+        StringPair(@NonNull String a, @NonNull String b) {
             this.a = a;
             this.b = b;
         }

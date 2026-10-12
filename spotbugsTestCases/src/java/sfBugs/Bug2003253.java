@@ -1,12 +1,15 @@
 package sfBugs;
 
 import javax.annotation.CheckForNull;
+
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+
+import org.jspecify.annotations.Nullable;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug2003253 {
+
     @Nonnull
     private Object foo;
 

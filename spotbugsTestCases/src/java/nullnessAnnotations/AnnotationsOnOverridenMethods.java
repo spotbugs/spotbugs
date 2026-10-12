@@ -1,7 +1,8 @@
 package nullnessAnnotations;
 
 import javax.annotation.CheckForNull;
-import jakarta.annotation.Nonnull;
+
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
@@ -9,7 +10,7 @@ import edu.umd.cs.findbugs.annotations.ExpectWarning;
 public class AnnotationsOnOverridenMethods {
 
 
-    @Nonnull Object foo(@CheckForNull Object o) {
+    @NonNull Object foo(@CheckForNull Object o) {
         return o;
     }
 
@@ -22,12 +23,12 @@ public class AnnotationsOnOverridenMethods {
 
         @Override
         @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION,NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION")
-        @CheckForNull Object foo(@Nonnull Object o) {
+        @CheckForNull Object foo(@NonNull Object o) {
             return o;
         }
 
         @Override
-        @CheckForNull Object bar(@Nonnull Object o) {
+        @CheckForNull Object bar(@NonNull Object o) {
             return o;
         }
     }

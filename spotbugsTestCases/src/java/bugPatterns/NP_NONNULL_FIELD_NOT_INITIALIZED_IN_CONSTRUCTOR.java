@@ -1,6 +1,6 @@
 package bugPatterns;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
@@ -8,16 +8,16 @@ import edu.umd.cs.findbugs.annotations.NoWarning;
 public class NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR {
 
 
-    @Nonnull static Object a;
+    static @NonNull Object a;
 
     @ExpectWarning("NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
-    @Nonnull static Object b;
+    static @NonNull Object b;
 
     @ExpectWarning("NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
-    @Nonnull Object x;
+    @NonNull Object x;
 
     @ExpectWarning("NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
-    @Nonnull Object y;
+    @NonNull Object y;
 
     static {
         a = "a";

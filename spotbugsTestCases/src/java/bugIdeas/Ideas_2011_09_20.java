@@ -1,11 +1,11 @@
 package bugIdeas;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 public class Ideas_2011_09_20 {
     Object foo;
 
-    void setFoo(@Nonnull Object foo) {
+    void setFoo(@NonNull Object foo) {
         this.foo = foo;
     }
 
