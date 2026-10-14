@@ -133,7 +133,7 @@ public class FindReturnRef extends OpcodeStackDetector {
 
                     if (!currentStack.isTop()) {
                         // We might be at an instruction eliminated by OpcodeStackScanner, for instance because it is after if(1 != 1)
-                        fieldValues.get(field).add(currentStack.getStackItem(0));
+                        addFieldValue(field, currentStack.getStackItem(0));
                     }
 
                     if (currentStack.hasIncomingBranches(pc)) {
@@ -146,7 +146,7 @@ public class FindReturnRef extends OpcodeStackDetector {
                             if (ih.hasTargeters() && lastInstruction != null) {
                                 OpcodeStack prevStack = OpcodeStackScanner.getStackAt(javaClass, m, lastInstruction.getPosition());
                                 if (prevStack.getStackDepth() > 1) {
-                                    fieldValues.get(field).add(prevStack.getStackItem(0));
+                                    addFieldValue(field, prevStack.getStackItem(0));
                                 }
                             }
                         }
@@ -155,6 +155,16 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
         } catch (CFGBuilderException e) {
             AnalysisContext.logError(String.format("Error happened while analyzing %s", javaClass.getClassName()), e);
+        }
+    }
+
+    /**
+     * Records a value stored into a field, unless the value is known to be null: a null does not expose anything,
+     * and its signature is only the type of the variable it comes from.
+     */
+    private void addFieldValue(XField field, OpcodeStack.Item value) {
+        if (!value.isNull()) {
+            fieldValues.get(field).add(value);
         }
     }
 
@@ -422,6 +432,10 @@ public class FindReturnRef extends OpcodeStackDetector {
     }
 
     private CaptureKind getPotentialCapture(OpcodeStack.Item top) {
+        if (top.isNull()) {
+            // Storing a value known to be null does not expose anything.
+            return CaptureKind.NONE;
+        }
         CaptureKind kind = CaptureKind.REP;
         if (!top.isInitialParameter()) {
             OpcodeStack.Item newTop = arrayParamClones.get(top);
