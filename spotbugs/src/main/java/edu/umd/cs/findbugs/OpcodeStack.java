@@ -1475,14 +1475,24 @@ public class OpcodeStack {
                 // so that a subsequent IFNULL on the same variable can detect the dead fall-through.
                 int reg = topItem.registerNumber;
                 if (reg >= 0 && reg < lvValues.size()) {
-                    lvValues.set(reg, Item.nullItem(topItem.getSignature()));
+                    lvValues.set(reg, nullValueOf(lvValues.get(reg), topItem));
                 }
                 break;
             }
             case Const.IFNULL: {
                 seenTransferOfControl = true;
                 Item topItem = pop();
-                addJumpValue(dbc.getPC(), dbc.getBranchTarget());
+                int reg = topItem.registerNumber;
+                if (reg >= 0 && reg < lvValues.size()) {
+                    // On the branch the tested value is null; propagate that to the local variable in the
+                    // state merged at the branch target, and keep the non-null value for the fall-through.
+                    Item nonNullValue = lvValues.get(reg);
+                    lvValues.set(reg, nullValueOf(nonNullValue, topItem));
+                    addJumpValue(dbc.getPC(), dbc.getBranchTarget());
+                    lvValues.set(reg, nonNullValue);
+                } else {
+                    addJumpValue(dbc.getPC(), dbc.getBranchTarget());
+                }
                 // If the item is a local variable definitely set to null (e.g. ACONST_NULL or null-propagated
                 // through IFNONNULL fall-through), the jump always happens and the fall-through is dead code.
                 // Only apply when registerNumber >= 0 (local variable); field-summary nulls (registerNumber == -1)
@@ -2669,6 +2679,13 @@ public class OpcodeStack {
             Item result = new Item(JAVA_UTIL_ARRAYS_ARRAY_LIST);
             push(result);
             return;
+        } else if (seen == Const.INVOKEINTERFACE && "toList".equals(method) && "java/util/stream/Stream".equals(clsName)
+                && "()Ljava/util/List;".equals(signature)) {
+            // Stream.toList() returns an unmodifiable list, like List.copyOf()
+            pop();
+            Item result = new Item("Ljava/util/ImmutableCollections$AbstractImmutableList;");
+            push(result);
+            return;
         } else if (seen == Const.INVOKESTATIC) {
             Item requestParameter = null;
             if ("(Ljava/util/List;)Ljava/util/List;".equals(signature)
@@ -3082,6 +3099,23 @@ public class OpcodeStack {
 
     public boolean isJumpTarget(int pc) {
         return jumpEntryLocations.get(pc);
+    }
+
+    /**
+     * Returns the value of a local variable that is known to be null because of a null check of the item loaded
+     * from it. The value keeps its other properties, such as being an unmodified parameter.
+     *
+     * @param value
+     *            the current value of the local variable, possibly null if unknown
+     * @param loaded
+     *            the item that was loaded from the local variable and null checked
+     * @return a copy of the value, or an item of the type of the loaded item, that is known to be null
+     */
+    private static Item nullValueOf(Item value, Item loaded) {
+        Item nullValue = value == null ? new Item(loaded.getSignature()) : new Item(value);
+        nullValue.constValue = null;
+        nullValue.setNull(true);
+        return nullValue;
     }
 
     private void addJumpValue(int from, int target) {
