@@ -120,8 +120,9 @@ public class FindSelfComparison extends OpcodeStackDetector {
             XField f = getXFieldOperand();
             XClass x = getXClassOperand();
 
-            checkPUTFIELD: if (putFieldInstructionIndex + MAX_INSTRUCTIONS_BETWEEN_PUTFIELDS + 1 >= instructionIndex
-                    && f != null && obj != null && f.equals(putFieldXField) && !f.isSynthetic() && obj.sameValue(putFieldObj) && x != null) {
+            checkPUTFIELD: if (f != null && obj != null && x != null
+                    && putFieldInstructionIndex + MAX_INSTRUCTIONS_BETWEEN_PUTFIELDS + 1 >= instructionIndex
+                    && f.equals(putFieldXField) && !f.isSynthetic() && obj.sameValue(putFieldObj)) {
 
 
                 LineNumberTable table = getCode().getLineNumberTable();
