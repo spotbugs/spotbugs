@@ -48,7 +48,19 @@ public class FindSelfComparison extends OpcodeStackDetector {
         this.bugAccumulator = new BugAccumulator(bugReporter);
     }
 
+    /**
+     * Maximum number of instructions allowed between two PUTFIELDs to the same field for them to be considered a double assignment.
+     * The distance is counted in instructions rather than bytecode offsets, so that wide operands (e.g. {@code ldc2_w} for
+     * {@code long} and {@code double} constants) don't hide double assignments, see
+     * <a href="https://github.com/spotbugs/spotbugs/issues/3975">#3975</a>.
+     */
+    private static final int MAX_INSTRUCTIONS_BETWEEN_PUTFIELDS = 6;
+
     int putFieldPC = Integer.MIN_VALUE;
+
+    int putFieldInstructionIndex;
+
+    int instructionIndex;
 
     OpcodeStack.Item putFieldObj;
 
@@ -68,6 +80,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
         whichRegister = -1;
         registerLoadCount = 0;
         lastMethodCall = -1;
+        instructionIndex = 0;
         resetDoubleAssignmentState();
         super.visit(obj);
         resetDoubleAssignmentState();
@@ -79,6 +92,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
 
     private void resetDoubleAssignmentState() {
         putFieldPC = Integer.MIN_VALUE;
+        putFieldInstructionIndex = Integer.MIN_VALUE;
         putFieldXField = null;
         putFieldValue = null;
         putFieldObj = null;
@@ -94,7 +108,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
         if (DEBUG) {
             System.out.printf("%3d %-15s %s%n", getPC(), Const.getOpcodeName(seen), stack);
         }
-
+        instructionIndex++;
 
         if (stack.hasIncomingBranches(getPC())) {
             resetDoubleAssignmentState();
@@ -106,8 +120,9 @@ public class FindSelfComparison extends OpcodeStackDetector {
             XField f = getXFieldOperand();
             XClass x = getXClassOperand();
 
-            checkPUTFIELD: if (putFieldPC + 10 > getPC() && f != null && obj != null && f.equals(putFieldXField)
-                    && !f.isSynthetic() && obj.sameValue(putFieldObj) && x != null) {
+            checkPUTFIELD: if (f != null && obj != null && x != null
+                    && putFieldInstructionIndex + MAX_INSTRUCTIONS_BETWEEN_PUTFIELDS + 1 >= instructionIndex
+                    && f.equals(putFieldXField) && !f.isSynthetic() && obj.sameValue(putFieldObj)) {
 
 
                 LineNumberTable table = getCode().getLineNumberTable();
@@ -163,6 +178,7 @@ public class FindSelfComparison extends OpcodeStackDetector {
                 bugAccumulator.accumulateBug(bug, this);
             }
             putFieldPC = getPC();
+            putFieldInstructionIndex = instructionIndex;
             putFieldXField = f;
             putFieldObj = obj;
             putFieldValue = value;
