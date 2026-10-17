@@ -16,7 +16,7 @@ public final class Issue1155 {
 
     /*
      * This static method call will throw an exception if 'found' is null.
-     * The 'require' method is a static method and cannot be overridden to change the behavior.
+     * The 'check' method is a static method and cannot be overridden to change the behavior.
      * So if 'found' is null the return statement is never reached.
      * So the reported NP_NULL_ON_SOME_PATH on the dereference of 'found' in the return statement is incorrect.
      */
@@ -61,7 +61,7 @@ public final class Issue1155 {
 
     /*
      * This static method call will throw an exception if 'found' is null.
-     * The 'require' method is a static method and cannot be overridden to change the behavior.
+     * The 'failIf' method is a static method and cannot be overridden to change the behavior.
      * So if 'found' is null the return statement is never reached.
      * So the reported NP_NULL_ON_SOME_PATH on the dereference of 'found' in the return statement is incorrect.
      */
