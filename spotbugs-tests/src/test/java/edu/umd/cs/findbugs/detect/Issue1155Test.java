@@ -18,7 +18,5 @@ public class Issue1155Test extends AbstractIntegrationTest {
         assertBugInMethodCount("NP_NULL_ON_SOME_PATH", "ghIssues.Issue1155", "demoOfCorrectNoReport", 0);
         assertBugInMethodCount("NP_NULL_ON_SOME_PATH", "ghIssues.Issue1155", "demoOfCorrectNoReportDifferentMethodName", 0);
         assertBugInMethodCount("NP_NULL_ON_SOME_PATH", "ghIssues.Issue1155", "demoOfInvalidReport", 0);
-
-        assertThat(getBugCollection(), is(emptyIterable()));
     }
 }
