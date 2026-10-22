@@ -31,7 +31,7 @@ dependencies {
   implementation 'com.google.truth:truth:1.4.5'
   implementation 'joda-time:joda-time:2.15.0'
   api 'com.github.stephenc.jcip:jcip-annotations:1.0-1'
-  implementation 'org.springframework:spring-core:7.0.9'
+  implementation 'org.springframework:spring-core:7.0.10'
   compileOnly 'jakarta.annotation:jakarta.annotation-api:3.0.0'
   implementation 'org.checkerframework:checker-qual:4.3.1'
   implementation 'com.sun.xml.bind:jaxb-impl:4.0.9'
