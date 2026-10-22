@@ -9064,7 +9064,7 @@ after the call to initLogging, the logger configuration is lost
             These calls will not be executed atomically, so it's recommended to put these calls
             into a synchronized block or method.</p>
         <p>See SEI CERT rule
-            <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA03-J.+Do+not+assume+that+a+group+of+calls+to+independently+atomic+methods+is+atomic">
+            <a href="https://cmu-sei.github.io/secure-coding-standards/sei-cert-oracle-coding-standard-for-java/rules/visibility-and-atomicity-vna/vna03-j">
             VNA03-J. Do not assume that a group of calls to independently atomic methods is atomic</a>.
         </p>]]>
     </Details>
@@ -9077,7 +9077,7 @@ after the call to initLogging, the logger configuration is lost
         <p>This operation is atomic, but it needs to be executed in a synchronized block or method,
             because in another method in this class, the object can be modified. To make both atomic, both need synchronization.</p>
         <p>See SEI CERT rule
-          <a href="https://wiki.sei.cmu.edu/confluence/display/java/VNA03-J.+Do+not+assume+that+a+group+of+calls+to+independently+atomic+methods+is+atomic">
+          <a href="https://cmu-sei.github.io/secure-coding-standards/sei-cert-oracle-coding-standard-for-java/rules/visibility-and-atomicity-vna/vna03-j">
           VNA03-J. Do not assume that a group of calls to independently atomic methods is atomic</a>.
         </p>]]>
     </Details>
