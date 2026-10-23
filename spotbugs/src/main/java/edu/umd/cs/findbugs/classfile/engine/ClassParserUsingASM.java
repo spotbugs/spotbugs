@@ -153,6 +153,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
         private int parameterCount = -1;
 
+        private int methodParameterIndex = 0;
+
         /**
          * @param calledClassSet
          * @param mBuilder
@@ -177,6 +179,17 @@ public class ClassParserUsingASM implements ClassParserInterface {
 
         boolean isStatic() {
             return (access & Opcodes.ACC_STATIC) != 0;
+        }
+
+        @Override
+        public void visitParameter(String name, int parameterAccess) {
+            // Currently only non-static inner class references to the outer class instances.
+            //   Needed because it isn't necessarily stored, but JDK25+ use Objects.requireNonNull on them.
+            if ((parameterAccess & (Opcodes.ACC_MANDATED | Opcodes.ACC_FINAL)) != 0) {
+                mBuilder.setVariableIsSynthetic((isStatic() ? 0 : 1) + methodParameterIndex);
+            }
+
+            methodParameterIndex++;
         }
 
         @Override
@@ -283,6 +296,8 @@ public class ClassParserUsingASM implements ClassParserInterface {
                     && owner.equals(slashedClassName) && name.startsWith("this$")) {
                 // the field that has name starts with "this$" is generated for non-static inner class
                 // https://sourceforge.net/p/findbugs/bugs/1015/
+                // Needed despite visitParameter because older JDKs didn't include MethodParameters attributes for the
+                // field within the constructors.
                 mBuilder.setVariableIsSynthetic(parameterForLoadState);
             }
             fieldInstructionCount++;
