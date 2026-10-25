@@ -5,6 +5,8 @@ This is the changelog for SpotBugs. This follows [Keep a Changelog v1.0.0](http:
 Currently the versioning policy of this project follows [Semantic Versioning v2.0.0](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased - 2026-??-??
+### Fixed
+- Fix `SA_FIELD_DOUBLE_ASSIGNMENT` false negative for `long` and `double` fields assigned twice in a field initializer ([#3975](https://github.com/spotbugs/spotbugs/issues/3975))
 
 ## 4.10.5 - 2026-10-11
 ### Added
