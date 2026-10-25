@@ -32,25 +32,18 @@ public class Bug1197 {
     public void test4() {
         Integer x = 5;
         String y = "5";
-        junit.framework.Assert.assertEquals(x, y);
+        org.junit.jupiter.api.Assertions.assertEquals(x, y);
     }
 
     @ExpectWarning("EC_UNRELATED_TYPES")
     public void test5() {
         Integer x = 5;
         String y = "5";
-        org.junit.Assert.assertEquals(x, y);
-    }
-
-    @ExpectWarning("EC_UNRELATED_TYPES")
-    public void test6() {
-        Integer x = 5;
-        String y = "5";
         org.testng.Assert.assertEquals(x, y);
     }
 
     @DesireWarning("EC_UNRELATED_TYPES")
-    public void test7() {
+    public void test6() {
         Integer x = 5;
         String y = "5";
         org.testng.Assert.assertEquals(x, y, "oops");
