@@ -1,19 +1,18 @@
 package sfBugs;
 
 import org.jspecify.annotations.NonNull;
-
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 public class Bug1921523 {
-    public @CheckForNull Integer nullablePerhaps(int x) {
+    public @Nullable Integer nullablePerhaps(int x) {
         return x % 2 == 0 ? null : x;
     }
 
-    public @CheckForNull Integer nullableAlways(int x) {
+    public @Nullable Integer nullableAlways(int x) {
         return null;
     }
 
-    public @CheckForNull Integer nullableNever(int x) {
+    public @Nullable Integer nullableNever(int x) {
         return 7;
     }
 

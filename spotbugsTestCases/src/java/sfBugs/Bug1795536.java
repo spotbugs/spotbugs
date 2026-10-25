@@ -1,10 +1,10 @@
 package sfBugs;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 public class Bug1795536 {
     interface I {
-        public void foo(@CheckForNull Object arg);
+        public void foo(@Nullable Object arg);
     }
 
     static abstract class A1 implements I {

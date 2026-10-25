@@ -1,17 +1,15 @@
 package sfBugs;
 
-import javax.annotation.CheckForNull;
+import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 import jakarta.annotation.Nonnull;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-
-import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
 public class Bug2003253 {
 
-    @Nonnull
-    private Object foo;
+    private @Nonnull Object foo;
 
     //
     // The InconsistentAnnotations detector should report
@@ -26,7 +24,7 @@ public class Bug2003253 {
     // FindNullDeref should report a warning here.
     //
     @ExpectWarning("NP")
-    public void report2(@CheckForNull Object bar) {
+    public void report2(@Nullable Object bar) {
         this.foo = bar;
     }
 
@@ -34,7 +32,7 @@ public class Bug2003253 {
     // FindNullDeref should report a warning here.
     //
     @ExpectWarning("NP")
-    public int report3(@CheckForNull Object bar) {
+    public int report3(@Nullable Object bar) {
         return bar.hashCode();
     }
 
@@ -42,11 +40,11 @@ public class Bug2003253 {
     // FindNullDeref should report a warning here.
     //
     @ExpectWarning("NP")
-    public int report4(@CheckForNull Object bar) {
+    public int report4(@Nullable Object bar) {
         return nonnull(bar);
     }
 
-    public int nonnull(@Nonnull Object bar) {
+    public int nonnull(@NonNull Object bar) {
         return bar.hashCode();
     }
 }

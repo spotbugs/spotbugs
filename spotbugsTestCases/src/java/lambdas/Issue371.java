@@ -1,10 +1,10 @@
 package lambdas;
-import javax.annotation.CheckForNull;
+
+import org.jspecify.annotations.Nullable;
 
 public class Issue371 {
 
-    @CheckForNull
-    private String returnsNull() {
+    private @Nullable String returnsNull() {
         return null;
     }
 

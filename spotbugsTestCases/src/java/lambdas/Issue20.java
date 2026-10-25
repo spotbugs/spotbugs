@@ -1,14 +1,13 @@
 package lambdas;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 public class Issue20 {
 
   /**
    * @return may be null
    */
-  @CheckForNull
-  public static String methodThatMightReturnNull() {
+  public static @Nullable String methodThatMightReturnNull() {
     if (Boolean.getBoolean("test")) {
       return null;
     }

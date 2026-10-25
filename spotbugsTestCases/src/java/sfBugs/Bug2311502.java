@@ -8,9 +8,10 @@ import java.lang.annotation.RetentionPolicy;
 import javax.annotation.CheckForNull;
 import javax.annotation.meta.TypeQualifierDefault;
 
-import org.jspecify.annotations.NonNull;
-
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class Bug2311502 {
 
@@ -35,8 +36,8 @@ public class Bug2311502 {
         public final class BadInnerClass {
             @ExpectWarning("NP")
             public void badMethod() {
-                System.out.println(junkField.hashCode()); // should be caught as
-                                                          // a bug
+                // should be caught as a bug
+                System.out.println(junkField.hashCode());
             }
         }
 
@@ -45,8 +46,7 @@ public class Bug2311502 {
     public static @ReturnValuesAreNonnullByDefault
     class NPNonNullReturnViolationBug {
 
-        @CheckForNull
-        private Object junkField;
+        private @Nullable Object junkField;
 
         public void setJunk(Object junk) {
             this.junkField = junk;

@@ -3,7 +3,7 @@ package sfBugs;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 public final class Bug3343304 {
     public static void parse() {
@@ -22,8 +22,7 @@ public final class Bug3343304 {
     }
 
     private static final class FindBugs extends Abstract {
-        private @CheckForNull
-        Map<Integer, String> metrics = null;
+        private @Nullable Map<Integer, String> metrics = null;
 
         @Override
         protected void parseLine() {

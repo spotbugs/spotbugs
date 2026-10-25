@@ -15,13 +15,14 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.meta.TypeQualifierDefault;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import edu.umd.cs.findbugs.annotations.NoWarning;
 import jsr305.FieldsNonNullByDefault;
+
+import org.jspecify.annotations.Nullable;
 
 /* ********************
  * Behavior at filing:  false positive NP from getField()
@@ -56,9 +57,8 @@ abstract class Bug2672946B extends Bug2672946A {
 
     /** However, the explicit warning here does override the inherited annotation */
     @ExpectWarning("NP_METHOD_RETURN_RELAXING_ANNOTATION")
-    @CheckForNull
     @Override
-    public Bug2672946B getField2() {
+    public @Nullable Bug2672946B getField2() {
         Bug2672946A field = super.getField2();
         if (field.hashCode() == 42)
             System.out.println("Found it");
@@ -91,11 +91,11 @@ abstract class Bug2672946B extends Bug2672946A {
     }
     abstract Object bar();
 
-    abstract @CheckForNull Object bar2();
+    abstract @Nullable Object bar2();
 
 }
 
-@CheckForNull
+@Nullable
 @TypeQualifierDefault(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @interface MethodsAreCheckNullByDefault {

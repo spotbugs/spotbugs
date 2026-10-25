@@ -1,15 +1,14 @@
 package sfBugs;
 
-import javax.annotation.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NoWarning;
 
 import org.jspecify.annotations.NonNull;
-
-import edu.umd.cs.findbugs.annotations.NoWarning;
+import org.jspecify.annotations.Nullable;
 
 public class Bug3567801 {
 
     interface Test {
-        int foo(@CheckForNull Object x);
+        int foo(@Nullable Object x);
     }
 
     static class Impl implements Test {

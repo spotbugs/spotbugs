@@ -3,8 +3,7 @@ package ghIssues;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import javax.annotation.CheckForNull;
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class Issue2965 {
 
@@ -47,8 +46,7 @@ public class Issue2965 {
     );
   }
 
-  @CheckForNull
-  private String getString(@Nullable final String text) {
+  private @Nullable String getString(@Nullable final String text) {
     return text == null ? null : text;
   }
 
@@ -71,8 +69,7 @@ public class Issue2965 {
     return nullableResult;
   }
 
-  @Nullable
-  private String callNullableMethod() {
+  private @Nullable String callNullableMethod() {
     return "x";
   }
   
@@ -81,8 +78,7 @@ public class Issue2965 {
     return Objects.requireNonNull(getValue()).toString();
   }
   
-  @CheckForNull
-  private Issue2965 getValue() {
+  private @Nullable Issue2965 getValue() {
     return null;
   }
 }

@@ -3,6 +3,7 @@ package androidAnnotations;
 import androidx.annotation.Nullable;
 
 public class UncheckedNullableReturn2 {
+
     @Nullable
     String foo() {
         return null;

@@ -1,12 +1,11 @@
 package nullnessAnnotations;
 
-import javax.annotation.CheckForNull;
-
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class UseAnnotations {
 
-    @CheckForNull
+    @Nullable
     Object f(int x) {
         if (x == 0)
             return null;

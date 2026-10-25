@@ -1,7 +1,8 @@
 package nullnessAnnotations.packageDefault;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
-import edu.umd.cs.findbugs.annotations.Nullable;
+
+import org.jspecify.annotations.Nullable;
 
 public class TestNonNull1 {
 

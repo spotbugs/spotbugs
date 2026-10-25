@@ -3,7 +3,7 @@ package ghIssues;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 public class Issue3573 {
     public boolean doSomethingCompletelyDifferent(Map<String, String> map) {
@@ -18,8 +18,7 @@ public class Issue3573 {
         private static final long serialVersionUID = 1L;
 
         @Override
-        @CheckForNull
-        public V get(Object key) {
+        public @Nullable V get(Object key) {
             return super.get(key);
         }
     }

@@ -1,6 +1,6 @@
 package bugIdeas;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 public class Ideas_2009_07_26 {
     int x;
@@ -15,7 +15,7 @@ public class Ideas_2009_07_26 {
         return true;
     }
 
-    public static int getHash(@CheckForNull Object o) {
+    public static int getHash(@Nullable Object o) {
         return o.hashCode();
     }
 

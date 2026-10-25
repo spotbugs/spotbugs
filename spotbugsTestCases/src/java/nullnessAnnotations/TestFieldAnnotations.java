@@ -1,14 +1,13 @@
 package nullnessAnnotations;
 
 import org.jspecify.annotations.NonNull;
-
-import edu.umd.cs.findbugs.annotations.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 public class TestFieldAnnotations {
     @NonNull
     Object x;
 
-    @CheckForNull
+    @Nullable
     Object y;
 
     void bug0() {

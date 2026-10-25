@@ -3,7 +3,7 @@ package bugIdeas;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import javax.annotation.CheckForNull;
+import org.jspecify.annotations.Nullable;
 
 public final class Ideas_2010_08_30 implements Runnable {
 
@@ -26,8 +26,7 @@ public final class Ideas_2010_08_30 implements Runnable {
         System.out.println("Hello");
     }
 
-    public @CheckForNull
-    String getFoo() {
+    public @Nullable String getFoo() {
         return null;
     }
 
