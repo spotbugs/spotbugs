@@ -3,7 +3,9 @@ package npe;
 import org.jspecify.annotations.Nullable;
 
 public class CheckForNullField {
-    @Nullable Object x;
+
+    @Nullable
+    Object x;
 
     public int getNonNullXDoNotReport() {
         if (x == null)

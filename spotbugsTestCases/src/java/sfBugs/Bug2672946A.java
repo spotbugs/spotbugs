@@ -13,9 +13,9 @@ package sfBugs;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import org.jspecify.annotations.NonNull;
-
 import jsr305.FieldsNonNullByDefault;
+
+import org.jspecify.annotations.NonNull;
 
 /* ********************
  * Behavior at filing: False positive NP, see Bug2672946B.java for details

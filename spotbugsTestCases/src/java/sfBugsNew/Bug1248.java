@@ -6,6 +6,7 @@ import java.util.List;
 import org.jspecify.annotations.NonNull;
 
 public class Bug1248 {
+
     private final @NonNull List<Integer> foo = Collections.emptyList();
 
     public void test0() {

@@ -4,7 +4,8 @@ import org.jspecify.annotations.Nullable;
 
 public class CheckForNullUses {
 
-    @Nullable Object doNotReport() {
+    @Nullable
+    Object doNotReport() {
         return this;
     }
 

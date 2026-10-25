@@ -2,13 +2,11 @@ package bugIdeas;
 
 import com.google.common.base.Preconditions;
 
-import org.jspecify.annotations.NonNull;
-
 import edu.umd.cs.findbugs.annotations.NoWarning;
 
+import org.jspecify.annotations.NonNull;
+
 public class Ideas_2011_08_05 {
-
-
 
     public String returnNonnull() {
         return "x";
@@ -29,8 +27,6 @@ public class Ideas_2011_08_05 {
         Preconditions.checkNotNull(x);
         return h;
     }
-
-
 
     @NoWarning("RCN")
     public int test4() {
@@ -66,7 +62,6 @@ public class Ideas_2011_08_05 {
         return h;
     }
 
-
     public int test6OK(String x) {
         int h = x.hashCode();
         if (x == null)
@@ -89,6 +84,5 @@ public class Ideas_2011_08_05 {
             return x.hashCode();
         }
     }
-
 
 }
