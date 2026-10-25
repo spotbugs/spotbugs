@@ -3,9 +3,9 @@ package bugIdeas;
 import java.util.logging.Logger;
 
 import edu.umd.cs.findbugs.annotations.DesireWarning;
-import junit.framework.Assert;
 
 import org.jspecify.annotations.Nullable;
+import org.junit.jupiter.api.Assertions;
 
 public class Ideas_2011_12_19 {
 
@@ -22,24 +22,24 @@ public class Ideas_2011_12_19 {
     }
 
     int f3(Object x) {
-        Assert.assertTrue(x != null);
+        Assertions.assertTrue(x != null);
         return x.hashCode();
     }
 
     int f4(Object x) {
-        Assert.assertFalse(x == null);
+        Assertions.assertFalse(x == null);
         return x.hashCode();
     }
 
     @DesireWarning("NP")
     int f3Bug(Object x) {
-        Assert.assertTrue(x == null);
+        Assertions.assertTrue(x == null);
         return x.hashCode();
     }
 
     @DesireWarning("NP")
     int f4Bug(Object x) {
-        Assert.assertFalse(x != null);
+        Assertions.assertFalse(x != null);
         return x.hashCode();
     }
 
@@ -56,14 +56,14 @@ public class Ideas_2011_12_19 {
 
     int f5c() {
         Object o = h("a");
-        Assert.assertTrue(o != null);
+        Assertions.assertTrue(o != null);
         return o.hashCode();
     }
 
     int f5e(Object o) {
         if (o == null)
             System.out.println("oops");
-        Assert.assertTrue(o != null);
+        Assertions.assertTrue(o != null);
         return o.hashCode();
     }
 
@@ -87,7 +87,7 @@ public class Ideas_2011_12_19 {
     }
 
     int g(Object x) {
-        Assert.assertNotNull(x != null);
+        Assertions.assertNotNull(x != null);
         return x.hashCode();
     }
 
