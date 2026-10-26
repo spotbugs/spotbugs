@@ -1,8 +1,8 @@
 package sfBugs;
 
-import org.jspecify.annotations.NonNull;
-
 import edu.umd.cs.findbugs.annotations.NoWarning;
+
+import org.jspecify.annotations.NonNull;
 
 @NoWarning("NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
 public class Bug3547559 {

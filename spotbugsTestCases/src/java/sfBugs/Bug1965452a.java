@@ -19,6 +19,7 @@ public class Bug1965452a {
      */
     @ParametersAreNonnullByDefault
     public static class ClientFileImportObject {
+
         private final @Nullable String attributes;
 
         public ClientFileImportObject(File existingFile, @Nullable String mimeType, @Nullable String attributes2) {
@@ -51,7 +52,8 @@ public class Bug1965452a {
         final ImportData importData = createImportData(mimeType, existingFile, attributes);
     }
 
-    ImportData createImportData(final @Nullable String mimeType, final File existingFile, final @Nullable String attributes) {
+    ImportData createImportData(final @Nullable String mimeType, final File existingFile,
+            final @Nullable String attributes) {
         final ClientFileImportObject importObject = new ClientFileImportObject(existingFile, mimeType, attributes);
         return null; // new ImportData(importObject, existingFile);
     }

@@ -46,7 +46,7 @@ public class Issue2965 {
     );
   }
 
-  private @Nullable String getString(@Nullable final String text) {
+  private @Nullable String getString(final @Nullable String text) {
     return text == null ? null : text;
   }
 

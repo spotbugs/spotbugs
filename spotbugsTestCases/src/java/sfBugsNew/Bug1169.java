@@ -9,9 +9,9 @@ import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-import org.jspecify.annotations.NonNull;
-
 import edu.umd.cs.findbugs.annotations.NoWarning;
+
+import org.jspecify.annotations.NonNull;
 
 public abstract class Bug1169 {
 
@@ -59,7 +59,7 @@ public abstract class Bug1169 {
 
 
      @NoWarning("RCN,NP")
-     public <R> @NonNull R execute2(final @NonNull Engine<R> engine, final @NonNull Path path, final @NonNull byte[] buffer)
+     public <R> @NonNull R execute2(final @NonNull Engine<R> engine, final @NonNull Path path, final byte @NonNull [] buffer)
          throws UnsupportedOperationException, IOException {
 
        try (FileChannel c = open(path, StandardOpenOption.READ)) {

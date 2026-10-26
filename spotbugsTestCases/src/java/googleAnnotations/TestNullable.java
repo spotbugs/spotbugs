@@ -13,7 +13,7 @@ public class TestNullable {
         foo(null);
     }
 
-    static void foo2(@edu.umd.cs.findbugs.annotations.CheckForNull Object o) {
+    static void foo2(@org.jspecify.annotations.Nullable Object o) {
     }
 
     static void bar2() {
