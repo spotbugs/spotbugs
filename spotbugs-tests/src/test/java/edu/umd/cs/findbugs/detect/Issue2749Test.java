@@ -19,14 +19,12 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnJre;
-import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class Issue2749Test extends AbstractIntegrationTest {
+
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testMethodHandleSetterNotInvoked() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithMethodHandlesObjectSetterNotInvoked.class",
@@ -41,7 +39,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testMethodHandleGetterNotInvoked() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithMethodHandlesObjectGetterNotInvoked.class",
@@ -56,7 +53,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testMethodHandlesNeverInvoked() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithMethodHandlesNeverInvoked.class",
@@ -71,7 +67,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testVarHandleNeverInvoked() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithVarHandleNeverInvoked.class",
@@ -85,7 +80,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testVarHandleNoWriting() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithVarHandleNoWriting.class",
@@ -99,7 +93,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testVarHandleNoReading() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithVarHandleNoReading.class",
@@ -113,7 +106,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testVarHandleReadingAndWritingInSingleInvocation() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithVarHandleReadingAndWritingInOneInvocation.class",
@@ -125,7 +117,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testAtomicUpdaterNoWriting() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithAtomicUpdaterSetterNotInvoked.class",
@@ -139,7 +130,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testAtomicUpdaterNoReading() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithAtomicUpdaterGetterNotInvoked.class",
@@ -153,7 +143,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testAtomicUpdaterReadingAndWritingInSingleInvocation() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithAtomicUpdaterReadingAndWritingInOneInvocation.class",
@@ -165,7 +154,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testAtomicUpdaterNeverInvoked() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithAtomicUpdaterNeverInvoked.class",
@@ -179,7 +167,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testAtomicUpdatersInvoked() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithAtomicUpdaters.class",
@@ -191,7 +178,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testVarHandleNestedInvocation() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithVarHandleNestedInvocation.class",
@@ -207,7 +193,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testVarHandleInObjectField() {
         performAnalysis("../java11/ghIssues/issue2749/WithVarHandleInObjectField.class");
 
@@ -219,7 +204,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testMethodHandlesInObjectField() {
         performAnalysis("../java11/ghIssues/issue2749/WithMethodHandlesInObjectField.class");
 
@@ -229,7 +213,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testAtomicUpdatersInObjectFields() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithAtomicUpdatersInObjectFields.class",
@@ -241,7 +224,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testAccessViaGettersAndSetters() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithMethodHandlesPrimitive.class",
@@ -256,7 +238,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testStaticMethodHandlesInvoked() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithStaticMethodHandles.class",
@@ -268,7 +249,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testStaticMethodHandleSetterNotInvoked() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithStaticMethodHandleSetterNotInvoked.class",
@@ -283,7 +263,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testStaticVarHandleInvoked() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithStaticVarHandle.class",
@@ -295,7 +274,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testStaticVarHandleNoWriting() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithStaticVarHandleNoWriting.class",
@@ -309,7 +287,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testStaticVarHandleInitialized() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithStaticVarHandleInitialized.class",
@@ -321,7 +298,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testStaticMethodHandleGetterNotInvoked() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithStaticMethodHandleGetterNotInvoked.class",
@@ -336,7 +312,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testMethodHandleSetterAndDirectRead() {
         performAnalysis(
                 "../java11/ghIssues/issue2749/WithMethodHandleSetterAndDirectRead.class",
@@ -348,7 +323,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisabledOnJre(JRE.JAVA_8)
     void testMethodHandleSetterOnAnnotatedField() {
         performAnalysis("../java11/ghIssues/issue2749/WithMethodHandleSetterOnAnnotatedField.class");
 
@@ -360,7 +334,6 @@ class Issue2749Test extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @DisabledOnJre(JRE.JAVA_8)
     @ValueSource(strings = {
         "WithMethodHandlesOnExcludedField",
         "WithMethodHandleSetterInSerializable",
