@@ -16,14 +16,18 @@ class Issue4033Test extends AbstractIntegrationTest {
                 "../java17/ghIssues/Issue4033$MultiPolygon.class",
                 "../java17/ghIssues/Issue4033$Holder.class",
                 "../java17/ghIssues/Issue4033$NullStore.class");
+        assertNoMissingClasses();
         assertNoBugType("EI_EXPOSE_REP");
         assertNoBugType("EI_EXPOSE_REP2");
     }
 
     @Test
     void uncopiedValuesAreStillExposed() {
-        performAnalysis("../java17/ghIssues/Issue4033$Uncopied.class");
+        performAnalysis("../java17/ghIssues/Issue4033Uncopied.class");
+        assertNoMissingClasses();
         assertBugTypeCount("EI_EXPOSE_REP", 1);
+        assertBugInMethodAtLine("EI_EXPOSE_REP", "Issue4033Uncopied", "getNames", 20);
         assertBugTypeCount("EI_EXPOSE_REP2", 1);
+        assertBugInMethodAtLine("EI_EXPOSE_REP2", "Issue4033Uncopied", "<init>", 16);
     }
 }

@@ -81,22 +81,6 @@ public final class Issue4033 {
         }
     }
 
-    /** A null check that does not copy the parameter still exposes it. */
-    public static final class Uncopied {
-        private final List<String> names;
-
-        public Uncopied(List<String> names) {
-            if (names != null) {
-                names.size();
-            }
-            this.names = names;
-        }
-
-        public List<String> getNames() {
-            return names;
-        }
-    }
-
     private Issue4033() {
     }
 }
