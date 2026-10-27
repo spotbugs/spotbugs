@@ -7,6 +7,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 ## Unreleased - 2026-??-??
 ### Fixed
 - Fix `SA_FIELD_DOUBLE_ASSIGNMENT` false negative for `long` and `double` fields assigned twice in a field initializer ([#3975](https://github.com/spotbugs/spotbugs/issues/3975))
+- Fix `NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE` false positive for JDK25+ non-static inner classes that do not reference their outer class ([#4409](https://github.com/spotbugs/spotbugs/issues/4409))
 
 ## 4.10.5 - 2026-10-11
 ### Added
