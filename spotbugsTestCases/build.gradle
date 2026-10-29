@@ -38,7 +38,7 @@ dependencies {
   implementation 'com.sun.xml.bind:jaxb-impl:4.0.9'
   implementation 'jakarta.servlet:jakarta.servlet-api:6.1.0'
   implementation 'jakarta.ejb:jakarta.ejb-api:4.0.1'
-  implementation 'joda-time:joda-time:2.15.0'
+  implementation 'joda-time:joda-time:2.15.1'
   implementation 'org.checkerframework:checker-qual:4.3.1'
   implementation 'org.apache.commons:commons-lang3:3.21.0'
   implementation 'org.apache.groovy:groovy-all:6.0.0'
