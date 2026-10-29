@@ -51,5 +51,6 @@ class FindUnreleasedLockTest extends AbstractIntegrationTest {
     void doesNotReportUnreleasedLockWhenCallerUnlocksInFinally() {
         performAnalysis("ghIssues/Issue4411.class");
         assertNoBugType("UL_UNRELEASED_LOCK");
+        assertNoBugType("UL_UNRELEASED_LOCK_EXCEPTION_PATH");
     }
 }

@@ -7,17 +7,17 @@ public class Issue4411 {
 
     public void test() {
         try {
-            l();
+            acquireLock();
         } finally {
-            u();
+            releaseLock();
         }
     }
 
-    private void u() {
+    private void releaseLock() {
         activationLock.unlock();
     }
 
-    private void l() {
+    private void acquireLock() {
         activationLock.lock();
     }
 }
