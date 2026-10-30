@@ -269,7 +269,8 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
             return false;
         }
         for (TypeAnnotationNode annotation : typeAnnotations) {
-            if (new TypeReference(annotation.typeRef).getSort() != TypeReference.METHOD_RETURN) {
+            if (new TypeReference(annotation.typeRef).getSort() != TypeReference.METHOD_RETURN || annotation.typePath != null) {
+                // skip annotations on other targets or on a nested type (e.g. a type argument)
                 continue;
             }
             NullnessAnnotation nullness = getNullness(annotation.desc);
@@ -319,7 +320,9 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
      * Extracts nullness annotations from method type annotations on formal parameters.
      *
      * <p>Only annotations targeting {@link TypeReference#METHOD_FORMAL_PARAMETER}
-     * are considered. The map keys are the zero-based formal parameter indices
+     * with an empty type path are considered, so annotations on type arguments,
+     * array components or other nested types do not count as the nullness of the
+     * parameter itself. The map keys are the zero-based formal parameter indices
      * encoded in the type references, rather than positions in the type-annotation
      * list, which may contain annotations for other targets. Annotations classified
      * as {@link NullnessAnnotation#CHECK_FOR_NULL} are ignored.
@@ -338,7 +341,8 @@ public class CheckRelaxingNullnessAnnotation extends ClassNodeDetector {
 
         for (TypeAnnotationNode annotation : typeAnnotations) {
             TypeReference typeReference = new TypeReference(annotation.typeRef);
-            if (typeReference.getSort() != TypeReference.METHOD_FORMAL_PARAMETER) {
+            if (typeReference.getSort() != TypeReference.METHOD_FORMAL_PARAMETER || annotation.typePath != null) {
+                // skip annotations on other targets or on a nested type (e.g. a type argument)
                 continue;
             }
 
