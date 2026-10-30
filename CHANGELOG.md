@@ -9,6 +9,9 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `SA_FIELD_DOUBLE_ASSIGNMENT` false negative for `long` and `double` fields assigned twice in a field initializer ([#3975](https://github.com/spotbugs/spotbugs/issues/3975))
 - Fix `NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION` and `NP_METHOD_RETURN_RELAXING_ANNOTATION` false positives when a type-use nullness annotation (e.g. JSpecify) is placed on a type argument rather than on the parameter or return type itself ([#4424](https://github.com/spotbugs/spotbugs/issues/4424))
 
+### Fixed
+- Fix `EI_EXPOSE_REP` and `EI_EXPOSE_REP2` false positives when a parameter is stored after being replaced by an unmodifiable copy only if it is not null, so that the field holds either the copy or null, and when the copy is made with `Stream.toList()` ([#4033](https://github.com/spotbugs/spotbugs/issues/4033))
+
 ## 4.10.5 - 2026-10-11
 ### Added
 - Add `ReflectiveAccessTracker` to track fields accessed via reflection - such as VarHandle, MethodHandle or AtomicFieldUpdaters ([#3954](https://github.com/spotbugs/spotbugs/pull/3954)) to fix issue ([#2749](https://github.com/spotbugs/spotbugs/issues/2749))
