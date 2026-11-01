@@ -2,14 +2,12 @@ package sfBugs;
 
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 
-import jakarta.annotation.Nonnull;
-
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class Bug2003253 {
 
-    private @Nonnull Object foo;
+    private @NonNull Object foo;
 
     //
     // The InconsistentAnnotations detector should report

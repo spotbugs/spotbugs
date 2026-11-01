@@ -7,8 +7,6 @@ import java.lang.annotation.RetentionPolicy;
 
 import javax.annotation.meta.TypeQualifierDefault;
 
-import jakarta.annotation.Nonnull;
-
 import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
 import edu.umd.cs.findbugs.annotations.ExpectWarning;
 import sfBugs.Bug3399101.ParametersAreCheckForNullByDefault;
@@ -27,7 +25,7 @@ public class Bug3399101 {
     public @Nullable @interface ParametersAreCheckForNullByDefault {
     }
 
-    public @Nonnull Object field;
+    public @NonNull Object field;
 
     @ExpectWarning("NP")
     public Bug3399101(Object param) {
