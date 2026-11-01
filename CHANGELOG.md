@@ -6,7 +6,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 
 ## Unreleased - 2026-??-??
 ### Added
-- Add support for JSpecify type-use nullness annotations on fields. ([#xxxx](https://github.com/spotbugs/spotbugs/pull/xxxx))
+- Add support for JSpecify type-use nullness annotations on fields. ([#4429](https://github.com/spotbugs/spotbugs/pull/4429))
 
 ### Fixed
 - Fix `SA_FIELD_DOUBLE_ASSIGNMENT` false negative for `long` and `double` fields assigned twice in a field initializer ([#3975](https://github.com/spotbugs/spotbugs/issues/3975))
