@@ -94,7 +94,7 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 
         CheckReturnValueAnnotation n;
 
-        if (annotationClassName.equals(javax.annotation.CheckReturnValue.class.getName())) {
+        if (annotationClassName.equals("javax.annotation.CheckReturnValue")) {
             ElementValue v = map.get("when");
             if (v instanceof EnumElementValue) {
                 EnumElementValue when = (EnumElementValue) v;
