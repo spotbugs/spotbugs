@@ -33,7 +33,7 @@ jobs:
         uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '25'
       - name: Export reference JDK home
         shell: bash
         run: echo "TEST_JRT_OTHER_JDK_HOME=$JAVA_HOME" >> "$GITHUB_ENV"
