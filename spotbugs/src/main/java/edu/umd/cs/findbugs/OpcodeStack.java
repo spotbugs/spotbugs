@@ -2681,7 +2681,7 @@ public class OpcodeStack {
             return;
         } else if (seen == Const.INVOKEINTERFACE && "toList".equals(method) && "java/util/stream/Stream".equals(clsName)
                 && "()Ljava/util/List;".equals(signature)) {
-            // Stream.toList() returns an unmodifiable list, like List.copyOf()
+            // Stream.toList() returns an unmodifiable list, like the methods in IMMUTABLE_RETURNER_MAP
             pop();
             Item result = new Item("Ljava/util/ImmutableCollections$AbstractImmutableList;");
             push(result);
