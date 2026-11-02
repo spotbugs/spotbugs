@@ -19,6 +19,7 @@ class Issue4033Test extends AbstractIntegrationTest {
         assertNoMissingClasses();
         assertNoBugType("EI_EXPOSE_REP");
         assertNoBugType("EI_EXPOSE_REP2");
+        assertNoOtherFindReturnRefBugs();
     }
 
     @Test
@@ -29,5 +30,15 @@ class Issue4033Test extends AbstractIntegrationTest {
         assertBugInMethodAtLine("EI_EXPOSE_REP", "Issue4033Uncopied", "getNames", 20);
         assertBugTypeCount("EI_EXPOSE_REP2", 1);
         assertBugInMethodAtLine("EI_EXPOSE_REP2", "Issue4033Uncopied", "<init>", 16);
+        assertNoOtherFindReturnRefBugs();
+    }
+
+    private void assertNoOtherFindReturnRefBugs() {
+        assertNoBugType("MS_EXPOSE_REP");
+        assertNoBugType("MS_EXPOSE_BUF");
+        assertNoBugType("EI_EXPOSE_BUF");
+        assertNoBugType("EI_EXPOSE_BUF2");
+        assertNoBugType("EI_EXPOSE_STATIC_REP2");
+        assertNoBugType("EI_EXPOSE_STATIC_BUF2");
     }
 }
