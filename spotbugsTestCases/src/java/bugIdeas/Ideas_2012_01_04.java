@@ -22,7 +22,7 @@ public class Ideas_2012_01_04 {
         return result;
     }
 
-    @NoWarning("")
+    @ExpectWarning("")
     static long getLongFixed(byte [] b) {
        long result = 0;
         for(int i = 0; i < b.length; i++) {
