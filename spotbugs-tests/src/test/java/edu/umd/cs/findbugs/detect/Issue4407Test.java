@@ -7,7 +7,7 @@ import edu.umd.cs.findbugs.AbstractIntegrationTest;
 class Issue4407Test extends AbstractIntegrationTest {
 
     @Test
-    void reportsWaitWhileTwoDistinctMonitorsAreHeld() {
+    void doesNotReportInfiniteLoopForRandomNormalLoop() {
         performAnalysis("ghIssues/Issue4407.class");
 
         assertBugTypeCount("IL_INFINITE_LOOP", 0);
