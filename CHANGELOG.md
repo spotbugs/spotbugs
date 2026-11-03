@@ -9,6 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Add support for JSpecify type-use nullness annotations on fields. ([#4429](https://github.com/spotbugs/spotbugs/pull/4429))
 
 ### Fixed
+- Fix `IL_INFINITE_LOOP` false negative when the operands of a loop condition are reversed (e.g. `while (0 == value.length())` instead of `while (value.length() == 0)`) ([#4438](https://github.com/spotbugs/spotbugs/issues/4438))
 - Fix `SA_FIELD_DOUBLE_ASSIGNMENT` false negative for `long` and `double` fields assigned twice in a field initializer ([#3975](https://github.com/spotbugs/spotbugs/issues/3975))
 - Fix `NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION` and `NP_METHOD_RETURN_RELAXING_ANNOTATION` false positives when a type-use nullness annotation (e.g. JSpecify) is placed on a type argument rather than on the parameter or return type itself ([#4424](https://github.com/spotbugs/spotbugs/issues/4424))
 
