@@ -270,31 +270,31 @@ public class FindBugsTask extends AbstractFindBugsTask {
     /**
      * Set the specific visitors to use
      *
-     * @param commaSeperatedString
+     * @param commaSeparatedString
      *            visitors to use
      */
-    public void setVisitors(String commaSeperatedString) {
-        visitors = commaSeperatedString;
+    public void setVisitors(String commaSeparatedString) {
+        visitors = commaSeparatedString;
     }
 
     /**
      * Set the specific visitors to use
      *
-     * @param commaSeperatedString
+     * @param commaSeparatedString
      *            visitors to use
      */
-    public void setChooseVisitors(String commaSeperatedString) {
-        chooseVisitors = commaSeperatedString;
+    public void setChooseVisitors(String commaSeparatedString) {
+        chooseVisitors = commaSeparatedString;
     }
 
     /**
      * Set the specific visitors to use
      *
-     * @param commaSeperatedString
+     * @param commaSeparatedString
      *            visitors to use
      */
-    public void setOmitVisitors(String commaSeperatedString) {
-        omitVisitors = commaSeperatedString;
+    public void setOmitVisitors(String commaSeparatedString) {
+        omitVisitors = commaSeparatedString;
     }
 
     /**
