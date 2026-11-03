@@ -340,4 +340,95 @@ class ConstructorThrowTest extends AbstractIntegrationTest {
                 "constructorthrow/ConstructorThrowNegativeTest23$SealedChild$FinalGrandChild.class");
         assertNoBugType(CT_THROW);
     }
+
+    @Test
+    void testIssue4439ImplicitConstant() {
+        performAnalysis("constructorthrow/Issue4439$ImplicitConstant.class");
+        assertNoBugType(CT_THROW);
+    }
+
+    @Test
+    void testIssue4439ExplicitConstant() {
+        performAnalysis("constructorthrow/Issue4439$ExplicitConstant.class");
+        assertNoBugType(CT_THROW);
+    }
+
+    @Test
+    void testIssue4439StaticConstant() {
+        performAnalysis("constructorthrow/Issue4439$StaticConstant.class");
+        assertNoBugType(CT_THROW);
+    }
+
+    @Test
+    void testIssue4439ExplicitThis() {
+        performAnalysis("constructorthrow/Issue4439$ExplicitThis.class");
+        assertNoBugType(CT_THROW);
+    }
+
+    @Test
+    void testIssue4439ThisWithMessage() {
+        performAnalysis("constructorthrow/Issue4439$ThisWithMessage.class");
+        assertNoBugType(CT_THROW);
+    }
+
+    @Test
+    void testIssue4439ThisWithSupplier() {
+        performAnalysis("constructorthrow/Issue4439$ThisWithSupplier.class");
+        assertNoBugType(CT_THROW);
+    }
+
+    @Test
+    void testIssue4439InstanceHelper() {
+        performAnalysis("constructorthrow/Issue4439$InstanceHelper.class");
+        assertNoBugType(CT_THROW);
+    }
+
+    @Test
+    void testIssue4439NullableParameter() {
+        performAnalysis("constructorthrow/Issue4439$NullableParameter.class");
+        assertBugTypeCount(CT_THROW, 1);
+    }
+
+    @Test
+    void testIssue4439NullableField() {
+        performAnalysis("constructorthrow/Issue4439$NullableField.class");
+        assertBugTypeCount(CT_THROW, 1);
+    }
+
+    @Test
+    void testIssue4439StaticHelper() {
+        performAnalysis("constructorthrow/Issue4439$StaticHelper.class");
+        assertBugTypeCount(CT_THROW, 1);
+    }
+
+    @Test
+    void testIssue4439ThisThenThrow() {
+        performAnalysis("constructorthrow/Issue4439$ThisThenThrow.class");
+        assertBugTypeCount(CT_THROW, 1);
+        assertBugAtLine(CT_THROW, 96);
+    }
+
+    @Test
+    void testIssue4439NullableWithThisSupplier() {
+        performAnalysis("constructorthrow/Issue4439$NullableWithThisSupplier.class");
+        assertBugTypeCount(CT_THROW, 1);
+    }
+
+    @Test
+    void testIssue4439OtherInstanceConstant() {
+        performAnalysis("constructorthrow/Issue4439$OtherInstanceConstant.class");
+        assertBugTypeCount(CT_THROW, 1);
+    }
+
+    @Test
+    void testIssue4439AlwaysNull() {
+        performAnalysis("constructorthrow/Issue4439$AlwaysNull.class");
+        assertBugTypeCount(CT_THROW, 1);
+    }
+
+    @Test
+    void testIssue4439ThrowingMessage() {
+        performAnalysis("constructorthrow/Issue4439$ThrowingMessage.class");
+        assertBugTypeCount(CT_THROW, 1);
+    }
 }
