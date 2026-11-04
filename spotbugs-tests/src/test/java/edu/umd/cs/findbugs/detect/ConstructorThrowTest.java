@@ -1,6 +1,8 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
+import edu.umd.cs.findbugs.annotations.Confidence;
+import org.apache.bcel.Const;
 import org.junit.jupiter.api.Test;
 
 class ConstructorThrowTest extends AbstractIntegrationTest {
@@ -368,14 +370,21 @@ class ConstructorThrowTest extends AbstractIntegrationTest {
         assertNoBugInClass(CT_THROW, "constructorthrow.Issue4439$ThisWithMessage");
         assertNoBugInClass(CT_THROW, "constructorthrow.Issue4439$ThisWithSupplier");
         assertNoBugInClass(CT_THROW, "constructorthrow.Issue4439$InstanceHelper");
-        assertBugInClassCount(CT_THROW, "constructorthrow.Issue4439$NullableParameter", 1);
-        assertBugInClassCount(CT_THROW, "constructorthrow.Issue4439$NullableField", 1);
-        assertBugInClassCount(CT_THROW, "constructorthrow.Issue4439$StaticHelper", 1);
-        assertBugInClassCount(CT_THROW, "constructorthrow.Issue4439$ThisThenThrow", 1);
-        assertBugAtLine(CT_THROW, 96);
-        assertBugInClassCount(CT_THROW, "constructorthrow.Issue4439$NullableWithThisSupplier", 1);
-        assertBugInClassCount(CT_THROW, "constructorthrow.Issue4439$OtherInstanceConstant", 1);
-        assertBugInClassCount(CT_THROW, "constructorthrow.Issue4439$AlwaysNull", 1);
-        assertBugInClassCount(CT_THROW, "constructorthrow.Issue4439$ThrowingMessage", 1);
+        assertBugInMethodAtLineWithConfidence(CT_THROW, "constructorthrow.Issue4439$NullableParameter", Const.CONSTRUCTOR_NAME, 70,
+                Confidence.MEDIUM);
+        assertBugInMethodAtLineWithConfidence(CT_THROW, "constructorthrow.Issue4439$NullableField", Const.CONSTRUCTOR_NAME, 79,
+                Confidence.MEDIUM);
+        assertBugInMethodAtLineWithConfidence(CT_THROW, "constructorthrow.Issue4439$StaticHelper", Const.CONSTRUCTOR_NAME, 85,
+                Confidence.MEDIUM);
+        assertBugInMethodAtLineWithConfidence(CT_THROW, "constructorthrow.Issue4439$ThisThenThrow", Const.CONSTRUCTOR_NAME, 96,
+                Confidence.MEDIUM);
+        assertBugInMethodAtLineWithConfidence(CT_THROW, "constructorthrow.Issue4439$NullableWithThisSupplier", Const.CONSTRUCTOR_NAME, 102,
+                Confidence.MEDIUM);
+        assertBugInMethodAtLineWithConfidence(CT_THROW, "constructorthrow.Issue4439$OtherInstanceConstant", Const.CONSTRUCTOR_NAME, 115,
+                Confidence.MEDIUM);
+        assertBugInMethodAtLineWithConfidence(CT_THROW, "constructorthrow.Issue4439$AlwaysNull", Const.CONSTRUCTOR_NAME, 124,
+                Confidence.MEDIUM);
+        assertBugInMethodAtLineWithConfidence(CT_THROW, "constructorthrow.Issue4439$ThrowingMessage", Const.CONSTRUCTOR_NAME, 130,
+                Confidence.MEDIUM);
     }
 }
