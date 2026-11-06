@@ -139,10 +139,13 @@ public class InfiniteLoop extends OpcodeStackDetector {
         final OpcodeStack.Item item0;
         final OpcodeStack.Item item1;
 
-        ForwardConditionalBranch(OpcodeStack.Item item0, OpcodeStack.Item item1, int from, int to) {
+        final boolean alwaysTaken;
+
+        ForwardConditionalBranch(OpcodeStack.Item item0, OpcodeStack.Item item1, int from, int to, boolean alwaysTaken) {
             super(from, to);
             this.item0 = item0;
             this.item1 = item1;
+            this.alwaysTaken = alwaysTaken;
         }
 
         @Override
@@ -227,6 +230,10 @@ public class InfiniteLoop extends OpcodeStackDetector {
                 continue;
             }
             ForwardConditionalBranch fcb = myForwardBranches.get(0);
+            if (fcb.alwaysTaken) {
+                // The loop is always exited before its first iteration completes
+                continue;
+            }
             for (Jump fj : forwardJumps) {
                 if (fcb.from != fj.from && myBackwardsReach < fj.from && fj.from < bb.from && bb.from < fj.to) {
                     continue backwardBranchLoop;
@@ -354,11 +361,11 @@ public class InfiniteLoop extends OpcodeStackDetector {
             OpcodeStack.Item item0 = stack.getStackItem(0);
             if (getDefaultSwitchOffset() > 0) {
                 forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), getPC()
-                        + getDefaultSwitchOffset()));
+                        + getDefaultSwitchOffset(), false));
             }
             for (int offset : getSwitchOffsets()) {
                 if (offset > 0) {
-                    forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), getPC() + offset));
+                    forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), getPC() + offset, false));
                 }
             }
             break;
@@ -381,12 +388,21 @@ public class InfiniteLoop extends OpcodeStackDetector {
                 item1 = pendingComparisonItem1;
             }
 
+            // A single-operand integer branch compares its operand against zero
+            Object constant = item0.getConstant();
+            boolean knownConstant = !pendingComparison && constant instanceof Integer;
+
             int target = getBranchTarget();
             if (getBranchOffset() > 0) {
-                forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item1, getPC(), target));
+                forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item1, getPC(), target,
+                        knownConstant && isBranchTaken(seen, (Integer) constant, 0)));
                 break;
             }
             if (getFurthestJump(target) > getPC()) {
+                break;
+            }
+            if (knownConstant && !isBranchTaken(seen, (Integer) constant, 0)) {
+                // Backward branch never taken: loop exits immediately - not infinite.
                 break;
             }
 
@@ -419,7 +435,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
             OpcodeStack.Item item1 = stack.getStackItem(1);
             int target = getBranchTarget();
             if (getBranchOffset() > 0) {
-                forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item1, getPC(), target));
+                forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item1, getPC(), target, false));
                 break;
             }
             if (getFurthestJump(target) > getPC()) {
@@ -435,33 +451,7 @@ public class InfiniteLoop extends OpcodeStackDetector {
                 Object rawConst0 = item0.getConstant();
                 Object rawConst1 = item1.getConstant();
                 if (rawConst0 instanceof Integer && rawConst1 instanceof Integer) {
-                    int v0 = (Integer) rawConst0;
-                    int v1 = (Integer) rawConst1;
-                    boolean branchTaken;
-                    switch (seen) {
-                    case Const.IF_ICMPLT:
-                        branchTaken = v1 < v0;
-                        break;
-                    case Const.IF_ICMPLE:
-                        branchTaken = v1 <= v0;
-                        break;
-                    case Const.IF_ICMPGT:
-                        branchTaken = v1 > v0;
-                        break;
-                    case Const.IF_ICMPGE:
-                        branchTaken = v1 >= v0;
-                        break;
-                    case Const.IF_ICMPEQ:
-                        branchTaken = v1 == v0;
-                        break;
-                    case Const.IF_ICMPNE:
-                        branchTaken = v1 != v0;
-                        break;
-                    default:
-                        branchTaken = true;
-                        break;
-                    }
-                    if (!branchTaken) {
+                    if (!isBranchTaken(seen, (Integer) rawConst1, (Integer) rawConst0)) {
                         // Backward branch never taken: loop exits immediately - not infinite.
                         break;
                     }
@@ -529,6 +519,35 @@ public class InfiniteLoop extends OpcodeStackDetector {
         }
         assert target <= originalTarget;
         return target;
+    }
+
+    /**
+     * @return whether an integer conditional branch comparing value1 with value2 is taken
+     *         (for single-operand branches, value2 is zero)
+     */
+    private static boolean isBranchTaken(int opcode, int value1, int value2) {
+        switch (opcode) {
+        case Const.IFLT:
+        case Const.IF_ICMPLT:
+            return value1 < value2;
+        case Const.IFLE:
+        case Const.IF_ICMPLE:
+            return value1 <= value2;
+        case Const.IFGT:
+        case Const.IF_ICMPGT:
+            return value1 > value2;
+        case Const.IFGE:
+        case Const.IF_ICMPGE:
+            return value1 >= value2;
+        case Const.IFEQ:
+        case Const.IF_ICMPEQ:
+            return value1 == value2;
+        case Const.IFNE:
+        case Const.IF_ICMPNE:
+            return value1 != value2;
+        default:
+            return true;
+        }
     }
 
     private boolean constantSince(Item item1, int branchTarget) {
