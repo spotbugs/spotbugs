@@ -18,7 +18,14 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.List;
+import java.util.Map;
+
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import org.junit.jupiter.api.Test;
 
 class BranchIssuesTest extends AbstractIntegrationTest {
@@ -31,6 +38,32 @@ class BranchIssuesTest extends AbstractIntegrationTest {
         // FNs: doit3
         assertBugInMethod("DB_DUPLICATE_BRANCHES", "DuplicateBranches", "doit");
         assertBugInMethod("DB_DUPLICATE_SWITCH_CLAUSES", "DuplicateBranches", "doit2");
+    }
+
+    @Test
+    void testDuplicateBranchesInsideOuterBranches() {
+        performAnalysis("ghIssues/Issue4436.class");
+
+        assertBugTypeCount("DB_DUPLICATE_BRANCHES", 3);
+        Map<String, List<Integer>> expectedLines = Map.of(
+                "ordinary", List.of(8, 10),
+                "nestedThen", List.of(19, 21),
+                "nestedElse", List.of(35, 37));
+        expectedLines.forEach((method, lines) -> {
+            assertBugInMethod("DB_DUPLICATE_BRANCHES", "ghIssues.Issue4436", method);
+            BugInstance bug = getBugCollection().getCollection().stream()
+                    .filter(b -> "DB_DUPLICATE_BRANCHES".equals(b.getType()))
+                    .filter(b -> method.equals(b.getPrimaryMethod().getMethodName()))
+                    .findFirst().orElseThrow();
+            List<SourceLineAnnotation> ranges = bug.getAnnotations().stream()
+                    .filter(SourceLineAnnotation.class::isInstance)
+                    .map(SourceLineAnnotation.class::cast).toList();
+            assertEquals(lines, ranges.stream().map(SourceLineAnnotation::getStartLine).toList());
+            assertEquals(lines, ranges.stream().map(SourceLineAnnotation::getEndLine).toList());
+        });
+        assertNoBugInMethod("DB_DUPLICATE_BRANCHES", "ghIssues.Issue4436", "unequalInner");
+        assertNoBugInMethod("DB_DUPLICATE_BRANCHES", "ghIssues.Issue4436", "extraElseStatement");
+        assertNoBugInMethod("DB_DUPLICATE_BRANCHES", "ghIssues.Issue4436", "differentJoin");
     }
 
     @Test
