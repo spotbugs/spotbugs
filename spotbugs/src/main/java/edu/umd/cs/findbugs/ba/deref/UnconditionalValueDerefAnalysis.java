@@ -845,13 +845,18 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
 
                 for (int i = 0; i < slots; i++) {
                     ValueNumber blockVN = blockValueNumberFrame.getValue(i);
-                    ValueNumber targetVN = targetValueNumberFrame.getValue(i);
-                    if (blockVN.equals(targetVN)) {
-                        continue;
+                    if (!blockVN.equals(targetValueNumberFrame.getValue(i))) {
+                        fact.clearDerefSet(blockVN);
                     }
-                    fact.clearDerefSet(blockVN);
+                }
+                // A block VN held in several slots is dereferenced if any of the target VNs it flows into is
+                for (int i = 0; i < slots; i++) {
+                    ValueNumber blockVN = blockValueNumberFrame.getValue(i);
+                    ValueNumber targetVN = targetValueNumberFrame.getValue(i);
                     if (originalFact.isUnconditionallyDereferenced(targetVN)) {
-                        fact.setDerefSet(blockVN, originalFact.getUnconditionalDerefLocationSet(targetVN));
+                        for (Location location : originalFact.getUnconditionalDerefLocationSet(targetVN)) {
+                            fact.addDeref(blockVN, location);
+                        }
                     }
 
                 } // for all slots
