@@ -143,6 +143,16 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
         }
 
         InstructionHandle elseFinishHandle = ((GotoInstruction) thenFinishIns.getInstruction()).getTarget();
+
+        // in a nested if/else the else branch ends with its own goto to the same target
+        InstructionHandle elseGoto = elseStartHandle;
+        while (elseGoto != null && elseGoto.getPosition() < elseStartPos + (thenFinishPos - thenStartPos)) {
+            elseGoto = elseGoto.getNext();
+        }
+        if (elseGoto != null && elseGoto.getInstruction() instanceof GotoInstruction
+                && ((GotoInstruction) elseGoto.getInstruction()).getTarget() == elseFinishHandle) {
+            elseFinishHandle = elseGoto;
+        }
         int elseFinishPos = elseFinishHandle.getPosition();
 
         if (thenFinishPos >= elseStartPos) {
