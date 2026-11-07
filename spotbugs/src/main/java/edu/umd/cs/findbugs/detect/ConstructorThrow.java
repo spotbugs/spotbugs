@@ -160,11 +160,41 @@ public class ConstructorThrow extends OpcodeStackDetector {
         if (canOnlyHaveSafeSubclasses || isFinalFinalizer) {
             return;
         }
+        if (isRequireNonNullOnThis(seen)) {
+            return;
+        }
         if (isFirstPass) {
             collectExceptionsByMethods(seen);
         } else if (Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
             reportConstructorThrow(seen);
         }
+    }
+
+    private boolean isRequireNonNullOnThis(int seen) {
+        if (seen != Const.INVOKESTATIC || getMethod().isStatic()
+                || !"java/util/Objects".equals(getClassConstantOperand())
+                || !"requireNonNull".equals(getNameConstantOperand())) {
+            return false;
+        }
+
+        int argumentIndex;
+        switch (getSigConstantOperand()) {
+        case "(Ljava/lang/Object;)Ljava/lang/Object;":
+            argumentIndex = 0;
+            break;
+        case "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;":
+        case "(Ljava/lang/Object;Ljava/util/function/Supplier;)Ljava/lang/Object;":
+            argumentIndex = 1;
+            break;
+        default:
+            return false;
+        }
+
+        if (stack.getStackDepth() <= argumentIndex) {
+            return false;
+        }
+        OpcodeStack.Item checkedArgument = stack.getStackItem(argumentIndex);
+        return checkedArgument.isInitialParameter() && checkedArgument.getRegisterNumber() == 0;
     }
 
     /**
