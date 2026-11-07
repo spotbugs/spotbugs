@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
@@ -37,10 +38,12 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.launching.JREContainer;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.osgi.service.resolver.BundleDescription;
+import org.eclipse.osgi.service.resolver.ExportPackageDescription;
+import org.eclipse.pde.core.plugin.IPluginLibrary;
 import org.eclipse.pde.core.plugin.IPluginModelBase;
 import org.eclipse.pde.core.plugin.PluginRegistry;
-import org.eclipse.pde.internal.build.site.PDEState;
-import org.eclipse.pde.internal.core.ClasspathUtilCore;
+import org.eclipse.pde.core.plugin.TargetPlatform;
+import org.eclipse.pde.core.plugin.VersionMatchRule;
 
 import de.tobject.findbugs.FindbugsPlugin;
 
@@ -52,6 +55,9 @@ import de.tobject.findbugs.FindbugsPlugin;
  * @author Andrei
  */
 public class PDEClassPathGenerator {
+
+    private static final Set<String> JRE_LIBRARY_NAMES =
+            Set.of("rt.jar", "jrt-fs.jar", "jce.jar");
 
     /**
      * @param javaProject non null
@@ -85,20 +91,20 @@ public class PDEClassPathGenerator {
                     classPath.add(path.toOSString());
                 }
             }
+
             // add CPE_CONTAINER classpathes
             IClasspathEntry[] rawClasspath = javaProject.getRawClasspath();
             for (IClasspathEntry entry : rawClasspath) {
                 if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
-                    IClasspathContainer classpathContainer = JavaCore.getClasspathContainer(entry.getPath(), javaProject);
+                    IClasspathContainer classpathContainer =
+                            JavaCore.getClasspathContainer(entry.getPath(), javaProject);
                     if (classpathContainer instanceof JREContainer) {
                         IClasspathEntry[] classpathEntries = classpathContainer.getClasspathEntries();
                         for (IClasspathEntry iClasspathEntry : classpathEntries) {
                             IPath path = iClasspathEntry.getPath();
                             // smallest possible fix for #1228 Eclipse plugin always uses host VM to resolve JDK classes
-                            if (isValidPath(path) &&
-                                    ("rt.jar".equals(path.lastSegment())
-                                            || "jrt-fs.jar".equals(path.lastSegment())
-                                            || "jce.jar".equals(path.lastSegment()))) {
+                            if (isValidPath(path)
+                                    && JRE_LIBRARY_NAMES.contains(path.lastSegment())) {
                                 classPath.add(path.toOSString());
                             }
                         }
@@ -127,15 +133,17 @@ public class PDEClassPathGenerator {
         if (model == null || model.getPluginBase().getId() == null) {
             return javaClassPath;
         }
-        BundleDescription target = model.getBundleDescription();
 
+        BundleDescription target = model.getBundleDescription();
         // target is null if plugin uses non OSGI format
         if (target == null) {
             return javaClassPath;
         }
+
         List<String> pdeClassPath = new ArrayList<>(javaClassPath);
         Set<BundleDescription> bundles = new HashSet<>();
         addDependentBundles(target, bundles);
+
         for (BundleDescription bd : bundles) {
             appendBundleToClasspath(bd, pdeClassPath);
         }
@@ -143,41 +151,62 @@ public class PDEClassPathGenerator {
     }
 
     private static void appendBundleToClasspath(BundleDescription bd, List<String> pdeClassPath) {
-        IPluginModelBase model = PluginRegistry.findModel(bd);
+        IPluginModelBase model = PluginRegistry.findModel(
+                bd.getSymbolicName(), bd.getVersion().toString(), VersionMatchRule.PERFECT);
         if (model == null) {
             return;
         }
-        ArrayList<IClasspathEntry> classpathEntries = new ArrayList<>();
-        ClasspathUtilCore.addLibraries(model, classpathEntries);
 
-        for (IClasspathEntry cpe : classpathEntries) {
-            IPath location = null;
-            if (cpe.getEntryKind() != IClasspathEntry.CPE_SOURCE) {
-                location = cpe.getPath();
+        String installLocation = model.getInstallLocation();
+        if (installLocation == null) {
+            return;
+        }
+
+        IPath installPath = new Path(installLocation);
+
+        if (installPath.toFile().isFile()) {
+            String locationStr = installPath.toOSString();
+            if (isValidPath(installPath) && !pdeClassPath.contains(locationStr)) {
+                pdeClassPath.add(locationStr);
             }
-            if (location == null) {
+            return;
+        }
+
+        for (IPluginLibrary library : model.getPluginBase().getLibraries()) {
+            if (!IPluginLibrary.CODE.equals(library.getType())) {
                 continue;
             }
+
+            String libraryName = expandLibraryName(library.getName());
+            IPath location = ".".equals(libraryName)
+                    ? installPath
+                    : installPath.append(libraryName);
+
             String locationStr = location.toOSString();
             if (pdeClassPath.contains(locationStr)) {
                 continue;
             }
+
             // extra cleanup for some directories on classpath
             String bundleLocation = bd.getLocation();
-            if (bundleLocation != null && !"jar".equals(location.getFileExtension())
+            if (bundleLocation != null
+                    && !"jar".equals(location.getFileExtension())
                     && new File(bundleLocation).isDirectory()
                     && bd.getSymbolicName().equals(location.lastSegment())) {
                 // ignore badly resolved plugin directories inside workspace
                 // ("." as classpath is resolved as plugin root directory)
-                // which is, if under workspace, NOT a part of the classpath
+                // which, if under workspace, is NOT a part of the classpath
                 continue;
             }
+
             if (!location.isAbsolute()) {
                 location = ResourceUtils.relativeToAbsolute(location);
             }
+
             if (!isValidPath(location)) {
                 continue;
             }
+
             locationStr = location.toOSString();
             if (!pdeClassPath.contains(locationStr)) {
                 pdeClassPath.add(locationStr);
@@ -188,17 +217,65 @@ public class PDEClassPathGenerator {
     private static void addDependentBundles(BundleDescription bd, Set<BundleDescription> bundles) {
         // TODO for some reasons, this does not add "native" fragments for the
         // platform. See also: ContributedClasspathEntriesEntry, RequiredPluginsClasspathContainer
-        // BundleDescription[] requires = PDEState.getDependentBundles(target);
-        BundleDescription[] bundles2 = PDEState.getDependentBundlesWithFragments(bd);
-        for (BundleDescription bundleDescription : bundles2) {
-            if (bundleDescription == null) {
+
+        addDependentBundles(bd.getResolvedRequires(), bundles);
+        addImportedBundles(bd, bundles);
+
+        for (BundleDescription fragment : bd.getFragments()) {
+            if (!fragment.isResolved()) {
                 continue;
             }
-            if (!bundles.contains(bundleDescription)) {
-                bundles.add(bundleDescription);
-                addDependentBundles(bundleDescription, bundles);
+
+            if (!bundles.add(fragment)) {
+                continue;
             }
+
+            addDependentBundles(fragment.getResolvedRequires(), bundles);
+            addImportedBundles(fragment, bundles);
         }
     }
 
+    private static void addDependentBundles(BundleDescription[] dependencies, Set<BundleDescription> bundles) {
+        for (BundleDescription dependency : dependencies) {
+            if (dependency == null) {
+                continue;
+            }
+
+            if (!bundles.add(dependency)) {
+                continue;
+            }
+
+            addDependentBundles(dependency, bundles);
+        }
+    }
+
+    private static void addImportedBundles(BundleDescription bd, Set<BundleDescription> bundles) {
+        for (ExportPackageDescription imported : bd.getResolvedImports()) {
+            BundleDescription exporter = imported.getExporter();
+            if (exporter == null
+                    || exporter == bd
+                    || (Objects.equals(bd.getSymbolicName(), exporter.getSymbolicName())
+                            && Objects.equals(bd.getVersion(), exporter.getVersion()))) {
+                continue;
+            }
+
+            if (!bundles.add(exporter)) {
+                continue;
+            }
+
+            addDependentBundles(exporter, bundles);
+        }
+    }
+
+    private static String expandLibraryName(String libraryName) {
+        if (libraryName == null || libraryName.isEmpty()) {
+            return "";
+        }
+
+        return libraryName
+                .replace("$ws$", "ws" + IPath.SEPARATOR + TargetPlatform.getWS())
+                .replace("$os$", "os" + IPath.SEPARATOR + TargetPlatform.getOS())
+                .replace("$nl$", "nl" + IPath.SEPARATOR + TargetPlatform.getNL())
+                .replace("$arch$", "arch" + IPath.SEPARATOR + TargetPlatform.getOSArch());
+    }
 }
