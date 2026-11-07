@@ -297,6 +297,53 @@ public class InfiniteLoop extends OpcodeStackDetector {
         addForwardJump(getPC(), target);
     }
 
+    /**
+     * Keep scanning even when the opcode stack is not in a known state.
+     *
+     * <p>
+     * The analysis here is built on branch and register metadata rather than on the values an opcode
+     * produces - {@link #sawBranchTo(int)} and the register-modification log are collected for every
+     * instruction regardless of the stack state, and {@link #stackItem(int)} reports a missing operand
+     * instead of failing. Bailing out on a {@code TOP} stack, as the base class does, drops the
+     * unconditional backward branch of a loop whose condition compares two operands against each other:
+     * javac compiles {@code 0 == x} into {@code iconst_0}, the read of {@code x}, a forward
+     * {@code if_icmpne} and finally a backward {@code goto}, and the stack state at that {@code goto} is
+     * not known. Losing the {@code goto} loses the whole loop, so the same loop is reported or not
+     * depending only on how the comparison was spelled.
+     * </p>
+     */
+    @Override
+    public boolean beforeOpcode(int seen) {
+        super.beforeOpcode(seen);
+        return true;
+    }
+
+    /**
+     * @return the operand at {@code stackOffset} of the current stack, or {@code null} when the stack
+     *         state is unknown or holds fewer operands than that
+     */
+    private Item stackItem(int stackOffset) {
+        if (stack.isTop() || stack.getStackDepth() <= stackOffset) {
+            return null;
+        }
+        return stack.getStackItem(stackOffset);
+    }
+
+    /**
+     * @return the comparison operand pair of the current opcode, or {@code null} when either operand is
+     *         not available
+     */
+    private Item[] comparisonOperands(int operands) {
+        Item[] items = new Item[operands];
+        for (int i = 0; i < operands; i++) {
+            items[i] = stackItem(i);
+            if (items[i] == null) {
+                return null;
+            }
+        }
+        return items;
+    }
+
     static final boolean DEBUG = false;
 
     @Override
@@ -311,11 +358,16 @@ public class InfiniteLoop extends OpcodeStackDetector {
         case Const.FCMPG:
         case Const.FCMPL:
         case Const.DCMPG:
-        case Const.DCMPL:
-            pendingComparisonItem0 = stack.getStackItem(0);
-            pendingComparisonItem1 = stack.getStackItem(1);
+        case Const.DCMPL: {
+            Item[] cmp = comparisonOperands(2);
+            if (cmp == null) {
+                break;
+            }
+            pendingComparisonItem0 = cmp[0];
+            pendingComparisonItem1 = cmp[1];
             pendingComparison = true;
             break;
+        }
 
         case Const.GOTO:
             if (getBranchOffset() < 0) {
@@ -351,7 +403,10 @@ public class InfiniteLoop extends OpcodeStackDetector {
 
         case Const.LOOKUPSWITCH:
         case Const.TABLESWITCH: {
-            OpcodeStack.Item item0 = stack.getStackItem(0);
+            OpcodeStack.Item item0 = stackItem(0);
+            if (item0 == null) {
+                break;
+            }
             if (getDefaultSwitchOffset() > 0) {
                 forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), getPC()
                         + getDefaultSwitchOffset()));
@@ -373,7 +428,10 @@ public class InfiniteLoop extends OpcodeStackDetector {
         case Const.IFNULL: {
             addBackwardsReach();
 
-            OpcodeStack.Item item0 = stack.getStackItem(0);
+            OpcodeStack.Item item0 = stackItem(0);
+            if (item0 == null) {
+                break;
+            }
             OpcodeStack.Item item1 = item0;
 
             if (pendingComparison) {
@@ -415,8 +473,11 @@ public class InfiniteLoop extends OpcodeStackDetector {
         case Const.IF_ICMPLT:
         case Const.IF_ICMPGE: {
             addBackwardsReach();
-            OpcodeStack.Item item0 = stack.getStackItem(0);
-            OpcodeStack.Item item1 = stack.getStackItem(1);
+            OpcodeStack.Item item0 = stackItem(0);
+            OpcodeStack.Item item1 = stackItem(1);
+            if (item0 == null || item1 == null) {
+                break;
+            }
             int target = getBranchTarget();
             if (getBranchOffset() > 0) {
                 forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item1, getPC(), target));
