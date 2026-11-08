@@ -1206,6 +1206,17 @@ an array argument which is zero-length.
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.InefficientAppendableToString">
+    <Details>
+<![CDATA[
+<p> This detector looks for code that calls toString() on a CharSequence
+before appending it to an Appendable (StringBuilder, StringBuffer, Writer, etc.).
+The Appendable can directly accept a CharSequence, avoiding the creation of an
+intermediate String object. A fast detector.
+</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.InvalidJUnitTest">
     <Details>
 <![CDATA[
@@ -6981,6 +6992,22 @@ f. e. call <code>myString.lastIndexOf('.')</code> instead of <code>myString.last
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="IATS_INEFFICIENT_APPEND_TO_STRING">
+    <ShortDescription>Inefficient conversion to String before appending to Appendable</ShortDescription>
+    <LongDescription>{1} calls toString() on a CharSequence before appending to an Appendable</LongDescription>
+    <Details>
+<![CDATA[
+<p>This code converts a CharSequence to a String using <code>toString()</code> before
+appending it to an Appendable (such as StringBuilder, StringBuffer, or Writer).
+This is inefficient because the Appendable can directly accept a CharSequence,
+avoiding the creation of an intermediate String object.</p>
+<p>For example, instead of:</p>
+<pre>stringBuilder.append(charSequence.toString())</pre>
+<p>Use:</p>
+<pre>stringBuilder.append(charSequence)</pre>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="ITA_INEFFICIENT_TO_ARRAY">
     <ShortDescription>Method uses toArray() with zero-length array argument</ShortDescription>
     <LongDescription>{1} uses Collection.toArray() with zero-length array argument</LongDescription>
@@ -10172,6 +10199,7 @@ Using floating-point variables should not be used as loop counters, as they are 
   <BugCode abbrev="IIL">Inefficient code which can be moved outside the loop</BugCode>
   <BugCode abbrev="IIO">Inefficient use of String.indexOf(String) or String.lastIndexOf(String)</BugCode>
   <BugCode abbrev="ITA">Inefficient use of collection.toArray(new Foo[0])</BugCode>
+  <BugCode abbrev="IATS">Inefficient conversion to String before appending to Appendable</BugCode>
   <BugCode abbrev="SW">Swing coding rules</BugCode>
   <BugCode abbrev="IJU">Improperly implemented JUnit TestCase</BugCode>
   <BugCode abbrev="BOA">Badly Overridden Adapter</BugCode>
