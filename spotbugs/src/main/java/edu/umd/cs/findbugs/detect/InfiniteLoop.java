@@ -390,7 +390,9 @@ public class InfiniteLoop extends OpcodeStackDetector {
                 break;
             }
 
-            if (constantSince(item0, target)) {
+            // Both operands of a floating-point comparison must remain unchanged
+            // for the backward branch to indicate an infinite loop.
+            if (constantSince(item0, target) && constantSince(item1, target)) {
                 int since0 = constantSince(item0);
                 BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP", HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
                         this, getPC());
