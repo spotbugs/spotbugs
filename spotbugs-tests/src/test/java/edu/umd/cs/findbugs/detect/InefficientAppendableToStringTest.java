@@ -32,11 +32,8 @@ class InefficientAppendableToStringTest extends AbstractIntegrationTest {
     void testInefficientAppendableToString() {
         performAnalysis("inefficient/InefficientAppendableToStringDemo.class");
 
-        // Should detect inefficient toString() calls before append
-        // 8 bad patterns: 4 basic + 4 lambda examples
         assertBugTypeCount("IATS_INEFFICIENT_APPEND_TO_STRING", 8);
 
-        // Verify bugs are in the expected methods - basic patterns
         assertBugInMethod("IATS_INEFFICIENT_APPEND_TO_STRING",
                 "inefficient.InefficientAppendableToStringDemo", "appendStringBuilderToString_bad");
         assertBugInMethod("IATS_INEFFICIENT_APPEND_TO_STRING",
@@ -45,9 +42,13 @@ class InefficientAppendableToStringTest extends AbstractIntegrationTest {
                 "inefficient.InefficientAppendableToStringDemo", "appendCharSequenceToString_bad");
         assertBugInMethod("IATS_INEFFICIENT_APPEND_TO_STRING",
                 "inefficient.InefficientAppendableToStringDemo", "appendInChain_bad");
-
-        // Lambda patterns are also detected (4 more bugs), but we don't verify exact method names
-        // because synthetic lambda method names (e.g., lambda$methodName$0) may vary between
-        // Java compiler versions. The total count of 8 bugs validates detection works in lambdas.
+        assertBugInMethod("IATS_INEFFICIENT_APPEND_TO_STRING",
+                "inefficient.InefficientAppendableToStringDemo", "lambda$appendInLambda_bad$0");
+        assertBugInMethod("IATS_INEFFICIENT_APPEND_TO_STRING",
+                "inefficient.InefficientAppendableToStringDemo", "lambda$appendWithConsumer_bad$1");
+        assertBugInMethod("IATS_INEFFICIENT_APPEND_TO_STRING",
+                "inefficient.InefficientAppendableToStringDemo", "lambda$appendWithSupplier_bad$2");
+        assertBugInMethod("IATS_INEFFICIENT_APPEND_TO_STRING",
+                "inefficient.InefficientAppendableToStringDemo", "lambda$appendWithFunction_bad$3");
     }
 }
