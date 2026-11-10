@@ -140,7 +140,8 @@ public class FindBadCast2 implements Detector {
     }
 
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
-        if (BCELUtil.isSynthetic(method) || !prescreen(classContext, method)) {
+        if ((BCELUtil.isSynthetic(method) && !method.getName().startsWith("lambda$"))
+                || !prescreen(classContext, method)) {
             return;
         }
         BugAccumulator accumulator = new BugAccumulator(bugReporter);
