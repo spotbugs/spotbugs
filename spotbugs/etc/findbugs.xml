@@ -1166,6 +1166,8 @@
                     experimental="true"/>
           <BugPattern abbrev="ITA" type="ITA_INEFFICIENT_TO_ARRAY" category="PERFORMANCE"
                     experimental="true"/>
+          <BugPattern abbrev="IATS" type="IATS_INEFFICIENT_APPEND_TO_STRING" category="PERFORMANCE"
+                    experimental="true"/>
           <BugPattern abbrev="IJU" type="IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD"
                     category="CORRECTNESS"/>
           <BugPattern abbrev="IJU" type="IJU_BAD_SUITE_METHOD" category="CORRECTNESS"/>

@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Detects inefficient usage of {@code appendable.append(charSequence.toString())}.
@@ -68,6 +69,17 @@ public class InefficientAppendableToString extends OpcodeStackDetector {
             "java/lang/CharSequence",
             "java/nio/CharBuffer");
 
+    /** Signatures for append methods that accept String or CharSequence */
+    private static final Set<String> APPEND_SIGNATURES = Set.of(
+            "(Ljava/lang/CharSequence;)Ljava/lang/Appendable;",
+            "(Ljava/lang/CharSequence;)Ljava/lang/StringBuilder;",
+            "(Ljava/lang/CharSequence;)Ljava/lang/StringBuffer;",
+            "(Ljava/lang/CharSequence;II)Ljava/lang/Appendable;",
+            "(Ljava/lang/CharSequence;II)Ljava/lang/StringBuilder;",
+            "(Ljava/lang/CharSequence;II)Ljava/lang/StringBuffer;",
+            "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
+            "(Ljava/lang/String;)Ljava/lang/StringBuffer;");
+
     public InefficientAppendableToString(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
@@ -97,21 +109,8 @@ public class InefficientAppendableToString extends OpcodeStackDetector {
             String sig = getSigConstantOperand();
             String calledClass = getClassConstantOperand();
 
-            // Check if this is append(CharSequence) or append(CharSequence, int, int)
-            boolean isAppendCharSequence = "(Ljava/lang/CharSequence;)Ljava/lang/Appendable;".equals(sig)
-                    || "(Ljava/lang/CharSequence;)Ljava/lang/StringBuilder;".equals(sig)
-                    || "(Ljava/lang/CharSequence;)Ljava/lang/StringBuffer;".equals(sig)
-                    || "(Ljava/lang/CharSequence;II)Ljava/lang/Appendable;".equals(sig)
-                    || "(Ljava/lang/CharSequence;II)Ljava/lang/StringBuilder;".equals(sig)
-                    || "(Ljava/lang/CharSequence;II)Ljava/lang/StringBuffer;".equals(sig)
-                    // Also check for String parameter which accepts CharSequence subclasses
-                    || "(Ljava/lang/String;)Ljava/lang/StringBuilder;".equals(sig)
-                    || "(Ljava/lang/String;)Ljava/lang/StringBuffer;".equals(sig);
-
-            // Check if this is called on an Appendable
-            boolean isAppendable = isAppendableClass(calledClass);
-
-            if (isAppendCharSequence && isAppendable) {
+            // Check if this is append(CharSequence) or append(String) and called on an Appendable
+            if (APPEND_SIGNATURES.contains(sig) && isAppendableClass(calledClass)) {
                 // Get the stack item that's being appended (argument to append)
                 int argIndex = sig.contains("II") ? 2 : 0; // Account for int, int parameters
                 if (stack.getStackDepth() > argIndex) {
@@ -138,7 +137,7 @@ public class InefficientAppendableToString extends OpcodeStackDetector {
         }
         // Check if it implements Appendable
         try {
-            return Hierarchy.isSubtype(className.replace('/', '.'), "java.lang.Appendable");
+            return Hierarchy.isSubtype(ClassName.toDottedClassName(className), "java.lang.Appendable");
         } catch (ClassNotFoundException e) {
             return false;
         }
@@ -165,7 +164,7 @@ public class InefficientAppendableToString extends OpcodeStackDetector {
             return false;
         }
 
-        String slashClassName = className.replace('.', '/');
+        String slashClassName = ClassName.toSlashedClassName(className);
         if (CHARSEQUENCE_CLASSES.contains(slashClassName)) {
             return true;
         }

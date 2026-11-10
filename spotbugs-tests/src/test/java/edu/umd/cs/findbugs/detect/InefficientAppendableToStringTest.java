@@ -33,9 +33,10 @@ class InefficientAppendableToStringTest extends AbstractIntegrationTest {
         performAnalysis("inefficient/InefficientAppendableToStringDemo.class");
 
         // Should detect inefficient toString() calls before append
-        assertBugTypeCount("IATS_INEFFICIENT_APPEND_TO_STRING", 4);
+        // 8 bad patterns: 4 basic + 4 lambda examples
+        assertBugTypeCount("IATS_INEFFICIENT_APPEND_TO_STRING", 8);
 
-        // Verify bugs are in the expected methods
+        // Verify bugs are in the expected methods - basic patterns
         assertBugInMethod("IATS_INEFFICIENT_APPEND_TO_STRING",
                 "inefficient.InefficientAppendableToStringDemo", "appendStringBuilderToString_bad");
         assertBugInMethod("IATS_INEFFICIENT_APPEND_TO_STRING",
@@ -44,5 +45,16 @@ class InefficientAppendableToStringTest extends AbstractIntegrationTest {
                 "inefficient.InefficientAppendableToStringDemo", "appendCharSequenceToString_bad");
         assertBugInMethod("IATS_INEFFICIENT_APPEND_TO_STRING",
                 "inefficient.InefficientAppendableToStringDemo", "appendInChain_bad");
+
+        // Verify bugs are in the expected methods - lambda patterns
+        // Note: Lambda methods are compiled to synthetic methods like lambda$methodName$0
+        assertBugInMethod("IATS_INEFFICIENT_APPEND_TO_STRING",
+                "inefficient.InefficientAppendableToStringDemo", "lambda$appendInLambda_bad$0");
+        assertBugInMethod("IATS_INEFFICIENT_APPEND_TO_STRING",
+                "inefficient.InefficientAppendableToStringDemo", "lambda$appendWithConsumer_bad$1");
+        assertBugInMethod("IATS_INEFFICIENT_APPEND_TO_STRING",
+                "inefficient.InefficientAppendableToStringDemo", "lambda$appendWithSupplier_bad$2");
+        assertBugInMethod("IATS_INEFFICIENT_APPEND_TO_STRING",
+                "inefficient.InefficientAppendableToStringDemo", "lambda$appendWithFunction_bad$3");
     }
 }
