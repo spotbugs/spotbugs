@@ -9,9 +9,12 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Add support for JSpecify type-use nullness annotations on fields. ([#4429](https://github.com/spotbugs/spotbugs/pull/4429))
 
 ### Fixed
+- Fix `Iterative jump info didn't converge` analysis errors in loops that null-check a local variable and assign `null` to it ([#4419](https://github.com/spotbugs/spotbugs/issues/4419))
+- Fix `DB_DUPLICATE_BRANCHES` false negatives for identical inner if/else branches nested in an outer then branch ([#4436](https://github.com/spotbugs/spotbugs/issues/4436))
 - Fix `SA_FIELD_DOUBLE_ASSIGNMENT` false negative for `long` and `double` fields assigned twice in a field initializer ([#3975](https://github.com/spotbugs/spotbugs/issues/3975))
 - Fix `NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION` and `NP_METHOD_RETURN_RELAXING_ANNOTATION` false positives when a type-use nullness annotation (e.g. JSpecify) is placed on a type argument rather than on the parameter or return type itself ([#4424](https://github.com/spotbugs/spotbugs/issues/4424))
 - Fix `StringIndexOutOfBoundsException` in `ClassName.isValidClassName()` for array descriptors without an element type, such as `[` ([#ISSUE](https://github.com/spotbugs/spotbugs/issues/ISSUE))
+- Fix `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE`, `AT_STALE_THREAD_WRITE_OF_PRIMITIVE` and `AT_NONATOMIC_64BIT_PRIMITIVE` false positives on the fields of a non-static inner or anonymous class of a multi-threaded class, such as the cursor of an iterator ([#4398](https://github.com/spotbugs/spotbugs/issues/4398))
 
 ### Removed
 - Remove premature support for jakarta.annotation.concurrent.* annotations, as no corresponding Jakarta annotation package exists. Concurrency annotations remain supported through JSR-305 and JCIP. ([#4431](https://github.com/spotbugs/spotbugs/pull/4431))

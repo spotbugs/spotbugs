@@ -545,7 +545,8 @@ public class OpcodeStack {
             if (i1.pc == i2.pc) {
                 m.pc = i1.pc;
             }
-            if (Objects.equals(i1.signature, i2.signature)) {
+            if (Objects.equals(i1.signature, i2.signature) || i1.isNull() && i2.isNull()) {
+                // two nulls keep the first signature, so that nulls of different types merged at a loop head converge
                 m.signature = i1.signature;
             } else if (i1.isNull()) {
                 m.signature = i2.signature;
