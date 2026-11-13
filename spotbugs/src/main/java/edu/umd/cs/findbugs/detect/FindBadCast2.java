@@ -14,14 +14,18 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.CHECKCAST;
+import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INSTANCEOF;
 import org.apache.bcel.generic.INVOKEDYNAMIC;
+import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.NEW;
+import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Select;
 import org.apache.bcel.generic.Type;
@@ -139,6 +143,72 @@ public class FindBadCast2 implements Detector {
         return paramValueNumberSet;
     }
 
+    /**
+     * Returns the values that javac tests with {@code instanceof} as part of a record pattern. javac calls each record
+     * component accessor inside a {@code catch (Throwable)} handler that throws {@code MatchException}: the record being
+     * deconstructed is the receiver of such a call, and a nested pattern's component is its result. A hand-written
+     * {@code instanceof} is skipped too if the code around it catches {@code Throwable} and throws
+     * {@code MatchException}, an acceptable false negative.
+     */
+    private static Set<ValueNumber> getRecordPatternValues(MethodGen methodGen, ConstantPoolGen cpg, CFG cfg,
+            ValueNumberDataflow vnaDataflow) throws DataflowAnalysisException {
+        BitSet accessorCalls = new BitSet();
+        for (CodeExceptionGen handler : methodGen.getExceptionHandlers()) {
+            if (!throwsMatchException(handler, cpg)) {
+                continue;
+            }
+            for (InstructionHandle handle = handler.getStartPC(); handle != null; handle = handle.getNext()) {
+                if (handle.getInstruction() instanceof InvokeInstruction) {
+                    accessorCalls.set(handle.getPosition());
+                }
+                if (handle == handler.getEndPC()) {
+                    break;
+                }
+            }
+        }
+
+        Set<ValueNumber> values = new HashSet<>();
+        if (accessorCalls.isEmpty()) {
+            return values;
+        }
+        for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+            Location location = i.next();
+            InstructionHandle handle = location.getHandle();
+            int pc = handle.getPosition();
+            if (pc < 0 || !accessorCalls.get(pc) || !(handle.getInstruction() instanceof InvokeInstruction)) {
+                continue;
+            }
+            InvokeInstruction call = (InvokeInstruction) handle.getInstruction();
+            ValueNumberFrame before = vnaDataflow.getFactAtLocation(location);
+            if (before.isValid() && !(call instanceof INVOKESTATIC) && !(call instanceof INVOKEDYNAMIC)) {
+                values.add(before.getInstance(call, cpg));
+            }
+            ValueNumberFrame after = vnaDataflow.getFactAfterLocation(location);
+            if (after.isValid() && !Type.VOID.equals(call.getReturnType(cpg))) {
+                values.add(after.getTopValue());
+            }
+        }
+        return values;
+    }
+
+    /**
+     * Whether the handler is javac's {@code catch (Throwable t) { throw new MatchException(t.toString(), t); }}.
+     */
+    private static boolean throwsMatchException(CodeExceptionGen handler, ConstantPoolGen cpg) {
+        ObjectType catchType = handler.getCatchType();
+        if (catchType == null || !"java.lang.Throwable".equals(catchType.getClassName())) {
+            return false;
+        }
+        // astore t; new MatchException; ...
+        InstructionHandle handle = handler.getHandlerPC();
+        for (int n = 0; handle != null && n < 3; n++, handle = handle.getNext()) {
+            if (handle.getInstruction() instanceof NEW) {
+                return "java.lang.MatchException".equals(((NEW) handle.getInstruction()).getLoadClassType(cpg).getClassName());
+            }
+        }
+        return false;
+    }
+
     private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
         if (BCELUtil.isSynthetic(method) || !prescreen(classContext, method)) {
             return;
@@ -194,6 +264,7 @@ public class FindBadCast2 implements Detector {
         String constantClass = null;
         boolean methodInvocationWasGeneric = false;
         SwitchHandler switchHandler = new SwitchHandler();
+        Set<ValueNumber> recordPatternValues = null;
 
         int pcForConstantClass = -1;
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
@@ -412,9 +483,16 @@ public class FindBadCast2 implements Detector {
                 boolean upcast = Repository.instanceOf(refJavaClass, castJavaClass);
                 if (upcast || typesAreEqual) {
                     if (!isCast) {
-                        accumulator.accumulateBug(new BugInstance(this, "BC_VACUOUS_INSTANCEOF", NORMAL_PRIORITY)
-                                .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType),
-                                sourceLineAnnotation);
+                        if (recordPatternValues == null) {
+                            recordPatternValues = getRecordPatternValues(methodGen, cpg, cfg, vnaDataflow);
+                        }
+                        // javac tests a record pattern's record and its nested components with instanceof
+                        // even when the static type already matches, see #3196
+                        if (!recordPatternValues.contains(valueNumber)) {
+                            accumulator.accumulateBug(new BugInstance(this, "BC_VACUOUS_INSTANCEOF", NORMAL_PRIORITY)
+                                    .addClassAndMethod(methodGen, sourceFile).addFoundAndExpectedType(refType, castType),
+                                    sourceLineAnnotation);
+                        }
                     }
                 } else {
                     boolean castMayThrow = !Repository.instanceOf(refJavaClass, castJavaClass);
