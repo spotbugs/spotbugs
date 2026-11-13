@@ -22,6 +22,8 @@ class Issue3196Test extends AbstractIntegrationTest {
         assertNoBugInMethod("BC_VACUOUS_INSTANCEOF", "Issue3196", "nestedIf");
         assertBugInMethod("BC_VACUOUS_INSTANCEOF", "Issue3196", "handWrittenNested");
         assertBugInMethod("BC_VACUOUS_INSTANCEOF", "Issue3196", "handWrittenTopLevel");
-        assertBugTypeCount("BC_VACUOUS_INSTANCEOF", 2);
+        assertBugInMethod("BC_VACUOUS_INSTANCEOF", "Issue3196", "handWrittenCatchException");
+        assertBugInMethod("BC_VACUOUS_INSTANCEOF", "Issue3196", "handWrittenCatchThrowable");
+        assertBugTypeCount("BC_VACUOUS_INSTANCEOF", 4);
     }
 }

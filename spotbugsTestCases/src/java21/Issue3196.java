@@ -45,4 +45,23 @@ public class Issue3196 {
     public boolean handWrittenTopLevel(Foo foo) {
         return foo instanceof Foo;
     }
+
+    // A try-catch around them only hides them if it is javac's MatchException handler
+    public boolean handWrittenCatchException(Two two) {
+        try {
+            One one = two.one();
+            return one instanceof One;
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
+    public boolean handWrittenCatchThrowable(Two two) {
+        try {
+            One one = two.one();
+            return one instanceof One;
+        } catch (Throwable t) {
+            throw new IllegalStateException(t.toString(), t);
+        }
+    }
 }

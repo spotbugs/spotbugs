@@ -147,7 +147,8 @@ public class FindBadCast2 implements Detector {
      * Returns the values that javac tests with {@code instanceof} as part of a record pattern. javac calls each record
      * component accessor inside a {@code catch (Throwable)} handler that throws {@code MatchException}: the record being
      * deconstructed is the receiver of such a call, and a nested pattern's component is its result. A hand-written
-     * {@code instanceof} has no such handler.
+     * {@code instanceof} is skipped too if the code around it catches {@code Throwable} and throws
+     * {@code MatchException}, an acceptable false negative.
      */
     private static Set<ValueNumber> getRecordPatternValues(MethodGen methodGen, ConstantPoolGen cpg, CFG cfg,
             ValueNumberDataflow vnaDataflow) throws DataflowAnalysisException {
