@@ -76,6 +76,12 @@ public class FindReturnRef extends OpcodeStackDetector {
     private OpcodeStack.Item bufferParamUnderArrayAccess = null;
     private XField fieldUnderWrapToBuffer = null;
     private OpcodeStack.Item paramUnderWrapToBuffer = null;
+    private XField fieldUnderSingletonList = null;
+    private OpcodeStack.Item paramUnderSingletonList = null;
+    private XField fieldUnderListGet = null;
+    private OpcodeStack.Item paramUnderListGet = null;
+    private XField fieldSingletonListUnderCast = null;
+    private OpcodeStack.Item paramSingletonListUnderCast = null;
 
     private final Map<OpcodeStack.Item, XField> bufferFieldDuplicates = new HashMap<>();
     private final Map<OpcodeStack.Item, OpcodeStack.Item> bufferParamDuplicates = new HashMap<>();
@@ -85,6 +91,8 @@ public class FindReturnRef extends OpcodeStackDetector {
     private final Map<OpcodeStack.Item, OpcodeStack.Item> arrayParamsWrappedToBuffers = new HashMap<>();
     private final Map<OpcodeStack.Item, XField> arrayFieldClones = new HashMap<>();
     private final Map<OpcodeStack.Item, OpcodeStack.Item> arrayParamClones = new HashMap<>();
+    private final Map<OpcodeStack.Item, XField> singletonListFields = new HashMap<>();
+    private final Map<OpcodeStack.Item, OpcodeStack.Item> singletonListParams = new HashMap<>();
     private final Map<XField, List<OpcodeStack.Item>> fieldValues = new HashMap<>();
 
     private final BugAccumulator bugAccumulator;
@@ -160,6 +168,11 @@ public class FindReturnRef extends OpcodeStackDetector {
 
     @Override
     public void visit(Method obj) {
+        // OpcodeStack.Item equality is value-based, so entries recorded for one method
+        // could collide with equal items in another method or class. The singletonList
+        // propagation only ever spans a single method, so drop it when a new method starts.
+        singletonListFields.clear();
+        singletonListParams.clear();
         check = obj.isPublic() && (getThisClass().isPublic() || overridesMethodFromPublicSupertype(obj));
         if (!check) {
             return;
@@ -190,6 +203,12 @@ public class FindReturnRef extends OpcodeStackDetector {
         bufferParamUnderDuplication = null;
         bufferFieldUnderArrayAccess = null;
         bufferParamUnderArrayAccess = null;
+        fieldUnderSingletonList = null;
+        paramUnderSingletonList = null;
+        fieldUnderListGet = null;
+        paramUnderListGet = null;
+        fieldSingletonListUnderCast = null;
+        paramSingletonListUnderCast = null;
 
         if (staticMethod && seen == Const.PUTSTATIC && nonPublicFieldOperand()
                 && MutableClasses.mutableSignature(getSigConstantOperand())) {
@@ -252,6 +271,10 @@ public class FindReturnRef extends OpcodeStackDetector {
                     isBuf = true;
                 }
             }
+            if (field == null) {
+                // Collections.singletonList(field).get(0) returns the same object as the field.
+                field = singletonListFields.get(item);
+            }
             if (field == null
                     || !isFieldOf(field, getClassDescriptor())
                     || field.isPublic()
@@ -309,10 +332,38 @@ public class FindReturnRef extends OpcodeStackDetector {
                     bufferParamUnderArrayAccess = item;
                 }
             }
+
+            if ("get".equals(method.getName()) && "(I)Ljava/lang/Object;".equals(method.getSignature())
+                    && "Ljava/util/List;".equals(method.getClassDescriptor().getSignature())
+                    && stack.getStackDepth() > 1) {
+                // List.get(int) on a list produced by Collections.singletonList(x) returns x itself.
+                OpcodeStack.Item receiver = stack.getStackItem(1);
+                XField listField = singletonListFields.get(receiver);
+                if (listField != null) {
+                    fieldUnderListGet = listField;
+                } else {
+                    OpcodeStack.Item listParam = singletonListParams.get(receiver);
+                    if (listParam != null) {
+                        paramUnderListGet = listParam;
+                    }
+                }
+            }
         }
 
         if (seen == Const.INVOKESTATIC) {
             MethodDescriptor method = getMethodDescriptorOperand();
+            if (method != null && "singletonList".equals(method.getName())
+                    && "(Ljava/lang/Object;)Ljava/util/List;".equals(method.getSignature())
+                    && "Ljava/util/Collections;".equals(method.getClassDescriptor().getSignature())) {
+                OpcodeStack.Item arg = stack.getStackItem(0);
+                XField fieldArg = arg.getXField();
+                if (fieldArg != null && !fieldArg.isPublic() && isFieldOf(fieldArg, getClassDescriptor())) {
+                    fieldUnderSingletonList = fieldArg;
+                } else if (arg.isInitialParameter()) {
+                    paramUnderSingletonList = arg;
+                }
+                return;
+            }
             if (method == null || !"wrap".equals(method.getName())
                     || !WRAP_METHOD_SIGNATURE_PATTERN.matcher(method.getSignature()).matches()
                     || !BUFFER_CLASS_PATTERN.matcher(method.getClassDescriptor().getSignature()).matches()) {
@@ -336,6 +387,14 @@ public class FindReturnRef extends OpcodeStackDetector {
             OpcodeStack.Item param = arrayParamClones.get(item);
             if (param != null) {
                 paramCloneUnderCast = param;
+            }
+            XField singletonField = singletonListFields.get(item);
+            if (singletonField != null) {
+                fieldSingletonListUnderCast = singletonField;
+            }
+            OpcodeStack.Item singletonParam = singletonListParams.get(item);
+            if (singletonParam != null) {
+                paramSingletonListUnderCast = singletonParam;
             }
         }
     }
@@ -380,6 +439,12 @@ public class FindReturnRef extends OpcodeStackDetector {
             if (paramUnderClone != null) {
                 arrayParamClones.put(stack.getStackItem(0), paramUnderClone);
             }
+            if (fieldUnderListGet != null) {
+                singletonListFields.put(stack.getStackItem(0), fieldUnderListGet);
+            }
+            if (paramUnderListGet != null) {
+                singletonListParams.put(stack.getStackItem(0), paramUnderListGet);
+            }
             if (seen == Const.INVOKEVIRTUAL) {
                 if (bufferFieldUnderDuplication != null) {
                     bufferFieldDuplicates.put(stack.getStackItem(0), bufferFieldUnderDuplication);
@@ -403,6 +468,12 @@ public class FindReturnRef extends OpcodeStackDetector {
             if (paramUnderWrapToBuffer != null) {
                 arrayParamsWrappedToBuffers.put(stack.getStackItem(0), paramUnderWrapToBuffer);
             }
+            if (fieldUnderSingletonList != null) {
+                singletonListFields.put(stack.getStackItem(0), fieldUnderSingletonList);
+            }
+            if (paramUnderSingletonList != null) {
+                singletonListParams.put(stack.getStackItem(0), paramUnderSingletonList);
+            }
         }
 
         if (seen == Const.CHECKCAST && !stack.isTop()) {
@@ -412,6 +483,12 @@ public class FindReturnRef extends OpcodeStackDetector {
             }
             if (paramCloneUnderCast != null) {
                 arrayParamClones.put(item, paramCloneUnderCast);
+            }
+            if (fieldSingletonListUnderCast != null) {
+                singletonListFields.put(item, fieldSingletonListUnderCast);
+            }
+            if (paramSingletonListUnderCast != null) {
+                singletonListParams.put(item, paramSingletonListUnderCast);
             }
         }
     }
@@ -432,14 +509,18 @@ public class FindReturnRef extends OpcodeStackDetector {
             if (newTop != null) {
                 kind = CaptureKind.ARRAY_CLONE;
             } else {
-                newTop = arrayParamsWrappedToBuffers.get(top);
+                // Collections.singletonList(param).get(0) stores the parameter itself.
+                newTop = singletonListParams.get(top);
                 if (newTop == null) {
-                    newTop = bufferParamDuplicates.get(top);
+                    newTop = arrayParamsWrappedToBuffers.get(top);
                     if (newTop == null) {
-                        return CaptureKind.NONE;
+                        newTop = bufferParamDuplicates.get(top);
+                        if (newTop == null) {
+                            return CaptureKind.NONE;
+                        }
                     }
+                    kind = CaptureKind.BUF;
                 }
-                kind = CaptureKind.BUF;
             }
             top = newTop;
         }

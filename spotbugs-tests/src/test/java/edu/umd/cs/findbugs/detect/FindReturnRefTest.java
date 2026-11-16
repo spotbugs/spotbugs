@@ -341,6 +341,26 @@ class FindReturnRefTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void testSingletonListExpose() {
+        // issue #4437
+        performAnalysis("exposemutable/SingletonListExposeTest.class");
+
+        assertBugTypeCount("EI_EXPOSE_BUF", 0);
+        assertBugTypeCount("EI_EXPOSE_BUF2", 0);
+        assertBugTypeCount("EI_EXPOSE_REP", 1);
+        assertBugTypeCount("EI_EXPOSE_REP2", 1);
+        assertBugTypeCount("EI_EXPOSE_STATIC_BUF2", 0);
+        assertBugTypeCount("EI_EXPOSE_STATIC_REP2", 1);
+        assertBugTypeCount("MS_EXPOSE_BUF", 0);
+        assertBugTypeCount("MS_EXPOSE_REP", 1);
+
+        assertBugInMethodAtField("EI_EXPOSE_REP", "SingletonListExposeTest", "getData", "data");
+        assertBugInMethodAtField("EI_EXPOSE_REP2", "SingletonListExposeTest", "setData", "data");
+        assertBugInMethodAtField("EI_EXPOSE_STATIC_REP2", "SingletonListExposeTest", "setStaticData", "staticData");
+        assertBugInMethodAtField("MS_EXPOSE_REP", "SingletonListExposeTest", "getStaticData", "staticData");
+    }
+
+    @Test
     void testEI2() {
         performAnalysis("EI2.class");
 
