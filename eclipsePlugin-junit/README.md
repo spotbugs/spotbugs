@@ -5,3 +5,4 @@ Github CI will run test in this project automatically.
 
 We have another project `eclipsePlugin-test`, to test SpotBugs Eclipse Plugin with Eclipse.
 Ideally we should migrate this `eclipsePlugin-junit` project to that.
+# i update
