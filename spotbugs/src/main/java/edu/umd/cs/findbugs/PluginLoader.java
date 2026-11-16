@@ -551,6 +551,37 @@ public class PluginLoader implements AutoCloseable {
                 return url;
             }
         }
+        URL ownResource = getOwnResource(name);
+        if (ownResource != null) {
+            return ownResource;
+        }
+
+        LOG.debug("Trying to load {} using ClassLoader.getResource", name);
+        URL url = classLoaderForResources.getResource(name);
+        if (url == null) {
+            url = classLoaderForResources.getResource("/" + name);
+        }
+        if (IO.verifyURL(url)) {
+            return url;
+        }
+
+        return null;
+    }
+
+    /**
+     * Get a resource which is shipped with this plugin, i.e. which is found
+     * where the plugin was loaded from or in a jar on the class path of its
+     * manifest. Unlike {@link #getResource(String)} this does not fall back to
+     * {@link ClassLoader#getResource(String)}, which searches the class path
+     * of the JVM first and may therefore return a resource of the same name
+     * which belongs to another plugin, e.g. to the core plugin.
+     *
+     * @param name
+     *            resource to get
+     * @return URL for the resource, or null if it is not shipped with this
+     *         plugin
+     */
+    private @Nullable URL getOwnResource(String name) {
         if (loadedFrom != null) {
             try {
                 URL url = resourceFromPlugin(loadedFrom, name);
@@ -576,15 +607,6 @@ public class PluginLoader implements AutoCloseable {
             if (IO.verifyURL(url)) {
                 return url;
             }
-        }
-
-        LOG.debug("Trying to load {} using ClassLoader.getResource", name);
-        URL url = classLoaderForResources.getResource(name);
-        if (url == null) {
-            url = classLoaderForResources.getResource("/" + name);
-        }
-        if (IO.verifyURL(url)) {
-            return url;
         }
 
         return null;
@@ -1045,7 +1067,10 @@ public class PluginLoader implements AutoCloseable {
 
         }
         try {
-            URL bugRankURL = getResource(BugRanker.FILENAME);
+            // Only the core plugin may look for its bug rank file on the class path.
+            // Any other plugin could find the one of the core plugin there, and
+            // BugRanker would then apply the core ranks twice to its bug patterns.
+            URL bugRankURL = isCorePlugin() ? getResource(BugRanker.FILENAME) : getOwnResource(BugRanker.FILENAME);
 
             if (bugRankURL == null) {
                 // see
