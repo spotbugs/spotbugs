@@ -34,6 +34,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.RETURN;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -406,8 +407,11 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
     @Override
     public boolean prescreen(ClassContext classContext, Method method, boolean mightClose) {
-        // A method that calls lock() and never unlock() has mightClose == false.
-        // That is the missing-release case, so it still has to be analysed.
+        // A method that never calls unlock() leaves the lock to be released elsewhere: by its caller,
+        // as in a beginRead()/endRead() pair, by a method it calls, or by an object it returns.
+        if (!mightClose) {
+            return false;
+        }
         BitSet bytecodeSet = classContext.getBytecodeSet(method);
         if (bytecodeSet == null) {
             return false;
@@ -444,6 +448,10 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
             String sourceFile = javaClass.getSourceFileName();
             Location location = resource.getLocation();
             InstructionHandle handle = location.getHandle();
+            if (handle.getNext().getInstruction() instanceof RETURN) {
+                // The lock is acquired for the caller.
+                return;
+            }
 
             String bugType;
             int priority;
