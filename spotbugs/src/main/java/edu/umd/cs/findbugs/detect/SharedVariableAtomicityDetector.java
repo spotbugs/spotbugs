@@ -57,6 +57,7 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
     private final Set<XField> relevantFields = new HashSet<>();
     private final Map<XMethod, Set<XMethod>> nonSyncedMethodCallsByCallingMethods = new HashMap<>();
     private final List<PendingBug> pendingBugs = new ArrayList<>();
+    private final Map<ClassDescriptor, Boolean> directlyMultiThreadedClasses = new HashMap<>();
 
     /** A candidate bug captured at the PUTFIELD/PUTSTATIC site, evaluated in report(). */
     private static final class PendingBug {
@@ -223,7 +224,8 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
             if (field != null && !field.isFinal() && !field.isSynthetic()
                     && (seen == Const.PUTSTATIC || stack.getStackItem(1).getRegisterNumber() == 0
                             || isEnclosingThisReference(stack.getStackItem(1).getXField()))
-                    && isFieldOfMethodClassOrEnclosing(field, method)) {
+                    && isFieldOfMethodClassOrEnclosing(field, method)
+                    && isWriteInMultiThreadedCode(field, method)) {
                 // Whether the field is actually shared (read in another reachable
                 // method) is evaluated in report() once the cross-class read map
                 // is fully accumulated. Capture the candidate bug now, while the
@@ -289,6 +291,29 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
         return false;
     }
 
+    /**
+     * A non-static inner class is analyzed when its enclosing class is
+     * multi-threaded, because it can reach the enclosing instance's fields through
+     * {@code this$0}. Writes to its own fields, such as the cursor of an iterator,
+     * are only reported when the inner class is multi-threaded too, so a write
+     * counts when the class that declares the field or the class of the writing
+     * method is multi-threaded in its own right.
+     */
+    private boolean isWriteInMultiThreadedCode(XField field, XMethod method) {
+        return isDirectlyMultiThreaded(field.getClassDescriptor()) || isDirectlyMultiThreaded(method.getClassDescriptor());
+    }
+
+    private boolean isDirectlyMultiThreaded(ClassDescriptor descriptor) {
+        return directlyMultiThreadedClasses.computeIfAbsent(descriptor, d -> {
+            try {
+                return MultiThreadedCodeIdentifierUtils.isDirectlyPartOfMultiThreadedCode(d);
+            } catch (CheckedAnalysisException e) {
+                AnalysisContext.logError("Error while checking whether " + d + " is part of multi-threaded code", e);
+                return false;
+            }
+        });
+    }
+
     private static boolean isEnclosingThisReference(XField field) {
         // javac names the synthetic enclosing-instance reference this$0,
         // this$1, ... and marks it ACC_SYNTHETIC; it is the only synthetic
@@ -316,5 +341,6 @@ public class SharedVariableAtomicityDetector extends OpcodeStackDetector {
         pendingBugs.clear();
         readFieldsByMethods.clear();
         nonSyncedMethodCallsByCallingMethods.clear();
+        directlyMultiThreadedClasses.clear();
     }
 }

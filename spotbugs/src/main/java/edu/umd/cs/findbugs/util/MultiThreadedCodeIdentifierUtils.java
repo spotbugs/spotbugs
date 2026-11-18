@@ -109,6 +109,16 @@ public class MultiThreadedCodeIdentifierUtils {
         return false;
     }
 
+    /**
+     * Returns whether the class described by {@code descriptor} is part of
+     * multi-threaded code in its own right, leaving out the context a non-static
+     * inner class inherits from its enclosing class.
+     */
+    public static boolean isDirectlyPartOfMultiThreadedCode(ClassDescriptor descriptor) throws CheckedAnalysisException {
+        JavaClass javaClass = Global.getAnalysisCache().getClassAnalysis(JavaClass.class, descriptor);
+        return isDirectlyPartOfMultiThreadedCode(javaClass, AnalysisContext.currentAnalysisContext().getClassContext(javaClass));
+    }
+
     private static boolean isDirectlyPartOfMultiThreadedCode(JavaClass javaClass, ClassContext classContext) {
         if (Subtypes2.instanceOf(javaClass, JAVA_LANG_RUNNABLE) ||
                 Stream.of(javaClass.getFields()).anyMatch(MultiThreadedCodeIdentifierUtils::isFieldIndicatingMultiThreadedContainer)) {

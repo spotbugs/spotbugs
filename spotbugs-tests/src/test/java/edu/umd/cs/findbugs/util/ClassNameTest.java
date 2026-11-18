@@ -195,4 +195,10 @@ class ClassNameTest {
     void testEmptyStringIsInvalidClassName() {
         assertFalse(ClassName.isValidClassName(("")));
     }
+
+    @Test
+    void testArrayPrefixWithoutElementTypeIsInvalidClassName() {
+        assertFalse(ClassName.isValidClassName("["));
+        assertFalse(ClassName.isValidClassName("[["));
+    }
 }

@@ -222,18 +222,19 @@ public abstract class ClassName {
      * <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.3.2">
      * JVMS (Java SE 8 Edition) 4.3.2</a>
      *
-     * @param className a class name to test for validity - must be non-{@code null} and non-empty.
+     * @param className a class name to test for validity - must be non-{@code null}.
      * @return {@code true} if {@code className} is a valid array field descriptor as
      *          per JVMS 4.3.2, otherwise {@code false}
-     * @throws IndexOutOfBoundsException if {@code className} is empty.
      * @throws NullPointerException if {@code className} is {@code null}.
      */
     private static boolean isValidArrayFieldDescriptor(String className) {
+        if (!className.startsWith("[")) {
+            return false;
+        }
         String tail = className.substring(1);
-        return className.startsWith("[") &&
-                (isValidArrayFieldDescriptor(tail) ||
-                        isValidClassFieldDescriptor(tail) ||
-                        isValidBaseTypeFieldDescriptor(tail));
+        return isValidArrayFieldDescriptor(tail) ||
+                isValidClassFieldDescriptor(tail) ||
+                isValidBaseTypeFieldDescriptor(tail);
 
     }
 

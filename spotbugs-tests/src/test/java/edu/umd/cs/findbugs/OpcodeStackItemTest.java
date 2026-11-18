@@ -48,6 +48,22 @@ class OpcodeStackItemTest {
         assertEquals(0, m2.getConstant());
     }
 
+    @Test
+    void testMergeNullsOfDifferentTypes() {
+        OpcodeStack.Item threadNull = OpcodeStack.Item.nullItem("Ljava/lang/Thread;");
+        OpcodeStack.Item objectNull = new OpcodeStack.Item();
+
+        OpcodeStack.Item m1 = OpcodeStack.Item.merge(threadNull, objectNull);
+        assertTrue(m1.isNull());
+        assertEquals("Ljava/lang/Thread;", m1.getSignature());
+        assertEquals(m1, OpcodeStack.Item.merge(m1, objectNull));
+
+        OpcodeStack.Item m2 = OpcodeStack.Item.merge(objectNull, threadNull);
+        assertTrue(m2.isNull());
+        assertEquals("Ljava/lang/Object;", m2.getSignature());
+        assertEquals(m2, OpcodeStack.Item.merge(m2, threadNull));
+    }
+
     private static final String NEW_ITEM_KIND_NAME = "newItemKindName";
 
     @Test
