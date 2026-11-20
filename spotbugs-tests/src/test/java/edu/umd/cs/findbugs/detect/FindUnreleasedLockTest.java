@@ -1,3 +1,4 @@
+
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
@@ -19,7 +20,10 @@ class FindUnreleasedLockTest extends AbstractIntegrationTest {
         assertNoBugType("UL_UNRELEASED_LOCK");
         assertNoBugType("UL_UNRELEASED_LOCK_EXCEPTION_PATH");
         assertBugTypeCount("CWO_CLOSED_WITHOUT_OPENED", 1);
-        assertBugInMethod("CWO_CLOSED_WITHOUT_OPENED", "ThrowExceptionAndUnlockBeforeLock", "doSomething");
+        assertBugInMethod(
+                "CWO_CLOSED_WITHOUT_OPENED",
+                "ThrowExceptionAndUnlockBeforeLock",
+                "doSomething");
     }
 
     @Test
@@ -28,7 +32,10 @@ class FindUnreleasedLockTest extends AbstractIntegrationTest {
         assertNoBugType("UL_UNRELEASED_LOCK");
         assertNoBugType("CWO_CLOSED_WITHOUT_OPENED");
         assertBugTypeCount("UL_UNRELEASED_LOCK_EXCEPTION_PATH", 1);
-        assertBugInMethod("UL_UNRELEASED_LOCK_EXCEPTION_PATH", "UnreleasedLock", "doSomething");
+        assertBugInMethod(
+                "UL_UNRELEASED_LOCK_EXCEPTION_PATH",
+                "UnreleasedLock",
+                "doSomething");
     }
 
     @Test
@@ -38,5 +45,12 @@ class FindUnreleasedLockTest extends AbstractIntegrationTest {
         assertNoBugType("CWO_CLOSED_WITHOUT_OPENED");
         assertBugTypeCount("UL_UNRELEASED_LOCK", 1);
         assertBugInMethod("UL_UNRELEASED_LOCK", "LockWithoutUnlock", "test");
+    }
+
+    @Test
+    void doesNotReportUnreleasedLockWhenCallerUnlocksInFinally() {
+        performAnalysis("ghIssues/Issue4411.class");
+        assertNoBugType("UL_UNRELEASED_LOCK");
+        assertNoBugType("UL_UNRELEASED_LOCK_EXCEPTION_PATH");
     }
 }
