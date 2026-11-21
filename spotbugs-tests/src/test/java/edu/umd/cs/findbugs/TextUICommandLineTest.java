@@ -1,6 +1,8 @@
 package edu.umd.cs.findbugs;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -126,6 +128,37 @@ class TextUICommandLineTest {
         // we don't even *really* need to finish analysis, but it's better to explicitly check
         String xml = Files.readString(file, StandardCharsets.UTF_8);
         assertThat(xml, containsString("BugCollection"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "-output", "-outputFile" })
+    void legacyOutputUsesLastReporter(String outputOption) throws IOException {
+        Path file = Files.createTempFile("spotbugs", ".html");
+        TextUICommandLine commandLine = new TextUICommandLine();
+        try (FindBugs2 findbugs = new FindBugs2()) {
+            commandLine.handleOption("-sortByClass", "");
+            commandLine.handleOption("-html", "fancy-hist.xsl");
+            commandLine.handleOptionWithArgument(outputOption, file.toString());
+            commandLine.configureEngine(findbugs);
+            findbugs.getBugReporter().finish();
+        }
+
+        assertThat(Files.readString(file, StandardCharsets.UTF_8), containsString("#historyTab"));
+    }
+
+    @Test
+    void legacySortingReporterCanOverrideHtml() throws IOException {
+        Path file = Files.createTempFile("spotbugs", ".txt");
+        TextUICommandLine commandLine = new TextUICommandLine();
+        try (FindBugs2 findbugs = new FindBugs2()) {
+            commandLine.handleOption("-html", "fancy-hist.xsl");
+            commandLine.handleOption("-sortByClass", "");
+            commandLine.handleOptionWithArgument("-outputFile", file.toString());
+            commandLine.configureEngine(findbugs);
+            findbugs.getBugReporter().finish();
+        }
+
+        assertThat(Files.size(file), is(0L));
     }
 
     /**
