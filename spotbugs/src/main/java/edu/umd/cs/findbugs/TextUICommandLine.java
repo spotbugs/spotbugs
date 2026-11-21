@@ -117,6 +117,13 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
     private boolean setExitCode = false;
 
+    /**
+     * The SARIF reporter created by the {@code -sarif} option, if any. Kept so that the {@code -exitcode} option can
+     * inform it that finding bugs means a failed run, regardless of whether {@code -exitcode} is given before or after
+     * {@code -sarif} on the command line.
+     */
+    private @Nullable SarifBugReporter sarifBugReporter;
+
     private boolean noClassOk = false;
 
     private int priorityThreshold = Detector.NORMAL_PRIORITY;
@@ -399,7 +406,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
             addDistinctBugReporter(xDocsBugReporter);
         } else if ("-sarif".equals(option)) {
             bugReporterType = SARIF_REPORTER;
-            SarifBugReporter sarifBugReporter = new SarifBugReporter(project);
+            sarifBugReporter = new SarifBugReporter(project);
+            sarifBugReporter.setFailOnError(setExitCode);
             handleOutputFilePath(sarifBugReporter, optionExtraPart);
             addDistinctBugReporter(sarifBugReporter);
         } else if ("-applySuppression".equals(option)) {
@@ -410,6 +418,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
             scanNestedArchives = "".equals(optionExtraPart) || Boolean.parseBoolean(optionExtraPart);
         } else if ("-exitcode".equals(option)) {
             setExitCode = true;
+            if (sarifBugReporter != null) {
+                sarifBugReporter.setFailOnError(true);
+            }
         } else if ("-auxclasspathFromInput".equals(option)) {
             try {
                 BufferedReader in = UTF8.bufferedReader(System.in);
