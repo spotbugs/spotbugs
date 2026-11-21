@@ -467,6 +467,26 @@ class SarifBugReporterTest {
     }
 
     @Test
+    void testInvocationUnsuccessfulOnBugPresenceWithFailOnError() {
+        BugPattern bugPattern = new BugPattern("TYPE", "abbrev", "category", false, "shortDescription",
+                "longDescription", "detailText", "https://example.com/help.html", 0);
+        DetectorFactoryCollection.instance().registerBugPattern(bugPattern);
+
+        reporter.setFailOnError(true);
+        reporter.reportBug(new BugInstance(bugPattern.getType(), 0).addInt(10).addClass("the/target/Class"));
+        reporter.finish();
+
+        String json = writer.toString();
+        JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
+        JsonObject run = jsonObject.getAsJsonArray("runs").get(0).getAsJsonObject();
+        JsonObject invocation = run.getAsJsonArray("invocations").get(0).getAsJsonObject();
+
+        assertThat(invocation.get("exitCode").getAsInt(), is(1));
+        assertThat(invocation.get("exitCodeDescription").getAsString(), is("BUGS FOUND"));
+        assertThat(invocation.get("executionSuccessful").getAsBoolean(), is(false));
+    }
+
+    @Test
     void testUnknownSourceFileDoesNotWriteStackTraceToStderr() {
         BugPattern bugPattern = new BugPattern("TYPE", "abbrev", "category", false, "shortDescription",
                 "longDescription", "detailText", "https://example.com/help.html", 0);
