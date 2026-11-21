@@ -31,6 +31,8 @@ import org.apache.bcel.classfile.BootstrapMethods;
 import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.INVOKESTATIC;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -159,8 +161,8 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
             }
             OpcodeStack.Item item = stack.getStackItem(0);
 
-            if (getNextOpcode() == Const.PUTFIELD) {
-                // INVOKEDYNAMIC followed by PUTFIELD means that we assigned the method reference to a field
+            if (getNextOpcode() == Const.PUTFIELD || isStoredNegatedPredicate()) {
+                // Storing a method reference, directly or through Predicate.not, does not call it.
                 // But we might be missing calls to that field afterwards, this would be a false negative
                 return;
             }
@@ -218,6 +220,23 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
                 }
             }
         }
+    }
+
+    private boolean isStoredNegatedPredicate() {
+        if (getNextOpcode() != Const.INVOKESTATIC || getNextPC() + 3 > getMaxPC()
+                || getNextCodeByte(3) != Const.PUTFIELD) {
+            return false;
+        }
+        if (!getSigConstantOperand().endsWith(")Ljava/util/function/Predicate;")) {
+            // A subtype can override negate() and call the method reference.
+            return false;
+        }
+        int index = (getNextCodeByte(1) << 8) | getNextCodeByte(2);
+        INVOKESTATIC invocation = new INVOKESTATIC(index);
+        ConstantPoolGen cpg = getClassContext().getConstantPoolGen();
+        return "java.util.function.Predicate".equals(invocation.getClassName(cpg))
+                && "not".equals(invocation.getMethodName(cpg))
+                && "(Ljava/util/function/Predicate;)Ljava/util/function/Predicate;".equals(invocation.getSignature(cpg));
     }
 
     private boolean isCurrentMethodReadObject() {
