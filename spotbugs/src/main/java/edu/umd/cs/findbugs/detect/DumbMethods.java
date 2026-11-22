@@ -512,6 +512,11 @@ public class DumbMethods extends OpcodeStackDetector {
 
         @Override
         public void sawOpcode(int seen) {
+            // A field store of the Random just constructed keeps the instance. Do not clear on
+            // astore: a local used once, including new Random().nextInt(), must stay reported.
+            if ((seen == Const.PUTSTATIC || seen == Const.PUTFIELD) && storesJustConstructedRandom()) {
+                freshRandomOnTos = false;
+            }
             if (seen == Const.INVOKEVIRTUAL) {
                 String classConstantOperand = getClassConstantOperand();
                 String nameConstantOperand = getNameConstantOperand();
@@ -542,6 +547,26 @@ public class DumbMethods extends OpcodeStackDetector {
                     pcToBugInstanceMap.keySet().removeIf(pc -> pc >= loopstart && pc <= loopend);
                 }
             }
+        }
+
+        /**
+         * @return true when the value stored by the current putstatic/putfield is the
+         *         Random or SecureRandom constructed at {@code randomInitPC}
+         */
+        private boolean storesJustConstructedRandom() {
+            if (randomInitPC <= 0 || stack.getStackDepth() == 0) {
+                return false;
+            }
+            Item stored = stack.getStackItem(0);
+            if (stored.getPC() != randomInitPC) {
+                return false;
+            }
+            XMethod createdBy = stored.getReturnValueOf();
+            if (createdBy == null || !Const.CONSTRUCTOR_NAME.equals(createdBy.getName())) {
+                return false;
+            }
+            String slashedClassName = ClassName.toSlashedClassName(createdBy.getClassName());
+            return CLASS_NAME_RANDOM.equals(slashedClassName) || "java/security/SecureRandom".equals(slashedClassName);
         }
 
         @Override
