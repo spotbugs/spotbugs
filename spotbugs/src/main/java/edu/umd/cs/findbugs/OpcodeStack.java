@@ -324,6 +324,9 @@ public class OpcodeStack {
 
         private @Nullable Object userValue;
 
+        // Change 1: element stored inside Collections.singletonList(...)
+        private @Nullable Item singletonElement;
+
         private HttpParameterInjection injection;
 
         private int fieldLoadedFromRegister = -1;
@@ -386,14 +389,14 @@ public class OpcodeStack {
             }
             Item that = (Item) o;
 
+            // Change 3: singletonElement is part of equality
             return Objects.equals(this.signature, that.signature) && Objects.equals(this.constValue, that.constValue)
                     && Objects.equals(this.source, that.source) && Objects.equals(this.userValue, that.userValue)
+                    && Objects.equals(this.singletonElement, that.singletonElement)
                     && Objects.equals(this.injection, that.injection) && this.specialKind == that.specialKind
                     && this.registerNumber == that.registerNumber && this.flags == that.flags
                     && this.fieldLoadedFromRegister == that.fieldLoadedFromRegister;
-
         }
-
 
         public boolean sameValue(OpcodeStack.Item that) {
 
@@ -568,6 +571,12 @@ public class OpcodeStack {
                 m.userValue = i1.userValue;
             }
 
+            // Change 4: preserve singletonElement when both incoming items agree
+            if (Objects.equals(i1.singletonElement, i2.singletonElement)) {
+                m.singletonElement = i1.singletonElement == null
+                        ? null : new Item(i1.singletonElement);
+            }
+
             if (i1.registerNumber == i2.registerNumber) {
                 m.registerNumber = i1.registerNumber;
             }
@@ -598,7 +607,6 @@ public class OpcodeStack {
             this(signature, Integer.valueOf(constValue));
         }
 
-
         public static Item initialArgument(String signature, int reg) {
             Item it = new Item(signature);
             it.setInitialParameter(true);
@@ -624,13 +632,14 @@ public class OpcodeStack {
             this.fieldLoadedFromRegister = it.fieldLoadedFromRegister;
             this.registerNumber = it.registerNumber;
             this.userValue = it.userValue;
+            // Change 2: copy singletonElement
+            this.singletonElement = it.singletonElement == null
+                    ? null : new Item(it.singletonElement);
             this.injection = it.injection;
             this.flags = it.flags;
             this.specialKind = it.specialKind;
             this.pc = it.pc;
         }
-
-
 
         public Item(Item it, String signature) {
             this(it);
@@ -942,7 +951,6 @@ public class OpcodeStack {
             setSpecialKind(Item.SERVLET_OUTPUT);
         }
 
-
         public boolean isServletWriter() {
             if (getSpecialKind() == Item.SERVLET_OUTPUT) {
                 return true;
@@ -952,7 +960,6 @@ public class OpcodeStack {
                 return true;
             }
             XMethod writingToSource = getReturnValueOf();
-
 
             return writingToSource != null && ("javax.servlet.http.HttpServletResponse".equals(writingToSource.getClassName())
                     || "jakarta.servlet.http.HttpServletResponse".equals(writingToSource.getClassName()))
@@ -1248,7 +1255,6 @@ public class OpcodeStack {
                         item = Item.merge(item, newItem);
                     }
 
-
                 }
             }
 
@@ -1260,7 +1266,6 @@ public class OpcodeStack {
 
                 setTop(true);
             }
-
 
         }
 
@@ -1667,7 +1672,6 @@ public class OpcodeStack {
                 }
                 break;
 
-
             case Const.IALOAD:
             case Const.SALOAD:
                 pop(2);
@@ -2009,8 +2013,6 @@ public class OpcodeStack {
                 push(newValue);
             }
                 break;
-
-
 
             case Const.I2C: {
                 it = pop();
@@ -2678,16 +2680,33 @@ public class OpcodeStack {
             }
             String returnTypeName = IMMUTABLE_RETURNER_MAP.get(Pair.of(clsName, method));
             if (returnTypeName != null) {
+
+                // Change 5: capture the element before the arguments are popped
+                Item singletonElement = null;
+
+                if (JAVA_UTIL_COLLECTIONS.equals(clsName)
+                        && "singletonList".equals(method)
+                        && "(Ljava/lang/Object;)Ljava/util/List;".equals(signature)
+                        && getStackDepth() > 0) {
+                    singletonElement = new Item(getStackItem(0));
+                }
+
                 GenericSignatureParser sp = new GenericSignatureParser(signature);
                 for (int i = 0; i < sp.getNumParameters(); ++i) {
                     pop();
                 }
+
                 Item result;
                 if (requestParameter != null && JAVA_UTIL_ARRAYS_ARRAY_LIST.equals(requestParameter.getSignature())) {
                     result = new Item("Ljava/util/Collections$UnmodifiableRandomAccessList;");
                 } else {
                     result = new Item(returnTypeName);
                 }
+
+                if (singletonElement != null) {
+                    result.singletonElement = singletonElement;
+                }
+
                 push(result);
                 return;
             } else if (requestParameter != null) {
@@ -2698,6 +2717,28 @@ public class OpcodeStack {
                     return;
                 }
                 push(requestParameter); // fall back to standard logic
+            }
+        }
+
+        // Change 6: List.get(0) on a Collections.singletonList(...) result returns the stored element.
+        // Must run before pushByInvoke(), which would discard the constant.
+        if ((seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL)
+                && "get".equals(method)
+                && "(I)Ljava/lang/Object;".equals(signature)
+                && getStackDepth() >= 2) {
+
+            Item receiver = getItemMethodInvokedOn(dbc);
+            Item index = getStackItem(0);
+
+            if (receiver.singletonElement != null
+                    && Integer.valueOf(0).equals(index.getConstant())) {
+
+                Item element = new Item(receiver.singletonElement);
+                element.setPC(dbc.getPC());
+
+                pop(2);
+                push(element);
+                return;
             }
         }
 
@@ -2918,7 +2959,7 @@ public class OpcodeStack {
                 Item newValue = mergeFrom.get(i);
                 mergeInto.add(newValue);
                 changed = true;
-            
+
             }
              */
             if (DEBUG2 && changed) {
@@ -2965,7 +3006,6 @@ public class OpcodeStack {
             return jumpEntryLocations.nextSetBit(pc);
         }
     }
-
 
     public static class JumpInfoFactory extends edu.umd.cs.findbugs.classfile.engine.bcel.AnalysisFactory<JumpInfo> {
 
@@ -3218,7 +3258,6 @@ public class OpcodeStack {
         if (from < to) {
             return;
         }
-
 
         if (DEBUG && !this.isJumpInfoChangedByBackwardsBranch()) {
             System.out.printf("%s jump info at %d changed by jump from %d%n", kind, to, from);
@@ -3810,7 +3849,6 @@ public class OpcodeStack {
     boolean isJumpInfoChangedByBackwardsBranch() {
         return jumpInfoChangedByBackwardsBranch;
     }
-
 
     void clearJumpInfoChangedByBackwardsBranch() {
         this.jumpInfoChangedByBackwardsBranch = false;
