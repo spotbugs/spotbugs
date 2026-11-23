@@ -22,17 +22,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.BootstrapMethods;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantInvokeDynamic;
+import org.apache.bcel.classfile.ConstantMethodHandle;
+import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.INVOKESTATIC;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -46,6 +50,8 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.util.BootstrapMethodsUtil;
 import edu.umd.cs.findbugs.util.MultiMap;
@@ -75,6 +81,40 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
     private final Map<Integer, CallerInfo> refCallerClones = new HashMap<>();
     private final Map<Integer, CallerInfo> refCallerReadObjects = new HashMap<>();
     private final MultiMap<Integer, XMethod> refCalleeToCallerMap = new MultiMap<>(ArrayList.class);
+
+    private static final class ConstructorReference {
+        final int bootstrapIndex;
+        final SourceLineAnnotation sourceLine;
+        final boolean directStorage;
+        boolean stored;
+        boolean possiblyInvoked;
+
+        ConstructorReference(int bootstrapIndex, SourceLineAnnotation sourceLine, boolean directStorage) {
+            this.bootstrapIndex = bootstrapIndex;
+            this.sourceLine = sourceLine;
+            this.directStorage = directStorage;
+        }
+    }
+
+    private static final class DeferredValue {
+        final String interfaceSignature;
+        final Set<ConstructorReference> references;
+
+        DeferredValue(String interfaceSignature, Set<ConstructorReference> references) {
+            this.interfaceSignature = interfaceSignature;
+            this.references = references;
+        }
+    }
+
+    // OpcodeStack items retain the producing bytecode offset through casts and local variables.
+    private final Map<Integer, ConstructorReference> constructorReferences = new LinkedHashMap<>();
+    private final Map<Integer, DeferredValue> deferredValues = new HashMap<>();
+    private final Map<FieldDescriptor, Set<ConstructorReference>> storedReferences = new HashMap<>();
+    private boolean uncertainFlow;
+
+    private static final String FUNCTION_PACKAGE = "java/util/function/";
+    private static final String PREDICATE = FUNCTION_PACKAGE + "Predicate";
+    private static final String FUNCTION = FUNCTION_PACKAGE + "Function";
 
     private static final String CONSTRUCTOR_BUG = "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR";
     private static final String CLONE_BUG = "MC_OVERRIDABLE_METHOD_CALL_IN_CLONE";
@@ -149,28 +189,40 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
     }
 
     @Override
+    public void visit(Method method) {
+        super.visit(method);
+        uncertainFlow = method.getCode() != null && method.getCode().getExceptionTable().length > 0;
+    }
+
+    @Override
+    public void visitAfter(Method method) {
+        for (ConstructorReference ref : constructorReferences.values()) {
+            // At joins we may lose provenance. Only preserve the immediate field-store exemption in that case.
+            if (!ref.stored || ref.possiblyInvoked || (uncertainFlow && !ref.directStorage)) {
+                refCallerConstructors.put(ref.bootstrapIndex, new CallerInfo(getXMethod(), ref.sourceLine));
+            }
+        }
+        constructorReferences.clear();
+        deferredValues.clear();
+        storedReferences.clear();
+    }
+
+    @Override
     public void sawOpcode(int seen) {
         if (getXClass().isFinal()) {
             return;
         }
         XMethod caller = getXMethod();
-        if (seen == Const.INVOKEDYNAMIC) {
+        boolean inConstructor = Const.CONSTRUCTOR_NAME.equals(getMethodName());
+        if (inConstructor) {
+            trackConstructorReferences(seen);
+        }
+
+        if (seen == Const.INVOKEDYNAMIC && !constructorReferences.containsKey(getPC()) && stack.getStackDepth() != 0
+                && getNextOpcode() != Const.PUTFIELD) {
             ConstantInvokeDynamic constDyn = (ConstantInvokeDynamic) getConstantRefOperand();
-            if (stack.getStackDepth() == 0) {
-                return;
-            }
             OpcodeStack.Item item = stack.getStackItem(0);
-
-            if (getNextOpcode() == Const.PUTFIELD || isStoredNegatedPredicate()) {
-                // Storing a method reference, directly or through Predicate.not, does not call it.
-                // But we might be missing calls to that field afterwards, this would be a false negative
-                return;
-            }
-
-            if (item.getRegisterNumber() == 0 && Const.CONSTRUCTOR_NAME.equals(getMethodName())) {
-                refCallerConstructors.put(constDyn.getBootstrapMethodAttrIndex(),
-                        new CallerInfo(caller, SourceLineAnnotation.fromVisitedInstruction(this)));
-            } else if ("clone".equals(getMethodName())
+            if ("clone".equals(getMethodName())
                     && (("()" + getClassDescriptor().getSignature()).equals(getMethodSig())
                             || "()Ljava/lang/Object;".equals(getMethodSig()))
                     && item.getReturnValueOf() != null
@@ -222,21 +274,203 @@ public class FindOverridableMethodCall extends OpcodeStackDetector {
         }
     }
 
-    private boolean isStoredNegatedPredicate() {
-        if (getNextOpcode() != Const.INVOKESTATIC || getNextPC() + 3 > getMaxPC()
-                || getNextCodeByte(3) != Const.PUTFIELD) {
+    private void trackConstructorReferences(int opcode) {
+        uncertainFlow |= isBranch(opcode) || isSwitch(opcode);
+        switch (opcode) {
+        case Const.INVOKEDYNAMIC:
+            trackDynamicReference();
+            break;
+        case Const.INVOKESTATIC:
+        case Const.INVOKEINTERFACE:
+        case Const.INVOKEVIRTUAL:
+        case Const.INVOKESPECIAL:
+            trackReferenceInvocation(opcode == Const.INVOKESTATIC);
+            break;
+        case Const.PUTFIELD:
+            DeferredValue value = deferredValues.get(stack.getStackItem(0).getPC());
+            if (value != null && stack.getStackItem(1).getRegisterNumber() == 0) {
+                value.references.forEach(ref -> ref.stored = true);
+                storedReferences.computeIfAbsent(getFieldDescriptorOperand(), field -> new HashSet<>()).addAll(value.references);
+            }
+            break;
+        case Const.GETFIELD:
+            markPossiblyInvoked(storedReferences.getOrDefault(getFieldDescriptorOperand(), Set.of()));
+            break;
+        case Const.AASTORE:
+        case Const.PUTSTATIC:
+            markPossiblyInvoked(referencesAtStackOffset(0));
+            break;
+        default:
+            break;
+        }
+    }
+
+    private void trackDynamicReference() {
+        String signature = getSigConstantOperand();
+        int argumentCount = getNumberArguments(signature);
+        if (stack.getStackDepth() < argumentCount) {
+            uncertainFlow = true;
+            return;
+        }
+        for (int i = 0; i < argumentCount; i++) {
+            markPossiblyInvoked(referencesAtStackOffset(i));
+        }
+        int index = ((ConstantInvokeDynamic) getConstantRefOperand()).getBootstrapMethodAttrIndex();
+        Set<ConstructorReference> references = Set.of();
+        if (argumentCount > 0 && stack.getStackItem(0).getRegisterNumber() == 0) {
+            ConstructorReference reference = new ConstructorReference(index, SourceLineAnnotation.fromVisitedInstruction(this),
+                    getNextOpcode() == Const.PUTFIELD);
+            constructorReferences.put(getPC(), reference);
+            references = Set.of(reference);
+        }
+        String result = signature.substring(signature.indexOf(')') + 1);
+        if (result.startsWith("L")) {
+            boolean exactType = isLambdaMetafactory(index);
+            if (exactType || !references.isEmpty()) {
+                deferredValues.put(getPC(), new DeferredValue(exactType ? result : "", references));
+            }
+        }
+    }
+
+    private boolean isLambdaMetafactory(int index) {
+        for (Attribute attribute : getThisClass().getAttributes()) {
+            if (attribute instanceof BootstrapMethods) {
+                int methodIndex = ((BootstrapMethods) attribute).getBootstrapMethods()[index].getBootstrapMethodRef();
+                Constant handle = getConstantPool().getConstant(methodIndex);
+                if (!(handle instanceof ConstantMethodHandle)) {
+                    return false;
+                }
+                Constant reference = getConstantPool().getConstant(((ConstantMethodHandle) handle).getReferenceIndex());
+                if (!(reference instanceof ConstantCP)) {
+                    return false;
+                }
+                ConstantCP method = (ConstantCP) reference;
+                ConstantNameAndType nameAndType = getConstantPool().getConstant(method.getNameAndTypeIndex());
+                // The alternate bootstrap can add interfaces beyond the result type.
+                return "java.lang.invoke.LambdaMetafactory".equals(method.getClass(getConstantPool()))
+                        && "metafactory".equals(nameAndType.getName(getConstantPool()));
+            }
+        }
+        return false;
+    }
+
+    private void trackReferenceInvocation(boolean isStatic) {
+        String signature = getSigConstantOperand();
+        int argumentCount = getNumberArguments(signature);
+        int consumed = argumentCount + (isStatic ? 0 : 1);
+        if (stack.getStackDepth() < consumed) {
+            uncertainFlow = true;
+            return;
+        }
+        Set<ConstructorReference> references = new HashSet<>();
+        for (int i = 0; i < consumed; i++) {
+            references.addAll(referencesAtStackOffset(i));
+        }
+        String result = signature.substring(signature.indexOf(')') + 1);
+        if (isDeferredCombinator(isStatic, argumentCount, result)) {
+            deferredValues.put(getPC(), new DeferredValue(result, references));
+            return;
+        }
+        markPossiblyInvoked(references);
+        if (!storedReferences.isEmpty()) {
+            for (int i = 0; i < consumed; i++) {
+                if (stack.getStackItem(i).getRegisterNumber() == 0) {
+                    // A call on or with the under-construction object may use its stored references.
+                    storedReferences.values().forEach(FindOverridableMethodCall::markPossiblyInvoked);
+                    break;
+                }
+            }
+        }
+    }
+
+    private boolean isDeferredCombinator(boolean isStatic, int argumentCount, String result) {
+        String owner = getClassConstantOperand();
+        String name = getNameConstantOperand();
+        String signature = getSigConstantOperand();
+        if (isStatic) {
+            if (FUNCTION.equals(owner) && "identity".equals(name) && "()Ljava/util/function/Function;".equals(signature)) {
+                return true;
+            }
+            return PREDICATE.equals(owner) && "not".equals(name)
+                    && "(Ljava/util/function/Predicate;)Ljava/util/function/Predicate;".equals(signature)
+                    && usesJdkDefault(deferredValues.get(stack.getStackItem(0).getPC()), PREDICATE, "negate",
+                            "()Ljava/util/function/Predicate;");
+        }
+        if (!result.startsWith("L" + FUNCTION_PACKAGE)) {
             return false;
         }
-        if (!getSigConstantOperand().endsWith(")Ljava/util/function/Predicate;")) {
-            // A subtype can override negate() and call the method reference.
+        String defaultOwner = result.substring(1, result.length() - 1);
+        String simpleName = defaultOwner.substring(FUNCTION_PACKAGE.length());
+        boolean knownDefault;
+        switch (simpleName) {
+        case "Predicate":
+        case "BiPredicate":
+        case "IntPredicate":
+        case "LongPredicate":
+        case "DoublePredicate":
+            knownDefault = ("negate".equals(name) && ("()" + result).equals(signature))
+                    || (("and".equals(name) || "or".equals(name)) && ("(" + result + ")" + result).equals(signature));
+            break;
+        case "Consumer":
+        case "BiConsumer":
+        case "IntConsumer":
+        case "LongConsumer":
+        case "DoubleConsumer":
+            knownDefault = "andThen".equals(name) && ("(" + result + ")" + result).equals(signature);
+            break;
+        case "Function":
+            knownDefault = ("compose".equals(name) || "andThen".equals(name)) && ("(" + result + ")" + result).equals(signature);
+            break;
+        case "BiFunction":
+            knownDefault = "andThen".equals(name) && ("(Ljava/util/function/Function;)" + result).equals(signature);
+            break;
+        default:
             return false;
         }
-        int index = (getNextCodeByte(1) << 8) | getNextCodeByte(2);
-        INVOKESTATIC invocation = new INVOKESTATIC(index);
-        ConstantPoolGen cpg = getClassContext().getConstantPoolGen();
-        return "java.util.function.Predicate".equals(invocation.getClassName(cpg))
-                && "not".equals(invocation.getMethodName(cpg))
-                && "(Ljava/util/function/Predicate;)Ljava/util/function/Predicate;".equals(invocation.getSignature(cpg));
+        return knownDefault && usesJdkDefault(deferredValues.get(stack.getStackItem(argumentCount).getPC()), defaultOwner, name, signature);
+    }
+
+    private boolean usesJdkDefault(DeferredValue receiver, String owner, String name, String signature) {
+        if (receiver == null || receiver.interfaceSignature.isEmpty()) {
+            return false;
+        }
+        String receiverClass = receiver.interfaceSignature.substring(1, receiver.interfaceSignature.length() - 1);
+        if (owner.equals(receiverClass)) {
+            return true;
+        }
+        ClassDescriptor descriptor = DescriptorFactory.instance().getClassDescriptor(receiverClass);
+        try {
+            return Hierarchy.isSubtype(descriptor.getDottedClassName(), owner.replace('/', '.'))
+                    && !overridesDefault(descriptor, owner, name, signature, new HashSet<>());
+        } catch (ClassNotFoundException | CheckedAnalysisException e) {
+            return false;
+        }
+    }
+
+    private boolean overridesDefault(ClassDescriptor type, String owner, String name, String signature, Set<ClassDescriptor> seen)
+            throws CheckedAnalysisException {
+        if (owner.equals(type.getClassName()) || !seen.add(type)) {
+            return false;
+        }
+        XClass xClass = type.getXClass();
+        if (xClass.findMethod(name, signature, false) != null) {
+            return true;
+        }
+        for (ClassDescriptor parent : xClass.getInterfaceDescriptorList()) {
+            if (overridesDefault(parent, owner, name, signature, seen)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Set<ConstructorReference> referencesAtStackOffset(int offset) {
+        DeferredValue value = deferredValues.get(stack.getStackItem(offset).getPC());
+        return value == null ? Set.of() : value.references;
+    }
+
+    private static void markPossiblyInvoked(Set<ConstructorReference> references) {
+        references.forEach(ref -> ref.possiblyInvoked = true);
     }
 
     private boolean isCurrentMethodReadObject() {
