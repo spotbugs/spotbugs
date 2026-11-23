@@ -28,12 +28,14 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefAnalysis;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 
 /**
  * Perform dataflow analysis on a method using a control flow graph. Both
@@ -63,6 +65,8 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
     private int numIterations;
 
+    @SuppressFBWarnings(value = "MS_SHOULD_BE_FINAL",
+            justification = "Preserve compatibility with callers that explicitly enable dataflow debugging")
     public static boolean DEBUG = SystemProperties.getBoolean("dataflow.debug");
 
     /**
@@ -141,7 +145,6 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
      */
     public void execute() throws DataflowAnalysisException {
         boolean change;
-        boolean debugWas = DEBUG;
         if (DEBUG) {
             reportAnalysis("Executing");
         }
@@ -152,27 +155,10 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
             change = false;
             boolean sawBackEdge = false;
             ++numIterations;
-            if (numIterations > MAX_ITERS && !DEBUG) {
-                DEBUG = true;
-                reportAnalysis("Too many iterations");
-                System.out.println(this.getClass().getName());
-                if (this.getClass() == UnconditionalValueDerefDataflow.class || this.getClass() == LiveLocalStoreDataflow.class) {
-                    try {
-                        ClassContext cc = Global.getAnalysisCache().getClassAnalysis(ClassContext.class,
-                                DescriptorFactory.createClassDescriptorFromDottedClassName(cfg.getMethodGen().getClassName()));
-                        System.out.println("Forwards cfg");
-                        CFGPrinter printer = new CFGPrinter(cfg);
-                        printer.setIsForwards(true);
-                        printer.print(System.out);
-                        System.out.println("Backwards cfg");
-                        printer = new CFGPrinter(cfg);
-                        printer.setIsForwards(false);
-                        printer.print(System.out);
-                        cc.dumpSimpleDataflowInformation(cfg.getMethodGen().getMethod());
-                    } catch (CheckedAnalysisException e) {
-                        e.printStackTrace(System.out);
-                    }
-                }
+            if (DEBUG && numIterations == MAX_ITERS + 1) {
+                // Only dump the extra diagnostics if debugging was explicitly requested,
+                // and only once per execution (the first time the threshold is exceeded).
+                reportTooManyIterations();
             }
 
             if (DEBUG) {
@@ -185,8 +171,6 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
             }
 
             if (numIterations >= MAX_ITERS + 9) {
-                DEBUG = debugWas;
-
                 throw new DataflowAnalysisException("Too many iterations (" + numIterations + ") in dataflow when analyzing "
                         + getFullyQualifiedMethodName());
             }
@@ -438,7 +422,42 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
                     .printStackTrace(System.out);
 
         }
-        DEBUG = debugWas;
+    }
+
+    /**
+     * Print extra diagnostic information about an analysis which needs more than
+     * {@link #MAX_ITERS} iterations to converge. Must only be called if {@link #DEBUG} is enabled.
+     */
+    private void reportTooManyIterations() {
+        reportAnalysis("Too many iterations");
+        System.out.println(this.getClass().getName());
+        if (this.getClass() != UnconditionalValueDerefDataflow.class && this.getClass() != LiveLocalStoreDataflow.class) {
+            return;
+        }
+        MethodGen methodGen = cfg.getMethodGen();
+        if (methodGen == null) {
+            return;
+        }
+        System.out.println("Forwards cfg");
+        CFGPrinter printer = new CFGPrinter(cfg);
+        printer.setIsForwards(true);
+        printer.print(System.out);
+        System.out.println("Backwards cfg");
+        printer = new CFGPrinter(cfg);
+        printer.setIsForwards(false);
+        printer.print(System.out);
+
+        IAnalysisCache analysisCache = Global.getAnalysisCache();
+        if (analysisCache == null) {
+            return;
+        }
+        try {
+            ClassContext cc = analysisCache.getClassAnalysis(ClassContext.class,
+                    DescriptorFactory.createClassDescriptorFromDottedClassName(methodGen.getClassName()));
+            cc.dumpSimpleDataflowInformation(methodGen.getMethod());
+        } catch (CheckedAnalysisException e) {
+            e.printStackTrace(System.out);
+        }
     }
 
     private void reportAnalysis(String msg) {
