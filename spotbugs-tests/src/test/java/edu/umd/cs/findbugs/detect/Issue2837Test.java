@@ -17,12 +17,29 @@ class Issue2837Test extends AbstractIntegrationTest {
 
         assertBugTypeCount("MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", 4);
         assertBugInMethodAtLineWithConfidence("MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", "Issue2837",
-                Const.CONSTRUCTOR_NAME, 19, Confidence.LOW);
+                Const.CONSTRUCTOR_NAME, 22, Confidence.LOW);
         assertBugInMethodAtLineWithConfidence("MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", "Issue2837$InvokedNegation",
-                Const.CONSTRUCTOR_NAME, 31, Confidence.LOW);
+                Const.CONSTRUCTOR_NAME, 34, Confidence.LOW);
         assertBugInMethodAtLineWithConfidence("MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", "Issue2837$EagerFactory",
-                Const.CONSTRUCTOR_NAME, 44, Confidence.LOW);
+                Const.CONSTRUCTOR_NAME, 47, Confidence.LOW);
         assertBugInMethodAtLineWithConfidence("MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", "Issue2837$OverriddenNegation",
-                Const.CONSTRUCTOR_NAME, 60, Confidence.LOW);
+                Const.CONSTRUCTOR_NAME, 63, Confidence.LOW);
+    }
+
+    @Test
+    void tracksCallbackCombinationsUntilTheyAreStoredOrUsed() {
+        performAnalysis("ghIssues/Issue2837$DeferredCombinators.class",
+                "ghIssues/Issue2837$DeferredCombinators$InheritedPredicate.class",
+                "ghIssues/Issue2837$StoredThenInvoked.class",
+                "ghIssues/Issue2837$UnknownReceiver.class");
+
+        String bug = "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR";
+        assertNoBugInClass(bug, "Issue2837$DeferredCombinators");
+        assertBugTypeCount(bug, 5);
+        assertBugInMethodAtLineWithConfidence(bug, "Issue2837$StoredThenInvoked", Const.CONSTRUCTOR_NAME, 99, Confidence.LOW);
+        assertBugInMethodAtLineWithConfidence(bug, "Issue2837$StoredThenInvoked", Const.CONSTRUCTOR_NAME, 100, Confidence.LOW);
+        assertBugInMethodAtLineWithConfidence(bug, "Issue2837$StoredThenInvoked", Const.CONSTRUCTOR_NAME, 101, Confidence.LOW);
+        assertBugInMethodAtLineWithConfidence(bug, "Issue2837$StoredThenInvoked", Const.CONSTRUCTOR_NAME, 102, Confidence.LOW);
+        assertBugInMethodAtLineWithConfidence(bug, "Issue2837$UnknownReceiver", Const.CONSTRUCTOR_NAME, 131, Confidence.LOW);
     }
 }
