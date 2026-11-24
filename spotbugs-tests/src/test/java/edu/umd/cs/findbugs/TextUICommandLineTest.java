@@ -1,6 +1,11 @@
 package edu.umd.cs.findbugs;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -126,6 +131,22 @@ class TextUICommandLineTest {
         // we don't even *really* need to finish analysis, but it's better to explicitly check
         String xml = Files.readString(file, StandardCharsets.UTF_8);
         assertThat(xml, containsString("BugCollection"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "-output", "-outputFile" })
+    void writesHtmlReportForLegacyGradleArguments(String outputOption, @TempDir Path outputDirectory)
+            throws IOException, HelpRequestedException {
+        Path file = outputDirectory.resolve("spotbugs.html");
+        TextUICommandLine commandLine = new TextUICommandLine();
+        try (FindBugs2 findbugs = new FindBugs2()) {
+            // The Gradle plugin in #1804 passes the report path separately from the format flags.
+            commandLine.parse(new String[] { "-sortByClass", "-html:fancy-hist.xsl", outputOption, file.toString() });
+            commandLine.configureEngine(findbugs);
+            findbugs.getBugReporter().finish();
+        }
+
+        assertThat(Files.readString(file, StandardCharsets.UTF_8), containsString("#historyTab"));
     }
 
     /**

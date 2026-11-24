@@ -662,6 +662,11 @@ public class TextUICommandLine extends FindBugsCommandLine {
             throw new IllegalStateException("No bug reporter configured");
         }
 
+        if (outputStream != null && reporters.stream().allMatch(reporter -> reporter.getOutputTarget() == null)) {
+            // The legacy output option uses one format, with the last format option taking precedence.
+            reporters.subList(0, reporters.size() - 1).clear();
+        }
+
         if (priorityAdjuster != null) {
             for (TextUIBugReporter reporter : reporters) {
                 reporter.setPriorityAdjuster(priorityAdjuster);
