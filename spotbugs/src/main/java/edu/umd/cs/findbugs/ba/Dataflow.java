@@ -206,9 +206,6 @@ public class Dataflow<Fact, AnalysisType extends DataflowAnalysis<Fact>> {
                 }
                 i = bb.iterator();
             }
-            if (DEBUG) {
-                dumpDataflow(analysis);
-            }
 
             // For each block in CFG...
 
