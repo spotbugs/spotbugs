@@ -1147,6 +1147,8 @@ public class OpcodeStack {
             return;
         }
         needToMerge = false;
+        boolean stackUpdated = false;
+        boolean wasTop = isTop();
         if (dbc.getPC() == zeroOneComing) {
             pop();
             top = false;
@@ -1162,14 +1164,11 @@ public class OpcodeStack {
             push(item);
 
             zeroOneComing = -1;
+            stackUpdated = true;
             if (DEBUG) {
                 System.out.println("Updated to " + this);
             }
-            return;
-        }
-
-        boolean stackUpdated = false;
-        if (!isTop() && (convertJumpToOneZeroState == 3 || convertJumpToZeroOneState == 3)) {
+        } else if (!isTop() && (convertJumpToOneZeroState == 3 || convertJumpToZeroOneState == 3)) {
             pop();
             Item topItem = new Item("I");
             topItem.setCouldBeZero(true);
@@ -1204,12 +1203,14 @@ public class OpcodeStack {
                 }
 
             }
-            if (isTop()) {
+            if (wasTop) {
                 lvValues = new ArrayList<>(jumpEntry);
-                if (jumpStackEntry != null) {
-                    stack = new ArrayList<>(jumpStackEntry);
-                } else {
-                    stack.clear();
+                if (!stackUpdated) {
+                    if (jumpStackEntry != null) {
+                        stack = new ArrayList<>(jumpStackEntry);
+                    } else {
+                        stack.clear();
+                    }
                 }
                 setTop(false);
                 return;
