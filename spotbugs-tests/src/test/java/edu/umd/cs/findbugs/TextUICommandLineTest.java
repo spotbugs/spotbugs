@@ -1,8 +1,11 @@
 package edu.umd.cs.findbugs;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -132,33 +135,18 @@ class TextUICommandLineTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "-output", "-outputFile" })
-    void legacyOutputUsesLastReporter(String outputOption) throws IOException {
-        Path file = Files.createTempFile("spotbugs", ".html");
+    void writesHtmlReportForLegacyGradleArguments(String outputOption, @TempDir Path outputDirectory)
+            throws IOException, HelpRequestedException {
+        Path file = outputDirectory.resolve("spotbugs.html");
         TextUICommandLine commandLine = new TextUICommandLine();
         try (FindBugs2 findbugs = new FindBugs2()) {
-            commandLine.handleOption("-sortByClass", "");
-            commandLine.handleOption("-html", "fancy-hist.xsl");
-            commandLine.handleOptionWithArgument(outputOption, file.toString());
+            // The Gradle plugin in #1804 passes the report path separately from the format flags.
+            commandLine.parse(new String[] { "-sortByClass", "-html:fancy-hist.xsl", outputOption, file.toString() });
             commandLine.configureEngine(findbugs);
             findbugs.getBugReporter().finish();
         }
 
         assertThat(Files.readString(file, StandardCharsets.UTF_8), containsString("#historyTab"));
-    }
-
-    @Test
-    void legacySortingReporterCanOverrideHtml() throws IOException {
-        Path file = Files.createTempFile("spotbugs", ".txt");
-        TextUICommandLine commandLine = new TextUICommandLine();
-        try (FindBugs2 findbugs = new FindBugs2()) {
-            commandLine.handleOption("-html", "fancy-hist.xsl");
-            commandLine.handleOption("-sortByClass", "");
-            commandLine.handleOptionWithArgument("-outputFile", file.toString());
-            commandLine.configureEngine(findbugs);
-            findbugs.getBugReporter().finish();
-        }
-
-        assertThat(Files.size(file), is(0L));
     }
 
     /**
