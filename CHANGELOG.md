@@ -9,6 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Add support for JSpecify type-use nullness annotations on fields. ([#4429](https://github.com/spotbugs/spotbugs/pull/4429))
 
 ### Fixed
+- Dataflow no longer enables debug output automatically when an analysis exceeds the iteration threshold; detailed output now appears only when `dataflow.debug` is enabled explicitly ([#3785](https://github.com/spotbugs/spotbugs/issues/3785))
 - Fix `Iterative jump info didn't converge` analysis errors in loops that null-check a local variable and assign `null` to it ([#4419](https://github.com/spotbugs/spotbugs/issues/4419))
 - Fix `DB_DUPLICATE_BRANCHES` false negatives for identical inner if/else branches nested in an outer then branch ([#4436](https://github.com/spotbugs/spotbugs/issues/4436))
 - Fix `SA_FIELD_DOUBLE_ASSIGNMENT` false negative for `long` and `double` fields assigned twice in a field initializer ([#3975](https://github.com/spotbugs/spotbugs/issues/3975))
@@ -16,6 +17,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Fix `StringIndexOutOfBoundsException` in `ClassName.isValidClassName()` for array descriptors without an element type, such as `[` ([#ISSUE](https://github.com/spotbugs/spotbugs/issues/ISSUE))
 - Fix `AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE`, `AT_STALE_THREAD_WRITE_OF_PRIMITIVE` and `AT_NONATOMIC_64BIT_PRIMITIVE` false positives on the fields of a non-static inner or anonymous class of a multi-threaded class, such as the cursor of an iterator ([#4398](https://github.com/spotbugs/spotbugs/issues/4398))
 - Fix the bug rank of plugins without their own `bugrank.txt`, such as find-sec-bugs: with `spotbugs.jar` on the class path (e.g. command line, Maven) the ranks of the core plugin were applied to them twice. Their bugs are now ranked like core bugs of the same category, e.g. `SECURITY` 5 instead of 10, so bugs which `-maxRank` or the default rank threshold of 20 used to hide are reported ([spotbugs-maven-plugin#144](https://github.com/spotbugs/spotbugs-maven-plugin/issues/144))
+- Fix analysis errors when dataflow debugging is enabled, caused by dumping dataflow facts before they were computed ([#3785](https://github.com/spotbugs/spotbugs/issues/3785))
 - Fix `BC_VACUOUS_INSTANCEOF` false positives on record patterns, such as `foo instanceof Foo(var a, var b)` when `foo` is already a `Foo`, or a nested pattern whose type matches the component's type ([#3196](https://github.com/spotbugs/spotbugs/issues/3196))
 
 ### Removed
