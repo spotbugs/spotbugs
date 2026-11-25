@@ -45,6 +45,10 @@ public class UnmodifiableClass {
     private final Set<String> setWithIf3;
     private final Map<String, String> mapWithIf3;
 
+    private final List<String> listWithReversedTernary;
+    private final Set<String> setWithReversedTernary;
+    private final Map<String, String> mapWithReversedTernary;
+
     public UnmodifiableClass(List<String> list, Set<String> set, Map<String, String> map) {
         this.emptyList = Collections.emptyList();
         this.emptySet = Collections.emptySet();
@@ -65,6 +69,10 @@ public class UnmodifiableClass {
         this.listWithTernary3 = list != null ? new ArrayList<>(list) : Collections.emptyList();
         this.setWithTernary3 = set != null ? new HashSet<>(set) : Collections.emptySet();
         this.mapWithTernary3 = map != null ? new HashMap<>(map) : Collections.emptyMap();
+
+        this.listWithReversedTernary = list == null ? Collections.emptyList() : List.copyOf(list);
+        this.setWithReversedTernary = set == null ? Collections.emptySet() : Set.copyOf(set);
+        this.mapWithReversedTernary = map == null ? Collections.emptyMap() : Map.copyOf(map);
 
         if (list != null) {
             this.listWithIf = List.copyOf(list);
@@ -215,5 +223,17 @@ public class UnmodifiableClass {
 
     public Map<String, String> getMapWithIf3() {
         return mapWithIf3;
+    }
+
+    public List<String> getListWithReversedTernary() {
+        return listWithReversedTernary;
+    }
+
+    public Set<String> getSetWithReversedTernary() {
+        return setWithReversedTernary;
+    }
+
+    public Map<String, String> getMapWithReversedTernary() {
+        return mapWithReversedTernary;
     }
 }
