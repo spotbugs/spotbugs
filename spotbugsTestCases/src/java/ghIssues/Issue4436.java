@@ -86,4 +86,18 @@ public class Issue4436 {
         }
         return sb.length();
     }
+
+    public int tryInElse(int i) {
+        StringBuilder sb = new StringBuilder();
+        if (i == 19) {
+            sb.append('A');
+        } else {
+            try {
+                sb.append('A');
+            } catch (RuntimeException e) {
+                sb.append('B');
+            }
+        }
+        return sb.length();
+    }
 }

@@ -64,6 +64,7 @@ class BranchIssuesTest extends AbstractIntegrationTest {
         assertNoBugInMethod("DB_DUPLICATE_BRANCHES", "ghIssues.Issue4436", "unequalInner");
         assertNoBugInMethod("DB_DUPLICATE_BRANCHES", "ghIssues.Issue4436", "extraElseStatement");
         assertNoBugInMethod("DB_DUPLICATE_BRANCHES", "ghIssues.Issue4436", "differentJoin");
+        assertNoBugInMethod("DB_DUPLICATE_BRANCHES", "ghIssues.Issue4436", "tryInElse");
     }
 
     @Test

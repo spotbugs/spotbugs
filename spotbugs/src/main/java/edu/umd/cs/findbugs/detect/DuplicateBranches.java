@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.GotoInstruction;
@@ -163,7 +164,8 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
             }
             if (candidate == null || candidate.getPosition() != candidatePos
                     || !(candidate.getInstruction() instanceof GotoInstruction)
-                    || ((GotoInstruction) candidate.getInstruction()).getTarget() != elseFinishHandle) {
+                    || ((GotoInstruction) candidate.getInstruction()).getTarget() != elseFinishHandle
+                    || isFollowedByCatchBlocks(method, elseStartPos, candidatePos, elseFinishPos)) {
                 return;
             }
             elseFinishHandle = candidate;
@@ -191,6 +193,22 @@ public class DuplicateBranches extends PreorderVisitor implements Detector {
                 .addClassAndMethod(classContext.getJavaClass(), method)
                 .addSourceLineRange(classContext, this, thenStartPos, thenFinishPos)
                 .addSourceLineRange(classContext, this, elseStartPos, elseFinishPos));
+    }
+
+    /**
+     * Whether an exception handler between {@code end} and {@code join} protects the code between {@code start} and
+     * {@code end}, i.e. whether that code is a try block followed by its catch blocks, as in
+     * {@code if (c) { a(); } else { try { a(); } catch (E e) { b(); } }}, and not an inner else branch followed by the
+     * else branch of an outer if.
+     */
+    private static boolean isFollowedByCatchBlocks(Method method, int start, int end, int join) {
+        for (CodeException handler : method.getCode().getExceptionTable()) {
+            if (handler.getStartPC() < end && handler.getEndPC() > start
+                    && handler.getHandlerPC() > end && handler.getHandlerPC() < join) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
