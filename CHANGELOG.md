@@ -9,6 +9,7 @@ Currently the versioning policy of this project follows [Semantic Versioning v2.
 - Add support for JSpecify type-use nullness annotations on fields. ([#4429](https://github.com/spotbugs/spotbugs/pull/4429))
 
 ### Fixed
+- Fix `IL_INFINITE_LOOP` false positives for loops with floating-point comparisons ([#4435](https://github.com/spotbugs/spotbugs/pull/4435))
 - Dataflow no longer enables debug output automatically when an analysis exceeds the iteration threshold; detailed output now appears only when `dataflow.debug` is enabled explicitly ([#3785](https://github.com/spotbugs/spotbugs/issues/3785))
 - Fix `Iterative jump info didn't converge` analysis errors in loops that null-check a local variable and assign `null` to it ([#4419](https://github.com/spotbugs/spotbugs/issues/4419))
 - Fix `DB_DUPLICATE_BRANCHES` false negatives for identical inner if/else branches nested in an outer then branch ([#4436](https://github.com/spotbugs/spotbugs/issues/4436))
