@@ -18,7 +18,7 @@ import org.gradle.crypto.checksum.Checksum
 plugins {
   id 'org.sonarqube' version '7.6.0.18749'
   id 'org.gradle.crypto.checksum' version '1.4.0'
-  id 'com.github.spotbugs' version '6.5.13'
+  id 'com.github.spotbugs' version '6.5.15'
   id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
