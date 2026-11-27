@@ -38,4 +38,4 @@ See [docs/README.md](docs/README.md) for detail.
 
 ## Update the Changelog at GitHub Release
 
-The `CHANGELOG` on the [GitHub release page](https://github.com/spotbugs/spotbugs/releases) only contains a link to the correct version of the `CHANGELOG.md` file (see `createReleaseBody` task in `build.gradle`). It needs to be manually updated after the new GitHub release is created.
+The `createReleaseBody` task in `build.gradle` includes the release's section of `CHANGELOG.md` on the [GitHub release page](https://github.com/spotbugs/spotbugs/releases). If the section cannot be found or read, the release notes instead link to the changelog at the release tag; update them manually.

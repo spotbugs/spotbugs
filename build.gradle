@@ -231,20 +231,40 @@ createChecksums.configure { Checksum checksumTask ->
   dependsOn(':spotbugs:distTar')
 }
 createReleaseBody.configure { Task releaseTask ->
+  File changelogFile = file('CHANGELOG.md')
+  String version = project.version
+  releaseTask.inputs.files changelogFile
+  releaseTask.inputs.property 'releaseVersion', version
   releaseTask.inputs.files fileTree(layout.buildDirectory.dir('checksums')).matching { PatternFilterable pattern ->
     pattern.include '*.sha256'
   }
   releaseTask.outputs.file outputFile
   releaseTask.dependsOn createChecksums
 
-  String version = project.version
   doLast {
+    String changelog = "- https://github.com/spotbugs/spotbugs/blob/${version}/CHANGELOG.md"
+    try {
+      List<String> lines = changelogFile.readLines('UTF-8')
+      int start = lines.findIndexOf { String line -> line.startsWith("## ${version} - ") } + 1
+      if (start >= 0) {
+        int end = start + 1
+        while (end < lines.size() && !(lines[end] ==~ /##\s.*/)) {
+          end++
+        }
+        changelog = lines.subList(start, end).join('\n').stripTrailing()
+      } else {
+        logger.warn("No changelog section found for ${version}; using the changelog link")
+      }
+    } catch (IOException e) {
+      logger.warn("Could not read ${changelogFile}; using the changelog link: ${e.message}")
+    }
+
     File outputAsFile = outputFile.get().asFile
     outputAsFile.delete()
-    outputAsFile << """SpotBugs ${version}
+    outputAsFile << """##SpotBugs ${version}
 
 ### CHANGELOG
-- https://github.com/spotbugs/spotbugs/blob/${version}/CHANGELOG.md
+${changelog}
 
 ### CHECKSUM
 | file | checksum (sha256) |
