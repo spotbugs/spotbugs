@@ -1,7 +1,6 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.AbstractIntegrationTest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class FindReturnRefTest extends AbstractIntegrationTest {
@@ -317,10 +316,28 @@ class FindReturnRefTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Disabled
     void testUnmodifiableRecord() {
         performAnalysis("../java17/exposemutable/UnmodifiableRecord.class");
         assertNoExposeBug();
+    }
+
+    @Test
+    void testModifiableRecord() {
+        performAnalysis("../java17/exposemutable/ModifiableRecord.class");
+
+        assertBugInMethodAtField("EI_EXPOSE_REP", "ModifiableRecord", "list", "list");
+        assertBugInMethodAtField("EI_EXPOSE_REP", "ModifiableRecord", "set", "set");
+        assertBugInMethodAtField("EI_EXPOSE_REP", "ModifiableRecord", "ifList", "ifList");
+        assertBugInMethodAtField("EI_EXPOSE_REP", "ModifiableRecord", "ifMap", "ifMap");
+
+        assertBugTypeCount("EI_EXPOSE_REP", 4);
+        assertBugTypeCount("EI_EXPOSE_BUF", 0);
+        assertBugTypeCount("EI_EXPOSE_BUF2", 0);
+        assertBugTypeCount("EI_EXPOSE_REP2", 0);
+        assertBugTypeCount("EI_EXPOSE_STATIC_BUF2", 0);
+        assertBugTypeCount("EI_EXPOSE_STATIC_REP2", 0);
+        assertBugTypeCount("MS_EXPOSE_BUF", 0);
+        assertBugTypeCount("MS_EXPOSE_REP", 0);
     }
 
     @Test

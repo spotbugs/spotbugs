@@ -173,6 +173,24 @@ public class OpcodeStack {
         IMMUTABLE_RETURNER_MAP.put(Pair.of(Values.SLASHED_JAVA_UTIL_SET, "copyOf"), "Ljava/util/ImmutableCollections$AbstractImmutableSet;");
     }
 
+    /**
+     * Maps each unmodifiable collection of {@link #IMMUTABLE_RETURNER_MAP} to the one of the same kind (List, Set or Map)
+     * returned by {@code List.of()}, {@code Set.of()} or {@code Map.of()}.
+     */
+    private static final Map<String, String> UNMODIFIABLE_COLLECTION_KINDS = new HashMap<>();
+    static {
+        for (String collection : List.of(Values.SLASHED_JAVA_UTIL_LIST, Values.SLASHED_JAVA_UTIL_SET, Values.SLASHED_JAVA_UTIL_MAP)) {
+            String kind = IMMUTABLE_RETURNER_MAP.get(Pair.of(collection, "of"));
+            // the class names of these collections end with List, Set or Map
+            String suffix = collection.substring(collection.lastIndexOf('/') + 1) + ";";
+            for (String signature : IMMUTABLE_RETURNER_MAP.values()) {
+                if (signature.endsWith(suffix)) {
+                    UNMODIFIABLE_COLLECTION_KINDS.put(signature, kind);
+                }
+            }
+        }
+    }
+
     @StaticConstant
     static final HashMap<String, String> boxedTypes = new HashMap<>();
 
@@ -552,6 +570,12 @@ public class OpcodeStack {
                 m.signature = i2.signature;
             } else if (i2.isNull()) {
                 m.signature = i1.signature;
+            } else {
+                String kind = UNMODIFIABLE_COLLECTION_KINDS.get(i1.signature);
+                if (kind != null && kind.equals(UNMODIFIABLE_COLLECTION_KINDS.get(i2.signature))) {
+                    // e.g. List.copyOf(list) on one path and Collections.emptyList() on the other: still an unmodifiable list
+                    m.signature = kind;
+                }
             }
             if (Objects.equals(i1.constValue, i2.constValue)) {
                 m.constValue = i1.constValue;
