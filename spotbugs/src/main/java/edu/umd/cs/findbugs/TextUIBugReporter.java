@@ -171,6 +171,17 @@ public abstract class TextUIBugReporter extends AbstractBugReporter implements C
                     }
                 }
             }
+            if (error.getNestedExceptionMessage() != null) {
+                emitLine("\t\tCaused by: " + error.getNestedExceptionMessage());
+                if (reportStackTrace) {
+                    String[] nestedStackTrace = error.getNestedStackTrace();
+                    if (nestedStackTrace != null) {
+                        for (String aStackTrace : nestedStackTrace) {
+                            emitLine("\t\t\tAt " + aStackTrace);
+                        }
+                    }
+                }
+            }
         }
     }
 
