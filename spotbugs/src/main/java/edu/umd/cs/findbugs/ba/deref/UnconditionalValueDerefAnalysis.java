@@ -19,9 +19,11 @@
 
 package edu.umd.cs.findbugs.ba.deref;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.bcel.Const;
@@ -741,6 +743,9 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         // Edge transfer function
         if (isFactValid(fact)) {
             fact = propagateDerefSetsToMergeInputValues(fact, edge);
+            if (!isExceptionEdge(edge) && edge.isBackwardInBytecode()) {
+                fact = propagateLoopCarriedConstantDerefs(fact, edge);
+            }
             if (invDataflow != null) {
                 knownNonnullOnBranch = findValueKnownNonnullOnBranch(fact, edge);
                 if (knownNonnullOnBranch != null) {
@@ -895,6 +900,129 @@ public class UnconditionalValueDerefAnalysis extends BackwardDataflowAnalysis<Un
         }
         fact.cleanDerefSet(null, blockValueNumberFrame);
         return fact;
+    }
+
+    /**
+     * On a loop back edge, a constant value (e.g. {@code null}) carried into a
+     * phi node of the loop header is unconditionally dereferenced if, on
+     * <em>every</em> non-exception successor of the header, either the phi
+     * node or the constant itself is unconditionally dereferenced.
+     * <p>
+     * {@link #propagateDerefSetsToMergeInputValues(UnconditionalValueDerefSet, Edge)}
+     * only translates phi to input after the successors have been intersected.
+     * At a loop header that loses this information: the exit dereferences the
+     * phi node, while the loop body overwrites the local with the constant
+     * again, so the body dereferences the constant and not the phi node.
+     * Translating per successor before intersecting is only valid for a
+     * {@link ValueNumber#CONSTANT_VALUE}: every evaluation of the constant
+     * produces the same value, so a dereference of a later assignment is a
+     * dereference of the same value. For any other value a later assignment
+     * may produce a different value, so those are left alone.
+     * </p>
+     *
+     * @param fact
+     *            the fact on the back edge after phi translation
+     * @param backEdge
+     *            the back edge into the loop header
+     * @return possibly-modified dataflow value
+     */
+    private UnconditionalValueDerefSet propagateLoopCarriedConstantDerefs(UnconditionalValueDerefSet fact, Edge backEdge) {
+        BasicBlock header = backEdge.getTarget();
+        ValueNumberFrame bodyValueNumberFrame = vnaDataflow.getResultFact(backEdge.getSource());
+        ValueNumberFrame headerValueNumberFrame = vnaDataflow.getStartFact(header);
+        if (!bodyValueNumberFrame.isValid() || !headerValueNumberFrame.isValid()
+                || bodyValueNumberFrame.getNumLocals() != headerValueNumberFrame.getNumLocals()) {
+            return fact;
+        }
+
+        UnconditionalValueDerefSet result = fact;
+        List<UnconditionalValueDerefSet[]> successorFacts = null;
+        for (int i = 0; i < bodyValueNumberFrame.getNumLocals(); i++) {
+            ValueNumber constantVN = bodyValueNumberFrame.getValue(i);
+            ValueNumber phiVN = headerValueNumberFrame.getValue(i);
+            if (constantVN.equals(phiVN) || !constantVN.hasFlag(ValueNumber.CONSTANT_VALUE)
+                    || !phiVN.hasFlag(ValueNumber.PHI_NODE) || result.isUnconditionallyDereferenced(constantVN)) {
+                continue;
+            }
+            if (successorFacts == null) {
+                successorFacts = getHeaderSuccessorFacts(header);
+                if (successorFacts == null) {
+                    return result;
+                }
+            }
+
+            Set<Location> derefLocations = new HashSet<>();
+            boolean derefOnEverySuccessor = true;
+            boolean phiDerefOnSomeSuccessor = false;
+            for (UnconditionalValueDerefSet[] successorFact : successorFacts) {
+                UnconditionalValueDerefSet translated = successorFact[0];
+                UnconditionalValueDerefSet untranslated = successorFact[1];
+                if (translated.isUnconditionallyDereferenced(phiVN)) {
+                    // the phi node, i.e. the value carried by this back edge
+                    derefLocations.addAll(translated.getUnconditionalDerefLocationSet(phiVN));
+                    phiDerefOnSomeSuccessor = true;
+                } else if (untranslated.isUnconditionallyDereferenced(constantVN)) {
+                    // the constant itself, assigned again on this successor;
+                    // it is not live at the end of the header, so the
+                    // translated fact no longer mentions it
+                    derefLocations.addAll(untranslated.getUnconditionalDerefLocationSet(constantVN));
+                } else {
+                    derefOnEverySuccessor = false;
+                    break;
+                }
+            }
+            if (derefOnEverySuccessor && phiDerefOnSomeSuccessor) {
+                if (result == fact) {
+                    result = duplicateFact(fact);
+                }
+                result.setDerefSet(constantVN, derefLocations);
+                if (DEBUG) {
+                    System.out.println("** Loop-carried constant " + constantVN + " (phi " + phiVN + ") dereferenced at "
+                            + derefLocations + " on " + backEdge);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Get the facts flowing into the end of a loop header from each of its
+     * non-exception successors. Each entry holds the fact translated with the
+     * same edge transfer that
+     * {@link #meetInto(UnconditionalValueDerefSet, Edge, UnconditionalValueDerefSet, boolean)}
+     * applies, and the untranslated fact at the start of the successor. Values
+     * known to be nonnull on the branch are cleared from both. Successors
+     * without information yet (TOP) are skipped, as they are by the meet.
+     *
+     * @return the {translated, untranslated} facts, or null if a successor fact
+     *         is BOTTOM or no successor has information yet
+     */
+    private @Nullable List<UnconditionalValueDerefSet[]> getHeaderSuccessorFacts(BasicBlock header) {
+        List<UnconditionalValueDerefSet[]> facts = new ArrayList<>();
+        for (Iterator<Edge> i = cfg.outgoingEdgeIterator(header); i.hasNext();) {
+            Edge edge = i.next();
+            if (isExceptionEdge(edge)) {
+                continue;
+            }
+            UnconditionalValueDerefSet untranslated = getResultFact(edge.getTarget());
+            if (untranslated.isTop()) {
+                continue;
+            }
+            if (untranslated.isBottom()) {
+                return null;
+            }
+            UnconditionalValueDerefSet translated = propagateDerefSetsToMergeInputValues(untranslated, edge);
+            if (invDataflow != null) {
+                ValueNumber knownNonnullOnBranch = findValueKnownNonnullOnBranch(translated, edge);
+                if (knownNonnullOnBranch != null) {
+                    translated.clearDerefSet(knownNonnullOnBranch);
+                    untranslated = duplicateFact(untranslated);
+                    untranslated.clearDerefSet(knownNonnullOnBranch);
+                }
+            }
+            facts.add(new UnconditionalValueDerefSet[] { translated, untranslated });
+        }
+        return facts.isEmpty() ? null : facts;
     }
 
     /**
