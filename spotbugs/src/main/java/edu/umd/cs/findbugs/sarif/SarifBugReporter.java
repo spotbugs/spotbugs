@@ -29,8 +29,27 @@ import org.jspecify.annotations.NonNull;
 public class SarifBugReporter extends BugCollectionBugReporter {
     private final Gson gson = new Gson();
 
+    /**
+     * Whether a run that found bugs should be reported as a failed run. This mirrors the {@code -exitcode} command
+     * line switch: when it is set, finding bugs makes the process exit with a non-zero exit code, i.e. the run failed.
+     * See <a href="https://github.com/spotbugs/spotbugs/issues/1918">issue #1918</a>.
+     */
+    private boolean failOnError = false;
+
     public SarifBugReporter(Project project) {
         super(project);
+    }
+
+    /**
+     * Sets whether a run that found bugs counts as a failed run, so that {@code invocations[].executionSuccessful} is
+     * reported as {@code false} when bugs were found. Without this flag (the default), finding bugs alone does not make
+     * the invocation unsuccessful: the scanner did its job, only the findings are reported.
+     *
+     * @param failOnError
+     *            {@code true} if finding bugs should mark the invocation as unsuccessful
+     */
+    public void setFailOnError(boolean failOnError) {
+        this.failOnError = failOnError;
     }
 
     @Override
@@ -91,9 +110,13 @@ public class SarifBugReporter extends BugCollectionBugReporter {
                 .collect(Collectors.toList());
 
         int exitCode = ExitCodes.from(getQueuedErrors().size(), missingClasses.size(), getBugCollection().getCollection().size());
+        boolean executionSuccessful = (exitCode | ExitCodes.BUGS_FOUND_FLAG) == ExitCodes.BUGS_FOUND_FLAG;
+        if (failOnError && (exitCode & ExitCodes.BUGS_FOUND_FLAG) != 0) {
+            executionSuccessful = false;
+        }
         Invocation invocation = new Invocation(exitCode,
                 getExitCodeDescription(exitCode),
-                (exitCode | ExitCodes.BUGS_FOUND_FLAG) == ExitCodes.BUGS_FOUND_FLAG,
+                executionSuccessful,
                 execNotifications,
                 configNotifications);
 
